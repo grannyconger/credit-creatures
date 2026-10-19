@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Credit Life Teacher</title>
+  <link rel="stylesheet" href="../css/base.css">
+</head>
+<body>
+  <main>
+    <section class="panel">
+      <h1>📣 Teacher Dashboard</h1>
+      <p class="tagline">Credit Life classroom controls.</p>
+
+      <div id="signed-out">
+        <button id="sign-in" type="button">Sign in with your school Google account</button>
+      </div>
+
+      <div id="signed-in" hidden>
+        <p id="status"></p>
+        <button id="sign-out" class="secondary" type="button">Sign out</button>
+      </div>
+
+      <p id="error" class="error" role="alert"></p>
+      <p class="note">The full dashboard arrives in Phase 7. This page only checks access.</p>
+    </section>
+  </main>
+
+  <script type="module">
+    import { isConfigured } from "../js/firebase-config.js";
+
+    const $ = (id) => document.getElementById(id);
+    const signInBtn = $("sign-in");
+
+    if (!isConfigured) {
+      signInBtn.disabled = true;
+      $("error").textContent = "Sign-in is not set up yet.";
+    } else {
+      const { signIn, signOut, onUser, isTeacher } = await import("../js/auth.js");
+
+      onUser((user) => {
+        $("signed-out").hidden = Boolean(user);
+        $("signed-in").hidden = !user;
+        if (!user) return;
+        // Display only. Firestore rules enforce teacher access.
+        $("status").textContent = isTeacher(user)
+          ? `Welcome, ${user.displayName || user.email}. You have teacher access.`
+          : "This page is for teachers only.";
+      });
+
+      signInBtn.addEventListener("click", async () => {
+        $("error").textContent = "";
+        signInBtn.disabled = true;
+        try {
+          await signIn();
+        } catch (err) {
+          if (err.code !== "auth/popup-closed-by-user") {
+            $("error").textContent = err.code ? "Sign-in did not work. Please try again." : err.message;
+            console.error(err);
+          }
+        } finally {
+          signInBtn.disabled = false;
+        }
+      });
+
+      $("sign-out").addEventListener("click", () => signOut());
+    }
+  </script>
+</body>
+</html>

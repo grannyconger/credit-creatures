@@ -1,0 +1,11 @@
+{
+  "name": "credit-life",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Credit Life: raise a fantasy creature through its credit life.",
+  "scripts": {
+    "test": "node --test",
+    "sim": "node scripts/sim-report.js"
+  }
+}

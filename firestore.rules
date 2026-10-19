@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// Starter rules (Phase 1). Hardened in Phase 7.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSchool() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.matches('.*@greermiddlecollege[.]org$');
+    }
+
+    function isTeacher() {
+      return isSchool()
+        && request.auth.token.email in [
+          'bweaver@greermiddlecollege.org',
+          'brobinson@greermiddlecollege.org'
+        ];
+    }
+
+    match /users/{uid} {
+      allow read: if isSchool() && request.auth.uid == uid;
+      allow write: if isSchool()
+        && request.auth.uid == uid
+        && request.resource.data.email == request.auth.token.email.lower()
+        && request.resource.data.keys().hasOnly(['displayName', 'email', 'lastSignIn']);
+    }
+
+    // Everything else is denied by default.
+  }
+}
