@@ -21,6 +21,7 @@ A classroom game where students raise a fantasy creature through its credit life
 - Do not touch the separate Credit Quest project or repo.
 - Student-facing text: plain language for a 15-year-old with no credit knowledge. No em-dashes, no semicolons.
 - Real brand names are fine. Real logos are never fine. Use the emoji map in SPEC §4.
+- Feedback is built in (`docs/FEEDBACK.md`). Every new screen, choice, minigame and question logs telemetry through `js/telemetry.js`. Never ask students for personal info.
 - Sign-in is school-only (`@greermiddlecollege.org`). Firestore rules are the real gate. Any rules change must be pasted into the Firebase console by the teacher (give click-by-click steps).
 
 ## Build phases (SPEC §23)

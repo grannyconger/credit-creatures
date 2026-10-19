@@ -33,6 +33,7 @@ Last updated: 2026-10-19
   - Cards in collections count in utilization at their unpaid balance.
   - Premium cards: odds are 0 with no score, and very low under 24 months of history. If approved, a premium card acts as a normal card.
   - Payday loans, title loans, rent-to-own and store cards are not accounts. They come in Phase 4 as one-time Decision cards.
+- **Built-in feedback and tuning** (approved 2026-10-19): automatic play telemetry, one-tap student reactions, a 🐞 bug button with seed for replay, a teacher Tuning tab, and Phase 8 `tuning-report`/`replay` scripts. Full design in `docs/FEEDBACK.md`. It's built inside Phases 3 to 8, not as a separate phase.
 - **Brands:** the credit union is "Market Village Credit Union" 🤝. Product names are in `js/data/products.js`.
 
 ## Code map
@@ -79,11 +80,18 @@ Scope from SPEC §3, §6, §7 and §21:
   - `classes/{classId}`: `{ name, teacherEmail, code, releasedChapter, settings }`.
   - `classCodes/{code}`: `{ classId }`.
 - **Saving:** at every End Month and on Save and Quit. The life is plain JSON (a round trip is tested).
+- **Feedback work for this phase** (see `docs/FEEDBACK.md`):
+  - `js/telemetry.js`: queue, flush with the autosave, `window.onerror` capture, session timer.
+  - The 🐞 button, saving to `feedback/{id}` with screen, seed and last actions.
+  - Logging for onboarding and Design Your Card.
+  - Rules for `telemetry/{uid}` and `feedback/{id}`: create only, own uid.
+  - Make the engine fully replayable from its seed and action log, with a test.
 
 ## End-of-phase checklist
 
 1. `npm test` is green, and `npm run sim` still meets the §24 targets if engine numbers changed.
 2. Check the live site after pushing (the files load under `/credit-life/`).
 3. If `firestore.rules` changed, give the teacher click-by-click console steps.
-4. Update this file (status, decisions, code map, next step) and the status column in `CLAUDE.md`.
-5. Commit with a "Phase N: ..." message, push, and stop for approval.
+4. Every new screen, choice, minigame and question logs telemetry as listed in `docs/FEEDBACK.md`.
+5. Update this file (status, decisions, code map, next step) and the status column in `CLAUDE.md`.
+6. Commit with a "Phase N: ..." message, push, and stop for approval.
