@@ -2,12 +2,12 @@
 // Security comes from Firestore rules (firestore.rules), not from hiding this.
 // Paste the values from Firebase console > Project settings > Your apps > Web app.
 export const firebaseConfig = {
-  apiKey: "PASTE_API_KEY",
-  authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
-  projectId: "PASTE_PROJECT_ID",
-  storageBucket: "PASTE_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId: "PASTE_APP_ID",
+  apiKey: "AIzaSyA3UTTF_XBxqGT3_Cz0NiLX0f13F_nCiIU",
+  authDomain: "credit-life-38e4a.firebaseapp.com",
+  projectId: "credit-life-38e4a",
+  storageBucket: "credit-life-38e4a.firebasestorage.app",
+  messagingSenderId: "252360372988",
+  appId: "1:252360372988:web:a18ad24ea1d090096b9d79",
 };
 
 export const SCHOOL_DOMAIN = "greermiddlecollege.org";
