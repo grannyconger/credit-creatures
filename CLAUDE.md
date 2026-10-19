@@ -8,6 +8,7 @@ A classroom game where students raise a fantasy creature through its credit life
 - No framework, no build step. Plain HTML, CSS and JavaScript ES modules served as-is by GitHub Pages.
 - Relative paths only. Everything must work under the `/credit-life/` subpath.
 - The engine (`js/engine/`) is pure JS: no DOM, no `window`, no Firebase. Deterministic given a seed. Tested in Node.
+- Engine actions return `{ life, ok, message }` and never change their input. Entries in append-only lists (log, history, statements, inquiries) are shared between copies, so never edit one after it is pushed. UI code imports only from `js/engine/index.js`.
 - All tunable numbers live in `js/data/config.js`. Scenarios and products live in data files, never in engine code.
 - No secrets in the repo. The Firebase web config is public by design. Security comes from Firestore rules.
 - Do not touch the separate Credit Quest project or repo.
@@ -29,7 +30,7 @@ A classroom game where students raise a fantasy creature through its credit life
 | 7 | Teacher: dashboard, roster, controls, CSV export, rules hardening |
 | 8 | Pilot: one class plays, tune numbers, add remaining content |
 
-**Current phase:** 1 (built, awaiting Firebase config and approval). The approved plan for Phases 1 and 2 is in `~/.claude/plans/hidden-splashing-micali.md`.
+**Current phase:** 2 (engine built, awaiting approval). Phase 1 approved: sign-in verified live. The approved plan for Phases 1 and 2 is in `~/.claude/plans/hidden-splashing-micali.md`.
 
 ## Run locally
 
