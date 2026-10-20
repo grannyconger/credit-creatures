@@ -30,6 +30,7 @@ async function boot() {
   state.db = db;
   auth.onUser((user) => {
     state.me = user;
+    document.getElementById("sign-out").hidden = !user;
     if (!user) return signedOut(auth);
     if (!auth.isTeacher(user)) {
       return fill(root, h("p", "This page is for teachers only."), h("button.secondary", { type: "button", onclick: () => auth.signOut() }, "Sign out"));
