@@ -7,7 +7,7 @@ import { h, add, fill, money, ageLabel } from "../ui/dom.js";
 import { creatureSvg } from "../ui/creature-art.js";
 import { reportTab } from "../ui/accounts/report-tab.js";
 import { scoreTab } from "../ui/accounts/score-tab.js";
-import { rosterRow, studentDetail, rosterCsv, tuning, FLAGS } from "./analyze.js";
+import { rosterRow, studentDetail, rosterCsv, tuning, tuningExport, FLAGS } from "./analyze.js";
 import { STANDARD_LABELS } from "../data/practice-questions.js";
 import { CONFIG } from "../data/config.js";
 import { chapterInfo } from "../data/chapters.js";
@@ -406,7 +406,8 @@ function tuningView() {
   }
   const t = state.tuning;
   const exportJson = () => {
-    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), class: cls().name, tuning: t, roster: state.rows }, null, 2)], { type: "application/json" });
+    const data = tuningExport({ className: cls().name, tuningData: t, rows: state.rows, saves: state.saves });
+    const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
     const a = h("a", { href: URL.createObjectURL(blob), download: `${cls().name.replace(/\W+/g, "-")}-tuning.json` });
     document.body.append(a);
     a.click();
@@ -415,7 +416,7 @@ function tuningView() {
   const m = t.minutesPerMonth;
   return h(
     "div.t-tuning",
-    h("div.t-toolbar", h("p", `${t.events.toLocaleString()} play events from ${state.rows.length} students (practice mode left out).`), h("div.row", h("button.secondary.small", { type: "button", onclick: loadTuning }, "Reload"), h("button.small", { type: "button", onclick: exportJson }, "Export tuning data (JSON)"))),
+    h("div.t-toolbar", h("p", `${t.events.toLocaleString()} play events from ${state.rows.length} students (practice mode left out).`), h("div.row", h("button.secondary.small", { type: "button", onclick: loadTuning }, "Reload"), h("button.small", { type: "button", onclick: exportJson, title: "No names or emails are included" }, "Export tuning data (JSON, no names)"))),
     h(
       "div.stat-grid",
       stat("Minutes per game month", m.median == null ? "No data" : `${m.median} (target ${m.targetLow} to ${m.targetHigh})`),

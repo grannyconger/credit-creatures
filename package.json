@@ -6,6 +6,8 @@
   "description": "Credit Life: raise a fantasy creature through its credit life.",
   "scripts": {
     "test": "node --test",
-    "sim": "node scripts/sim-report.js"
+    "sim": "node scripts/sim-report.js",
+    "tuning-report": "node scripts/tuning-report.js",
+    "replay": "node scripts/replay.js"
   }
 }

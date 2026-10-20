@@ -10,6 +10,7 @@ import { CONFIG } from "../data/config.js";
 export function billsPanel({ life, onPay, onMove, onAutopay }) {
   const cards = ownCards(life);
   const cosigned = life.accounts.filter((a) => a.owner === "cosigned" && a.status === "open" && a.pastDue > 0);
+  const collections = life.accounts.filter((a) => a.status === "collections" && amountOwed(a) > 0);
   const up = upcomingPayments(life);
   const el = h("div.bills");
 
@@ -61,6 +62,19 @@ export function billsPanel({ life, onPay, onMove, onAutopay }) {
         plan && plan.months > 1 ? h("p.note.tight", `If you paid only minimums on ${money(due.statementBalance)}: ${plan.months} months and ${money(plan.totalInterest)} in interest.`) : null,
         owed > 0 ? payoffPreview(a, owed) : null,
         onAutopay ? autopayControl(a, onAutopay) : null
+      )
+    );
+  }
+
+  for (const a of collections) {
+    const owed = amountOwed(a);
+    add(
+      el,
+      h(
+        "div.bill-card.bad",
+        h("div.bill-head", h("strong", `🚨 ${a.name}`)),
+        h("p", "This is on your credit report as a collection. Paying it won't erase the mark, but a paid collection hurts much less than an unpaid one."),
+        h("div.row", h("button", { type: "button", disabled: owed > life.checking, onclick: () => onPay(a.id, owed, "collection") }, `Pay ${money(owed)} to settle it`))
       )
     );
   }

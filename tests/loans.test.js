@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { E, lifeWith, months, card } from "./helpers.js";
+import { E, lifeWith, withCard, months, card } from "./helpers.js";
 
 test("auto loan APR depends on the score", () => {
   const noScore = E.quoteAutoLoan(lifeWith(), { price: 10000, termMonths: 60 });
@@ -65,4 +65,20 @@ test("upgrading a secured card returns the deposit", () => {
   assert.equal(up.life.checking, 400);
   assert.equal(card(up.life, r.accountId).limit, 1000);
   assert.equal(card(up.life, r.accountId).secured, false);
+});
+
+test("an ignored bill in collections hurts the score until paid, and stays as a paid collection", () => {
+  let { life, id } = withCard(lifeWith({ seed: "coll", checking: 900 }), { limit: 500 });
+  for (let i = 0; i < 8; i++) life = E.endMonth(life).life;
+  const before = life.score;
+  const r = E.addCollection(life, "Clinic bill", 180);
+  life = E.endMonth(r.life).life;
+  assert.ok(life.score < before - 30, `${before} -> ${life.score}`);
+  assert.equal(E.buildReport(life).collections.length, 1);
+  life = E.pay(life, r.accountId, 180).life;
+  assert.equal(E.findAccount(life, r.accountId).status, "collectionPaid");
+  const lower = life.score;
+  life = E.endMonth(life).life;
+  assert.ok(life.score > lower, "paying it off helps");
+  assert.ok(life.score < before, "but the paid collection still shows");
 });

@@ -142,6 +142,7 @@ export function endMonth(life) {
 
   // ---- Step 5: loan, BNPL and bill payments come out of checking ----
   for (const bill of next.bills) {
+    if (bill.startsMonth != null && M < bill.startsMonth) continue;
     if (bill.amount <= next.checking) {
       next.checking = money(next.checking - bill.amount);
       emit(5, "bill", `${bill.name} bill paid: ${dollars(bill.amount)}.`, { amount: bill.amount });

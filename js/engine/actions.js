@@ -30,6 +30,7 @@ export const ACTIONS = {
   leaveSchool: accounts.leaveSchool,
   cosign: accounts.cosign,
   buyWithBnpl: accounts.buyWithBnpl,
+  addCollection: accounts.addCollection,
   applyForCard,
   endMonth,
   getTeenDebitCard,

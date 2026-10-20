@@ -163,7 +163,7 @@ export function upcomingPayments(life) {
       cardsDue.push({ name: a.name, amount: minLeft, accountId: a.id });
     }
   }
-  for (const b of life.bills) auto.push({ name: b.name, amount: b.amount, monthsLeft: b.monthsLeft ?? null });
+  for (const b of life.bills) if (b.startsMonth == null || life.month >= b.startsMonth) auto.push({ name: b.name, amount: b.amount, monthsLeft: b.monthsLeft ?? null });
   for (const a of life.accounts) {
     if (a.owner !== "self" || a.status !== "open") continue;
     if (a.kind === "installment" && a.firstDueMonth != null && life.month >= a.firstDueMonth) {

@@ -26,6 +26,7 @@ export {
   leaveSchool,
   cosign,
   buyWithBnpl,
+  addCollection,
   amountOwed,
 } from "./accounts.js";
 export { quoteApplication, applyForCard } from "./approval.js";

@@ -35,8 +35,8 @@ A classroom game where students raise a fantasy creature through its credit life
 | 5 | Account Management: wallet, statements, bills, AutoPay, My Score, report, Practice Desk, inbox, themes, Sparkle Points | Done, approved |
 | 6 | Economy and engagement: Ledger Sort, Cashier Rush, Check Writer, shop, BNPL checkout, 40+ achievements, XP, ranks, leaderboard | Done, approved |
 | 7 | Teacher: dashboard, roster, controls, CSV export, Tuning tab, rules hardening (plus unlock pop-ups, local credit unions, signature font) | Done, approved |
-| 8 | Social and customization: friend requests, friend groups, gifts every 40 hours, bigger creature customizer | Done, awaiting approval |
-| 9 | Pilot: one class plays, tune numbers, add remaining content | Next |
+| 8 | Social and customization: friend requests, friend groups, gifts every 40 hours, bigger creature customizer | Done, approved |
+| 9 | Pilot: one class plays, tune numbers, add remaining content | Built, waiting for pilot data (docs/PILOT.md) |
 
 ## Run locally
 
@@ -50,6 +50,9 @@ Open http://localhost:8000/?local to play with no sign-in. It saves to localStor
 
 - `npm test` runs `node --test` (engine unit tests plus the 1,000-life simulation assertions, under 1 second).
 - `npm run sim` prints the score distribution report by play style.
+- `npm run tuning-report -- pilot-data/<file>.json` suggests config changes from a dashboard tuning export.
+- `npm run replay -- pilot-data/<file>.json --set <setting>=<value>` re-runs real students' games with new values.
+- `pilot-data/` is gitignored. Never commit student data.
 
 ## Deploy
 

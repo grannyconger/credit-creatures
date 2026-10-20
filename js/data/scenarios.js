@@ -774,6 +774,327 @@ export const SCENARIOS = [
     },
   },
 
+  // ---------------- More of the catalog (Phase 9) ----------------
+  {
+    id: "carLease",
+    group: "types",
+    standards: [1, 2],
+    icon: "🚙",
+    title: "Lease a new car?",
+    minChapter: 4,
+    fits: (life) => !hasType(life, "autoLoan") && life.checking >= 350,
+    text: () => [
+      "A dealer offers a shiny new car for $199 a month for 3 years, with $300 due when you sign. That's a lease.",
+      "With a lease you're renting the car. After 3 years you give it back and own nothing. Gas and insurance add about $90 a month.",
+    ],
+    choices: () => [
+      {
+        key: "lease",
+        label: "Sign the lease",
+        steps: [["debitPurchase", 300, "car lease signing fee"], ["addBill", "Car lease", 199, 36], ["removeBill", "Bus pass"], ["addBill", "Gas and insurance", 90]],
+        outcome: "New car smell! $199 comes out every month for 3 years, and at the end you own nothing.",
+        quality: "bad",
+        math: "$300 + $199 × 36 months = $7,464 to drive a car you give back.",
+      },
+      { key: "bus", label: "Keep riding the bus", outcome: "Your $30 bus pass wins again. You can save for a used car you'd actually own.", quality: "good" },
+    ],
+  },
+  {
+    id: "rewardsCard",
+    group: "types",
+    standards: [1, 2],
+    icon: "✈️",
+    title: "A travel rewards card",
+    fits: (life) => life.score != null && life.score >= 700 && !life.accounts.some((a) => a.product === "premium" && a.status === "open"),
+    text: () => [
+      "An ad says: \"Earn 2% back on everything with the Capital One Venture X!\" It has a $395 annual fee and wants a long, strong credit history.",
+      "You spend about $300 a month on a card. Is it worth it?",
+    ],
+    choices: () => [
+      {
+        key: "apply",
+        label: "Apply for it",
+        steps: [["applyForCard", { issuer: "capitalOne", product: "premium", requestedLimit: 5000, design: "plasticBlue" }]],
+        outcome: (r) =>
+          approvedText(r, "Approved, but check the math. The fee costs more than you'll earn back.", "Denied. Premium cards want years of history. The hard inquiry stays on your report."),
+        quality: "bad",
+        factor: { key: "newCredit", dir: "down" },
+        math: "$300 × 12 months × 2% = $72 a year in rewards. The fee is $395. You'd lose $323 a year.",
+      },
+      { key: "skip", label: "Skip it for now", outcome: "Smart. Rewards only pay off when you spend a lot and pay in full every month.", quality: "good", math: "$300 × 12 × 2% = $72 in rewards vs a $395 fee." },
+    ],
+  },
+  {
+    id: "balanceTransfer",
+    group: "costs",
+    standards: [2],
+    icon: "🔀",
+    title: "0% balance transfer",
+    fits: (life) => ownCards(life).some((a) => amountOwed(a) >= 300),
+    text: (life) => {
+      const a = ownCards(life).find((x) => amountOwed(x) >= 300);
+      const owed = amountOwed(a);
+      return [
+        `You owe ${dollars(owed)} on your ${a.name} at ${apr(a.apr)} APR. A letter offers a new card with 0% interest for 12 months if you move the balance over.`,
+        `There's a 3% transfer fee (${dollars(Math.round(owed * 0.03))}), and applying is a hard inquiry.`,
+      ];
+    },
+    choices: (life) => {
+      const a = ownCards(life).find((x) => amountOwed(x) >= 300);
+      const owed = amountOwed(a);
+      const fee = Math.round(owed * 0.03);
+      const monthly = Math.ceil(owed / 12);
+      const keep = payoffPlan(owed, a.apr, monthly);
+      return [
+        {
+          key: "transfer",
+          label: "Apply and transfer",
+          steps: [["recordInquiry", "Balance transfer card"]],
+          outcome: `If you pay ${dollars(monthly)} a month, it's gone in 12 months for just the ${dollars(fee)} fee. In this game the transfer card is a one-time choice, so your balance stays where it is.`,
+          quality: "ok",
+          factor: { key: "newCredit", dir: "down" },
+          math: `Keep it at ${apr(a.apr)}: ${dollars(monthly)} a month costs ${dollars(keep.totalInterest)} in interest. Transfer: ${dollars(fee)} fee and $0 interest if it's paid off within 12 months.`,
+        },
+        {
+          key: "payDown",
+          label: "Skip it and pay extra each month",
+          outcome: "No inquiry and no fee. Paying extra still cuts your interest a lot.",
+          quality: "good",
+          math: `${dollars(monthly)} a month at ${apr(a.apr)}: ${keep.months} months and ${dollars(keep.totalInterest)} in interest.`,
+        },
+      ];
+    },
+  },
+  {
+    id: "deferredInterest",
+    group: "costs",
+    standards: [2, 5],
+    icon: "⏳",
+    title: "No interest if paid in 6 months",
+    fits: (life) => life.checking >= 120,
+    text: () => [
+      "Shimmer Market sells a $600 laptop with a deal: \"No interest if paid in full in 6 months!\"",
+      "The catch: if even $1 is left after 6 months, they charge ALL the interest from day one, at 27%. That's called deferred interest.",
+    ],
+    choices: (life) => [
+      {
+        key: "planFull",
+        label: "Take it and pay $100 a month",
+        steps: [["addBill", "Laptop promo plan", 100, 6]],
+        outcome: "If every $100 payment goes through, you pay $600 and no interest. Keep enough in checking.",
+        quality: "ok",
+        math: "$600 ÷ 6 months = $100 a month. Miss it and the back interest is about $81.",
+      },
+      {
+        key: "planHalf",
+        label: "Take it and pay $50 a month",
+        steps: [["addBill", "Laptop promo plan", 50, 6], ["addBill", "Laptop deferred interest and balance", 381, 1, 5]],
+        outcome: "After 6 months you still owe $300, so all the back interest lands at once. Ouch.",
+        quality: "bad",
+        math: "$50 × 6 = $300 paid. $300 left, plus about $81 of interest from day one = $381 due.",
+      },
+      {
+        key: "cheaper",
+        label: "Buy a $300 used laptop with debit",
+        steps: [["debitPurchase", 300, "used laptop"]],
+        disabled: short(life, 300),
+        outcome: "It's not new, but it's paid for. No traps.",
+        quality: "good",
+      },
+    ],
+  },
+  {
+    id: "annualFee",
+    group: "costs",
+    standards: [2],
+    icon: "🗓️",
+    title: "Your annual fee is coming",
+    fits: (life) => ownCards(life).some((a) => a.annualFee > 0),
+    text: (life) => {
+      const a = ownCards(life).find((x) => x.annualFee > 0);
+      return [`Your ${a.name} charges a ${dollars(a.annualFee)} annual fee every year on its birthday. Is the card worth it?`, "Closing it saves the fee, but you lose its limit and its age on your report."];
+    },
+    choices: (life) => {
+      const a = ownCards(life).find((x) => x.annualFee > 0);
+      const owed = amountOwed(a);
+      return [
+        { key: "keep", label: "Keep it", outcome: "The fee keeps coming each year. Make sure the card earns its keep.", quality: "ok" },
+        {
+          key: "close",
+          label: "Close it",
+          steps: [["closeAccount", a.id]],
+          disabled: owed > 0 ? `Pay the ${dollars(owed)} balance first.` : null,
+          outcome: "No more fee. Your total limit went down, so keep other balances low.",
+          quality: "ok",
+          factor: { key: "length", dir: "down" },
+        },
+      ];
+    },
+  },
+  {
+    id: "paydayRollover",
+    group: "pitfalls",
+    standards: [5],
+    icon: "🔁",
+    title: "Can't repay the payday loan",
+    priority: 3,
+    once: false,
+    fits: (life) => life.bills.some((b) => b.name === "Payday loan payback") && life.checking < 345,
+    text: () => [
+      "Your $345 payday loan payback comes out at End Month, and checking won't cover it. Quick Cash offers to \"roll it over\": pay just the $45 fee now and owe $345 again in two weeks.",
+    ],
+    choices: (life) => [
+      {
+        key: "rollover",
+        label: "Roll it over for $45",
+        steps: [["debitPurchase", 45, "payday rollover fee"]],
+        disabled: short(life, 45),
+        outcome: "You paid $45 and still owe $345. This is how a $300 loan turns into hundreds in fees.",
+        quality: "bad",
+        math: "Roll it over 4 times: $45 × 4 = $180 in fees, and you still owe the $345.",
+      },
+      {
+        key: "savings",
+        label: "Pay it from savings",
+        steps: [["moveToChecking", Math.min(345, life.savings)]],
+        disabled: life.savings < 345 - life.checking ? "Not enough in savings." : null,
+        outcome: "Done with Quick Cash. Rebuild your savings next.",
+        quality: "good",
+      },
+      {
+        key: "creditUnion",
+        label: "Get a Greenville FCU small loan to pay it off",
+        steps: [["receiveCash", 300, "Greenville FCU small loan"], ["addBill", "Greenville FCU loan payment", 104, 3]],
+        outcome: "The payday loan gets paid at End Month. Now you owe a fair loan instead of a trap.",
+        quality: "good",
+      },
+    ],
+  },
+  {
+    id: "titleLoan",
+    group: "pitfalls",
+    standards: [5],
+    icon: "🔑",
+    title: "Cash for your car title?",
+    fits: (life) => hasType(life, "autoLoan") && life.checking < 300,
+    text: () => [
+      "A sign says: \"Get $500 today. Just hand over your car title!\" You pay back $625 next month.",
+      "If you can't pay, the lender can take your car, even though you still owe your car loan.",
+    ],
+    choices: () => [
+      {
+        key: "take",
+        label: "Take the $500",
+        steps: [["receiveCash", 500, "title loan"], ["addBill", "Title loan payback", 625, 1]],
+        outcome: "You have $500 now. $625 comes out at End Month, and your car is the collateral.",
+        quality: "bad",
+        math: "$125 fee on $500 for one month. As a yearly rate, that's about 300% APR.",
+      },
+      { key: "skip", label: "Walk away", outcome: "Your car stays yours. Talk to a credit union or use savings instead.", quality: "good" },
+    ],
+  },
+  {
+    id: "settlementAd",
+    group: "pitfalls",
+    standards: [5],
+    icon: "📺",
+    title: "\"Erase your debt!\"",
+    fits: (life) => life.accounts.some((a) => a.owner === "self" && ["open", "collections"].includes(a.status) && a.kind !== "installment" && amountOwed(a) >= 200),
+    text: () => [
+      "A video ad says: \"Settle your debt for pennies on the dollar! Just $200 to start!\"",
+      "Debt settlement companies take fees up front, tell you to stop paying your bills, and your report fills with late marks.",
+    ],
+    choices: (life) => [
+      {
+        key: "pay",
+        label: "Pay the $200 to start",
+        steps: [["debitPurchase", 200, "debt settlement company fee"]],
+        disabled: short(life, 200),
+        outcome: "$200 gone, and nothing you owe changed. Many of these companies are scams.",
+        quality: "bad",
+      },
+      { key: "callLender", label: "Call your card company and ask for a payment plan", outcome: "Lenders often lower payments or waive a fee if you ask. Free nonprofit credit counseling can help too.", quality: "good" },
+      { key: "ignore", label: "Ignore the ad", outcome: "Good call. Keep paying what you can, starting with the minimums.", quality: "ok" },
+    ],
+  },
+  {
+    id: "medicalNotice",
+    group: "pitfalls",
+    standards: [3, 5],
+    icon: "📬",
+    title: "A final notice",
+    minChapter: 3,
+    fits: (life) => life.score != null,
+    text: () => [
+      "You find an unopened envelope from months ago. It's a $180 bill from the urgent care clinic, marked FINAL NOTICE.",
+      "If it's not paid this month, it goes to a collection agency, and that goes on your credit report.",
+    ],
+    choices: (life) => [
+      {
+        key: "pay",
+        label: "Pay the $180 now",
+        cost: { amount: 180, item: "old clinic bill", methods: ["debit", "card"] },
+        outcome: "Paid before it went to collections. Your report never knew.",
+        quality: "good",
+      },
+      {
+        key: "ignore",
+        label: "Ignore it",
+        steps: [["addCollection", "Urgent care bill", 180]],
+        outcome: "It went to collections and your score will drop. You can still pay it from your Wallet. A paid collection hurts less.",
+        quality: "bad",
+        factor: { key: "payment", dir: "down" },
+      },
+    ],
+  },
+  {
+    id: "reportError",
+    group: "profile",
+    standards: [3],
+    icon: "📝",
+    title: "A mistake on your report",
+    minChapter: 3,
+    fits: (life) => life.accounts.some((a) => a.reported && a.history.length >= 3),
+    text: () => [
+      "You check your report and see a 30-day late mark from a month you know you paid on time. You have the receipt.",
+      "Credit bureaus must check a dispute, usually within 30 days, and fix mistakes.",
+    ],
+    choices: () => [
+      { key: "dispute", label: "File a dispute with your receipt", outcome: "Good move. Disputing is free. In real life the bureau checks with the lender and removes the wrong mark.", quality: "good" },
+      { key: "ignore", label: "Leave it", outcome: "A wrong late mark can drag your score down for years. Always dispute errors.", quality: "bad" },
+    ],
+  },
+  {
+    id: "landlordCheck",
+    group: "profile",
+    standards: [3],
+    icon: "🏠",
+    title: "Your first apartment",
+    minChapter: 5,
+    fits: (life) => life.checking >= 35,
+    text: () => [
+      "You found an apartment! The landlord charges a $35 application fee and checks your credit. Landlords usually do a soft check.",
+      "Your score helps decide the security deposit.",
+    ],
+    choices: (life) => [
+      {
+        key: "apply",
+        label: "Apply ($35)",
+        steps: [["debitPurchase", 35, "apartment application fee"], ["recordInquiry", "Apartment landlord screening", false]],
+        outcome:
+          life.score == null
+            ? "No score yet, so the landlord wants a cosigner or two months of rent as a deposit."
+            : life.score >= 670
+              ? `Approved with a normal deposit! Your ${life.score} score made it easy.`
+              : life.score >= 580
+                ? `Approved, but your ${life.score} score means a bigger deposit.`
+                : `Denied for now. A ${life.score} score worries landlords. On-time payments will fix that.`,
+        quality: life.score != null && life.score >= 670 ? "good" : "ok",
+      },
+      { key: "wait", label: "Wait until your score is higher", outcome: "Living with roommates or family a bit longer saves money too.", quality: "ok" },
+    ],
+  },
+
   // ---------------- Credit profile (Std 3) ----------------
   {
     id: "checkReport",

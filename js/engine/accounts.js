@@ -73,12 +73,15 @@ export function receiveCash(life, amount, source = "cash") {
 
 // months: how many payments before the bill ends (null runs forever).
 // A limited bill that bounces stays until it is paid.
-export function addBill(life, name, amount, months = null) {
+// startIn: End Months to wait before the first payment (0 = this one).
+export function addBill(life, name, amount, months = null, startIn = 0) {
   const next = copyLife(life);
   next.bills = next.bills.filter((b) => b.name !== name);
-  next.bills.push(months == null ? { name, amount } : { name, amount, monthsLeft: months });
-  logAction(next, "addBill", months == null ? [name, amount] : [name, amount, months]);
-  const how = months == null ? "a month" : months === 1 ? "at the end of this month" : `a month for ${months} months`;
+  const bill = months == null ? { name, amount } : { name, amount, monthsLeft: months };
+  if (startIn > 0) bill.startsMonth = next.month + startIn;
+  next.bills.push(bill);
+  logAction(next, "addBill", startIn > 0 ? [name, amount, months, startIn] : months == null ? [name, amount] : [name, amount, months]);
+  const how = startIn > 0 ? `due in ${startIn} months` : months == null ? "a month" : months === 1 ? "at the end of this month" : `a month for ${months} months`;
   return { life: next, ok: true, message: `${name}: ${dollars(amount)} ${how}.` };
 }
 
@@ -477,6 +480,27 @@ export function cosign(life, { friend = "your friend", amount = 600, termMonths 
   });
   logAction(next, "cosign", [{ friend, amount, termMonths, apr, reliability }]);
   return { life: next, ok: true, accountId: a.id, message: `You cosigned for ${friend}. If they miss a payment, it shows on your report.` };
+}
+
+// ---------- collections (an ignored bill) ----------
+
+// A bill that was never paid, sold to a collection agency. It shows on the
+// report as a collection until it's paid, and as a paid collection after.
+export function addCollection(life, name, amount) {
+  const next = copyLife(life);
+  const a = baseAccount(next, {
+    type: "collection",
+    kind: "collection",
+    name: `${name} (in collections)`,
+    icon: "🚨",
+    original: money(amount),
+    balance: money(amount),
+    status: "collections",
+    closedMonth: next.month,
+  });
+  next.accounts.push(a);
+  logAction(next, "addCollection", [name, amount]);
+  return { life: next, ok: true, accountId: a.id, message: `${name} went to collections. It's on your credit report now.` };
 }
 
 // ---------- buy now, pay later ----------

@@ -51,6 +51,23 @@ function sampleLives() {
   lives.school = school;
   let car = E.openAutoLoan(lifeWith({ seed: "car", checking: 1500 }), { price: 4000, downPayment: 500, termMonths: 48 }).life;
   lives.car = car;
+  lives.carBroke = E.debitPurchase(car, car.checking - 150, "repairs").life;
+  // Years of careful use: a high score.
+  let strong = withCard(lifeWith({ seed: "strong", checking: 3000 }), { limit: 2000 });
+  let sl = strong.life;
+  for (let i = 0; i < 30; i++) {
+    sl = E.cardPurchase(sl, strong.id, 40, "x").life;
+    sl = E.endMonth(sl).life;
+    const a = E.findAccount(sl, strong.id);
+    if (a.due) sl = E.pay(sl, strong.id, a.due.statementBalance).life;
+  }
+  lives.strong = sl;
+  const big = withCard(lifeWith({ seed: "bigbal", checking: 900 }), { limit: 1000, annualFee: 39 });
+  lives.bigBalance = E.cardPurchase(big.life, big.id, 450, "laptop").life;
+  let payday = lifeWith({ seed: "payday", checking: 100 });
+  payday = E.receiveCash(payday, 300, "Quick Cash payday loan").life;
+  payday = E.addBill(payday, "Payday loan payback", 345, 1).life;
+  lives.paydayDue = E.debitPurchase(payday, 250, "rent").life;
   return lives;
 }
 
@@ -220,4 +237,20 @@ test("limited bills end after their months, and a bounced one stays", () => {
   broke = E.addBill(broke, "Payback", 345, 1).life;
   broke = E.endMonth(broke).life;
   assert.equal(broke.bills.find((b) => b.name === "Payback").monthsLeft, 1);
+});
+
+test("a bill can wait months before its first payment", () => {
+  let life = lifeWith({ seed: "later", checking: 2000 });
+  life = E.addBill(life, "Later", 381, 1, 5).life;
+  for (let i = 0; i < 5; i++) {
+    assert.ok(life.bills.some((b) => b.name === "Later"), `still waiting after ${i} months`);
+    assert.equal(E.upcomingPayments(life).auto.some((x) => x.name === "Later"), false);
+    life = E.endMonth(life).life;
+  }
+  assert.ok(E.upcomingPayments(life).auto.some((x) => x.name === "Later"));
+  const before = life.checking;
+  life = E.endMonth(life).life;
+  assert.equal(before - life.checking, 381);
+  assert.equal(life.bills.some((b) => b.name === "Later"), false);
+  assert.equal(JSON.stringify(E.replayLife(life.start, life.log)), JSON.stringify(life));
 });

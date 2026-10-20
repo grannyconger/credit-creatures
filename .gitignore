@@ -2,3 +2,6 @@
 node_modules/
 *.log
 .firebase/
+
+# Pilot exports from the teacher dashboard. Student data never goes in the repo.
+pilot-data/

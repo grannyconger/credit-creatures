@@ -144,6 +144,23 @@ export function studentDetail(raw) {
   };
 }
 
+// The tuning export (docs/PILOT.md): no names or emails, just numbers and each
+// student's action log, which scripts/replay.js re-runs under new settings.
+export function tuningExport({ className, tuningData, rows, saves }) {
+  const ids = new Map(rows.map((r, i) => [r.uid, `Student ${i + 1}`]));
+  return {
+    exportedAt: new Date().toISOString(),
+    class: className,
+    anonymous: true,
+    tuning: tuningData,
+    roster: rows.map(({ studentName, studentEmail, displayName, creatureName, uid, ...rest }) => ({ student: ids.get(uid), ...rest })),
+    lives: saves
+      .map((s) => parseSave(s))
+      .filter((s) => s.life?.start && Array.isArray(s.life.log))
+      .map((s) => ({ student: ids.get(s.uid), start: { ...s.life.start, name: "" }, log: s.life.log, chapter: s.play?.chapter ?? 1 })),
+  };
+}
+
 // ---------- CSV export for the gradebook ----------
 
 const CSV_COLUMNS = [
