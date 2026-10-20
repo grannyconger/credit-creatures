@@ -1,4 +1,4 @@
-// Chapter 1 complete. Phase 4 replaces the "what's next" part with the hub.
+// Chapter 1 complete. From here, students go to the hub.
 import { h, money, ageLabel } from "../dom.js";
 import { fullName } from "../../data/creatures.js";
 import { findAccount, hardInquiriesInWindow } from "../../engine/index.js";
@@ -6,7 +6,7 @@ import { CONFIG } from "../../data/config.js";
 import { creatureSvg } from "../creature-art.js";
 import { cardArt } from "../card-art.js";
 
-export function render(root, { game, go, saveAndQuit }) {
+export function render(root, { game, go, advance, saveAndQuit }) {
   const life = game.life;
   const c = game.save.creature;
   const card = game.ob.cardId ? findAccount(life, game.ob.cardId) : null;
@@ -42,12 +42,14 @@ export function render(root, { game, go, saveAndQuit }) {
       h(
         "ul",
         h("li", `Starting now, ${c.name} pays a ${money(CONFIG.bills.phone)} phone bill and a ${money(CONFIG.bills.busPass)} bus pass each month.`),
-        h("li", "Chapter 2 opens when your teacher releases it. A first real job, a car decision and student loan offers are coming.")
+        h("li", "Your debit card now comes from The Gilded Vault, and your digital wallet holds it with any credit cards."),
+        h("li", "Chapter 2 opens when your teacher releases it. Real work shifts, bills and big decisions are coming.")
       ),
       h(
         "div.row",
         h("button.secondary", { type: "button", onclick: () => go("creature") }, "Edit my creature"),
-        h("button", { type: "button", onclick: saveAndQuit }, "Save and quit")
+        h("button.secondary", { type: "button", onclick: saveAndQuit }, "Save and quit"),
+        h("button.big", { type: "button", onclick: () => advance("hub") }, "Go to my hub")
       )
     )
   );

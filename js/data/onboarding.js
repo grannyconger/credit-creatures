@@ -26,6 +26,14 @@ export const SHIFT_ITEMS = [
   { item: "A balance on a credit card", answer: "liability", why: "A card balance is borrowed money you owe the bank." },
   { item: "A gift card with $25 on it", answer: "asset", why: "It holds value that belongs to you." },
   { item: "A late library fine", answer: "liability", why: "You owe the library, so it is a liability." },
+  { item: "A car you paid off", answer: "asset", why: "It's fully yours now, so it is an asset." },
+  { item: "The rest of a car loan", answer: "liability", why: "The loan is money you still owe the lender." },
+  { item: "A $100 savings bond", answer: "asset", why: "It belongs to you and is worth money." },
+  { item: "A buy now, pay later plan you haven't finished", answer: "liability", why: "The payments still to come are money you owe." },
+  { item: "Cash in your wallet", answer: "asset", why: "Cash you hold is something you own." },
+  { item: "A student loan", answer: "liability", why: "You have to pay it back, so it is a liability." },
+  { item: "A payday loan due Friday", answer: "liability", why: "You owe it back soon, plus a big fee." },
+  { item: "A deposit on your secured card", answer: "asset", why: "It's your money held by the bank. You get it back when you close or upgrade the card." },
 ];
 
 export const SHIFT_ITEMS_PER_SHIFT = 4;

@@ -76,3 +76,22 @@ The game now saves creatures, classes, telemetry and bug reports, so the rules n
 3. Open https://www.coachw.club/credit-life/ in another tab and play through: name, creature, the join code, age 16, tutorial, time skip, Design Your Card.
 4. In Firebase, open **Firestore Database > Data**. You should see `saves`, `classes`, `classCodes` and `telemetry`. Click the 🐞 button in the game once to check that `feedback` appears too.
 5. Close the tab partway through, reopen the game, and check that it picks up where you stopped.
+
+## 10. Publish the Phase 4 rules (once)
+
+Phase 4 saves chapter progress and reflections in each student's save, so the rules need one more update. Same steps as section 8:
+
+1. Open https://console.firebase.google.com and click the **credit-life** project.
+2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
+3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
+4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
+5. Click **Publish**. Wait for "Rules published."
+
+Until you publish, students who reach the hub will see "We couldn't save just now."
+
+## 11. Release a chapter
+
+1. Open https://www.coachw.club/credit-life/teacher/ and sign in.
+2. In the class table, click **Release Chapter 2** for the class. Confirm the pop-up.
+3. Students on the hub click **Check again** (or reload) and **Start Chapter 2** appears.
+4. Each chapter is 3 game months. Release the next one when the class is ready. Students can't play past the newest released chapter, but they can replay finished chapters in practice mode, which never changes their real game.

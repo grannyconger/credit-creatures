@@ -28,6 +28,19 @@ function append(el, children) {
   }
 }
 
+// Like el.append, but skips null and false and flattens arrays (the browser's
+// own append would print "null").
+export function add(el, ...children) {
+  append(el, children);
+  return el;
+}
+
+// Empties el, then adds the children.
+export function fill(el, ...children) {
+  el.replaceChildren();
+  return add(el, ...children);
+}
+
 export function clear(el) {
   el.replaceChildren();
   return el;

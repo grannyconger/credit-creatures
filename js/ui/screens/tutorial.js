@@ -1,10 +1,11 @@
 // Tutorial months (SPEC §6): a guided work shift, a debit purchase, End Month,
 // a "your report is thin" explainer and a tour of the 5 score factors.
 import { h, clear, money } from "../dom.js";
-import { earn, debitPurchase, endMonth, tutorialShiftPay, creditReport, createRng } from "../../engine/index.js";
-import { SHIFT_ITEMS, SHIFT_ITEMS_PER_SHIFT, FIRST_PURCHASES, FACTOR_TOUR } from "../../data/onboarding.js";
+import { earn, debitPurchase, endMonth, tutorialShiftPay, creditReport } from "../../engine/index.js";
+import { SHIFT_ITEMS_PER_SHIFT, FIRST_PURCHASES, FACTOR_TOUR } from "../../data/onboarding.js";
 import { CONFIG } from "../../data/config.js";
 import { monthRecord, monthSummary } from "../month-summary.js";
+import { shiftGame } from "../shift.js";
 
 const STAGES = ["shift", "purchase", "month1", "thin", "factors", "month2"];
 const STAGE_LABELS = ["First shift", "First purchase", "End Month", "Your report", "Your score", "End Month"];
@@ -41,69 +42,25 @@ export function render(root, ctx) {
 
 const STAGE_RENDER = {
   shift(el, { game, next, track }) {
-    const rng = createRng(`${game.life.seed}:shift`);
-    const pool = SHIFT_ITEMS.slice();
-    const items = [];
-    while (items.length < SHIFT_ITEMS_PER_SHIFT) items.push(pool.splice(Math.floor(rng.next() * pool.length), 1)[0]);
     const t = CONFIG.onboarding.tutorialShift;
-    const started = Date.now();
-    let k = 0;
-    let correct = 0;
-
-    const area = h("div.shift");
     el.append(
       h("h1", "Your first work shift"),
       h(
         "p",
         `You are helping the bookkeeper at The Gilded Vault. Sort each item. Is it something you OWN (an asset) or something you OWE (a liability)? You get ${money(t.base)} for showing up and ${money(t.perCorrect)} for each right answer.`
       ),
-      area
+      shiftGame({
+        seed: `${game.life.seed}:shift`,
+        count: SHIFT_ITEMS_PER_SHIFT,
+        payFor: tutorialShiftPay,
+        track,
+        onCollect: async ({ correct, total, pay, seconds }) => {
+          game.life = earn(game.life, pay, "first work shift").life;
+          track("tutorialShift", { correct, total, pay, seconds });
+          await next();
+        },
+      })
     );
-
-    function ask() {
-      clear(area);
-      if (k === items.length) return finish();
-      const it = items[k];
-      const choose = (answer) => {
-        const right = answer === it.answer;
-        if (right) correct++;
-        track("shiftAnswer", { n: k, right });
-        clear(area);
-        area.append(
-          h("p.shift-count", `Item ${k + 1} of ${items.length}`),
-          h("div.shift-item", it.item),
-          h("div.callout", { class: right ? "good" : "bad" }, h("strong", right ? "Right! " : "Not quite. "), it.why),
-          h("div.row.center", h("button.big", { type: "button", onclick: () => (k++, ask()) }, k + 1 < items.length ? "Next item" : "See my pay"))
-        );
-      };
-      area.append(
-        h("p.shift-count", `Item ${k + 1} of ${items.length}`),
-        h("div.shift-item", it.item),
-        h(
-          "div.row.center",
-          h("button.big", { type: "button", onclick: () => choose("asset") }, "🏠 I OWN it (asset)"),
-          h("button.big", { type: "button", onclick: () => choose("liability") }, "📝 I OWE it (liability)")
-        )
-      );
-    }
-
-    function finish() {
-      const pay = tutorialShiftPay(correct);
-      const btn = h("button", { type: "button" }, `Collect ${money(pay)}`);
-      btn.addEventListener("click", async () => {
-        btn.disabled = true;
-        game.life = earn(game.life, pay, "first work shift").life;
-        track("tutorialShift", { correct, total: items.length, pay, seconds: Math.round((Date.now() - started) / 1000) });
-        await next();
-      });
-      area.append(
-        h("div.big-number", money(pay)),
-        h("p.center", `You sorted ${correct} of ${items.length} right. Your pay goes straight into your checking account.`),
-        h("div.row.center", btn)
-      );
-    }
-
-    ask();
   },
 
   purchase(el, { game, next, track }) {

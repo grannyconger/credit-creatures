@@ -40,7 +40,7 @@ export async function findClassByCode(code) {
 }
 
 export async function getClass(classId) {
-  return classId === LOCAL_CLASS.classId ? { id: classId, name: LOCAL_CLASS.name, releasedChapter: 1 } : null;
+  return classId === LOCAL_CLASS.classId ? { id: classId, name: LOCAL_CLASS.name, releasedChapter: read("class/released") || 1 } : null;
 }
 
 export async function loadSave(uid) {
@@ -61,6 +61,11 @@ export async function sendFeedback(report) {
   const all = read("feedback") || [];
   all.push(report);
   write("feedback", all.slice(-20));
+}
+
+// Local stand-in for the teacher's "Release next chapter" button.
+export async function releaseChapter(classId, chapter) {
+  if (classId === LOCAL_CLASS.classId) write("class/released", chapter);
 }
 
 export function resetLocal() {

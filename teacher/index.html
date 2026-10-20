@@ -22,7 +22,7 @@
         <div id="classes" hidden>
           <h3>Your classes</h3>
           <table class="class-table">
-            <thead><tr><th>Class</th><th>Join code</th><th>Chapter released</th></tr></thead>
+            <thead><tr><th>Class</th><th>Join code</th><th>Chapters open</th><th>Release</th></tr></thead>
             <tbody id="class-rows"></tbody>
           </table>
           <form id="create-form" class="create-form">
@@ -31,12 +31,13 @@
             <button id="create" type="submit">Create class</button>
           </form>
           <p class="note">Give students the join code. They type it after they make their creature.</p>
+          <p class="note">Chapter 1 is always open. Students can't play past the newest chapter you release. Each chapter is 3 game months (about 10 to 15 minutes).</p>
         </div>
         <button id="sign-out" class="secondary" type="button">Sign out</button>
       </div>
 
       <p id="error" class="error" role="alert"></p>
-      <p class="note">The full dashboard (roster, chapter release, CSV export) arrives in Phase 7.</p>
+      <p class="note">The full dashboard (roster, reflections, CSV export) arrives in Phase 7.</p>
     </section>
   </main>
 
@@ -51,10 +52,10 @@
       $("error").textContent = "Sign-in is not set up yet.";
     } else {
       const { signIn, signOut, onUser, isTeacher } = await import("../js/auth.js");
-      const { createClass, listMyClasses } = await import("../js/db.js");
+      const { createClass, listMyClasses, releaseChapter } = await import("../js/db.js");
       let me = null;
 
-      function addRow(c) {
+      function addRow(c, detached = false) {
         const tr = document.createElement("tr");
         for (const v of [c.name, c.code, c.releasedChapter]) {
           const td = document.createElement("td");
@@ -62,6 +63,30 @@
           tr.append(td);
         }
         tr.children[1].className = "code-cell";
+        tr.children[2].textContent = `1 to ${c.releasedChapter}`;
+        const td = document.createElement("td");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "small";
+        btn.textContent = `Release Chapter ${c.releasedChapter + 1}`;
+        btn.addEventListener("click", async () => {
+          const next = c.releasedChapter + 1;
+          if (!confirm(`Open Chapter ${next} for ${c.name}? Students can start it right away. This can't be undone from this page.`)) return;
+          btn.disabled = true;
+          $("error").textContent = "";
+          try {
+            await releaseChapter(c.id, next);
+            c.releasedChapter = next;
+            tr.replaceWith(addRow(c, true));
+          } catch (err) {
+            console.error(err);
+            btn.disabled = false;
+            $("error").textContent = "Could not release the chapter. Check that the new Firestore rules are published.";
+          }
+        });
+        td.append(btn);
+        tr.append(td);
+        if (detached) return tr;
         $("class-rows").append(tr);
       }
 
@@ -69,7 +94,7 @@
         $("class-rows").replaceChildren();
         try {
           const classes = await listMyClasses(me.email);
-          classes.sort((a, b) => a.name.localeCompare(b.name)).forEach(addRow);
+          classes.sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => addRow(c));
         } catch (err) {
           console.error(err);
           $("error").textContent = "Could not load your classes. Check that the new Firestore rules are published.";

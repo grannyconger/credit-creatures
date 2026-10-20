@@ -30,9 +30,9 @@ A classroom game where students raise a fantasy creature through its credit life
 |---|---|---|
 | 1 | Setup: repo, Firebase wiring, hello page with school-only sign-in | Done, approved |
 | 2 | Engine: accounts, month loop, score, approvals, collections, 1,000-life sim | Done, approved |
-| 3 | Onboarding: profile, creature creator, class codes, age 16 options, tutorial, Design Your Card, saving | Done, awaiting approval |
-| 4 | Simulation: hub, month loop, life events, ~20 scenarios, chapters, chapter release, reflections | Next |
-| 5 | Account Management: wallet, statements, bills, AutoPay, My Score, report, Practice Desk, inbox, themes, Sparkle Points | |
+| 3 | Onboarding: profile, creature creator, class codes, age 16 options, tutorial, Design Your Card, saving | Done, approved |
+| 4 | Simulation: hub, month loop, life events, ~20 scenarios, chapters, chapter release, reflections | Done, awaiting approval |
+| 5 | Account Management: wallet, statements, bills, AutoPay, My Score, report, Practice Desk, inbox, themes, Sparkle Points | Next |
 | 6 | Economy and engagement: Ledger Sort, Cashier Rush, shop, BNPL checkout, 40+ achievements, XP, ranks, leaderboard | |
 | 7 | Teacher: dashboard, roster, controls, CSV export, rules hardening | |
 | 8 | Pilot: one class plays, tune numbers, add remaining content | |
@@ -43,7 +43,7 @@ A classroom game where students raise a fantasy creature through its credit life
 python3 -m http.server 8000
 ```
 Open http://localhost:8000/ (`localhost` is an authorized Firebase domain).
-Open http://localhost:8000/?local to play with no sign-in. It saves to localStorage (`js/db-local.js`) and the class code is `TEST01`.
+Open http://localhost:8000/?local to play with no sign-in. It saves to localStorage (`js/db-local.js`) and the class code is `TEST01`. On the hub, a "release Chapter N" link stands in for the teacher's release button.
 
 ## Tests
 

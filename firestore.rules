@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Phase 3 rules. Teacher reads of student data and full hardening come in Phase 7.
+// Phase 4 rules. Teacher reads of student data and full hardening come in Phase 7.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -48,7 +48,7 @@ service cloud.firestore {
     match /saves/{uid} {
       allow read: if isMe(uid);
       allow create, update: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['creature', 'onboarding', 'chapter', 'lifeJson',
+        && request.resource.data.keys().hasOnly(['creature', 'onboarding', 'chapter', 'play', 'lifeJson',
           'classId', 'creatureName', 'step', 'score', 'month', 'ageMonths', 'engineVersion', 'updatedAt'])
         && request.resource.data.lifeJson is string
         && request.resource.data.lifeJson.size() < 900000

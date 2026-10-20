@@ -145,10 +145,12 @@ export function endMonth(life) {
     if (bill.amount <= next.checking) {
       next.checking = money(next.checking - bill.amount);
       emit(5, "bill", `${bill.name} bill paid: ${dollars(bill.amount)}.`, { amount: bill.amount });
+      if (bill.monthsLeft != null) bill.monthsLeft--;
     } else {
       bounce(5, `${bill.name} bill`, bill.amount);
     }
   }
+  next.bills = next.bills.filter((b) => b.monthsLeft == null || b.monthsLeft > 0);
 
   for (const a of next.accounts.filter((x) => x.kind === "installment" && isOpen(x))) {
     if (a.firstDueMonth == null || M < a.firstDueMonth) {

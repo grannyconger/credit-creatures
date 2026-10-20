@@ -61,12 +61,25 @@ export function earn(life, amount, source = "work shift") {
   return { life: next, ok: true, message: `You earned ${dollars(amount)}.` };
 }
 
-export function addBill(life, name, amount) {
+// Money that is not pay, like a gift or a loan handed over in cash.
+// It does not count as income when lenders look at what you earn.
+export function receiveCash(life, amount, source = "cash") {
+  if (!(amount > 0)) return fail(life, "Nothing to receive.");
+  const next = copyLife(life);
+  next.checking = money(next.checking + amount);
+  logAction(next, "receiveCash", [amount, source]);
+  return { life: next, ok: true, message: `${dollars(amount)} from ${source} went into checking.` };
+}
+
+// months: how many payments before the bill ends (null runs forever).
+// A limited bill that bounces stays until it is paid.
+export function addBill(life, name, amount, months = null) {
   const next = copyLife(life);
   next.bills = next.bills.filter((b) => b.name !== name);
-  next.bills.push({ name, amount });
-  logAction(next, "addBill", [name, amount]);
-  return { life: next, ok: true, message: `${name} bill set to ${dollars(amount)} a month.` };
+  next.bills.push(months == null ? { name, amount } : { name, amount, monthsLeft: months });
+  logAction(next, "addBill", months == null ? [name, amount] : [name, amount, months]);
+  const how = months == null ? "a month" : months === 1 ? "at the end of this month" : `a month for ${months} months`;
+  return { life: next, ok: true, message: `${name}: ${dollars(amount)} ${how}.` };
 }
 
 export function removeBill(life, name) {
@@ -74,6 +87,15 @@ export function removeBill(life, name) {
   next.bills = next.bills.filter((b) => b.name !== name);
   logAction(next, "removeBill", [name]);
   return { life: next, ok: true, message: `${name} bill removed.` };
+}
+
+// A credit check that is not part of opening an account here, like a store
+// card sign-up or checking your own report (soft, no score effect).
+export function recordInquiry(life, source, hard = true) {
+  const next = copyLife(life);
+  addInquiry(next, source, hard);
+  logAction(next, "recordInquiry", [source, hard]);
+  return { life: next, ok: true, message: hard ? `A hard inquiry from ${source} was added to your report.` : `${source} was a soft inquiry. It does not change your score.` };
 }
 
 export function moveToSavings(life, amount) {
@@ -242,6 +264,17 @@ export function upgradeSecured(life, accountId, newLimit) {
   return { life: next, ok: true, message: `Your card is now unsecured. Your ${dollars(back)} deposit came back.` };
 }
 
+export function raiseLimit(life, accountId, newLimit) {
+  const a = findAccount(life, accountId);
+  if (!a || !isRevolving(a) || a.owner !== "self" || !isOpen(a) || a.secured) return fail(life, "That card can't get a higher limit.");
+  if (!(newLimit > a.limit)) return fail(life, "The new limit has to be higher.");
+  const next = copyLife(life);
+  const before = a.limit;
+  findAccount(next, accountId).limit = newLimit;
+  logAction(next, "raiseLimit", [accountId, newLimit]);
+  return { life: next, ok: true, message: `${a.name} limit went from ${dollars(before)} to ${dollars(newLimit)}.` };
+}
+
 // ---------- authorized user (SPEC §6) ----------
 
 // The game secretly picks the parent unless a profile key is given.
@@ -327,22 +360,24 @@ export function autoLoanApr(score) {
   return cfg.autoAprByScore.find((r) => score >= r.minScore).apr;
 }
 
-export function quoteAutoLoan(life, { price, downPayment = 0, termMonths = 60 }) {
+// aprBump: extra APR a dealer adds on top of the rate your score earns.
+export function quoteAutoLoan(life, { price, downPayment = 0, termMonths = 60, aprBump = 0 }) {
   const amount = money(price - downPayment);
-  const apr = autoLoanApr(life.score);
+  const apr = Math.round((autoLoanApr(life.score) + aprBump) * 10000) / 10000;
   const payment = amortizedPayment(amount, apr, termMonths);
   const totalInterest = money(payment * termMonths - amount);
   const approved = life.score == null || life.score >= CONFIG.loans.autoMinScore;
   return { amount, apr, termMonths, payment, totalInterest, approved };
 }
 
-export function openAutoLoan(life, { price, downPayment = 0, termMonths = 60, lender = "creditUnion" }) {
+export function openAutoLoan(life, { price, downPayment = 0, termMonths = 60, lender = "creditUnion", aprBump = 0 }) {
   if (downPayment > life.checking) return fail(life, "You don't have that much for a down payment.");
-  const q = quoteAutoLoan(life, { price, downPayment, termMonths });
+  const q = quoteAutoLoan(life, { price, downPayment, termMonths, aprBump });
+  const args = [aprBump ? { price, downPayment, termMonths, lender, aprBump } : { price, downPayment, termMonths, lender }];
   const next = copyLife(life);
   addInquiry(next, "Auto loan");
   if (!q.approved) {
-    logAction(next, "openAutoLoan", [{ price, downPayment, termMonths, lender }], { approved: false });
+    logAction(next, "openAutoLoan", args, { approved: false });
     return { life: next, ok: false, quote: q, message: "Denied. Your score is too low for this loan right now." };
   }
   next.checking = money(next.checking - downPayment);
@@ -357,7 +392,7 @@ export function openAutoLoan(life, { price, downPayment = 0, termMonths = 60, le
     termMonths,
     firstDueMonth: next.month + 1,
   });
-  logAction(next, "openAutoLoan", [{ price, downPayment, termMonths, lender }], { approved: true });
+  logAction(next, "openAutoLoan", args, { approved: true });
   return { life: next, ok: true, accountId: a.id, quote: q, message: `Approved at ${(q.apr * 100).toFixed(1)}% APR. Payment ${dollars(q.payment)} a month.` };
 }
 
@@ -379,6 +414,27 @@ export function openFederalStudentLoan(life, amount) {
   });
   logAction(next, "openFederalStudentLoan", [amount]);
   return { life: next, ok: true, accountId: a.id, message: `Student loan of ${dollars(amount)} received. Payments wait until after school.` };
+}
+
+// A bank loan for school. A higher rate than federal, and no waiting: payments start next month.
+export function openPrivateStudentLoan(life, amount) {
+  const cfg = CONFIG.loans.privateStudent;
+  const next = copyLife(life);
+  addInquiry(next, "Private student loan");
+  next.checking = money(next.checking + amount);
+  const a = openInstallment(next, {
+    type: "privateStudentLoan",
+    name: "Private student loan",
+    icon: "🏦",
+    issuer: "bank",
+    original: amount,
+    balance: amount,
+    apr: cfg.apr,
+    termMonths: cfg.termMonths,
+    firstDueMonth: next.month + 1,
+  });
+  logAction(next, "openPrivateStudentLoan", [amount]);
+  return { life: next, ok: true, accountId: a.id, message: `Private loan of ${dollars(amount)} received. Payments of ${dollars(a.payment)} start next month.` };
 }
 
 export function leaveSchool(life) {

@@ -2,9 +2,13 @@
 import { LIFE_VERSION } from "./engine/index.js";
 import { track, flush } from "./telemetry.js";
 import { toast } from "./ui/dom.js";
+import { newPlay } from "./play.js";
 
-// Onboarding steps in order (SPEC §5). Phase 4 adds the hub after "done".
-export const STEPS = ["profile", "creature", "join", "teen", "tutorial", "skip", "networks", "design", "result", "done"];
+// Onboarding steps in order (SPEC §5). After "done", students live in the hub.
+export const STEPS = ["profile", "creature", "join", "teen", "tutorial", "skip", "networks", "design", "result", "done", "hub"];
+
+// Screens open once the student reaches the hub. The router guards each one.
+export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd"]);
 
 // Steps a student can go back to after moving past them.
 export const EDITABLE = new Set(["profile", "creature"]);
@@ -15,8 +19,10 @@ export function createGame(user, db) {
     db,
     profile: { displayName: "", classId: "" },
     classInfo: null,
-    save: { creature: null, onboarding: { step: "profile" }, chapter: 1, life: null },
+    save: { creature: null, onboarding: { step: "profile" }, chapter: 1, life: null, play: null },
     returning: false,
+    // Practice mode (SPEC §5): { practice: true, life, play } kept in memory only.
+    practice: null,
 
     get life() {
       return game.save.life;
@@ -35,10 +41,50 @@ export function createGame(user, db) {
       const [profile, save] = await Promise.all([db.loadProfile(user.uid), db.loadSave(user.uid)]);
       game.profile = { displayName: profile?.displayName || user.displayName || "", classId: profile?.classId || "" };
       if (save) {
-        game.save = { creature: save.creature || null, onboarding: save.onboarding || { step: "profile" }, chapter: save.chapter || 1, life: save.life || null };
+        game.save = {
+          creature: save.creature || null,
+          onboarding: save.onboarding || { step: "profile" },
+          chapter: save.chapter || 1,
+          life: save.life || null,
+          play: save.play || null,
+        };
         game.returning = true;
       }
       if (game.profile.classId) game.classInfo = await db.getClass(game.profile.classId).catch(() => null);
+    },
+
+    get play() {
+      if (!game.save.play) game.save.play = newPlay();
+      return game.save.play;
+    },
+
+    // What the month and chapter screens play on: the real save, or a
+    // practice copy that is never written.
+    get run() {
+      if (game.practice) return game.practice;
+      return {
+        practice: false,
+        get life() {
+          return game.life;
+        },
+        set life(v) {
+          game.life = v;
+        },
+        get play() {
+          return game.play;
+        },
+        persist: (reason) => game.persist(reason),
+      };
+    },
+
+    startPractice(practice) {
+      game.practice = {
+        practice: true,
+        chapter: practice.play.chapter,
+        life: practice.life,
+        play: practice.play,
+        persist: async (reason) => flush(reason),
+      };
     },
 
     summary() {

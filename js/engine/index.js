@@ -2,6 +2,10 @@
 export { createLife, copyLife, monthlyIncome, findAccount, hardInquiriesInWindow, LIFE_VERSION } from "./life.js";
 export {
   earn,
+  receiveCash,
+  recordInquiry,
+  raiseLimit,
+  openPrivateStudentLoan,
   addBill,
   removeBill,
   moveToSavings,
@@ -32,3 +36,5 @@ export { minPayment, monthlyInterest, amortizedPayment, payoffPlan, minimumOnlyP
 export { createRng, seedFrom } from "./rng.js";
 export { getTeenDebitCard, tutorialShiftPay, timeSkip } from "./onboarding.js";
 export { replayLife } from "./replay.js";
+export { runSteps, resolveChoice, paymentOptions, paymentStep, drawLifeEvent, drawDecisionCards, shiftPay, ownCards, utilization, upcomingPayments } from "./cards.js";
+export { dollars } from "./util.js";

@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  updateDoc,
   addDoc,
   collection,
   query,
@@ -43,14 +44,15 @@ export async function loadSave(uid) {
   const snap = await getDoc(doc(db, "saves", uid));
   if (!snap.exists()) return null;
   const d = snap.data();
-  return { creature: d.creature, onboarding: d.onboarding, chapter: d.chapter, life: d.lifeJson ? JSON.parse(d.lifeJson) : null };
+  return { creature: d.creature, onboarding: d.onboarding, chapter: d.chapter, play: d.play || null, life: d.lifeJson ? JSON.parse(d.lifeJson) : null };
 }
 
 export async function writeSave(uid, save, summary) {
   await setDoc(doc(db, "saves", uid), {
     creature: plain(save.creature),
     onboarding: plain(save.onboarding),
-    chapter: save.chapter,
+    chapter: save.play?.chapter ?? save.chapter ?? 1,
+    play: plain(save.play),
     lifeJson: save.life ? JSON.stringify(save.life) : "",
     ...plain(summary),
     updatedAt: serverTimestamp(),
@@ -108,6 +110,11 @@ export async function createClass(teacherEmail, name) {
       if (err.code !== "permission-denied" || attempt === 4) throw err;
     }
   }
+}
+
+// Rules let only the class's own teacher change it, and never its code.
+export async function releaseChapter(classId, chapter) {
+  await updateDoc(doc(db, "classes", classId), { releasedChapter: chapter });
 }
 
 export async function listMyClasses(teacherEmail) {

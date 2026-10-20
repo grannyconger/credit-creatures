@@ -4,10 +4,23 @@ export const CONFIG = {
   pacing: {
     monthsPerChapter: 3,
     decisionCardsPerMonth: 5,
+    // One-time cards per month (priority cards don't count). This spreads the
+    // pilot's ~20 scenarios across the semester. Everyday cards fill the rest.
+    newCardsPerMonth: 2,
+    everydayCardsPerMonth: 1,
     shiftsPerMonth: 3,
     payPerShift: [40, 120],
     sessionMinutes: 15,
     sparkle: { perChapter: 10, total: 30 },
+  },
+
+  // The month loop after Chapter 1 (SPEC §8).
+  play: {
+    // Placeholder work shift until the Phase 6 minigames: pay is $40 to $120.
+    shift: { base: 40, perCorrect: 20, items: 4 },
+    raiseBonus: 10,
+    cashAdvanceFee: { percent: 0.05, min: 10 },
+    monthRecordsKept: 6,
   },
 
   // Age 16 to 18 (SPEC §6). The tutorial plays a few months, then a time skip runs the rest.
@@ -57,6 +70,7 @@ export const CONFIG = {
   loans: {
     creditBuilder: { amount: 500, termMonths: 12, apr: 0.06 },
     federalStudent: { apr: 0.055, termMonths: 120, graceMonths: 6 },
+    privateStudent: { apr: 0.11, termMonths: 60 },
     // Auto loan APR by score. The first row whose minScore the score meets wins.
     autoAprByScore: [
       { minScore: 760, apr: 0.055 },

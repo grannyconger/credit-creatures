@@ -1,7 +1,7 @@
 // App shell: sign-in, loading the save, and a hash router over the screens.
 // Add ?local to a localhost URL to play with browser storage and no sign-in.
 import { isConfigured } from "./firebase-config.js";
-import { createGame, STEPS, EDITABLE } from "./game.js";
+import { createGame, STEPS, EDITABLE, HUB_SCREENS } from "./game.js";
 import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge } from "./telemetry.js";
 import { mountBugButton } from "./ui/bug-button.js";
 import { creatureSvg } from "./ui/creature-art.js";
@@ -17,8 +17,11 @@ import * as design from "./ui/screens/design.js";
 import * as result from "./ui/screens/result.js";
 import * as done from "./ui/screens/done.js";
 import * as saved from "./ui/screens/saved.js";
+import * as hub from "./ui/screens/hub.js";
+import * as month from "./ui/screens/month.js";
+import * as chapterEnd from "./ui/screens/chapter-end.js";
 
-const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved };
+const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved, hub, month, chapterEnd };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 
@@ -44,6 +47,7 @@ if (!LOCAL && !isConfigured) {
     if (!user) return signedOut();
     root.replaceChildren(h("section.panel.center", h("p", "Loading your creature...")));
     game = createGame(user, db);
+    game.local = LOCAL;
     try {
       await game.load();
     } catch (err) {
@@ -52,7 +56,7 @@ if (!LOCAL && !isConfigured) {
     }
     initTelemetry({
       sink: (batch, rollup) => db.flushTelemetry(user.uid, batch, rollup),
-      context: () => ({ step: game.step, chapter: game.save.chapter, month: game.life?.month ?? -1 }),
+      context: () => ({ step: game.step, chapter: game.save.play?.chapter ?? 1, month: game.life?.month ?? -1, practice: Boolean(game.practice) }),
     });
     track("sessionStart", { returning: game.returning, step: game.step, local: LOCAL });
     onSessionNudge(showNudge);
@@ -130,13 +134,26 @@ function route() {
   const current = STEPS.indexOf(game.step);
   let target = want;
   if (want === "saved") target = "saved";
+  else if (game.step === "hub" && HUB_SCREENS.has(want)) target = want;
   else if (!STEPS.includes(want)) target = game.step;
   else if (want !== game.step && !(EDITABLE.has(want) && STEPS.indexOf(want) < current)) target = game.step;
   if (target === "result" && !game.ob.lastResult) target = "design";
+  if (game.step === "hub" && HUB_SCREENS.has(target)) target = hubTarget(target);
   if (target !== want) {
     history.replaceState(null, "", `#/${target}`);
   }
   show(target);
+}
+
+// Leaving for the hub ends practice. A finished chapter waits for its
+// reflection. A month needs a chapter in progress.
+function hubTarget(want) {
+  if (want === "hub") game.practice = null;
+  const play = game.run.play;
+  if (play.summary) return "chapterEnd";
+  if (want === "chapterEnd") return play.active ? "month" : "hub";
+  if (want === "month" && !play.active) return "hub";
+  return want;
 }
 
 function show(name) {

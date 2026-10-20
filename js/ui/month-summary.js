@@ -12,21 +12,13 @@ const ICONS = {
   collections: "🚨",
 };
 
-// Keeps only what the screen needs, small enough to save.
-export function monthRecord(month, result) {
-  return {
-    month,
-    score: result.life.score,
-    delta: result.scoreChange.delta,
-    events: result.events.map((e) => ({ type: e.type, message: e.message })),
-  };
-}
+export { monthRecord } from "../play.js";
 
-export function monthSummary(record) {
+export function monthSummary(record, title = null) {
   if (!record) return "";
   return h(
     "div.callout.month-summary",
-    h("h3", `Month ${record.month + 1} is over`),
+    h("h3", title || `Month ${record.month + 1} is over`),
     h(
       "ul.event-list",
       record.events.map((e) => h("li", h("span.event-icon", e.type === "scoreChange" && record.delta < 0 ? "📉" : ICONS[e.type] || "•"), e.message))
