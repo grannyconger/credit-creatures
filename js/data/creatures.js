@@ -42,8 +42,15 @@ export const ACCESSORY_SLOTS = { head: "Head", neck: "Neck", face: "Face" };
 
 export const NAME_IDEAS = ["Pip", "Mossy", "Biscuit", "Nova", "Pebble", "Ziggy", "Clover", "Ember", "Waffles", "Juniper", "Puddles", "Sprout"];
 
+export const LAST_NAME_IDEAS = ["Mossbright", "Puddleton", "Featherbottom", "Glimmerstone", "McScales", "Quillsworth", "Lanternby", "Pebblefoot", "Sparkwhistle", "Thistledown"];
+
 export const NAME_MAX = 20;
 
+// The name printed on cards and checks: first name plus the optional last name.
+export function fullName(creature) {
+  return [creature?.name, creature?.lastName].filter(Boolean).join(" ");
+}
+
 export function defaultCreature() {
-  return { name: "", species: "mossDragon", palette: "moss", accessories: { head: "none", neck: "none", face: "none" } };
+  return { name: "", lastName: "", species: "mossDragon", palette: "moss", accessories: { head: "none", neck: "none", face: "none" } };
 }

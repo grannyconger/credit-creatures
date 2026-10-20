@@ -1,5 +1,6 @@
 // Chapter 1 complete. Phase 4 replaces the "what's next" part with the hub.
 import { h, money, ageLabel } from "../dom.js";
+import { fullName } from "../../data/creatures.js";
 import { findAccount, hardInquiriesInWindow } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { creatureSvg } from "../creature-art.js";
@@ -33,7 +34,7 @@ export function render(root, { game, go, saveAndQuit }) {
       card
         ? h(
             "div.done-card",
-            cardArt({ issuer: card.issuer, network: card.network, name: card.name, design: card.design, nickname: card.nickname, holder: c.name }),
+            cardArt({ issuer: card.issuer, network: card.network, name: card.name, design: card.design, nickname: card.nickname, holder: fullName(c) }),
             h("p", `Limit ${money(card.limit)}. APR ${(card.apr * 100).toFixed(1)}%. Your first statement comes at the end of next month.`)
           )
         : h("div.callout", h("p", "You don't have a card yet. You will get more chances to apply in the chapters ahead.")),

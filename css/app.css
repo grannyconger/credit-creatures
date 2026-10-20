@@ -11,7 +11,7 @@
 main.app { max-width: 1120px; padding: 32px 24px 96px; }
 .panel.narrow { max-width: 640px; margin: 0 auto; }
 .center { text-align: center; }
-.row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; margin-top: 24px; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 24px; }
 .row.center { justify-content: center; }
 .muted { color: var(--muted); }
 .note.tight { margin-top: 6px; }
@@ -166,17 +166,49 @@ button.link { background: none; color: var(--accent); padding: 6px 8px; text-dec
 .grid-cell.code-30, .grid-cell.code-60 { background: var(--warn-bg); color: var(--warn); }
 .grid-cell.code-90, .grid-cell.code-CO { background: var(--bad-bg); color: var(--danger); }
 
-.weight-bar { display: flex; border-radius: 10px; overflow: hidden; margin: 12px 0 20px; font-size: 0.85rem; font-weight: 700; color: #fff; }
-.weight-bar span { padding: 8px 6px; text-align: center; white-space: nowrap; overflow: hidden; }
-.weight-bar .w0 { background: #6a4fc2; }
-.weight-bar .w1 { background: #2b6cb0; }
-.weight-bar .w2 { background: #2f7d4a; }
-.weight-bar .w3 { background: #b4691f; }
-.weight-bar .w4 { background: #a8431f; }
-.factor-card { border: 2px solid var(--border); border-radius: 14px; padding: 20px; }
-.factor-head { display: flex; align-items: center; gap: 12px; }
-.factor-icon { font-size: 2rem; }
-.factor-weight { margin-left: auto; font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+/* Score factors: each part has its own color (f0 to f4). Progress never relies on color alone:
+   every part also shows its number, a check mark when done, and a text status line. */
+.f0 { --f: #6a4fc2; --f-bg: #efeafb; }
+.f1 { --f: #2b6cb0; --f-bg: #e6f0fa; }
+.f2 { --f: #2f7d4a; --f-bg: #e5f3ea; }
+.f3 { --f: #9a5a14; --f-bg: #fbf0e2; }
+.f4 { --f: #a8431f; --f-bg: #fbe9e3; }
+.weight-bar { display: flex; gap: 3px; margin: 12px 0 8px; font-size: 0.85rem; font-weight: 700; color: #fff; }
+.weight-bar span { background: var(--f); padding: 8px 6px; text-align: center; white-space: nowrap; overflow: hidden; border-radius: 6px; opacity: 0.35; transition: opacity 0.2s, transform 0.2s; }
+.weight-bar span.done { opacity: 0.85; }
+.weight-bar span.current { opacity: 1; transform: scaleY(1.15); box-shadow: 0 0 0 3px var(--panel), 0 0 0 5px var(--f); }
+.factor-steps { display: flex; list-style: none; padding: 0; margin: 18px 0 6px; }
+.factor-steps li { flex: 1; position: relative; display: flex; justify-content: center; }
+.factor-steps li + li::before { content: ""; position: absolute; top: 19px; right: 50%; width: 100%; height: 4px; background: var(--border); z-index: 0; }
+.factor-steps li.done + li::before, .factor-steps li.done + li.current::before { background: var(--good); }
+.factor-step { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; color: var(--muted); padding: 0 2px; font-size: 0.8rem; font-weight: 600; }
+.factor-step:disabled { cursor: default; opacity: 1; }
+.factor-dot { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 1.05rem; font-weight: 800; border: 3px solid var(--border); background: var(--panel); color: var(--muted); }
+li.done .factor-dot { background: var(--f); border-color: var(--f); color: #fff; }
+li.current .factor-dot { border-color: var(--f); color: var(--f); background: var(--f-bg); box-shadow: 0 0 0 4px var(--f-bg); transform: scale(1.12); }
+li.current .factor-step, li.done .factor-step { color: var(--ink); }
+li.current .factor-step { font-weight: 800; }
+.factor-progress { text-align: center; font-weight: 700; margin: 10px 0 14px; }
+.factor-progress .meter { display: block; height: 8px; max-width: 320px; margin: 6px auto 0; background: var(--border); border-radius: 99px; overflow: hidden; }
+.factor-progress .meter span { display: block; height: 100%; background: var(--f); border-radius: 99px; transition: width 0.3s; }
+.factor-card { border: 3px solid var(--f); border-radius: 16px; overflow: hidden; background: var(--f-bg); }
+.factor-head { display: flex; align-items: center; gap: 12px; background: var(--f); color: #fff; padding: 14px 20px; }
+.factor-head h2 { margin: 0; color: #fff; }
+.factor-num { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.9; display: block; }
+.factor-icon { font-size: 2rem; background: #fff; border-radius: 50%; width: 52px; height: 52px; display: grid; place-items: center; flex: none; }
+.factor-weight { margin-left: auto; font-size: 1.6rem; font-weight: 800; text-align: right; line-height: 1.1; }
+.factor-weight small { display: block; font-size: 0.7rem; font-weight: 600; opacity: 0.9; }
+.factor-body { padding: 16px 20px 20px; }
+.factor-body .callout { background: var(--panel); border-left: 5px solid var(--f); }
+@media (max-width: 560px) {
+  .factor-step .factor-label { display: none; }
+  .weight-bar { font-size: 0.72rem; }
+  .factor-head { padding: 12px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .weight-bar span, .factor-progress .meter span { transition: none; }
+  li.current .factor-dot, .weight-bar span.current { transform: none; }
+}
 
 /* Stats */
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 16px 0; }
@@ -242,7 +274,7 @@ button.link { background: none; color: var(--accent); padding: 6px 8px; text-dec
 .card-nick { font-style: italic; opacity: 0.9; }
 .card-chip { width: 42px; height: 30px; border-radius: 6px; background: linear-gradient(135deg, #f5d77a, #c9a23c); }
 .card-name { font-size: 1.05em; font-weight: 700; }
-.card-holder { letter-spacing: 0.1em; }
+.card-holder { letter-spacing: 0.1em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .design-plasticBlue { background: linear-gradient(135deg, #2b6cb0, #1d3f75); }
 .design-plasticGreen { background: linear-gradient(135deg, #3f8f4f, #1f5530); }
 .design-plasticPurple { background: linear-gradient(135deg, #7a5ad1, #43307f); }

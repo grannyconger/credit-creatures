@@ -8,8 +8,7 @@ Last updated: 2026-10-20
 
 - **Phase 1: done, approved.** Live at https://www.coachw.club/credit-life/.
 - **Phase 2: done, approved** (2026-10-20, "pick up where we left off").
-- **Phase 3: done, awaiting approval.** 82 tests pass. The full onboarding was clicked through in headless Chrome at 1280px and 390px in `?local` mode (both the parent card path and the debit-only path, approved and denied).
-- **Teacher action needed before students can play:** publish the new `firestore.rules` (steps in `docs/setup-firebase.md`, section 8). Then create a class on `/teacher/` to get a join code.
+- **Phase 3: done, awaiting approval.** Teacher tested Chapter 1 live (2026-10-20, "worked great") and published the new rules. Tweaks from that test are in (see below). 82 tests pass. The full onboarding was clicked through in headless Chrome at 1280px and 390px in `?local` mode (both the parent card path and the debit-only path, approved and denied).
 - **Next step:** get Phase 3 approval, then plan and build Phase 4.
 
 ## Open decisions (ask once, then use the default)
@@ -17,6 +16,9 @@ Last updated: 2026-10-20
 1. **First-score height.** Careful players get about 757 at 6 months and 774 at 12 months. A responsible parent's card now also gives about 819 at age 18 (average parent 776, maxed 593, no parent: no score). "Score 700/750" achievements (Phase 6) would come almost instantly. **Default: leave as is.** To lower it, raise `score.lengthCurvePower` in `js/data/config.js`, then rerun `npm run sim`.
 2. **Phase 4: replay rules for earlier chapters** (SPEC §5). **Default:** replay runs on a throwaway copy of the save from that chapter's start. Nothing is written back.
 3. **Phase 4: "Previously on..." recap.** **Default:** built from the last chapter's saved month records and score history, with no extra storage.
+4. **Debit card and digital wallet (SPEC §14).** **Default:** Phase 4 gives every creature an adult Gilded Vault debit card at 18 and a basic "Pay with" picker on decision cards that cost money (debit or any open card, showing checking balance, available credit and the new utilization). Phase 5 adds the full Wallet screen with card art. Phase 6 reuses the picker at shop and BNPL checkout.
+5. **Check Writer minigame (SPEC §17).** **Default:** Phase 6, with Ledger Sort and Cashier Rush. Part 1 writes a check from an order or bill and signs the front (the payer signs the front). Part 2 endorses the back of a paycheck before depositing it. A full-screen signature pad takes touch, pen or mouse. "Type my signature" writes the full name in a self-hosted cursive font (OFL license, no CDN). Signature drawings are never saved, only that the check was signed.
+6. **Creature aging (SPEC §3).** **Default:** after the pilot, small details only. Not scheduled in a phase yet.
 
 ## Decisions already made
 
@@ -49,6 +51,12 @@ Last updated: 2026-10-20
 - **Saves:** `saves/{uid}` stores the life as a JSON string (`lifeJson`) plus summary fields (score, month, step) for the Phase 7 roster. It saves at every step, every End Month, and on Save and Quit.
 - **Telemetry:** `telemetry/{uid}/events/{autoId}` (one doc per flush, not per month as FEEDBACK.md first said, because flushes happen at every save and create-only rules forbid overwriting) plus the `telemetry/{uid}` rollup (merge with increments).
 - **Display name:** Google's name goes in `googleName`. `displayName` is the student's own choice and sign-in no longer overwrites it.
+
+## Tweaks after the teacher's Chapter 1 test (2026-10-20)
+
+- Every button row is centered (`.row` in `css/app.css`), right under the content it belongs to. The shift's "Next item" button sits in a centered row.
+- "The 5 parts of a credit score" has a color per part (`.f0` to `.f4`). The weight bar fades parts not reached yet and checks off finished ones, a numbered stepper (1 to 5, ✓ when done, `aria-current="step"`, readable labels) lets students jump back to parts they have seen, a "Part N of 5" line with a meter is announced to screen readers, and the card takes the part's color. Telemetry: `factorPart` {part, n, how}.
+- Creatures have an optional last name (`creature.lastName`, idea button, `fullName()` in `js/data/creatures.js`). The full name prints on the card art. Existing students can add one with "Edit my creature". No rules change was needed (`creatureName` stays the first name).
 
 ## Code map
 

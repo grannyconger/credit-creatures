@@ -73,7 +73,7 @@ const STAGE_RENDER = {
           h("p.shift-count", `Item ${k + 1} of ${items.length}`),
           h("div.shift-item", it.item),
           h("div.callout", { class: right ? "good" : "bad" }, h("strong", right ? "Right! " : "Not quite. "), it.why),
-          h("button", { type: "button", onclick: () => (k++, ask()) }, k + 1 < items.length ? "Next item" : "See my pay")
+          h("div.row.center", h("button.big", { type: "button", onclick: () => (k++, ask()) }, k + 1 < items.length ? "Next item" : "See my pay"))
         );
       };
       area.append(
@@ -216,42 +216,97 @@ const STAGE_RENDER = {
   },
 
   factors(el, { next, track }) {
-    let k = 0;
+    const total = FACTOR_TOUR.length;
     const started = Date.now();
+    let k = 0;
+    let furthest = 0;
+    const bar = h("div.weight-bar", { "aria-hidden": "true" });
+    const steps = h("ol.factor-steps", { "aria-label": "Your progress through the 5 parts" });
+    const status = h("p.factor-progress", { "aria-live": "polite" });
     const box = h("div");
     el.append(
       h("h1", "The 5 parts of a credit score"),
       h("p", "Scores run from 300 to 850. Every score is built from these 5 parts. Bigger parts matter more."),
-      h(
-        "div.weight-bar",
-        FACTOR_TOUR.map((f, i) => h("span", { style: { flex: parseInt(f.weight, 10) }, class: `w${i}` }, `${f.icon} ${f.weight}`))
-      ),
+      bar,
+      steps,
+      status,
       box
     );
+
+    const stateOf = (i) => (i === k ? "current" : i <= furthest ? "done" : "");
+
+    function go(i, how) {
+      k = i;
+      furthest = Math.max(furthest, k);
+      track("factorPart", { part: FACTOR_TOUR[k].key, n: k + 1, how });
+      show();
+    }
+
     function show() {
       const f = FACTOR_TOUR[k];
-      const last = k === FACTOR_TOUR.length - 1;
+      const last = k === total - 1;
+
+      clear(bar).append(
+        ...FACTOR_TOUR.map((x, i) =>
+          h("span", { style: { flex: parseInt(x.weight, 10) }, class: `f${i} ${stateOf(i)}` }, `${stateOf(i) === "done" ? "✓ " : ""}${x.icon} ${x.weight}`)
+        )
+      );
+
+      clear(steps).append(
+        ...FACTOR_TOUR.map((x, i) => {
+          const state = stateOf(i);
+          const words = state === "current" ? "you are here" : state === "done" ? "done" : "not yet";
+          return h(
+            "li",
+            { class: `f${i} ${state}` },
+            h(
+              "button.factor-step",
+              {
+                type: "button",
+                disabled: i > furthest || i === k,
+                "aria-current": state === "current" ? "step" : null,
+                "aria-label": `Part ${i + 1}: ${x.title}, ${words}`,
+                onclick: () => go(i, "jump"),
+              },
+              h("span.factor-dot", state === "done" ? "✓" : String(i + 1)),
+              h("span.factor-label", x.title)
+            )
+          );
+        })
+      );
+
+      status.className = `factor-progress f${k}`;
+      clear(status).append(
+        `Part ${k + 1} of ${total}: ${f.title}`,
+        h("span.meter", { "aria-hidden": "true" }, h("span", { style: { width: `${Math.round(((k + 1) / total) * 100)}%` } }))
+      );
+
       box.replaceChildren(
         h(
           "div.factor-card",
-          h("div.factor-head", h("span.factor-icon", f.icon), h("h2", f.title), h("span.factor-weight", f.weight)),
-          h("p", f.means),
-          h("div.callout", h("strong", "Life choice: "), f.example)
+          { class: `f${k}` },
+          h(
+            "div.factor-head",
+            h("span.factor-icon", { "aria-hidden": "true" }, f.icon),
+            h("div", h("span.factor-num", `Part ${k + 1} of ${total}`), h("h2", f.title)),
+            h("span.factor-weight", f.weight, h("small", "of your score"))
+          ),
+          h("div.factor-body", h("p", f.means), h("div.callout", h("strong", "Life choice: "), f.example))
         ),
         h(
           "div.row",
-          k > 0 ? h("button.secondary", { type: "button", onclick: () => (k--, show()) }, "Back") : null,
+          k > 0 ? h("button.secondary", { type: "button", onclick: () => go(k - 1, "back") }, "Back") : null,
           h(
-            "button",
+            "button.big",
             {
               type: "button",
               onclick: () => {
-                if (!last) return k++, show();
+                if (!last) return go(k + 1, "next");
                 track("factorTour", { seconds: Math.round((Date.now() - started) / 1000) });
                 next();
               },
             },
-            last ? "Got it" : `Next part (${k + 2} of ${FACTOR_TOUR.length})`
+            last ? "Got it" : `Next part (${k + 2} of ${total})`
           )
         )
       );

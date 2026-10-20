@@ -1,6 +1,7 @@
 // Design Your Card (SPEC §7): pick an issuer, product, limit and look, and watch
 // approval risk, APR, fee, income and score needs change live.
 import { h, clear, money, percent } from "../dom.js";
+import { fullName } from "../../data/creatures.js";
 import { quoteApplication, applyForCard, monthlyIncome, buildReport, hardInquiriesInWindow } from "../../engine/index.js";
 import { OFFERS, PRODUCTS, ISSUERS, NETWORKS, DESIGNS, TERMS_NOTE } from "../../data/products.js";
 import { TRADEOFF_HELP } from "../../data/onboarding.js";
@@ -137,7 +138,7 @@ export function render(root, { game, advance, track }) {
     const q = quoteApplication(life, app);
     const offer = OFFERS.find((o) => o.issuer === app.issuer && o.product === app.product);
     clear(preview).append(
-      cardArt({ issuer: app.issuer, network: offer.network, name: q.name, design: app.design, nickname: app.nickname, holder: game.save.creature.name })
+      cardArt({ issuer: app.issuer, network: offer.network, name: q.name, design: app.design, nickname: app.nickname, holder: fullName(game.save.creature) })
     );
 
     const rows = [

@@ -1,5 +1,6 @@
 // Approved or denied, with terms and plain-language reasons (SPEC §7).
 import { h, money, percent } from "../dom.js";
+import { fullName } from "../../data/creatures.js";
 import { addBill, hardInquiriesInWindow } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { cardArt } from "../card-art.js";
@@ -7,7 +8,7 @@ import { cardArt } from "../card-art.js";
 export function render(root, { game, advance, track }) {
   const r = game.ob.lastResult;
   const inquiries = hardInquiriesInWindow(game.life);
-  const card = cardArt({ issuer: r.issuer, network: r.network, name: r.name, design: r.design, nickname: r.nickname, holder: game.save.creature.name, size: "large" });
+  const card = cardArt({ issuer: r.issuer, network: r.network, name: r.name, design: r.design, nickname: r.nickname, holder: fullName(game.save.creature), size: "large" });
 
   const inquiryNote = h(
     "p.note",

@@ -63,7 +63,8 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 
 - **Theme:** fantasy kingdom.
 - **Players are not humans.** Each student adopts and names a fictional, fantastic creature (think Webkinz). The student makes credit decisions on the creature's behalf.
-- **Creature creator:** pick a species from a starter list (original designs only, for example a moss dragon, a lantern fox, a crystal owl, a puddle golem), then a color palette and a few accessories. Name is required and editable later.
+- **Creature creator:** pick a species from a starter list (original designs only, for example a moss dragon, a lantern fox, a crystal owl, a puddle golem), then a color palette and a few accessories. Name is required and editable later. An optional last name (added 2026-10-20) makes a full name, printed on the creature's bank cards and used for check writing and signatures.
+- **Aging (later, not a priority):** the creature looks a little older as it ages, with small details only (for example a few gray whisker tufts, reading glasses, a slightly softer posture). Same species, palette and accessories. Planned after the pilot unless there is spare time in Phase 8.
 - Accessories and backgrounds can be bought in the Shop (Section 15).
 - All art is original. No Nintendo, Webkinz or other existing characters.
 - Kingdom flavor appears in names and art (the bank is "The Gilded Vault," the town is a market village), but **all credit terms stay real** (APR, utilization, hard inquiry, etc.).
@@ -318,6 +319,7 @@ Scenario data lives in its own data file(s), one object per scenario, so new one
 Students can visit any time without losing game time.
 
 - **Wallet:** checking balance and every account's balance, limit, APR, minimum due, due date and a utilization bar.
+- **Debit card and digital wallet (added 2026-10-20):** at 18 the checking account comes with a Gilded Vault debit card (the teen debit card upgrades to it). A phone digital wallet 📱 holds the debit card and every open credit card. Whenever something costs money (decision cards in Phase 4, the shop and BNPL checkout in Phase 6), a "Pay with" picker shows each option with its live numbers: checking balance for debit, available credit and the new utilization for each card. Debit is declined when checking is too low. The picker shows what each choice does ("spends your money now", "borrows, due next month, adds to utilization"). The Wallet screen shows the cards as card art with the creature's full name.
 - **Statements:** purchases, payments, interest, fees, new balance and minimum due, month by month.
 - **Pay bills:** pay in full, the minimum, or a custom amount. Payoff preview, for example "Minimum only -> 14 months, $86 interest. Pay $60/month -> 4 months, $19 interest."
 - **AutoPay:** optional. If checking runs short, the payment bounces with a fee.
@@ -401,6 +403,7 @@ Quick (30 to 60 seconds), semi-related to the content. Pay depends on performanc
 |---|---|---|---|
 | **Ledger Sort** (Asset / Liability / Equity) | Bookkeeper | Sort items into ASSET, LIABILITY or EQUITY | **Pilot, top priority** |
 | Cashier Rush | Shopkeeper | Make correct change quickly | Pilot |
+| **Check Writer** (added 2026-10-20) | Scribe at The Gilded Vault | Fill in a paper check from an order or bill: date, payee, amount in numbers, amount in words, memo, signature. Part 2 endorses the back of a paycheck before depositing it. Signatures use a full-screen signature pad (touch, pen or mouse) with a "type my signature" option that writes the creature's full name in a cursive font | Phase 6 |
 | Check & Tip | Tavern server | Given a subtotal, add a 20% tip and give the total within 20 seconds | Later |
 | Delivery Dash | Courier | Timing and dodging (Frogger-style) | Later |
 | Lawn Pattern | Groundskeeper | Path-tracing puzzle | Later |
@@ -505,9 +508,9 @@ The pilot is Phases 1 to 7. Stop and wait for approval at the end of each.
 | 1 | **Setup:** repo structure, `CLAUDE.md`, Firebase config wiring, a "hello" page live at `coachw.club/credit-life` with working school-only Google sign-in. Give the teacher click-by-click steps for anything done in the Firebase or GitHub web consoles. |
 | 2 | **Engine:** accounts, month updates, score model, card approvals, collections status. Automated tests that simulate 1,000 creature lives with different play styles and print a score distribution sanity report. |
 | 3 | **Onboarding:** profile, creature creator, class codes, age 16 options, tutorial, lenders-vs-networks explainer, Design Your Card with live tradeoff display, saving. |
-| 4 | **Simulation:** hub, month loop, life events, first ~20 scenarios, chapters, teacher chapter release, reflections. |
-| 5 | **Account Management:** wallet, statements, pay bills, AutoPay, My Score with life-choice explainers, credit report, Practice Desk, Factor Check, notifications inbox, theme picker, Unicorn Sparkle Points. |
-| 6 | **Economy and engagement:** Ledger Sort and Cashier Rush minigames, shop with backgrounds and creature items, BNPL checkout, achievements (40+), XP, ranks, class leaderboard. |
+| 4 | **Simulation:** hub, month loop, life events, first ~20 scenarios with a basic "Pay with" picker (debit card or a credit card, with live balances), adult debit card at 18, chapters, teacher chapter release, reflections. |
+| 5 | **Account Management:** wallet with debit card and digital wallet, statements, pay bills, AutoPay, My Score with life-choice explainers, credit report, Practice Desk, Factor Check, notifications inbox, theme picker, Unicorn Sparkle Points. |
+| 6 | **Economy and engagement:** Ledger Sort, Cashier Rush and Check Writer minigames, "Pay with" picker at checkout, shop with backgrounds and creature items, BNPL checkout, achievements (40+), XP, ranks, class leaderboard. |
 | 7 | **Teacher:** dashboard, roster, controls, CSV export, Firestore security rules hardening, school-only sign-in verification. |
 | 8 | **Pilot:** one class plays. Tune numbers, add remaining scenarios, minigames and achievements. |
 
