@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Credit Life Teacher</title>
   <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/app.css">
 </head>
 <body>
   <main>
@@ -18,11 +19,24 @@
 
       <div id="signed-in" hidden>
         <p id="status"></p>
+        <div id="classes" hidden>
+          <h3>Your classes</h3>
+          <table class="class-table">
+            <thead><tr><th>Class</th><th>Join code</th><th>Chapter released</th></tr></thead>
+            <tbody id="class-rows"></tbody>
+          </table>
+          <form id="create-form" class="create-form">
+            <label for="class-name">New class name</label>
+            <input id="class-name" type="text" maxlength="40" placeholder="Period 2 Personal Finance" required>
+            <button id="create" type="submit">Create class</button>
+          </form>
+          <p class="note">Give students the join code. They type it after they make their creature.</p>
+        </div>
         <button id="sign-out" class="secondary" type="button">Sign out</button>
       </div>
 
       <p id="error" class="error" role="alert"></p>
-      <p class="note">The full dashboard arrives in Phase 7. This page only checks access.</p>
+      <p class="note">The full dashboard (roster, chapter release, CSV export) arrives in Phase 7.</p>
     </section>
   </main>
 
@@ -37,15 +51,63 @@
       $("error").textContent = "Sign-in is not set up yet.";
     } else {
       const { signIn, signOut, onUser, isTeacher } = await import("../js/auth.js");
+      const { createClass, listMyClasses } = await import("../js/db.js");
+      let me = null;
+
+      function addRow(c) {
+        const tr = document.createElement("tr");
+        for (const v of [c.name, c.code, c.releasedChapter]) {
+          const td = document.createElement("td");
+          td.textContent = v;
+          tr.append(td);
+        }
+        tr.children[1].className = "code-cell";
+        $("class-rows").append(tr);
+      }
+
+      async function loadClasses() {
+        $("class-rows").replaceChildren();
+        try {
+          const classes = await listMyClasses(me.email);
+          classes.sort((a, b) => a.name.localeCompare(b.name)).forEach(addRow);
+        } catch (err) {
+          console.error(err);
+          $("error").textContent = "Could not load your classes. Check that the new Firestore rules are published.";
+        }
+      }
 
       onUser((user) => {
         $("signed-out").hidden = Boolean(user);
         $("signed-in").hidden = !user;
+        $("classes").hidden = true;
+        me = user;
         if (!user) return;
         // Display only. Firestore rules enforce teacher access.
-        $("status").textContent = isTeacher(user)
+        const teacher = isTeacher(user);
+        $("status").textContent = teacher
           ? `Welcome, ${user.displayName || user.email}. You have teacher access.`
           : "This page is for teachers only.";
+        if (teacher) {
+          $("classes").hidden = false;
+          loadClasses();
+        }
+      });
+
+      $("create-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = $("class-name").value.trim();
+        if (!name) return;
+        $("create").disabled = true;
+        $("error").textContent = "";
+        try {
+          addRow(await createClass(me.email, name));
+          $("class-name").value = "";
+        } catch (err) {
+          console.error(err);
+          $("error").textContent = "Could not create the class. Check that the new Firestore rules are published.";
+        } finally {
+          $("create").disabled = false;
+        }
       });
 
       signInBtn.addEventListener("click", async () => {

@@ -1,0 +1,138 @@
+// Creature creator (SPEC §3): species, palette, accessories and a name.
+import { h, clear } from "../dom.js";
+import { creatureSvg } from "../creature-art.js";
+import { SPECIES, PALETTES, ACCESSORIES, ACCESSORY_SLOTS, NAME_IDEAS, NAME_MAX, defaultCreature } from "../../data/creatures.js";
+
+export function render(root, { game, advance, back, editing, track, refreshWho }) {
+  const start = game.save.creature || defaultCreature();
+  const draft = { ...start, accessories: { ...start.accessories } };
+  let ideaUsed = false;
+
+  const preview = h("div.creature-preview");
+  const speciesRow = h("div.tile-row");
+  const paletteRow = h("div.swatch-row");
+  const accessoryRows = h("div");
+  const nameInput = h("input", { type: "text", maxlength: NAME_MAX, value: draft.name, id: "creature-name", autocomplete: "off" });
+  const error = h("p.error", { role: "alert" });
+
+  function paint() {
+    preview.innerHTML = creatureSvg(draft, { size: 260 });
+    preview.append(h("p.creature-caption", draft.name || "Your creature", h("small", SPECIES[draft.species].blurb)));
+
+    clear(speciesRow);
+    for (const [key, s] of Object.entries(SPECIES)) {
+      speciesRow.append(
+        h(
+          "button.tile",
+          { type: "button", "aria-pressed": String(draft.species === key), onclick: () => set("species", key) },
+          h("span.tile-art", { html: creatureSvg({ ...draft, species: key, accessories: {} }, { size: 72, label: s.label }) }),
+          h("span", s.label)
+        )
+      );
+    }
+
+    clear(paletteRow);
+    for (const [key, p] of Object.entries(PALETTES)) {
+      paletteRow.append(
+        h(
+          "button.swatch",
+          { type: "button", title: p.label, "aria-label": p.label, "aria-pressed": String(draft.palette === key), onclick: () => set("palette", key) },
+          h("span", { style: { background: `linear-gradient(135deg, ${p.body} 55%, ${p.accent} 55%)` } })
+        )
+      );
+    }
+
+    clear(accessoryRows);
+    for (const [slot, label] of Object.entries(ACCESSORY_SLOTS)) {
+      accessoryRows.append(
+        h(
+          "div.chip-group",
+          h("span.chip-label", label),
+          Object.entries(ACCESSORIES[slot]).map(([key, text]) =>
+            h("button.chip", { type: "button", "aria-pressed": String(draft.accessories[slot] === key), onclick: () => setAccessory(slot, key) }, text)
+          )
+        )
+      );
+    }
+  }
+
+  function set(field, value) {
+    draft[field] = value;
+    paint();
+  }
+
+  function setAccessory(slot, value) {
+    draft.accessories[slot] = value;
+    paint();
+  }
+
+  nameInput.addEventListener("input", () => {
+    draft.name = nameInput.value;
+    preview.querySelector(".creature-caption").firstChild.textContent = draft.name || "Your creature";
+  });
+
+  const ideaBtn = h("button.link", { type: "button" }, "Give me an idea");
+  ideaBtn.addEventListener("click", () => {
+    const options = NAME_IDEAS.filter((n) => n !== draft.name);
+    draft.name = options[Math.floor(Math.random() * options.length)];
+    nameInput.value = draft.name;
+    ideaUsed = true;
+    paint();
+  });
+
+  const btn = h("button", { type: "submit" }, editing ? "Save changes" : "Next: join your class");
+  const form = h(
+    "form.panel.creator",
+    h(
+      "div.creator-left",
+      h("p.step-label", editing ? "Edit your creature" : "Step 2: your creature"),
+      h("h1", "Adopt a creature"),
+      h("p", "You will make money choices for this creature until it is grown. Make it yours."),
+      h("h3", "Species"),
+      speciesRow,
+      h("h3", "Colors"),
+      paletteRow,
+      h("h3", "Accessories"),
+      h("p.note.tight", "You can buy more in the shop later."),
+      accessoryRows,
+      h("h3", h("label", { for: "creature-name" }, "Name")),
+      h("div.name-row", nameInput, ideaBtn),
+      h("p.note.tight", "Pick a fun name, not your real name. You can change it later."),
+      error,
+      h("div.row", editing ? h("button.secondary", { type: "button", onclick: back }, "Cancel") : null, btn)
+    ),
+    h("div.creator-right", preview)
+  );
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim().replace(/\s+/g, " ");
+    if (!name) {
+      error.textContent = "Your creature needs a name.";
+      nameInput.focus();
+      return;
+    }
+    btn.disabled = true;
+    draft.name = name;
+    game.save.creature = draft;
+    track("creatureSaved", {
+      species: draft.species,
+      palette: draft.palette,
+      head: draft.accessories.head,
+      neck: draft.accessories.neck,
+      face: draft.accessories.face,
+      ideaUsed,
+      editing,
+    });
+    refreshWho();
+    if (editing) {
+      await game.persist("creatureEdit");
+      back();
+    } else {
+      await advance("join");
+    }
+  });
+
+  paint();
+  root.append(form);
+}

@@ -27,5 +27,7 @@ export function pct(x) {
 
 export function dollars(x) {
   const v = money(x);
-  return "$" + (Number.isInteger(v) ? v.toString() : v.toFixed(2));
+  const [whole, cents] = Math.abs(v).toFixed(2).split(".");
+  const s = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (Number.isInteger(v) ? "" : "." + cents);
+  return (v < 0 ? "-$" : "$") + s;
 }

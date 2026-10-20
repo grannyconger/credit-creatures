@@ -57,7 +57,7 @@ export function earn(life, amount, source = "work shift") {
   const next = copyLife(life);
   next.checking = money(next.checking + amount);
   next.incomeThisMonth = money(next.incomeThisMonth + amount);
-  logAction(next, "earn", { amount, source });
+  logAction(next, "earn", [amount, source]);
   return { life: next, ok: true, message: `You earned ${dollars(amount)}.` };
 }
 
@@ -65,12 +65,14 @@ export function addBill(life, name, amount) {
   const next = copyLife(life);
   next.bills = next.bills.filter((b) => b.name !== name);
   next.bills.push({ name, amount });
+  logAction(next, "addBill", [name, amount]);
   return { life: next, ok: true, message: `${name} bill set to ${dollars(amount)} a month.` };
 }
 
 export function removeBill(life, name) {
   const next = copyLife(life);
   next.bills = next.bills.filter((b) => b.name !== name);
+  logAction(next, "removeBill", [name]);
   return { life: next, ok: true, message: `${name} bill removed.` };
 }
 
@@ -79,7 +81,7 @@ export function moveToSavings(life, amount) {
   const next = copyLife(life);
   next.checking = money(next.checking - amount);
   next.savings = money(next.savings + amount);
-  logAction(next, "toSavings", { amount });
+  logAction(next, "moveToSavings", [amount]);
   return { life: next, ok: true, message: `Moved ${dollars(amount)} to savings.` };
 }
 
@@ -88,7 +90,7 @@ export function moveToChecking(life, amount) {
   const next = copyLife(life);
   next.savings = money(next.savings - amount);
   next.checking = money(next.checking + amount);
-  logAction(next, "toChecking", { amount });
+  logAction(next, "moveToChecking", [amount]);
   return { life: next, ok: true, message: `Moved ${dollars(amount)} to checking.` };
 }
 
@@ -99,7 +101,7 @@ export function debitPurchase(life, amount, item = "purchase") {
   if (amount > life.checking) return fail(life, `Declined. You only have ${dollars(life.checking)} in checking.`);
   const next = copyLife(life);
   next.checking = money(next.checking - amount);
-  logAction(next, "debit", { amount, item });
+  logAction(next, "debitPurchase", [amount, item]);
   return { life: next, ok: true, message: `Paid ${dollars(amount)} with debit.` };
 }
 
@@ -111,7 +113,7 @@ export function cardPurchase(life, accountId, amount, item = "purchase") {
   if (amount > available) return fail(life, `Declined. Only ${dollars(available)} of credit is left on this card.`);
   const next = copyLife(life);
   findAccount(next, accountId).pending.push({ amount: money(amount), item, month: next.month });
-  logAction(next, "card", { accountId, amount, item });
+  logAction(next, "cardPurchase", [accountId, amount, item]);
   return { life: next, ok: true, message: `Charged ${dollars(amount)} to ${a.name}.` };
 }
 
@@ -163,7 +165,7 @@ export function pay(life, accountId, amount) {
   if (want > life.checking) return fail(life, `You only have ${dollars(life.checking)} in checking.`);
   const next = copyLife(life);
   const paid = applyPayment(next, findAccount(next, accountId), amount);
-  logAction(next, "pay", { accountId, amount: paid });
+  logAction(next, "pay", [accountId, amount], { paid });
   return { life: next, ok: true, paid, message: `Paid ${dollars(paid)} to ${a.name}.` };
 }
 
@@ -173,7 +175,7 @@ export function setAutopay(life, accountId, mode) {
   if (!a || !isRevolving(a) || a.owner !== "self") return fail(life, "AutoPay works on your own cards.");
   const next = copyLife(life);
   findAccount(next, accountId).autopay = mode;
-  logAction(next, "autopay", { accountId, mode });
+  logAction(next, "setAutopay", [accountId, mode]);
   return { life: next, ok: true, message: mode ? "AutoPay is on." : "AutoPay is off." };
 }
 
@@ -221,7 +223,7 @@ export function closeAccount(life, accountId) {
     message += ` Your ${dollars(c.deposit)} deposit came back to checking.`;
     c.deposit = 0;
   }
-  logAction(next, "close", { accountId });
+  logAction(next, "closeAccount", [accountId]);
   return { life: next, ok: true, message };
 }
 
@@ -236,7 +238,7 @@ export function upgradeSecured(life, accountId, newLimit) {
   c.deposit = 0;
   c.secured = false;
   if (newLimit) c.limit = newLimit;
-  logAction(next, "upgrade", { accountId, newLimit: c.limit });
+  logAction(next, "upgradeSecured", [accountId, newLimit ?? null]);
   return { life: next, ok: true, message: `Your card is now unsecured. Your ${dollars(back)} deposit came back.` };
 }
 
@@ -269,7 +271,7 @@ export function joinAsAuthorizedUser(life, profileKey = null) {
     a.history.push({ month: m, code: rng.chance(p.lateChance) ? "30" : "OK" });
   }
   next.accounts.push(a);
-  logAction(next, "joinAU", { parentProfile: key });
+  logAction(next, "joinAsAuthorizedUser", [profileKey], { parentProfile: key });
   return { life: next, ok: true, accountId: a.id, message: "You were added to a parent's card. Its history now shows on your report." };
 }
 
@@ -279,7 +281,7 @@ export function removeAuthorizedUser(life) {
   if (!a) return fail(life, "You are not on a parent's card.");
   const next = copyLife(life);
   next.accounts = next.accounts.filter((x) => x.id !== a.id);
-  logAction(next, "removeAU", {});
+  logAction(next, "removeAuthorizedUser", []);
   return { life: next, ok: true, message: "You are off the parent's card. It no longer shows on your report." };
 }
 
@@ -310,7 +312,7 @@ export function openCreditBuilderLoan(life) {
     held: cfg.amount,
   });
   next.heldSavings = money(next.heldSavings + cfg.amount);
-  logAction(next, "openLoan", { type: a.type, amount: cfg.amount });
+  logAction(next, "openCreditBuilderLoan", []);
   return {
     life: next,
     ok: true,
@@ -340,7 +342,7 @@ export function openAutoLoan(life, { price, downPayment = 0, termMonths = 60, le
   const next = copyLife(life);
   addInquiry(next, "Auto loan");
   if (!q.approved) {
-    logAction(next, "autoDenied", { price });
+    logAction(next, "openAutoLoan", [{ price, downPayment, termMonths, lender }], { approved: false });
     return { life: next, ok: false, quote: q, message: "Denied. Your score is too low for this loan right now." };
   }
   next.checking = money(next.checking - downPayment);
@@ -355,7 +357,7 @@ export function openAutoLoan(life, { price, downPayment = 0, termMonths = 60, le
     termMonths,
     firstDueMonth: next.month + 1,
   });
-  logAction(next, "openLoan", { type: a.type, amount: q.amount, apr: q.apr });
+  logAction(next, "openAutoLoan", [{ price, downPayment, termMonths, lender }], { approved: true });
   return { life: next, ok: true, accountId: a.id, quote: q, message: `Approved at ${(q.apr * 100).toFixed(1)}% APR. Payment ${dollars(q.payment)} a month.` };
 }
 
@@ -375,7 +377,7 @@ export function openFederalStudentLoan(life, amount) {
     termMonths: cfg.termMonths,
     firstDueMonth: next.inSchool ? null : next.month + cfg.graceMonths,
   });
-  logAction(next, "openLoan", { type: a.type, amount });
+  logAction(next, "openFederalStudentLoan", [amount]);
   return { life: next, ok: true, accountId: a.id, message: `Student loan of ${dollars(amount)} received. Payments wait until after school.` };
 }
 
@@ -388,12 +390,14 @@ export function leaveSchool(life) {
       a.firstDueMonth = next.month + CONFIG.loans.federalStudent.graceMonths;
     }
   }
+  logAction(next, "leaveSchool", []);
   return { life: next, ok: true, message: "You finished school. Student loan payments start in 6 months." };
 }
 
 export function startSchool(life) {
   const next = copyLife(life);
   next.inSchool = true;
+  logAction(next, "startSchool", []);
   return { life: next, ok: true, message: "You started school." };
 }
 
@@ -415,7 +419,7 @@ export function cosign(life, { friend = "your friend", amount = 600, termMonths 
     friend,
     reliability,
   });
-  logAction(next, "cosign", { amount, friend });
+  logAction(next, "cosign", [{ friend, amount, termMonths, apr, reliability }]);
   return { life: next, ok: true, accountId: a.id, message: `You cosigned for ${friend}. If they miss a payment, it shows on your report.` };
 }
 
@@ -439,7 +443,7 @@ export function buyWithBnpl(life, amount, item = "purchase", merchant = "BNPL pl
   });
   next.checking = money(next.checking - parts[0]);
   next.accounts.push(a);
-  logAction(next, "bnpl", { amount, item });
+  logAction(next, "buyWithBnpl", [amount, item, merchant]);
   return {
     life: next,
     ok: true,

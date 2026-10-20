@@ -1,7 +1,7 @@
 // End Month: the bank and credit bureau steps from SPEC §10, in order.
 // Step 0 runs AutoPay on the due date, before the statement closes.
 import { CONFIG } from "../data/config.js";
-import { copyLife } from "./life.js";
+import { copyLife, logAction } from "./life.js";
 import { rngOn } from "./rng.js";
 import { money, dollars } from "./util.js";
 import { applyPayment, amountOwed, isOpen } from "./accounts.js";
@@ -18,6 +18,7 @@ export function endMonth(life) {
   const events = [];
   const emit = (step, type, message, extra = {}) => events.push({ step, type, month: M, message, ...extra });
   const prev = { score: next.score, factors: next.factors };
+  logAction(next, "endMonth", []);
 
   const own = (a) => a.owner === "self";
   const cards = next.accounts.filter((a) => a.kind === "revolving" && own(a) && isOpen(a));

@@ -5,62 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Credit Life</title>
   <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <main>
-    <section class="panel">
-      <h1>🐉 Credit Life</h1>
-      <p class="tagline">Raise a creature. Build its credit. Watch every choice add up.</p>
-
-      <div id="signed-out">
-        <button id="sign-in" type="button">Sign in with your school Google account</button>
-      </div>
-
-      <div id="signed-in" hidden>
-        <p>Hi, <strong id="user-name"></strong>! You are signed in.</p>
-        <p class="note">Your creature is waiting. The game opens soon.</p>
-        <button id="sign-out" class="secondary" type="button">Sign out</button>
-      </div>
-
-      <p id="error" class="error" role="alert"></p>
-    </section>
+  <header id="topbar" class="topbar" hidden>
+    <span class="brand">🐉 Credit Life</span>
+    <span id="who" class="who"></span>
+    <span class="topbar-actions">
+      <button id="save-quit" class="secondary small" type="button">Save and quit</button>
+      <button id="sign-out" class="link" type="button">Sign out</button>
+    </span>
+  </header>
+  <div id="nudge" class="nudge" role="status" hidden></div>
+  <main id="app" class="app">
+    <section class="panel center"><p>Loading...</p></section>
   </main>
-
-  <script type="module">
-    import { isConfigured } from "./js/firebase-config.js";
-
-    const $ = (id) => document.getElementById(id);
-    const signInBtn = $("sign-in");
-
-    if (!isConfigured) {
-      signInBtn.disabled = true;
-      $("error").textContent = "Sign-in is not set up yet. Check back soon.";
-    } else {
-      const { signIn, signOut, onUser } = await import("./js/auth.js");
-
-      onUser((user) => {
-        $("signed-out").hidden = Boolean(user);
-        $("signed-in").hidden = !user;
-        if (user) $("user-name").textContent = user.displayName || user.email;
-      });
-
-      signInBtn.addEventListener("click", async () => {
-        $("error").textContent = "";
-        signInBtn.disabled = true;
-        try {
-          await signIn();
-        } catch (err) {
-          if (err.code !== "auth/popup-closed-by-user") {
-            $("error").textContent = err.code ? "Sign-in did not work. Please try again." : err.message;
-            console.error(err);
-          }
-        } finally {
-          signInBtn.disabled = false;
-        }
-      });
-
-      $("sign-out").addEventListener("click", () => signOut());
-    }
-  </script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

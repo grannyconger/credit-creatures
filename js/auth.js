@@ -8,6 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 import {
   doc,
+  getDoc,
   setDoc,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
@@ -59,14 +60,16 @@ export function onUser(callback) {
   });
 }
 
+// The Google name goes in googleName. displayName is the student's own pick,
+// so it is set only the first time.
 async function saveProfile(user) {
-  await setDoc(
-    doc(db, "users", user.uid),
-    {
-      displayName: user.displayName || "",
-      email: user.email.toLowerCase(),
-      lastSignIn: serverTimestamp(),
-    },
-    { merge: true }
-  );
+  const ref = doc(db, "users", user.uid);
+  const existing = await getDoc(ref);
+  const fields = {
+    googleName: user.displayName || "",
+    email: user.email.toLowerCase(),
+    lastSignIn: serverTimestamp(),
+  };
+  if (!existing.exists() || !existing.data().displayName) fields.displayName = user.displayName || "";
+  await setDoc(ref, fields, { merge: true });
 }

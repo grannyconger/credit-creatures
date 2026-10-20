@@ -8,6 +8,8 @@ export const LIFE_VERSION = 1;
 export function createLife({ seed = 1, name = "", ageMonths = 18 * 12, inSchool = false } = {}) {
   return {
     version: LIFE_VERSION,
+    // How this life began. With the log, it rebuilds the whole life (replay.js).
+    start: { seed: String(seed), name, ageMonths, inSchool },
     seed: String(seed),
     rng: seedFrom(seed),
     name,
@@ -20,6 +22,7 @@ export function createLife({ seed = 1, name = "", ageMonths = 18 * 12, inSchool 
     incomeHistory: [],
     inSchool,
     leftSchoolMonth: null,
+    teenDebit: false,
     bills: [],
     accounts: [],
     inquiries: [],
@@ -55,8 +58,10 @@ function copyAccount(a) {
   return c;
 }
 
-export function logAction(life, action, details = {}) {
-  life.log.push({ month: life.month, action, ...details });
+// args are the exact arguments the action got after `life`, so replay.js can
+// call it again. details are extras for people reading the log.
+export function logAction(life, action, args, details = {}) {
+  life.log.push({ month: life.month, action, args, ...details });
 }
 
 export function monthlyIncome(life) {

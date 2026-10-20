@@ -58,3 +58,21 @@ Do these steps while signed in to the Google account that should own the project
 4. Sign out, then try a personal Gmail account. It should be turned away with
    "Please use your school Google account."
 5. Open https://www.coachw.club/credit-life/teacher/ and sign in. It should say you have teacher access.
+
+## 8. Publish the Phase 3 rules (once)
+
+The game now saves creatures, classes, telemetry and bug reports, so the rules need an update.
+
+1. Open https://console.firebase.google.com and click the **credit-life** project.
+2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
+3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
+4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button (two overlapping squares, top right of the file), and paste it into the editor.
+5. Click **Publish**. Wait for "Rules published."
+
+## 9. Make a class and test the game
+
+1. Open https://www.coachw.club/credit-life/teacher/ and sign in.
+2. Under **Your classes**, type a class name (for example `Period 2`) and click **Create class**. A 6-character join code appears in the table.
+3. Open https://www.coachw.club/credit-life/ in another tab and play through: name, creature, the join code, age 16, tutorial, time skip, Design Your Card.
+4. In Firebase, open **Firestore Database > Data**. You should see `saves`, `classes`, `classCodes` and `telemetry`. Click the 🐞 button in the game once to check that `feedback` appears too.
+5. Close the tab partway through, reopen the game, and check that it picks up where you stopped.

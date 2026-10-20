@@ -10,6 +10,18 @@ export const CONFIG = {
     sparkle: { perChapter: 10, total: 30 },
   },
 
+  // Age 16 to 18 (SPEC §6). The tutorial plays a few months, then a time skip runs the rest.
+  onboarding: {
+    startAgeMonths: 16 * 12,
+    cardAgeMonths: 18 * 12,
+    tutorialMonths: 2,
+    tutorialShift: { base: 20, perCorrect: 15 },
+    // Monthly part-time pay during the time skip, and the share of it spent.
+    teenIncome: [80, 160],
+    teenSpendShare: [0.45, 0.8],
+    teenSpending: ["snacks", "games", "clothes", "movie night", "phone case", "gas money"],
+  },
+
   // Monthly bills that start at age 18.
   bills: {
     phone: 45,

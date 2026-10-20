@@ -1,0 +1,202 @@
+// App shell: sign-in, loading the save, and a hash router over the screens.
+// Add ?local to a localhost URL to play with browser storage and no sign-in.
+import { isConfigured } from "./firebase-config.js";
+import { createGame, STEPS, EDITABLE } from "./game.js";
+import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge } from "./telemetry.js";
+import { mountBugButton } from "./ui/bug-button.js";
+import { creatureSvg } from "./ui/creature-art.js";
+import { h, clear, ageLabel } from "./ui/dom.js";
+import * as profile from "./ui/screens/profile.js";
+import * as creature from "./ui/screens/creature.js";
+import * as join from "./ui/screens/join.js";
+import * as teen from "./ui/screens/teen.js";
+import * as tutorial from "./ui/screens/tutorial.js";
+import * as skip from "./ui/screens/skip.js";
+import * as networks from "./ui/screens/networks.js";
+import * as design from "./ui/screens/design.js";
+import * as result from "./ui/screens/result.js";
+import * as done from "./ui/screens/done.js";
+import * as saved from "./ui/screens/saved.js";
+
+const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved };
+
+const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
+
+const root = document.getElementById("app");
+const topbar = document.getElementById("topbar");
+const who = document.getElementById("who");
+let game = null;
+let cleanup = null;
+
+captureErrors();
+
+const { auth, db } = await loadBackends();
+const bug = mountBugButton({
+  getContext: () => ({ uid: game?.user.uid || "", classId: game?.profile.classId, life: game?.life }),
+  send: (report) => db.sendFeedback(report),
+});
+bug.hide();
+
+if (!LOCAL && !isConfigured) {
+  signedOut("Sign-in is not set up yet. Check back soon.");
+} else {
+  auth.onUser(async (user) => {
+    if (!user) return signedOut();
+    root.replaceChildren(h("section.panel.center", h("p", "Loading your creature...")));
+    game = createGame(user, db);
+    try {
+      await game.load();
+    } catch (err) {
+      console.error(err);
+      return signedOut("We couldn't load your game. Please refresh the page.");
+    }
+    initTelemetry({
+      sink: (batch, rollup) => db.flushTelemetry(user.uid, batch, rollup),
+      context: () => ({ step: game.step, chapter: game.save.chapter, month: game.life?.month ?? -1 }),
+    });
+    track("sessionStart", { returning: game.returning, step: game.step, local: LOCAL });
+    onSessionNudge(showNudge);
+    topbar.hidden = false;
+    bug.show();
+    window.addEventListener("hashchange", route);
+    route();
+  });
+}
+
+async function loadBackends() {
+  if (LOCAL) {
+    const db = await import("./db-local.js");
+    const flag = "credit-life:signedIn";
+    let listener = null;
+    const auth = {
+      onUser(cb) {
+        listener = cb;
+        cb(localStorage.getItem(flag) ? db.LOCAL_USER : null);
+      },
+      async signIn() {
+        localStorage.setItem(flag, "1");
+        listener?.(db.LOCAL_USER);
+      },
+      async signOut() {
+        localStorage.removeItem(flag);
+        location.hash = "";
+        location.reload();
+      },
+    };
+    return { auth, db };
+  }
+  if (!isConfigured) return { auth: null, db: null };
+  const [auth, db] = await Promise.all([import("./auth.js"), import("./db.js")]);
+  return { auth, db };
+}
+
+function signedOut(error = "") {
+  game = null;
+  topbar.hidden = true;
+  bug.hide();
+  const err = h("p.error", { role: "alert" }, error);
+  const btn = h("button", { type: "button", disabled: !auth }, "Sign in with your school Google account");
+  btn.addEventListener("click", async () => {
+    err.textContent = "";
+    btn.disabled = true;
+    try {
+      await auth.signIn();
+    } catch (e) {
+      if (e.code !== "auth/popup-closed-by-user") {
+        err.textContent = e.code ? "Sign-in did not work. Please try again." : e.message;
+        console.error(e);
+      }
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  root.replaceChildren(
+    h(
+      "section.panel.signin",
+      h("div.signin-art", { html: creatureSvg({ species: "lanternFox", palette: "royal", accessories: { head: "crown" } }, { size: 160, label: "A lantern fox in a crown" }) }),
+      h("h1", "Credit Life"),
+      h("p.tagline", "Raise a creature. Build its credit. Watch every choice add up."),
+      btn,
+      LOCAL ? h("p.note", "Local test mode. Your game saves in this browser only.") : null,
+      err
+    )
+  );
+}
+
+// Students can't skip ahead. Earlier steps open only if they are editable.
+function route() {
+  if (!game) return;
+  const want = location.hash.replace(/^#\/?/, "");
+  const current = STEPS.indexOf(game.step);
+  let target = want;
+  if (want === "saved") target = "saved";
+  else if (!STEPS.includes(want)) target = game.step;
+  else if (want !== game.step && !(EDITABLE.has(want) && STEPS.indexOf(want) < current)) target = game.step;
+  if (target === "result" && !game.ob.lastResult) target = "design";
+  if (target !== want) {
+    history.replaceState(null, "", `#/${target}`);
+  }
+  show(target);
+}
+
+function show(name) {
+  if (cleanup) cleanup();
+  cleanup = null;
+  clear(root);
+  screenView(name);
+  updateWho();
+  const editing = name !== game.step && EDITABLE.has(name);
+  const ctx = {
+    game,
+    editing,
+    track,
+    go: (step) => (location.hash = `#/${step}`),
+    back: () => (location.hash = `#/${game.step}`),
+    // Moves the student to the next step and saves.
+    advance: async (step) => {
+      game.save.onboarding.step = step;
+      await game.persist(`step:${step}`);
+      location.hash = `#/${step}`;
+    },
+    refreshWho: updateWho,
+    saveAndQuit,
+  };
+  cleanup = SCREENS[name].render(root, ctx) || null;
+  window.scrollTo(0, 0);
+}
+
+function updateWho() {
+  if (!game) return;
+  const c = game.save.creature;
+  clear(who);
+  if (!c) return;
+  who.append(
+    h("span.who-art", { html: creatureSvg(c, { size: 40 }) }),
+    h("span.who-text", h("strong", c.name || "Your creature"), h("small", game.life ? ageLabel(game.life.ageMonths) : "Not hatched yet"))
+  );
+}
+
+async function saveAndQuit() {
+  track("saveAndQuit", { step: game.step });
+  await game.persist("quit");
+  location.hash = "#/saved";
+}
+
+function showNudge() {
+  const bar = document.getElementById("nudge");
+  bar.replaceChildren(
+    h("span", "⏳ You've played for a while. This is a good time to save."),
+    h("button", { type: "button", onclick: () => ((bar.hidden = true), saveAndQuit()) }, "Save and quit"),
+    h("button.secondary", { type: "button", onclick: () => ((bar.hidden = true), track("nudgeDismissed")) }, "Keep playing")
+  );
+  bar.hidden = false;
+}
+
+document.getElementById("save-quit").addEventListener("click", saveAndQuit);
+document.getElementById("sign-out").addEventListener("click", async () => {
+  if (game) await game.persist("signOut");
+  auth.signOut();
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden" && game) flush("hidden");
+});

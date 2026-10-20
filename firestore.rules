@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Starter rules (Phase 1). Hardened in Phase 7.
+// Phase 3 rules. Teacher reads of student data and full hardening come in Phase 7.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -18,12 +18,90 @@ service cloud.firestore {
         ];
     }
 
+    function myEmail() {
+      return request.auth.token.email.lower();
+    }
+
+    function isMe(uid) {
+      return isSchool() && request.auth.uid == uid;
+    }
+
+    function shortString(field, max) {
+      return !(field in request.resource.data)
+        || (request.resource.data[field] is string && request.resource.data[field].size() <= max);
+    }
+
+    // Profile: name, email and the class the student joined.
     match /users/{uid} {
-      allow read: if isSchool() && request.auth.uid == uid;
-      allow write: if isSchool()
-        && request.auth.uid == uid
-        && request.resource.data.email == request.auth.token.email.lower()
-        && request.resource.data.keys().hasOnly(['displayName', 'email', 'lastSignIn']);
+      allow read: if isMe(uid);
+      allow create, update: if isMe(uid)
+        && request.resource.data.email == myEmail()
+        && request.resource.data.keys().hasOnly(['displayName', 'googleName', 'email', 'lastSignIn', 'classId', 'joinedClassAt'])
+        && shortString('displayName', 30)
+        && shortString('googleName', 100)
+        && (!('classId' in request.resource.data)
+          || (resource != null && request.resource.data.classId == resource.data.get('classId', null))
+          || exists(/databases/$(database)/documents/classes/$(request.resource.data.classId)));
+    }
+
+    // One save per student. The life is a JSON string.
+    match /saves/{uid} {
+      allow read: if isMe(uid);
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['creature', 'onboarding', 'chapter', 'lifeJson',
+          'classId', 'creatureName', 'step', 'score', 'month', 'ageMonths', 'engineVersion', 'updatedAt'])
+        && request.resource.data.lifeJson is string
+        && request.resource.data.lifeJson.size() < 900000
+        && shortString('creatureName', 20);
+    }
+
+    // Classes are created by teachers. Any school user can look one up by id.
+    match /classes/{classId} {
+      allow get: if isSchool();
+      allow list: if isTeacher() && resource.data.teacherEmail == myEmail();
+      allow create: if isTeacher()
+        && request.resource.data.teacherEmail == myEmail()
+        && request.resource.data.keys().hasOnly(['name', 'teacherEmail', 'code', 'releasedChapter', 'createdAt'])
+        && request.resource.data.releasedChapter == 1
+        && shortString('name', 40);
+      allow update: if isTeacher()
+        && resource.data.teacherEmail == myEmail()
+        && request.resource.data.teacherEmail == resource.data.teacherEmail
+        && request.resource.data.code == resource.data.code;
+    }
+
+    // Join codes. A code can be read only by typing it exactly (no listing).
+    // Create fails if the code is already taken, so codes never collide.
+    match /classCodes/{code} {
+      allow get: if isSchool();
+      allow create: if isTeacher()
+        && code.matches('^[A-Z0-9]{6}$')
+        && request.resource.data.keys().hasOnly(['classId', 'name', 'teacherEmail'])
+        && request.resource.data.teacherEmail == myEmail()
+        && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.teacherEmail == myEmail()
+        && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.code == code;
+    }
+
+    // Play telemetry (docs/FEEDBACK.md). Students write their own and never read.
+    match /telemetry/{uid} {
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['flushes', 'sessions', 'secondsPlayed', 'errors', 'lastScreen', 'updatedAt']);
+      match /events/{id} {
+        allow create: if isMe(uid)
+          && request.resource.data.events is list
+          && request.resource.data.events.size() <= 200;
+      }
+    }
+
+    // Bug reports from the 🐞 button. Create only.
+    match /feedback/{id} {
+      allow create: if isSchool()
+        && request.resource.data.uid == request.auth.uid
+        && shortString('note', 500)
+        && request.resource.data.keys().hasOnly(['uid', 'classId', 'screen', 'note', 'seed', 'month', 'engineVersion',
+          'sessionId', 'actionsJson', 'eventsJson', 'userAgent', 'createdAt'])
+        && request.resource.data.actionsJson.size() < 50000
+        && request.resource.data.eventsJson.size() < 50000;
     }
 
     // Everything else is denied by default.

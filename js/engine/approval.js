@@ -128,7 +128,7 @@ export function applyForCard(life, app) {
   if (approved) {
     accountId = openCard(next, quote).id;
   }
-  logAction(next, "apply", { product: quote.name, approved, limit: quote.limit });
+  logAction(next, "applyForCard", [{ ...app }], { approved });
   const terms = { limit: quote.limit, apr: quote.apr, annualFee: quote.annualFee };
   const headline = approved
     ? `Approved! ${quote.name}: ${dollars(quote.limit)} limit, ${(quote.apr * 100).toFixed(1)}% APR, ${dollars(quote.annualFee)} annual fee.`

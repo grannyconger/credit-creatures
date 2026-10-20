@@ -30,3 +30,5 @@ export { buildReport, creditReport, paymentGrid } from "./report.js";
 export { computeScore, explainChange, FACTOR_LABELS } from "./score.js";
 export { minPayment, monthlyInterest, amortizedPayment, payoffPlan, minimumOnlyPlan } from "./payoff.js";
 export { createRng, seedFrom } from "./rng.js";
+export { getTeenDebitCard, tutorialShiftPay, timeSkip } from "./onboarding.js";
+export { replayLife } from "./replay.js";
