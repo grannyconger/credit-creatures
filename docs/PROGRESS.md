@@ -7,7 +7,7 @@ Last updated: 2026-10-20 (Phase 4)
 ## Status
 
 - **Phases 1 to 5: done, approved.** Phase 5 was approved 2026-10-20 ("Build it").
-- **Phase 6: done, awaiting approval.** 111 tests pass. The job board with all 3 minigames (including the signature pad, both drawn and typed), the shop, achievements, ranks and the leaderboard were clicked through in headless Chrome in `?local` mode.
+- **Phase 6: done, awaiting approval.** 112 tests pass. The job board with all 3 minigames (including the signature pad, both drawn and typed), the shop, achievements, ranks and the leaderboard were clicked through in headless Chrome in `?local` mode.
 - **Teacher action needed:** publish the Phase 6 `firestore.rules` (`docs/setup-firebase.md` section 12, adds `leaderboards/{classId}/players/{uid}`). The leaderboard toggle is on `/teacher/` (section 13).
 - **Waiting on the teacher:** OK to download the Dancing Script font (OFL) into `fonts/` for "Type my signature". Until then it uses the computer's built-in script fonts.
 - **Next step:** get Phase 6 approval, then plan and build Phase 7 (teacher dashboard).
@@ -57,7 +57,7 @@ Last updated: 2026-10-20 (Phase 4)
   - **Signature pad** (`js/ui/signature-pad.js`): a full-screen `<dialog>` with a canvas (pointer events, so touch, pen and mouse all work, `touch-action: none`), or "Type my signature" in script. The drawing is shown on the check only and is never saved or sent.
   - **Shop** (`js/data/shop.js`): 20 items (accessories and backgrounds). Stock is 5 regular items, 1 limited item and 1 big item ($300 to $600), the same for a given seed and chapter. Checkout goes through the "Pay with" picker, with BNPL from $50. Owned items go in `play.owned` and appear in the creature editor and on the hub. Needs (shoes, textbooks) stay as life cards.
   - **Achievements:** 51 in 9 categories (`js/data/achievements.js`), 6 hidden. `evaluate()` runs on every save once the student is in the hub, gives XP, adds an inbox note and shows a toast.
-  - **XP:** achievements, +5 for each right answer, +5 for each shift, +25 for each reflection. It never goes down. 7 kingdom ranks, from Apprentice (0) to Grand Vizier (2,400). Records: highest score, longest on-time streak, best XP chapter.
+  - **XP:** achievements, +5 for each right answer, +5 for each shift, +25 for each reflection. It never goes down. **XP cap (teacher-approved 2026-10-20):** no lifetime cap, but XP from right answers stops at 100 per chapter (`CONFIG.pacing.xp.answersPerChapter`), so replaying the Practice Desk can't flood the leaderboard. Accuracy still counts after the cap. Expected totals over about 10 chapters: strong student about 3,500, typical about 1,500 to 2,200, so Grand Vizier (2,400) is a strong student's goal around Chapter 8. 7 kingdom ranks, from Apprentice (0) to Grand Vizier (2,400). Records: highest score, longest on-time streak, best XP chapter.
   - **Leaderboard:** `leaderboards/{classId}/players/{uid}` holds creature name, display name, XP, rank, species and palette, written when XP changes. Rules let only classmates and the class's teacher read it, and XP can't go down. The teacher toggle sets `classes/{id}.leaderboard`.
 - **Phase 5 defaults** (announced 2026-10-20):
   - Account Management is one screen (`#/accounts`) with tabs: Wallet, Statements, My Score, My Report, Practice Desk and Inbox. It opens from the hub and the month screen and goes back to the same place. Time is paused there.

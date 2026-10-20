@@ -12,6 +12,9 @@ export const CONFIG = {
     payPerShift: [40, 120],
     sessionMinutes: 15,
     sparkle: { perChapter: 10, total: 30 },
+    // XP (SPEC §16). It never goes down, and there's no lifetime cap. Only right
+    // answers repeat without limit, so their XP is capped per chapter.
+    xp: { rightAnswer: 5, shift: 5, reflection: 25, answersPerChapter: 100 },
   },
 
   // The month loop after Chapter 1 (SPEC §8).

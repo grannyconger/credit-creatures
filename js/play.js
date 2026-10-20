@@ -30,6 +30,7 @@ export function ensurePlay(play) {
   // Phase 6: XP, achievements, minigame jobs, shop and records.
   play.xp ??= 0;
   play.xpByChapter ??= {};
+  play.answerXp ??= {};
   play.achievements ??= {};
   play.stats ??= { shifts: 0, paidInFull: 0, payoffSprints: 0, hadDebt: false };
   play.jobs ??= {};
@@ -282,7 +283,14 @@ export function sparkleLeft(play) {
   return Math.max(0, Math.min(cap.total - play.sparkle.total, cap.perChapter - (play.sparkle.byChapter[String(play.chapter)] || 0)));
 }
 
+// XP still available from right answers this chapter (capped, so replaying the
+// Practice Desk can't flood the leaderboard).
+export function answerXpLeft(play) {
+  return Math.max(0, XP.answersPerChapter - (play.answerXp[String(play.chapter)] || 0));
+}
+
 // Practice Desk and Factor Check accuracy, by standard and by question type.
+// Accuracy always counts. Returns the Sparkle Points and XP it gave.
 export function recordAnswer(play, { type, standard, correct }) {
   const bump = (map, key) => {
     const k = String(key);
@@ -292,8 +300,14 @@ export function recordAnswer(play, { type, standard, correct }) {
   };
   bump(play.desk.byStandard, standard);
   bump(play.desk.byType, type);
-  if (correct) addXp(play, XP.rightAnswer);
-  return correct ? awardSparkle(play) : 0;
+  if (!correct) return { sparkle: 0, xp: 0 };
+  const xp = Math.min(XP.rightAnswer, answerXpLeft(play));
+  if (xp) {
+    const ch = String(play.chapter);
+    play.answerXp[ch] = (play.answerXp[ch] || 0) + xp;
+    addXp(play, xp);
+  }
+  return { sparkle: awardSparkle(play), xp };
 }
 
 // ---------- Notifications inbox (SPEC §14) ----------

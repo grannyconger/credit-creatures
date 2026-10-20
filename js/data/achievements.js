@@ -3,6 +3,8 @@
 // Hidden achievements show as ??? until earned.
 // Plain language for a 15-year-old. No em-dashes, no semicolons.
 
+import { CONFIG } from "./config.js";
+
 export const CATEGORIES = {
   payment: "Payment habits",
   owed: "Utilization",
@@ -90,12 +92,8 @@ export const ACHIEVEMENTS = [
 
 export const ACHIEVEMENT_BY_ID = Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, a]));
 
-// XP for things that aren't achievements. XP never goes down.
-export const XP = {
-  rightAnswer: 5,
-  shift: 5,
-  reflection: 25,
-};
+// XP for things that aren't achievements, tuned in js/data/config.js.
+export const XP = CONFIG.pacing.xp;
 
 // Kingdom ranks by XP (SPEC §16).
 export const RANKS = [

@@ -42,7 +42,8 @@ function startView(play, { track, repaint, run }) {
     "div.desk",
     h("h2", "🧮 Practice Desk"),
     h("p", `${DESK_QUESTIONS} quick questions with new numbers every time. Real math is fine. Grab a calculator if you want one.`),
-    h("p.sparkle-line", run.practice ? "✨ Practice mode: Sparkle Points aren't saved." : left ? `✨ Each right answer earns 1 Sparkle Point. ${left} left this chapter.` : "✨ You've earned all the Sparkle Points you can for now. Practice still counts for your teacher."),
+    run.practice ? null : h("p.sparkle-line", P.answerXpLeft(play) ? `⭐ ${P.answerXpLeft(play)} XP from right answers left this chapter.` : "⭐ You've earned all the answer XP for this chapter. Practice still counts for your teacher."),
+    h("p.sparkle-line", run.practice ? "✨ Practice mode: Sparkle Points and XP aren't saved." : left ? `✨ Each right answer earns 1 Sparkle Point. ${left} left this chapter.` : "✨ You've earned all the Sparkle Points you can for now. Practice still counts for your teacher."),
     h(
       "div.row",
       h(
@@ -87,8 +88,8 @@ function questionView(play, { track, save, repaint }) {
               const ok = i === q.answer;
               if (ok) session.right++;
               const got = P.recordAnswer(play, { type: q.type, standard: meta.standard, correct: ok });
-              session.sparkle += got;
-              track("question", { type: q.type, standard: meta.standard, correct: ok, seconds: Math.round((Date.now() - session.shownAt) / 1000), sparkle: got });
+              session.sparkle += got.sparkle;
+              track("question", { type: q.type, standard: meta.standard, correct: ok, seconds: Math.round((Date.now() - session.shownAt) / 1000), sparkle: got.sparkle, xp: got.xp });
               repaint();
               await save("desk");
             },

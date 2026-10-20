@@ -64,15 +64,15 @@ test("Sparkle Points stop at 10 per chapter and 30 total", () => {
   const play = P.newPlay();
   const cap = CONFIG.pacing.sparkle;
   let got = 0;
-  for (let i = 0; i < 25; i++) got += P.recordAnswer(play, { type: "utilization", standard: 3, correct: true });
+  for (let i = 0; i < 25; i++) got += P.recordAnswer(play, { type: "utilization", standard: 3, correct: true }).sparkle;
   assert.equal(got, cap.perChapter);
   assert.equal(P.sparkleLeft(play), 0);
   for (let ch = 3; ch <= 8; ch++) {
     play.chapter = ch;
-    for (let i = 0; i < 12; i++) got += P.recordAnswer(play, { type: "tipMath", standard: 2, correct: true });
+    for (let i = 0; i < 12; i++) got += P.recordAnswer(play, { type: "tipMath", standard: 2, correct: true }).sparkle;
   }
   assert.equal(got, cap.total);
-  assert.equal(P.recordAnswer(play, { type: "tipMath", standard: 2, correct: false }), 0);
+  assert.deepEqual(P.recordAnswer(play, { type: "tipMath", standard: 2, correct: false }), { sparkle: 0, xp: 0 });
   assert.equal(play.desk.byStandard["2"].total, 73);
   assert.equal(play.desk.byType.utilization.right, 25);
 });
@@ -111,4 +111,17 @@ test("old saves get the new play fields", () => {
   assert.deepEqual(p.inbox, []);
   assert.equal(p.theme, "royal");
   assert.equal(p.sparkle.total, 0);
+});
+
+test("XP from right answers stops at the chapter cap, but accuracy keeps counting", () => {
+  const play = P.newPlay();
+  const cap = CONFIG.pacing.xp.answersPerChapter;
+  for (let i = 0; i < 40; i++) P.recordAnswer(play, { type: "utilization", standard: 3, correct: true });
+  assert.equal(play.xp, cap);
+  assert.equal(P.answerXpLeft(play), 0);
+  assert.equal(play.desk.byType.utilization.right, 40);
+  assert.equal(P.recordAnswer(play, { type: "utilization", standard: 3, correct: true }).xp, 0);
+  play.chapter = 3;
+  assert.equal(P.answerXpLeft(play), cap);
+  assert.equal(P.recordAnswer(play, { type: "utilization", standard: 3, correct: true }).xp, CONFIG.pacing.xp.rightAnswer);
 });
