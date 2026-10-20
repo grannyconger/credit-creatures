@@ -5,7 +5,7 @@ One class plays Credit Life for real. The game collects play data on its own, an
 ## Before day 1
 
 1. **Rules are published** in Firebase. Publish `firestore.rules` once with the newest version (`docs/setup-firebase.md` sections 8 to 16 all use the same steps). One publish covers every phase.
-2. **Your class exists** on `/credit-life/teacher/`, and you have its 6-character join code.
+2. **Your class exists** on `/credit-creatures/teacher/`, and you have its 6-character join code.
 3. **Settings** on the dashboard:
    - Chapters open: 1. Release Chapter 2 when the class has finished Chapter 1.
    - Months per chapter: 3 (about 10 to 15 minutes a chapter).

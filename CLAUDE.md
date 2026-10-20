@@ -13,7 +13,7 @@ A classroom game where students raise a fantasy creature through its credit life
 
 - Build one phase at a time. Stop at the end of each phase and wait for approval. Commit and push at the end of every phase.
 - No framework, no build step. Plain HTML, CSS and JavaScript ES modules served as-is by GitHub Pages. Firebase SDK comes from the gstatic CDN (pinned 12.19.0). Never `npm install` runtime dependencies.
-- Relative paths only. Everything must work under the `/credit-life/` subpath.
+- Relative paths only. Everything must work under the `/credit-creatures/` subpath.
 - The engine (`js/engine/`) is pure JS: no DOM, no `window`, no Firebase. Deterministic given a seed. Tested in Node.
 - Engine actions return `{ life, ok, message }` and never change their input. Entries in append-only lists (log, history, statements, inquiries) are shared between copies, so never edit one after it is pushed. UI code imports only from `js/engine/index.js`.
 - All tunable numbers live in `js/data/config.js`. Scenarios and products live in data files, never in engine code.
@@ -56,4 +56,4 @@ Open http://localhost:8000/?local to play with no sign-in. It saves to localStor
 
 ## Deploy
 
-Push to `main` on `grannyconger/credit-life` (gh CLI is logged in as grannyconger). GitHub Pages serves it at https://www.coachw.club/credit-life/ within a minute or two. Firebase project: `credit-life-38e4a`. Setup steps: `docs/setup-firebase.md`.
+Push to `main` on `grannyconger/credit-creatures` (gh CLI is logged in as grannyconger). GitHub Pages serves it at https://www.coachw.club/credit-creatures/ within a minute or two. Firebase project: `credit-life-38e4a`. Setup steps: `docs/setup-firebase.md`.

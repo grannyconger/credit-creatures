@@ -71,7 +71,7 @@ export function render(root, { game, go, track, refreshWho }) {
   };
 
   const who = (uid) => data.directory.find((d) => d.uid === uid);
-  const avatar = (d, size = 44) => h("span.fr-avatar", { html: d ? creatureSvg({ species: d.species, palette: d.palette, accessories: {} }, { size, label: "" }) : "" });
+  const avatar = (d, size = 48) => h("span.fr-avatar", { html: d ? creatureSvg(d.look || { species: d.species, palette: d.palette, accessories: {} }, { size, label: "" }) : "" });
   const person = (uid, name, extra) => {
     const d = who(uid);
     return h("div.fr-person", avatar(d), h("span.fr-name", h("strong", d?.creatureName || name || "Classmate"), h("small", d ? `${d.displayName} · ${d.rank} · ${d.xp} XP` : "")), h("span.fr-actions", extra));

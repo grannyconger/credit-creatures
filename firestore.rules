@@ -106,7 +106,7 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.code == code;
     }
 
-    // Class leaderboard (SPEC §16): creature name, display name and XP only.
+    // Class leaderboard (SPEC §16): creature name and look, display name and XP only.
     // Classmates and the class's teacher can read it. Each student writes only
     // their own entry, and XP can never go down.
     match /leaderboards/{classId}/players/{uid} {
@@ -120,7 +120,8 @@ service cloud.firestore {
       // Resetting a student also clears their leaderboard entry.
       allow delete: if ownsClass();
       allow create, update: if isMe(uid) && inClass()
-        && request.resource.data.keys().hasOnly(['creatureName', 'displayName', 'xp', 'rank', 'species', 'palette', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['creatureName', 'displayName', 'xp', 'rank', 'species', 'palette', 'look', 'updatedAt'])
+        && (!('look' in request.resource.data) || (request.resource.data.look is map && request.resource.data.look.size() <= 12))
         && request.resource.data.xp is int
         && request.resource.data.xp >= 0
         && request.resource.data.xp <= 100000

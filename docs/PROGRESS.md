@@ -7,12 +7,14 @@ Last updated: 2026-10-20 (Phase 4)
 ## Status
 
 - **Phases 1 to 8: done, approved.** Phase 8 was approved 2026-10-20 ("keep going").
-- **Phase 9 (pilot): code done, waiting for pilot data.** 133 tests pass.
+- **Phase 9 (pilot): code done, waiting for pilot data.** 138 tests pass.
   - 11 more decision cards (37 in total, the full SPEC §13 catalog).
   - `addCollection` and delayed bills in the engine.
   - Anonymous tuning export, `npm run tuning-report`, `npm run replay`, and the `pilot-data/` folder (gitignored).
   - `docs/PILOT.md` is the teacher's run-book.
-- **Teacher action needed:** publish the newest `firestore.rules` (it covers Phases 7 and 8), then follow `docs/PILOT.md`.
+- **Teacher action needed:** publish the newest `firestore.rules` (it covers Phases 7 and 8 and creature looks on the leaderboard), then follow `docs/PILOT.md`.
+- **Renamed 2026-10-20:** the repo is `grannyconger/credit-creatures` and the site is https://www.coachw.club/credit-creatures/. The Firebase project id stays `credit-life-38e4a`, because Firebase ids can't change. Browser test-storage keys keep the `credit-life:` prefix.
+- **Visual quality:** the teacher wants to plan improvements later. Options are in `docs/VISUAL-PLAN.md`. Don't start any of them without a plan they approve.
 - **Next step:** when the teacher says pilot data is in `pilot-data/`, run `npm run tuning-report` on it, test any engine changes with `npm run replay`, make the config changes, run the tests and push. Also replay any 🐞 bug report the teacher downloads.
 
 ## Open decisions (ask once, then use the default)
@@ -62,6 +64,14 @@ Last updated: 2026-10-20 (Phase 4)
 - **Telemetry:** `telemetry/{uid}/events/{autoId}` (one doc per flush, not per month as FEEDBACK.md first said, because flushes happen at every save and create-only rules forbid overwriting) plus the `telemetry/{uid}` rollup (merge with increments).
 - **Display name:** Google's name goes in `googleName`. `displayName` is the student's own choice and sign-in no longer overwrites it.
 - **First scores are moderate** (teacher request, 2026-10-20). Three tunables in `CONFIG.score`: `historyDepth` (payment history starts at 70% of full value and reaches 100% after 36 months on one account, and a parent's card counts at half its months), `authorizedAgeCapMonths: 12` (a parent's card counts as at most 1 year old for length), and a stricter length curve (`oldestFullMonths 96`, `averageFullMonths 60`, `lengthCurvePower 0.8`). Score at 18 with a parent's card: responsible about 735, average about 697, maxed about 513 (no parent: no score). Careful own card: about 695 at 6 months, 716 at 12, 749 at 24, 792 at 48.
+- **Customization expansion** (2026-10-20, teacher request):
+  - Two new body types: cloud bunny (100 XP) and shell turtle (300 XP).
+  - New layers: body pattern (clipped to the body via `area`), eye color, feet (via `feet` anchors), magic effects (a glow behind and/or sparkles in front), and 4 new palettes (2 earned with XP).
+  - About 17 new items for head, neck, face and paw.
+  - Every option and how it unlocks is in `js/data/looks.js` (`LOOK_OPTIONS`): free, `{ xp }`, `{ achievement }` or `{ shop: price }`. There are 112 looks in total.
+  - The editor shows unlocked choices plus a "🔒 N more to unlock" toggle listing what each locked look needs.
+  - `newlyUnlocked()` adds an "New look unlocked!" pop-up on save. The first run on an old save doesn't flood it.
+  - **Leaderboard look:** `syncLeaderboard` writes `look: publicLook(creature)` and rewrites when XP or the look changes. The rules allow a `look` map of up to 12 keys. Leaderboard and Friends draw it.
 - **Phase 9 changes** (2026-10-20):
   - **11 new cards:** car lease, a rewards card, a balance transfer, deferred interest, an annual fee, a payday rollover, a title loan, a settlement ad, a medical final notice, an error on your report, and an apartment landlord check.
   - **`addCollection(name, amount)`** puts an ignored bill on the report as a collection. Students can pay it from the bills panel or Wallet, which turns it into a paid collection.
@@ -142,6 +152,8 @@ Last updated: 2026-10-20 (Phase 4)
 | `js/data/scenarios.js` / `life-events.js` / `chapters.js` | 37 Decision cards (34 one-time, 3 everyday) / 14 life cards / chapter titles, intros and reflection questions |
 | `scripts/tuning-report.js`, `scripts/replay.js` (+ `-lib.js`) | Pilot tuning: suggestions from the export / re-run real games with new settings |
 | `docs/PILOT.md` | Teacher's pilot run-book |
+| `js/data/looks.js` | Every customization option, its unlock rule, `publicLook`, `newlyUnlocked` |
+| `docs/VISUAL-PLAN.md` | Visual quality options to plan with the teacher later |
 | `js/social.js`, `js/ui/screens/friends.js`, `js/data/social.js` | Friend, group and gift logic / Friends screen / preset group names and gift messages |
 | `js/teacher/dashboard.js` / `analyze.js` | Teacher dashboard UI / roster rows, flags, log check, CSV, tuning math |
 | `js/ui/celebrate.js` | Full-screen unlock pop-ups |
@@ -191,7 +203,7 @@ Last updated: 2026-10-20 (Phase 4)
 ## End-of-phase checklist
 
 1. `npm test` is green, and `npm run sim` still meets the §24 targets if engine numbers changed.
-2. Check the live site after pushing (the files load under `/credit-life/`).
+2. Check the live site after pushing (the files load under `/credit-creatures/`).
 3. If `firestore.rules` changed, give the teacher click-by-click console steps.
 4. Every new screen, choice, minigame and question logs telemetry as listed in `docs/FEEDBACK.md`.
 5. Update this file (status, decisions, code map, next step) and the status column in `CLAUDE.md`.

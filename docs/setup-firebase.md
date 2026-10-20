@@ -46,18 +46,18 @@ Do these steps while signed in to the Google account that should own the project
 
 ## 6. Check GitHub Pages
 
-1. Go to https://github.com/grannyconger/credit-life/settings/pages
+1. Go to https://github.com/grannyconger/credit-creatures/settings/pages
 2. **Source** should say **Deploy from a branch**, branch `main`, folder `/ (root)`.
-3. After a minute or two the page shows **Your site is live at https://www.coachw.club/credit-life/**.
+3. After a minute or two the page shows **Your site is live at https://www.coachw.club/credit-creatures/**.
 
 ## 7. Test it
 
-1. Open https://www.coachw.club/credit-life/
+1. Open https://www.coachw.club/credit-creatures/
 2. Sign in with your school account. You should see "Hi, (your name)!"
 3. In Firebase, open **Firestore Database > Data**. A `users` collection with your document should appear.
 4. Sign out, then try a personal Gmail account. It should be turned away with
    "Please use your school Google account."
-5. Open https://www.coachw.club/credit-life/teacher/ and sign in. It should say you have teacher access.
+5. Open https://www.coachw.club/credit-creatures/teacher/ and sign in. It should say you have teacher access.
 
 ## 8. Publish the Phase 3 rules (once)
 
@@ -66,14 +66,14 @@ The game now saves creatures, classes, telemetry and bug reports, so the rules n
 1. Open https://console.firebase.google.com and click the **credit-life** project.
 2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
 3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
-4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button (two overlapping squares, top right of the file), and paste it into the editor.
+4. Open https://github.com/grannyconger/credit-creatures/blob/main/firestore.rules, click the **Copy raw file** button (two overlapping squares, top right of the file), and paste it into the editor.
 5. Click **Publish**. Wait for "Rules published."
 
 ## 9. Make a class and test the game
 
-1. Open https://www.coachw.club/credit-life/teacher/ and sign in.
+1. Open https://www.coachw.club/credit-creatures/teacher/ and sign in.
 2. Under **Your classes**, type a class name (for example `Period 2`) and click **Create class**. A 6-character join code appears in the table.
-3. Open https://www.coachw.club/credit-life/ in another tab and play through: name, creature, the join code, age 16, tutorial, time skip, Design Your Card.
+3. Open https://www.coachw.club/credit-creatures/ in another tab and play through: name, creature, the join code, age 16, tutorial, time skip, Design Your Card.
 4. In Firebase, open **Firestore Database > Data**. You should see `saves`, `classes`, `classCodes` and `telemetry`. Click the 🐞 button in the game once to check that `feedback` appears too.
 5. Close the tab partway through, reopen the game, and check that it picks up where you stopped.
 
@@ -84,14 +84,14 @@ Phase 4 saves chapter progress and reflections in each student's save, so the ru
 1. Open https://console.firebase.google.com and click the **credit-life** project.
 2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
 3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
-4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
+4. Open https://github.com/grannyconger/credit-creatures/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
 5. Click **Publish**. Wait for "Rules published."
 
 Until you publish, students who reach the hub will see "We couldn't save just now."
 
 ## 11. Release a chapter
 
-1. Open https://www.coachw.club/credit-life/teacher/ and sign in.
+1. Open https://www.coachw.club/credit-creatures/teacher/ and sign in.
 2. In the class table, click **Release Chapter 2** for the class. Confirm the pop-up.
 3. Students on the hub click **Check again** (or reload) and **Start Chapter 2** appears.
 4. Each chapter is 3 game months. Release the next one when the class is ready. Students can't play past the newest released chapter, but they can replay finished chapters in practice mode, which never changes their real game.
@@ -103,14 +103,14 @@ Phase 6 adds the class leaderboard, so the rules need one more update. Same step
 1. Open https://console.firebase.google.com and click the **credit-life** project.
 2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
 3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
-4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
+4. Open https://github.com/grannyconger/credit-creatures/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
 5. Click **Publish**. Wait for "Rules published."
 
 Until you publish, the game still saves. Only the leaderboard stays empty.
 
 ## 13. Turn the leaderboard on or off
 
-On `/credit-life/teacher/`, the **Leaderboard** column shows **On (turn off)** or **Off (turn on)** for each class. It starts on. It ranks students by XP and shows only creature names, display names and XP.
+On `/credit-creatures/teacher/`, the **Leaderboard** column shows **On (turn off)** or **Off (turn on)** for each class. It starts on. It ranks students by XP and shows only creature names, display names and XP.
 
 ## 14. Publish the Phase 7 rules (once)
 
@@ -119,10 +119,10 @@ Phase 7 lets you (and only you) read your own students' saves, play data and bug
 1. Open https://console.firebase.google.com and click the **credit-life** project.
 2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
 3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
-4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
+4. Open https://github.com/grannyconger/credit-creatures/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
 5. Click **Publish**. Wait for "Rules published."
 
-Then open `/credit-life/teacher/`. Each student shows up on the roster after their next save (any button press that saves, like End Month), because that save adds your email to it.
+Then open `/credit-creatures/teacher/`. Each student shows up on the roster after their next save (any button press that saves, like End Month), because that save adds your email to it.
 
 ## 15. Using the dashboard
 
@@ -140,7 +140,7 @@ Phase 8 adds friends, friend groups and gifts. Same steps as before:
 1. Open https://console.firebase.google.com and click the **credit-life** project.
 2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
 3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
-4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
+4. Open https://github.com/grannyconger/credit-creatures/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
 5. Click **Publish**. Wait for "Rules published."
 
 What the rules enforce, so students can't get around them:
@@ -149,3 +149,14 @@ What the rules enforce, so students can't get around them:
 - One gift per student every 40 hours, timed by Google's servers, so changing the computer clock doesn't help.
 - Groups hold up to 6 students, and students can only add or remove themselves.
 - You can see each student's friends and gifts in their details on the dashboard.
+
+## 17. Publish the rules again for creature looks on the leaderboard (once)
+
+The leaderboard now carries each creature's look (body, colors, pattern and what it's wearing), so classmates see it in the leaderboard and Friends. Publish the newest `firestore.rules` the same way as before (Firebase console > **Firestore Database > Rules** > replace everything with https://github.com/grannyconger/credit-creatures/blob/main/firestore.rules > **Publish**). Until you do, the leaderboard still works but shows plain creatures.
+
+## The game moved to credit-creatures (2026-10-20)
+
+The repo was renamed from `credit-life` to `credit-creatures`, so the game now lives at **https://www.coachw.club/credit-creatures/** and the dashboard at **https://www.coachw.club/credit-creatures/teacher/**.
+- Saves, classes and join codes are all in Firebase, so nothing about students' games changes.
+- `coachw.club` is already an authorized domain in Firebase, so sign-in keeps working. Nothing to change there.
+- The old `/credit-life/` link stops working. Share the new link with students.

@@ -147,7 +147,7 @@ async function leaderboard(body, game) {
           "li",
           { class: r.uid === me ? "me" : "" },
           h("span.lb-place", String(i + 1)),
-          h("span.lb-art", { html: creatureSvg({ species: r.species, palette: r.palette, accessories: {} }, { size: 40, label: "" }) }),
+          h("span.lb-art", { html: creatureSvg(r.look || { species: r.species, palette: r.palette, accessories: {} }, { size: 48, label: "" }) }),
           h("span.lb-name", h("strong", r.creatureName), h("small", `${r.displayName}${r.uid === me ? " (you)" : ""}`)),
           h("span.lb-rank", r.rank),
           h("strong.lb-xp", `${r.xp} XP`)

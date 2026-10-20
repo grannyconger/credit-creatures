@@ -6,6 +6,7 @@ import { newPlay, ensurePlay } from "./play.js";
 import { evaluate, rankFor } from "./progress.js";
 import { celebrate } from "./ui/celebrate.js";
 import { fullName } from "./data/creatures.js";
+import { newlyUnlocked, publicLook } from "./data/looks.js";
 
 // Onboarding steps in order (SPEC §5). After "done", students live in the hub.
 export const STEPS = ["profile", "creature", "join", "teen", "tutorial", "skip", "networks", "design", "result", "done", "hub"];
@@ -122,6 +123,10 @@ export function createGame(user, db) {
           game.play.rankSeen = after.level;
           pops.push({ kind: "rank", id: after.title, icon: after.icon, kicker: "New rank!", title: `You're a ${after.title} now`, text: after.next ? `Next up: ${after.next.icon} ${after.next.title} at ${after.next.xp} XP.` : "That's the top rank in the kingdom." });
         }
+        for (const o of newlyUnlocked(game.play)) {
+          pops.push({ kind: "look", id: o.key, icon: "🎨", kicker: "New look unlocked!", title: o.name, text: `${o.slot}. Try it on in Edit my creature.` });
+          track("lookUnlocked", { look: o.key });
+        }
         if (pops.length) celebrate(pops);
       }
       let ok = true;
@@ -138,22 +143,27 @@ export function createGame(user, db) {
       return ok;
     },
 
-    // One small write when XP changes, so classmates see it (SPEC §16).
-    boardXp: null,
+    // One small write when XP or the creature's look changes, so classmates
+    // see it on the leaderboard and in Friends (SPEC §16).
+    boardKey: null,
     async syncLeaderboard() {
       const play = game.save.play;
       const c = game.save.creature;
-      if (!play || !c || !game.profile.classId || play.xp === game.boardXp) return;
+      if (!play || !c || !game.profile.classId) return;
+      const entry = {
+        creatureName: (fullName(c) || "Creature").slice(0, 41),
+        displayName: (game.profile.displayName || "").slice(0, 30),
+        xp: play.xp,
+        rank: rankFor(play.xp).title,
+        species: c.species,
+        palette: c.palette,
+        look: publicLook(c),
+      };
+      const key = JSON.stringify(entry);
+      if (key === game.boardKey) return;
       try {
-        await db.writeLeaderboard(game.profile.classId, user.uid, {
-          creatureName: (fullName(c) || "Creature").slice(0, 41),
-          displayName: (game.profile.displayName || "").slice(0, 30),
-          xp: play.xp,
-          rank: rankFor(play.xp).title,
-          species: c.species,
-          palette: c.palette,
-        });
-        game.boardXp = play.xp;
+        await db.writeLeaderboard(game.profile.classId, user.uid, entry);
+        game.boardKey = key;
       } catch (err) {
         console.warn("Leaderboard update failed", err);
         track("leaderboardFailed", { code: err.code || "" });

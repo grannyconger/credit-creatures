@@ -81,11 +81,11 @@ export async function releaseChapter(classId, chapter) {
 
 // Pretend classmates, so the leaderboard has something to rank against.
 const CLASSMATES = [
-  { uid: "c1", creatureName: "Nova Glimmerstone", displayName: "Avery", xp: 420, rank: "Knight", species: "crystalOwl", palette: "frost" },
-  { uid: "c2", creatureName: "Biscuit McScales", displayName: "Jordan", xp: 260, rank: "Squire", species: "mossDragon", palette: "sunny" },
-  { uid: "c3", creatureName: "Ember Lanternby", displayName: "Riley", xp: 610, rank: "Baron", species: "lanternFox", palette: "ember" },
-  { uid: "c4", creatureName: "Puddles", displayName: "Sam", xp: 90, rank: "Apprentice", species: "puddleGolem", palette: "midnight" },
-  { uid: "c5", creatureName: "Clover Thistledown", displayName: "Taylor", xp: 330, rank: "Knight", species: "mossDragon", palette: "rose" },
+  { uid: "c1", creatureName: "Nova Glimmerstone", displayName: "Avery", xp: 420, rank: "Knight", species: "crystalOwl", palette: "frost", look: { species: "crystalOwl", palette: "frost", pattern: "stars", eyes: "sparkle", accessories: { head: "wizardHat", held: "book", effect: "sparkles" } } },
+  { uid: "c2", creatureName: "Biscuit McScales", displayName: "Jordan", xp: 260, rank: "Squire", species: "mossDragon", palette: "sunny", look: { species: "mossDragon", palette: "sunny", pattern: "spots", accessories: { head: "headphones", feet: "sneakers" } } },
+  { uid: "c3", creatureName: "Ember Lanternby", displayName: "Riley", xp: 610, rank: "Baron", species: "lanternFox", palette: "ember", look: { species: "lanternFox", palette: "ember", markings: "blush", accessories: { head: "vikingHelmet", neck: "lei", feet: "boots", effect: "hearts" } } },
+  { uid: "c4", creatureName: "Puddles", displayName: "Sam", xp: 90, rank: "Apprentice", species: "puddleGolem", palette: "midnight", look: { species: "puddleGolem", palette: "midnight", eyes: "sleepy", accessories: { held: "balloon" } } },
+  { uid: "c5", creatureName: "Clover Thistledown", displayName: "Taylor", xp: 330, rank: "Knight", species: "cloudBunny", palette: "rose", look: { species: "cloudBunny", palette: "rose", pattern: "hearts", eyeColor: "violet", accessories: { head: "bow", feet: "slippers" } } },
 ];
 
 export async function writeLeaderboard(classId, uid, entry) {

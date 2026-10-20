@@ -444,7 +444,7 @@ Tutor Time is cut.
 
 ## 20. Teacher dashboard and grading
 
-Private page at `coachw.club/credit-life/teacher` (exact path set in Phase 1).
+Private page at `coachw.club/credit-creatures/teacher` (exact path set in Phase 1).
 
 - Create classes and get a join code for each.
 - **Chapter release controls** (Section 5).
@@ -461,7 +461,7 @@ Private page at `coachw.club/credit-life/teacher` (exact path set in Phase 1).
 
 ### Hosting
 
-- **Front end:** GitHub Pages from the repo `credit-life`. The teacher's custom domain already maps repos to `coachw.club/<repo-name>`, so the game lives at **`coachw.club/credit-life`**.
+- **Front end:** GitHub Pages from the repo `credit-creatures` (renamed from `credit-life` on 2026-10-20). The teacher's custom domain already maps repos to `coachw.club/<repo-name>`, so the game lives at **`coachw.club/credit-creatures`**.
 - **Back end:** Firebase (free Spark plan only). Firebase Authentication for Google sign-in and Cloud Firestore for saves, classes, XP and leaderboards.
 - Add `coachw.club` to Firebase Authentication > Authorized domains.
 
@@ -470,7 +470,7 @@ Private page at `coachw.club/credit-life/teacher` (exact path set in Phase 1).
 - Plain HTML, CSS and JavaScript ES modules. No framework, no build step, so GitHub Pages serves files as-is.
 - Firebase modular SDK loaded from the official CDN.
 - Engine and scenario logic are pure JS modules tested with Node's built-in test runner (`node --test`).
-- All relative paths must work under the `/credit-life/` subpath.
+- All relative paths must work under the `/credit-creatures/` subpath.
 
 ### Sign-in and access
 
@@ -506,7 +506,7 @@ The pilot is Phases 1 to 7. Stop and wait for approval at the end of each.
 
 | Phase | What gets built |
 |---|---|
-| 1 | **Setup:** repo structure, `CLAUDE.md`, Firebase config wiring, a "hello" page live at `coachw.club/credit-life` with working school-only Google sign-in. Give the teacher click-by-click steps for anything done in the Firebase or GitHub web consoles. |
+| 1 | **Setup:** repo structure, `CLAUDE.md`, Firebase config wiring, a "hello" page live at `coachw.club/credit-creatures` with working school-only Google sign-in. Give the teacher click-by-click steps for anything done in the Firebase or GitHub web consoles. |
 | 2 | **Engine:** accounts, month updates, score model, card approvals, collections status. Automated tests that simulate 1,000 creature lives with different play styles and print a score distribution sanity report. |
 | 3 | **Onboarding:** profile, creature creator, class codes, age 16 options, tutorial, lenders-vs-networks explainer, Design Your Card with live tradeoff display, saving. |
 | 4 | **Simulation:** hub, month loop, life events, first ~20 scenarios with a basic "Pay with" picker (debit card or a credit card, with live balances), adult debit card at 18, chapters, teacher chapter release, reflections. |

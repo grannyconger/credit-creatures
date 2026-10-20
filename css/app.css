@@ -114,9 +114,20 @@ button.link { background: none; color: var(--accent); padding: 6px 8px; text-dec
 .swatch[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
 
 .chip-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0; }
-.chip-label { width: 56px; font-weight: 600; color: var(--muted); }
+.chip-label { width: 84px; font-weight: 600; color: var(--muted); }
 .chip { background: #fff; color: var(--ink); border: 1.5px solid var(--border); padding: 6px 12px; border-radius: 999px; font-weight: 500; }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip.locked { opacity: 0.7; border-style: dashed; cursor: not-allowed; background: #f7f4ee; }
+.chip.locked small { color: var(--muted); }
+.locked-more { flex-basis: 100%; margin-left: 92px; }
+.locked-more summary { cursor: pointer; color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+.locked-more[open] { display: flex; flex-wrap: wrap; gap: 8px; }
+.locked-more[open] summary { flex-basis: 100%; }
+@media (max-width: 600px) { .locked-more { margin-left: 0; } }
+.tile.locked { opacity: 0.6; border-style: dashed; cursor: not-allowed; }
+.tile.locked small { color: var(--muted); font-size: 0.75rem; }
+.swatch.locked { opacity: 0.55; cursor: not-allowed; }
+.swatch.locked span { display: grid; place-items: center; font-size: 0.9rem; }
 
 /* Creature creator */
 .creator { display: grid; grid-template-columns: 1fr 320px; gap: 32px; }

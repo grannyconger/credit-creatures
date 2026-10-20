@@ -1,101 +1,91 @@
-// Creature creator (SPEC §3): species, palette, accessories and a name.
+// Creature creator (SPEC §3): body, colors, look, things to wear and a name.
+// Looks unlock from the start, with XP or achievements, or in the shop (js/data/looks.js).
 import { h, clear } from "../dom.js";
 import { creatureSvg } from "../creature-art.js";
-import { SHOP_BY_ID } from "../../data/shop.js";
-import { SPECIES, PALETTES, ACCESSORIES, ACCESSORY_SLOTS, NAME_IDEAS, LAST_NAME_IDEAS, NAME_MAX, MARKINGS, EYE_STYLES, defaultCreature, fullName } from "../../data/creatures.js";
+import { SPECIES, PALETTES, NAME_IDEAS, LAST_NAME_IDEAS, NAME_MAX, defaultCreature, fullName } from "../../data/creatures.js";
+import { LOOK_SLOTS, LOOK_OPTIONS, isUnlocked, lockText, getField, setField } from "../../data/looks.js";
 
 export function render(root, { game, advance, back, editing, track, refreshWho }) {
   const start = game.save.creature || defaultCreature();
   const draft = { lastName: "", ...start, accessories: { ...start.accessories } };
+  const play = game.save.play || null;
   let ideaUsed = false;
   let lastIdeaUsed = false;
 
   const preview = h("div.creature-preview");
   const speciesRow = h("div.tile-row");
   const paletteRow = h("div.swatch-row");
-  const accessoryRows = h("div");
-  const faceRows = h("div");
-  const backgroundRow = h("div.chip-group");
+  const lookRows = h("div");
+  const wearRows = h("div");
+  const progress = h("p.note.tight");
   const nameInput = h("input", { type: "text", maxlength: NAME_MAX, value: draft.name, id: "creature-name", autocomplete: "off" });
   const lastInput = h("input", { type: "text", maxlength: NAME_MAX, value: draft.lastName, id: "creature-last-name", autocomplete: "off", placeholder: "Optional" });
   const error = h("p.error", { role: "alert" });
   const caption = () => fullName(draft) || "Your creature";
+  const slot = (key) => LOOK_SLOTS.find((x) => x.key === key);
+
+  // One row of chips. Locked looks show what it takes to unlock them.
+  function chipRow(key) {
+    const sl = slot(key);
+    const current = getField(draft, sl.field) || sl.none;
+    const opts = LOOK_OPTIONS[key];
+    const open = opts.filter((o) => isUnlocked(o, play));
+    const locked = opts.filter((o) => !isUnlocked(o, play));
+    return h(
+      "div.chip-group",
+      h("span.chip-label", sl.label),
+      open.map((o) => h("button.chip", { type: "button", "aria-pressed": String(current === o.id), onclick: () => set(sl.field, o.id) }, o.name)),
+      locked.length
+        ? h(
+            "details.locked-more",
+            h("summary", `🔒 ${locked.length} more to unlock`),
+            locked.map((o) => h("button.chip.locked", { type: "button", disabled: true, title: lockText(o), "aria-label": `${o.name}, locked. ${lockText(o)}` }, o.name, h("small", ` ${lockText(o)}`)))
+          )
+        : null
+    );
+  }
 
   function paint() {
     preview.innerHTML = creatureSvg(draft, { size: 260, ageMonths: game.life?.ageMonths || 0 });
-
-    clear(faceRows);
-    for (const [field, label, options] of [
-      ["eyes", "Eyes", EYE_STYLES],
-      ["markings", "Marks", MARKINGS],
-    ]) {
-      faceRows.append(
-        h(
-          "div.chip-group",
-          h("span.chip-label", label),
-          Object.entries(options).map(([key, text]) =>
-            h("button.chip", { type: "button", "aria-pressed": String((draft[field] || Object.keys(options)[0]) === key), onclick: () => set(field, key) }, text)
-          )
-        )
-      );
-    }
     preview.append(h("p.creature-caption", caption(), h("small", SPECIES[draft.species].blurb)));
+    preview.className = `creature-preview ${draft.background && draft.background !== "none" ? `creature-stage bg-${draft.background}` : ""}`;
 
     clear(speciesRow);
-    for (const [key, s] of Object.entries(SPECIES)) {
+    for (const o of LOOK_OPTIONS.species) {
+      const ok = isUnlocked(o, play);
       speciesRow.append(
         h(
           "button.tile",
-          { type: "button", "aria-pressed": String(draft.species === key), onclick: () => set("species", key) },
-          h("span.tile-art", { html: creatureSvg({ ...draft, species: key, accessories: {} }, { size: 72, label: s.label }) }),
-          h("span", s.label)
+          { type: "button", class: ok ? "" : "locked", disabled: !ok, "aria-pressed": String(draft.species === o.id), onclick: () => set("species", o.id), title: ok ? "" : lockText(o) },
+          h("span.tile-art", { html: creatureSvg({ ...draft, species: o.id, accessories: {}, pattern: "none" }, { size: 72, label: o.name }) }),
+          h("span", o.name),
+          ok ? null : h("small", lockText(o))
         )
       );
     }
 
     clear(paletteRow);
-    for (const [key, p] of Object.entries(PALETTES)) {
+    for (const o of LOOK_OPTIONS.palette) {
+      const p = PALETTES[o.id];
+      const ok = isUnlocked(o, play);
       paletteRow.append(
         h(
           "button.swatch",
-          { type: "button", title: p.label, "aria-label": p.label, "aria-pressed": String(draft.palette === key), onclick: () => set("palette", key) },
-          h("span", { style: { background: `linear-gradient(135deg, ${p.body} 55%, ${p.accent} 55%)` } })
+          { type: "button", class: ok ? "" : "locked", disabled: !ok, title: ok ? p.label : `${p.label}: ${lockText(o)}`, "aria-label": ok ? p.label : `${p.label}, locked. ${lockText(o)}`, "aria-pressed": String(draft.palette === o.id), onclick: () => set("palette", o.id) },
+          h("span", { style: { background: `linear-gradient(135deg, ${p.body} 55%, ${p.accent} 55%)` } }, ok ? null : "🔒")
         )
       );
     }
 
-    clear(backgroundRow);
-    for (const [key, text] of [["none", "Plain"], ...ownedOf("background")]) {
-      backgroundRow.append(h("button.chip", { type: "button", "aria-pressed": String((draft.background || "none") === key), onclick: () => set("background", key === "none" ? null : key) }, text));
-    }
-    preview.className = `creature-preview ${draft.background ? `creature-stage bg-${draft.background}` : ""}`;
+    clear(lookRows).append(...["pattern", "eyes", "eyeColor", "markings"].map(chipRow));
+    clear(wearRows).append(...["head", "neck", "face", "held", "feet", "effect", "background"].map(chipRow));
 
-    clear(accessoryRows);
-    for (const [slot, label] of Object.entries(ACCESSORY_SLOTS)) {
-      accessoryRows.append(
-        h(
-          "div.chip-group",
-          h("span.chip-label", label),
-          [...Object.entries(ACCESSORIES[slot]), ...ownedOf(slot)].map(([key, text]) =>
-            h("button.chip", { type: "button", "aria-pressed": String((draft.accessories[slot] || "none") === key), onclick: () => setAccessory(slot, key) }, text)
-          )
-        )
-      );
-    }
-  }
-
-  // Items bought in the shop join the choices (SPEC §18).
-  function ownedOf(kind) {
-    return (game.save.play?.owned || []).map((id) => SHOP_BY_ID[id]).filter((i) => i && i.kind === kind).map((i) => [i.id, `${i.icon} ${i.name}`]);
+    const all = Object.values(LOOK_OPTIONS).flat();
+    progress.textContent = `You've unlocked ${all.filter((o) => isUnlocked(o, play)).length} of ${all.length} looks. Earn more with XP and achievements, or buy them in the shop.`;
   }
 
   function set(field, value) {
-    draft[field] = value;
-    paint();
-  }
-
-  function setAccessory(slot, value) {
-    draft.accessories[slot] = value;
+    setField(draft, field, value);
     paint();
   }
 
@@ -134,17 +124,15 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
       h("p.step-label", editing ? "Edit your creature" : "Step 2: your creature"),
       h("h1", "Adopt a creature"),
       h("p", "You will make money choices for this creature until it is grown. Make it yours."),
-      h("h3", "Species"),
+      progress,
+      h("h3", "Body"),
       speciesRow,
       h("h3", "Colors"),
       paletteRow,
-      h("h3", "Face"),
-      faceRows,
-      h("h3", "Accessories"),
-      h("p.note.tight", "Buy more in the shop after Chapter 1."),
-      accessoryRows,
-      ownedOf("background").length ? h("h3", "Background") : null,
-      ownedOf("background").length ? backgroundRow : null,
+      h("h3", "Look"),
+      lookRows,
+      h("h3", "Wear"),
+      wearRows,
       h("h3", h("label", { for: "creature-name" }, "Name")),
       h("div.name-row", nameInput, ideaBtn),
       h("h3", h("label", { for: "creature-last-name" }, "Last name")),
@@ -178,8 +166,13 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
       hasLastName: Boolean(draft.lastName),
       lastIdeaUsed,
       eyes: draft.eyes || "round",
+      eyeColor: draft.eyeColor || "default",
+      pattern: draft.pattern || "none",
       markings: draft.markings || "none",
       held: draft.accessories.held || "none",
+      feet: draft.accessories.feet || "none",
+      effect: draft.accessories.effect || "none",
+      background: draft.background || "none",
       editing,
     });
     refreshWho();

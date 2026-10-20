@@ -4,6 +4,8 @@ export const SPECIES = {
   lanternFox: { label: "Lantern fox", blurb: "Its tail glows when it is thinking." },
   crystalOwl: { label: "Crystal owl", blurb: "Sees every number on the page." },
   puddleGolem: { label: "Puddle golem", blurb: "Calm, squishy and very patient." },
+  cloudBunny: { label: "Cloud bunny", blurb: "Soft as a cloud, hops when it's happy." },
+  shellTurtle: { label: "Shell turtle", blurb: "Slow, steady and always prepared." },
 };
 
 // body, belly, accent (wings, ears, spots), eye
@@ -20,6 +22,10 @@ export const PALETTES = {
   lavender: { label: "Lavender", body: "#b9a3e3", belly: "#f1ecfb", accent: "#7c62b8", eye: "#2a1f45" },
   copper: { label: "Copper", body: "#b8733d", belly: "#f1d9c0", accent: "#7a4520", eye: "#2b1a0e" },
   snow: { label: "Snow", body: "#eef1f6", belly: "#ffffff", accent: "#9aa7bd", eye: "#2b2340" },
+  peach: { label: "Peach", body: "#f6b38f", belly: "#fde8da", accent: "#d97a55", eye: "#3a2218" },
+  forest: { label: "Forest", body: "#4f7f4a", belly: "#cfe3bf", accent: "#2f5530", eye: "#1a2a16" },
+  goldLeaf: { label: "Gold leaf", body: "#e2b23c", belly: "#fff4d0", accent: "#9a6f12", eye: "#3a2a10" },
+  galaxy: { label: "Galaxy", body: "#3b2f7a", belly: "#b8a9f0", accent: "#e05ab0", eye: "#fff4c2" },
 };
 
 // Face markings and eye styles (Phase 8 customizer).
@@ -67,5 +73,5 @@ export function fullName(creature) {
 }
 
 export function defaultCreature() {
-  return { name: "", lastName: "", species: "mossDragon", palette: "moss", markings: "none", eyes: "round", accessories: { head: "none", neck: "none", face: "none", held: "none" } };
+  return { name: "", lastName: "", species: "mossDragon", palette: "moss", markings: "none", eyes: "round", accessories: { head: "none", neck: "none", face: "none", held: "none", feet: "none", effect: "none" } };
 }

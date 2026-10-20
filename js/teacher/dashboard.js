@@ -247,7 +247,7 @@ function roster() {
   });
   const csv = () => {
     const blob = new Blob([rosterCsv(rows)], { type: "text/csv" });
-    const a = h("a", { href: URL.createObjectURL(blob), download: `${cls().name.replace(/\W+/g, "-")}-credit-life.csv` });
+    const a = h("a", { href: URL.createObjectURL(blob), download: `${cls().name.replace(/\W+/g, "-")}-credit-creatures.csv` });
     document.body.append(a);
     a.click();
     a.remove();

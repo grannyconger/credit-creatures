@@ -7,7 +7,7 @@ import { creatureSvg } from "../creature-art.js";
 import { payWith, methodLabel } from "../pay-with.js";
 import { moneyChips } from "../wallet.js";
 
-const KIND = { head: "Head", neck: "Neck", face: "Face", held: "Held in paw", background: "Background" };
+const KIND = { head: "Head", neck: "Neck", face: "Face", held: "Held in paw", feet: "Feet", effect: "Magic effect", background: "Background" };
 
 export function render(root, { game, go, track }) {
   const run = game.run;
