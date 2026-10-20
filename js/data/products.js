@@ -15,9 +15,10 @@ const GREENVILLE = {
   short: "Greenville FCU",
   icon: "🌲",
   local: true,
-  // Placeholder until the teacher confirms Greenville FCU's colors (its site
-  // blocks automated visits). Change these two values only.
-  brand: { bg: "#1f5f3a", fg: "#ffffff" },
+  // Brand colors from the teacher (2026-10-20): blue #1D61B1, golds #DFB50C,
+  // #E6C44C, #EBCD73, cream #FAF3DC, near-black #231F20. Gold text on the blue
+  // is only about 3.3:1, so the text is cream (about 5.9:1) with a gold ring.
+  brand: { bg: "#1D61B1", fg: "#FAF3DC", ring: "#DFB50C" },
 };
 
 export const ISSUERS = {

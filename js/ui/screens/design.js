@@ -5,7 +5,7 @@ import { fullName } from "../../data/creatures.js";
 import { quoteApplication, applyForCard, monthlyIncome, buildReport, hardInquiriesInWindow } from "../../engine/index.js";
 import { OFFERS, PRODUCTS, ISSUERS, NETWORKS, DESIGNS, TERMS_NOTE } from "../../data/products.js";
 import { TRADEOFF_HELP } from "../../data/onboarding.js";
-import { cardArt } from "../card-art.js";
+import { cardArt, brandStyle } from "../card-art.js";
 
 const NICK_MAX = 16;
 const RISK_CLASS = { Low: "good", Medium: "warn", High: "bad", "Very high": "bad" };
@@ -68,7 +68,7 @@ export function render(root, { game, advance, track }) {
           "button.tile.wide",
           { type: "button", "aria-pressed": String(app.issuer === key), onclick: () => setIssuer(key) },
           h("span.tile-emoji", iss.icon),
-          h("strong", iss.brand ? h("span.brand-pill", { style: { background: iss.brand.bg, color: iss.brand.fg } }, iss.name) : iss.name),
+          h("strong", iss.brand ? h("span.brand-pill", { style: brandStyle(iss.brand) }, iss.name) : iss.name),
           iss.local ? h("small", "Local credit union") : null,
           h("small", names.join(" · "))
         )

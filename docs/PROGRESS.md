@@ -9,7 +9,6 @@ Last updated: 2026-10-20 (Phase 4)
 - **Phases 1 to 6: done, approved.** Phase 6 was approved 2026-10-20. The teacher is publishing the Phase 6 rules.
 - **Phase 7: done, awaiting approval.** 119 tests pass. The dashboard was clicked through in headless Chrome with `/teacher/?local`: roster, pause, months per chapter, student detail, Tuning and bug reports. The student side was checked for pause, unlock pop-ups and the new credit unions.
 - **Teacher action needed:** publish the Phase 7 `firestore.rules` (`docs/setup-firebase.md` section 14). Students appear on the roster after their next save.
-- **Waiting on the teacher:** Greenville Federal Credit Union's brand colors. Its website blocks automated visits, so `js/data/products.js` uses a placeholder (`brand: { bg: "#1f5f3a", fg: "#ffffff" }`).
 - **Next step:** get Phase 7 approval, then plan and build Phase 8 (social and customization).
 
 ## Open decisions (ask once, then use the default)
@@ -66,7 +65,7 @@ Last updated: 2026-10-20 (Phase 4)
   - **How the teacher finds students:** every save now carries `teacherEmail` (from the class doc), `studentEmail`, `studentName`, `displayName` and `xp`. Rules let a teacher read and delete only saves with their email. Event logs (`telemetry/{uid}/events`) are readable when the student's save names that teacher, so the teacher's per-student queries need no collection-group index. Feedback docs carry `teacherEmail`.
   - **Class settings honored by the game:** `paused` stops the month screen and chapter starts (Accounts, the Practice Desk, the shop and Trophies still work). `monthsPerChapter` is stored on each chapter when it starts (`play.active.months`), and practice replays use the original length.
   - **"Numbers don't match the log" flag:** `logMismatches()` replays the life and compares checking, savings, held savings and every account's balance and status. Scores aren't compared, because score tuning changes them legitimately.
-  - **Local credit unions:** "Market Village Credit Union" is replaced by Greenville Federal Credit Union (🌲) and Truliant Federal Credit Union (🌟, #0033a0 and #fdda24 from truliantfcu.org). Old saves keep the hidden `creditUnion` issuer and offers, so they still show and replay.
+  - **Local credit unions:** "Market Village Credit Union" is replaced by Greenville Federal Credit Union (🌲, blue #1D61B1 with cream text and a gold #DFB50C ring, colors from the teacher) and Truliant Federal Credit Union (🌟, #0033a0 and #fdda24 from truliantfcu.org). Old saves keep the hidden `creditUnion` issuer and offers, so they still show and replay.
   - **Unlock pop-ups** (`js/ui/celebrate.js`): full-screen and dismissable (Continue or Escape) for new achievements, rank-ups (`play.rankSeen`) and new chapters. More than 3 at once fold into one summary pop-up. Motion is off with reduced-motion.
   - **Signature font:** Dancing Script (OFL) is in `fonts/` with `OFL.txt`.
   - **Telemetry fix:** event fields can no longer overwrite an event's `type`. Practice Desk answers log `qtype`.

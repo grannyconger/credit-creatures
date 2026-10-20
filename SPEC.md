@@ -85,7 +85,7 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 | Discover | 🧭 |
 | Capital One | ⛵ |
 | Chase | 🏛️ |
-| Greenville Federal Credit Union | 🌲 (name badge in its brand colors) |
+| Greenville Federal Credit Union | 🌲 (name badge in blue #1D61B1, cream text, gold #DFB50C ring) |
 | Truliant Federal Credit Union | 🌟 (name badge in royal blue #0033a0 and gold #fdda24) |
 | Venture X (product) | ✈️ |
 

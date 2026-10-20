@@ -3,6 +3,11 @@ import { h } from "./dom.js";
 import { ISSUERS, NETWORKS } from "../data/products.js";
 
 // issuerText replaces the issuer's name (the Gilded Vault debit card has no issuer entry).
+// A credit union's name badge in its own colors (no logos, SPEC §4).
+export function brandStyle(brand) {
+  return { background: brand.bg, color: brand.fg, boxShadow: brand.ring ? `inset 0 0 0 2px ${brand.ring}` : "" };
+}
+
 export function cardArt({ issuer, network, name, design = "plasticBlue", nickname = "", holder = "", size = "", issuerText = "" }) {
   const iss = ISSUERS[issuer];
   const net = NETWORKS[network];
@@ -13,7 +18,7 @@ export function cardArt({ issuer, network, name, design = "plasticBlue", nicknam
       "div.card-top",
       h(
         "span.card-issuer",
-        !issuerText && iss?.brand ? { class: "brand-pill", style: { background: iss.brand.bg, color: iss.brand.fg } } : {},
+        !issuerText && iss?.brand ? { class: "brand-pill", style: brandStyle(iss.brand) } : {},
         issuerText || (iss ? `${iss.icon} ${iss.short || iss.name}` : "")
       ),
       h("span.card-nick", nickname)
