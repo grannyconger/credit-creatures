@@ -138,7 +138,7 @@ function playChapters(seed, chapters, pick = (choices) => choices.find((c) => !c
         }
         life = r.life;
       }
-      while (P.shiftsLeft(play) > 0) life = P.workShift(play, life, 3).life;
+      while (P.shiftsLeft(play) > 0) life = P.workShift(play, life, 100).life;
       for (const a of E.ownCards(life)) {
         const owed = E.amountOwed(a);
         if (owed > 0 && owed <= life.checking) life = E.pay(life, a.id, owed).life;
@@ -199,14 +199,14 @@ test("practice mode rebuilds the life at a chapter's start and replays the same 
   assert.equal(save.play.chapter, 4);
 });
 
-test("a work shift pays $40 to $120 and the month has 3 shifts", () => {
-  assert.equal(E.shiftPay(0), 40);
-  assert.equal(E.shiftPay(4), 120);
+test("a work shift pays into checking as income, and the month has 3 shifts", () => {
   const play = P.newPlay();
   let life = lifeWith({ seed: "shift", checking: 100 });
   P.startChapter(play, life);
-  for (let i = 0; i < 3; i++) life = P.workShift(play, life, 2).life;
-  assert.equal(P.workShift(play, life, 2).ok, false);
+  for (let i = 0; i < 3; i++) life = P.workShift(play, life, 80).life;
+  assert.equal(life.checking, 340);
+  assert.equal(life.incomeThisMonth, 340);
+  assert.equal(P.workShift(play, life, 80).ok, false);
 });
 
 test("limited bills end after their months, and a bounced one stays", () => {

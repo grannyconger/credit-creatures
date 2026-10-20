@@ -32,9 +32,9 @@ A classroom game where students raise a fantasy creature through its credit life
 | 2 | Engine: accounts, month loop, score, approvals, collections, 1,000-life sim | Done, approved |
 | 3 | Onboarding: profile, creature creator, class codes, age 16 options, tutorial, Design Your Card, saving | Done, approved |
 | 4 | Simulation: hub, month loop, life events, ~20 scenarios, chapters, chapter release, reflections | Done, approved |
-| 5 | Account Management: wallet, statements, bills, AutoPay, My Score, report, Practice Desk, inbox, themes, Sparkle Points | Done, awaiting approval |
-| 6 | Economy and engagement: Ledger Sort, Cashier Rush, Check Writer, shop, BNPL checkout, 40+ achievements, XP, ranks, leaderboard | Next |
-| 7 | Teacher: dashboard, roster, controls, CSV export, rules hardening | |
+| 5 | Account Management: wallet, statements, bills, AutoPay, My Score, report, Practice Desk, inbox, themes, Sparkle Points | Done, approved |
+| 6 | Economy and engagement: Ledger Sort, Cashier Rush, Check Writer, shop, BNPL checkout, 40+ achievements, XP, ranks, leaderboard | Done, awaiting approval |
+| 7 | Teacher: dashboard, roster, controls, CSV export, rules hardening | Next |
 | 8 | Pilot: one class plays, tune numbers, add remaining content | |
 
 ## Run locally

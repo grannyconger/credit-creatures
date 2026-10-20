@@ -3,12 +3,14 @@ import { LIFE_VERSION } from "./engine/index.js";
 import { track, flush } from "./telemetry.js";
 import { toast } from "./ui/dom.js";
 import { newPlay, ensurePlay } from "./play.js";
+import { evaluate, rankFor } from "./progress.js";
+import { fullName } from "./data/creatures.js";
 
 // Onboarding steps in order (SPEC §5). After "done", students live in the hub.
 export const STEPS = ["profile", "creature", "join", "teen", "tutorial", "skip", "networks", "design", "result", "done", "hub"];
 
 // Screens open once the student reaches the hub. The router guards each one.
-export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts"]);
+export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts", "shop", "trophies"]);
 
 // Steps a student can go back to after moving past them.
 export const EDITABLE = new Set(["profile", "creature"]);
@@ -100,8 +102,15 @@ export function createGame(user, db) {
       };
     },
 
-    // Saves the game and sends telemetry in the same moment.
+    // Saves the game and sends telemetry in the same moment. New achievements
+    // are checked first, so their XP is in the same save.
     async persist(reason = "save") {
+      if (game.step === "hub" && game.save.life) {
+        for (const a of evaluate(game.save)) {
+          toast(`🏆 ${a.title}! +${a.xp} XP`, "good");
+          track("achievement", { id: a.id, xp: a.xp, reason });
+        }
+      }
       let ok = true;
       try {
         await db.writeSave(user.uid, game.save, game.summary());
@@ -112,7 +121,30 @@ export function createGame(user, db) {
         toast("We couldn't save just now. Check your internet. We will try again at the next save.", "bad");
       }
       flush(reason);
+      if (ok) game.syncLeaderboard();
       return ok;
+    },
+
+    // One small write when XP changes, so classmates see it (SPEC §16).
+    boardXp: null,
+    async syncLeaderboard() {
+      const play = game.save.play;
+      const c = game.save.creature;
+      if (!play || !c || !game.profile.classId || play.xp === game.boardXp) return;
+      try {
+        await db.writeLeaderboard(game.profile.classId, user.uid, {
+          creatureName: (fullName(c) || "Creature").slice(0, 41),
+          displayName: (game.profile.displayName || "").slice(0, 30),
+          xp: play.xp,
+          rank: rankFor(play.xp).title,
+          species: c.species,
+          palette: c.palette,
+        });
+        game.boardXp = play.xp;
+      } catch (err) {
+        console.warn("Leaderboard update failed", err);
+        track("leaderboardFailed", { code: err.code || "" });
+      }
     },
   };
   return game;

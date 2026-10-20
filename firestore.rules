@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Phase 4 rules. Teacher reads of student data and full hardening come in Phase 7.
+// Phase 6 rules. Teacher reads of student data and full hardening come in Phase 7.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -80,6 +80,30 @@ service cloud.firestore {
         && request.resource.data.teacherEmail == myEmail()
         && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.teacherEmail == myEmail()
         && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.code == code;
+    }
+
+    // Class leaderboard (SPEC §16): creature name, display name and XP only.
+    // Classmates and the class's teacher can read it. Each student writes only
+    // their own entry, and XP can never go down.
+    match /leaderboards/{classId}/players/{uid} {
+      function inClass() {
+        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('classId', '') == classId;
+      }
+      function ownsClass() {
+        return isTeacher() && get(/databases/$(database)/documents/classes/$(classId)).data.teacherEmail == myEmail();
+      }
+      allow read: if isSchool() && (inClass() || ownsClass());
+      allow create, update: if isMe(uid) && inClass()
+        && request.resource.data.keys().hasOnly(['creatureName', 'displayName', 'xp', 'rank', 'species', 'palette', 'updatedAt'])
+        && request.resource.data.xp is int
+        && request.resource.data.xp >= 0
+        && request.resource.data.xp <= 100000
+        && (resource == null || request.resource.data.xp >= resource.data.xp)
+        && shortString('creatureName', 41)
+        && shortString('displayName', 30)
+        && shortString('rank', 30)
+        && shortString('species', 30)
+        && shortString('palette', 30);
     }
 
     // Play telemetry (docs/FEEDBACK.md). Students write their own and never read.

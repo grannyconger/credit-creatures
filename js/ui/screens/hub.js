@@ -7,6 +7,8 @@ import { chapterInfo } from "../../data/chapters.js";
 import { CONFIG } from "../../data/config.js";
 import * as P from "../../play.js";
 import { moneyChips, walletStrip, accountButtons } from "../wallet.js";
+import { rankFor } from "../../progress.js";
+import { xpBar } from "./trophies.js";
 
 export function render(root, { game, go, track, saveAndQuit }) {
   game.practice = null;
@@ -93,8 +95,15 @@ export function render(root, { game, go, track, saveAndQuit }) {
       "section.panel.hub",
       h(
         "div.hero",
-        h("div.hero-art", { html: creatureSvg(c, { size: 150 }) }),
-        h("div", h("p.step-label", "Your hub"), h("h1", fullName(c)), h("p.muted", `${ageLabel(life.ageMonths)}. Chapter ${play.chapter}.`))
+        h("div.hero-art.creature-stage", { class: c.background ? `bg-${c.background}` : "", html: creatureSvg(c, { size: 150 }) }),
+        h(
+          "div",
+          h("p.step-label", "Your hub"),
+          h("h1", fullName(c)),
+          h("p.muted", `${ageLabel(life.ageMonths)}. Chapter ${play.chapter}.`),
+          h("p.rank-line", `${rankFor(play.xp).icon} ${rankFor(play.xp).title} · ${play.xp} XP`),
+          xpBar(play.xp)
+        )
       ),
       moneyChips(life, play.sparkle.total),
       accountButtons(game, go, P.unreadCount(play)),

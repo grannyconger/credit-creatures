@@ -178,8 +178,3 @@ export function upcomingPayments(life) {
   const total = money(auto.reduce((s, x) => s + x.amount, 0));
   return { auto, cardsDue, total, short: money(Math.max(0, total - life.checking)) };
 }
-
-export function shiftPay(correct, bonus = 0) {
-  const s = CONFIG.play.shift;
-  return s.base + s.perCorrect * correct + bonus;
-}

@@ -5,6 +5,7 @@ import { h } from "../dom.js";
 import { createRng } from "../../engine/index.js";
 import { QUESTION_TYPES, DESK_QUESTIONS, STANDARD_LABELS } from "../../data/practice-questions.js";
 import * as P from "../../play.js";
+import { finishDeskVisit } from "../../progress.js";
 
 let session = null;
 
@@ -122,10 +123,12 @@ function questionView(play, { track, save, repaint }) {
   );
 }
 
-function doneView(play, { track, repaint }) {
+function doneView(play, { track, repaint, save }) {
   const s = session;
   track("deskDone", { right: s.right, total: s.questions.length, sparkle: s.sparkle });
+  finishDeskVisit(play, s.right, s.questions.length);
   session = null;
+  save("deskDone");
   return h(
     "div.desk",
     h("h2", `You got ${s.right} of ${s.questions.length} right`),

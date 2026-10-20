@@ -10,6 +10,8 @@ import {
   collection,
   query,
   where,
+  orderBy,
+  limit,
   getDocs,
   writeBatch,
   serverTimestamp,
@@ -110,6 +112,21 @@ export async function createClass(teacherEmail, name) {
       if (err.code !== "permission-denied" || attempt === 4) throw err;
     }
   }
+}
+
+// ---------- leaderboard (SPEC §16): creature name, display name and XP only ----------
+
+export async function writeLeaderboard(classId, uid, entry) {
+  await setDoc(doc(db, "leaderboards", classId, "players", uid), { ...plain(entry), updatedAt: serverTimestamp() });
+}
+
+export async function readLeaderboard(classId) {
+  const snap = await getDocs(query(collection(db, "leaderboards", classId, "players"), orderBy("xp", "desc"), limit(50)));
+  return snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
+}
+
+export async function setLeaderboardOn(classId, on) {
+  await updateDoc(doc(db, "classes", classId), { leaderboard: on });
 }
 
 // Rules let only the class's own teacher change it, and never its code.

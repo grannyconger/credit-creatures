@@ -6,19 +6,19 @@ Last updated: 2026-10-20 (Phase 4)
 
 ## Status
 
-- **Phases 1 to 4: done, approved.** Phase 4 was approved 2026-10-20 ("ok do the next phase"). The teacher published the Phase 4 rules.
-- **Phase 5: done, awaiting approval.** 99 tests pass. Every Account Management tab, a Practice Desk visit, the inbox, the Night theme and a Factor Check were clicked through in headless Chrome in `?local` mode.
-- **No rules change in Phase 5.** Everything new saves inside `saves/{uid}.play`.
-- **Next step:** get Phase 5 approval, then plan and build Phase 6 (economy and engagement).
+- **Phases 1 to 5: done, approved.** Phase 5 was approved 2026-10-20 ("Build it").
+- **Phase 6: done, awaiting approval.** 111 tests pass. The job board with all 3 minigames (including the signature pad, both drawn and typed), the shop, achievements, ranks and the leaderboard were clicked through in headless Chrome in `?local` mode.
+- **Teacher action needed:** publish the Phase 6 `firestore.rules` (`docs/setup-firebase.md` section 12, adds `leaderboards/{classId}/players/{uid}`). The leaderboard toggle is on `/teacher/` (section 13).
+- **Waiting on the teacher:** OK to download the Dancing Script font (OFL) into `fonts/` for "Type my signature". Until then it uses the computer's built-in script fonts.
+- **Next step:** get Phase 6 approval, then plan and build Phase 7 (teacher dashboard).
 
 ## Open decisions (ask once, then use the default)
 
 1. **Economy looks loose.** A careful bot that works every shift (3 of 4 right) saves about $200 a month, so it has about $2,500 after 4 chapters. SPEC §19 aims for about $100 a month ("one $600 want every couple of chapters"). **Default: leave it until the Phase 6 shop gives money somewhere to go, then tune in the pilot** (`CONFIG.play.shift`, bills).
 2. **Card pacing.** 5 cards per month used up the ~20 pilot scenarios in about 4 months. **Default:** up to 2 new one-time cards and 1 everyday card per month, plus must-see priority cards (`CONFIG.pacing.newCardsPerMonth`, `everydayCardsPerMonth`). `decisionCardsPerMonth: 5` stays the cap. Raise these when Phase 8 adds the rest of the catalog.
-3. **Check Writer minigame (SPEC §17).** **Default:** Phase 6. Part 1 writes a check from a bill and signs the front. Part 2 endorses the back of a paycheck. Full-screen signature pad (touch, pen or mouse) or "type my signature" in a self-hosted cursive font (OFL). Drawings are never saved.
-4. **Creature aging (SPEC §3).** **Default:** after the pilot, small details only.
-5. **Phase 6: XP from Practice Desk.** **Default:** right answers give XP as well as Sparkle Points, so learning counts on the leaderboard. Sparkle still only nudges the displayed score.
-6. **Phase 6: shop prices** need to soak up the extra savings from decision 1. **Default:** wants from $20 to $600, with about one $300 to $600 item per chapter.
+3. **Creature aging (SPEC §3).** **Default:** after the pilot, small details only.
+4. **Signature font.** **Default:** self-host Dancing Script (OFL) in `fonts/` once the teacher OKs the download. Until then, the CSS falls back to Segoe Script, Brush Script, Snell Roundhand and generic cursive.
+5. **Phase 7: who can see reflections and play data.** **Default:** only the class's own teacher (the `teacherEmail` on the class). Rules give teachers read access to `saves`, `telemetry` and `feedback` for students whose `users/{uid}.classId` is one of their classes.
 
 ## Decisions already made
 
@@ -52,6 +52,13 @@ Last updated: 2026-10-20 (Phase 4)
 - **Telemetry:** `telemetry/{uid}/events/{autoId}` (one doc per flush, not per month as FEEDBACK.md first said, because flushes happen at every save and create-only rules forbid overwriting) plus the `telemetry/{uid}` rollup (merge with increments).
 - **Display name:** Google's name goes in `googleName`. `displayName` is the student's own choice and sign-in no longer overwrites it.
 - **First scores are moderate** (teacher request, 2026-10-20). Three tunables in `CONFIG.score`: `historyDepth` (payment history starts at 70% of full value and reaches 100% after 36 months on one account, and a parent's card counts at half its months), `authorizedAgeCapMonths: 12` (a parent's card counts as at most 1 year old for length), and a stricter length curve (`oldestFullMonths 96`, `averageFullMonths 60`, `lengthCurvePower 0.8`). Score at 18 with a parent's card: responsible about 735, average about 697, maxed about 513 (no parent: no score). Careful own card: about 695 at 6 months, 716 at 12, 749 at 24, 792 at 48.
+- **Phase 6 defaults** (announced 2026-10-20):
+  - **Jobs:** a job board replaces the placeholder shift in the month. Ledger Sort is 45 seconds of asset, liability or equity. Cashier Rush is 60 seconds of exact change. Check Writer means writing a check from a bill and signing the front, then endorsing the back of the paycheck, with an optional "For deposit only". Every game has a "No timer" mode with a set number of items. Pay is $40 + performance, capped at $120, plus experience (+$5 every 3 shifts at a job, up to +$20) and any raise. Everything is in `CONFIG.play.jobs`. The tutorial keeps its guided 4-item sort (`js/ui/shift.js`).
+  - **Signature pad** (`js/ui/signature-pad.js`): a full-screen `<dialog>` with a canvas (pointer events, so touch, pen and mouse all work, `touch-action: none`), or "Type my signature" in script. The drawing is shown on the check only and is never saved or sent.
+  - **Shop** (`js/data/shop.js`): 20 items (accessories and backgrounds). Stock is 5 regular items, 1 limited item and 1 big item ($300 to $600), the same for a given seed and chapter. Checkout goes through the "Pay with" picker, with BNPL from $50. Owned items go in `play.owned` and appear in the creature editor and on the hub. Needs (shoes, textbooks) stay as life cards.
+  - **Achievements:** 51 in 9 categories (`js/data/achievements.js`), 6 hidden. `evaluate()` runs on every save once the student is in the hub, gives XP, adds an inbox note and shows a toast.
+  - **XP:** achievements, +5 for each right answer, +5 for each shift, +25 for each reflection. It never goes down. 7 kingdom ranks, from Apprentice (0) to Grand Vizier (2,400). Records: highest score, longest on-time streak, best XP chapter.
+  - **Leaderboard:** `leaderboards/{classId}/players/{uid}` holds creature name, display name, XP, rank, species and palette, written when XP changes. Rules let only classmates and the class's teacher read it, and XP can't go down. The teacher toggle sets `classes/{id}.leaderboard`.
 - **Phase 5 defaults** (announced 2026-10-20):
   - Account Management is one screen (`#/accounts`) with tabs: Wallet, Statements, My Score, My Report, Practice Desk and Inbox. It opens from the hub and the month screen and goes back to the same place. Time is paused there.
   - Wallet uses the shared bills panel, now with limit, APR, a utilization bar, a payoff preview ("Minimum only: N months, $X interest. $Y a month: ...") and AutoPay (off, minimum, full statement).
@@ -96,6 +103,10 @@ Last updated: 2026-10-20 (Phase 4)
 | `js/play.js` | Pure month and chapter logic on `save.play`: start chapter, draw cards, choose, shifts, End Month, summary, reflection, recap, practice |
 | `js/ui/decision-card.js`, `pay-with.js`, `bills-panel.js`, `wallet.js`, `shift.js` | Card with choices, outcome and reactions. "Pay with" picker. Bills panel. Wallet strip and money chips. Shared work shift |
 | `js/data/scenarios.js` / `life-events.js` / `chapters.js` | 26 Decision cards (23 one-time, 3 everyday) / 14 life cards / chapter titles, intros and reflection questions |
+| `js/progress.js` | XP, ranks, achievements (`evaluate`), job pay and experience, payment and desk stats, records |
+| `js/ui/job-board.js`, `js/ui/minigames/*.js`, `js/ui/signature-pad.js` | Job picker and results. Ledger Sort, Cashier Rush, Check Writer. Full-screen signature pad |
+| `js/ui/screens/shop.js`, `trophies.js` | Shop with checkout / achievements, rank and records, leaderboard |
+| `js/data/minigames.js` / `shop.js` / `achievements.js` | Minigame content and check grading (`amountInWords`) / shop items and stock / achievements, XP and ranks |
 | `js/ui/screens/accounts.js`, `js/ui/accounts/*.js` | Account Management shell and its tabs: wallet, statements, score (gauge and history chart), report, desk, inbox |
 | `js/data/practice-questions.js` / `explainers.js` | Practice Desk and Factor Check generators / factor explainers, score bands, inbox types, themes |
 | `js/engine/cards.js`, `actions.js` | Card runner (`runSteps`, `drawLifeEvent`, `drawDecisionCards`, `paymentOptions`, `upcomingPayments`) / the named action map shared with replay |
@@ -127,12 +138,14 @@ Last updated: 2026-10-20 (Phase 4)
 | Reckless | 429 | 0% | 100% | 93% |
 | Never pays | 397 | 0% | 100% | 100% |
 
-## Phase 6 starting notes (not yet planned in detail)
+## Phase 7 starting notes (not yet planned in detail)
 
-Scope from SPEC §16, §17, §18 and the 2026-10-20 additions:
-- Minigames: Ledger Sort (asset, liability, equity, replaces the placeholder shift in `js/ui/shift.js`), Cashier Rush (making change), and Check Writer (write a check from a bill and sign the front, then endorse the back of a paycheck, with a full-screen signature pad and a "type my signature" cursive font served from the repo). Pay comes from performance. Log score, pay, duration and retries.
-- Shop: wants (creature items, backgrounds) and needs, with stock that rotates each chapter. Checkout uses the existing "Pay with" picker (`js/ui/pay-with.js`), which already supports BNPL.
-- Achievements (40+), XP that never goes down, kingdom ranks, and a class leaderboard (teacher toggle). The leaderboard needs a new Firestore collection and rules (creature name, display name and XP only), so the teacher will need rules steps.
+Scope from SPEC §20 and docs/FEEDBACK.md:
+- Teacher dashboard on `/teacher/`: roster (XP and rank, score, chapters played, reflections, on-time %, utilization, account types, practice accuracy by standard, achievement count, and flags for payday or title loans, collections, maxed cards, many inquiries, and a log that doesn't match the numbers).
+- Student detail: creature, credit report, score history, decisions, reflections, achievements. Everything is in `saves/{uid}` (`lifeJson` plus `play`), so the dashboard can rebuild with `creditReport` and check the log with `replayLife`.
+- Controls: pause play, release chapters (done), months per chapter, leaderboard toggle (done), reset a student. CSV export for the gradebook.
+- Tuning tab (FEEDBACK.md section 3) from `telemetry/{uid}` rollups, plus a JSON export.
+- Rules hardening: teacher reads of saves, telemetry and feedback for their own classes only. Tighter save field checks.
 
 ## End-of-phase checklist
 

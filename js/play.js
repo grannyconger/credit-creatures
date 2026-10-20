@@ -7,7 +7,8 @@ import { SCENARIOS, SCENARIO_BY_ID } from "./data/scenarios.js";
 import { LIFE_EVENTS, LIFE_EVENT_BY_ID } from "./data/life-events.js";
 import { chapterInfo } from "./data/chapters.js";
 import { INBOX_KEPT } from "./data/explainers.js";
-import { drawLifeEvent, drawDecisionCards, resolveChoice, endMonth, earn, shiftPay, replayLife, ownCards, dollars } from "./engine/index.js";
+import { XP } from "./data/achievements.js";
+import { drawLifeEvent, drawDecisionCards, resolveChoice, endMonth, earn, replayLife, ownCards, dollars, utilization } from "./engine/index.js";
 
 // "Cosign for a friend?" reads badly as "Cosign for a friend?: ...".
 export function titled(title) {
@@ -26,6 +27,15 @@ export function ensurePlay(play) {
   play.desk ??= { visits: 0, byStandard: {}, byType: {} };
   play.sparkle ??= { total: 0, byChapter: {} };
   play.theme ??= "royal";
+  // Phase 6: XP, achievements, minigame jobs, shop and records.
+  play.xp ??= 0;
+  play.xpByChapter ??= {};
+  play.achievements ??= {};
+  play.stats ??= { shifts: 0, paidInFull: 0, payoffSprints: 0, hadDebt: false };
+  play.jobs ??= {};
+  play.owned ??= [];
+  play.records ??= { highestScore: null, longestOnTime: 0 };
+  Object.assign(play.desk, { finished: play.desk.finished ?? 0, perfect: play.desk.perfect ?? 0, streak: play.desk.streak ?? 0, bestStreak: play.desk.bestStreak ?? 0 });
   return play;
 }
 
@@ -34,6 +44,7 @@ export function monthRecord(month, result) {
   return {
     month,
     score: result.life.score,
+    util: utilization(result.life),
     delta: result.scoreChange.delta,
     factor: result.scoreChange.factor,
     change: result.scoreChange.message,
@@ -142,10 +153,10 @@ export function shiftsLeft(play) {
   return Math.max(0, CONFIG.pacing.shiftsPerMonth - m.shiftsCut - m.shifts);
 }
 
-export function workShift(play, life, correct) {
+// Pay comes from the minigame (js/progress.js jobPay). It goes into checking as income.
+export function workShift(play, life, pay, source = "work shift") {
   if (shiftsLeft(play) <= 0) return { life, ok: false, message: "No shifts left this month." };
-  const pay = shiftPay(correct, play.shiftBonus);
-  const r = earn(life, pay, "work shift");
+  const r = earn(life, pay, source);
   play.active.month.shifts++;
   return { ...r, pay };
 }
@@ -202,6 +213,8 @@ function summarize(a, life) {
     best,
     worst: worst && worst.quality === "bad" ? worst : null,
     fees: Math.round(events.filter((e) => e.type === "fee").reduce((s, e) => s + (e.amount || 0), 0) * 100) / 100,
+    maxUtil: a.records.some((r) => r.util != null) ? Math.max(...a.records.filter((r) => r.util != null).map((r) => r.util)) : null,
+    hadCredit: life.accounts.some((x) => x.owner === "self" && x.reported && ["open", "paid"].includes(x.status)),
     lates: events.filter((e) => e.type === "late" || e.type === "collections").length,
     quizRight: a.decisions.filter((d) => d.quiz && d.quality === "good").length,
   };
@@ -214,6 +227,7 @@ export function submitReflection(play, { text, fun, clear }) {
   if (!s) return { ok: false, message: "There is no chapter to reflect on." };
   for (const h of play.history) delete h.records;
   play.history.push({ ...s, reflection: text, fun, clear });
+  addXp(play, XP.reflection);
   play.summary = null;
   play.chapter = s.chapter + 1;
   return { ok: true };
@@ -237,6 +251,16 @@ export function startPractice(save, chapter) {
   const play = { ...newPlay(), chapter, seen: h.seenAtStart.slice(), shiftBonus: h.shiftBonusAtStart || 0, lastChange: h.lastChangeAtStart || null };
   startChapter(play, life);
   return { life, play };
+}
+
+// ---------- XP (SPEC §16): it only ever goes up ----------
+
+export function addXp(play, n) {
+  if (!(n > 0)) return 0;
+  play.xp += n;
+  const ch = String(play.chapter);
+  play.xpByChapter[ch] = (play.xpByChapter[ch] || 0) + n;
+  return n;
 }
 
 // ---------- Unicorn Sparkle Points (SPEC §15) ----------
@@ -268,6 +292,7 @@ export function recordAnswer(play, { type, standard, correct }) {
   };
   bump(play.desk.byStandard, standard);
   bump(play.desk.byType, type);
+  if (correct) addXp(play, XP.rightAnswer);
   return correct ? awardSparkle(play) : 0;
 }
 

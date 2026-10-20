@@ -4,6 +4,7 @@ import { h, money, percent, toast } from "../dom.js";
 import { pay, setAutopay, moveToSavings, moveToChecking, amountOwed, dollars } from "../../engine/index.js";
 import { walletStrip } from "../wallet.js";
 import { billsPanel } from "../bills-panel.js";
+import { notePayment } from "../../progress.js";
 
 export function walletTab({ game, run, track, save, repaint }) {
   const life = run.life;
@@ -60,7 +61,11 @@ export function walletTab({ game, run, track, save, repaint }) {
     h("h3", "Cards and bills"),
     billsPanel({
       life,
-      onPay: (id, amount, kind) => act(pay(run.life, id, amount), "billPay", { kind, amount, where: "wallet" }),
+      onPay: (id, amount, kind) => {
+        const r = pay(run.life, id, amount);
+        if (r.ok) notePayment(run.play, run.life, id, r.paid);
+        return act(r, "billPay", { kind, amount, where: "wallet" });
+      },
       onMove: (dir, amount) => act(dir === "toSavings" ? moveToSavings(run.life, amount) : moveToChecking(run.life, amount), "moveMoney", { dir, amount }),
       onAutopay: (id, mode) => act(setAutopay(run.life, id, mode), "autopaySet", { mode: mode || "off" }),
     })

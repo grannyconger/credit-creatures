@@ -133,6 +133,30 @@ const HEAD = {
     <path d="M${x - 27} ${y + 12} Q${x} ${y - 34} ${x + 27} ${y + 12} Z" fill="#d9534f"/>
     <rect x="${x - 29}" y="${y + 6}" width="58" height="10" rx="5" fill="#b33d39"/>
     <circle cx="${x}" cy="${y - 20}" r="7" fill="#fff4e0"/>`,
+  // Shop items (js/data/shop.js)
+  topHat: ({ x, y }) => `
+    <rect x="${x - 16}" y="${y - 34}" width="32" height="36" rx="3" fill="#2b2340"/>
+    <rect x="${x - 16}" y="${y - 10}" width="32" height="7" fill="#d9534f"/>
+    <ellipse cx="${x}" cy="${y + 3}" rx="28" ry="6" fill="#2b2340"/>`,
+  pirateHat: ({ x, y }) => `
+    <path d="M${x - 34} ${y + 6} Q${x} ${y - 40} ${x + 34} ${y + 6} Q${x} ${y - 6} ${x - 34} ${y + 6} Z" fill="#2b2340"/>
+    <circle cx="${x}" cy="${y - 12}" r="6" fill="#f6f1e7"/>
+    <path d="M${x - 4} ${y - 4} L${x + 4} ${y - 4}" stroke="#f6f1e7" stroke-width="2"/>`,
+  flowerCrown: ({ x, y }) =>
+    [-24, -12, 0, 12, 24]
+      .map((dx, i) => `<circle cx="${x + dx}" cy="${y + 4 - Math.abs(dx) / 6}" r="6" fill="${["#f48fb1", "#ffd54f", "#ce93d8", "#ffd54f", "#f48fb1"][i]}"/><circle cx="${x + dx}" cy="${y + 4 - Math.abs(dx) / 6}" r="2" fill="#fff4e0"/>`)
+      .join(""),
+  partyHat: ({ x, y }) => `
+    <path d="M${x - 15} ${y + 6} L${x} ${y - 32} L${x + 15} ${y + 6} Z" fill="#4fc3f7"/>
+    <path d="M${x - 9} ${y - 8} L${x + 9} ${y - 8} M${x - 12} ${y} L${x + 12} ${y}" stroke="#f48fb1" stroke-width="3"/>
+    <circle cx="${x}" cy="${y - 33}" r="5" fill="${GOLD}"/>`,
+  royalCrown: ({ x, y }) => `
+    <path d="M${x - 26} ${y + 6} L${x - 26} ${y - 18} L${x - 13} ${y - 4} L${x} ${y - 26} L${x + 13} ${y - 4} L${x + 26} ${y - 18} L${x + 26} ${y + 6} Z"
+      fill="${GOLD}" stroke="${GOLD_DARK}" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="${x - 26}" y="${y}" width="52" height="7" fill="#a8431f"/>
+    <circle cx="${x}" cy="${y - 8}" r="4.5" fill="#d9534f"/>
+    <circle cx="${x - 14}" cy="${y - 2}" r="3.5" fill="#2b6cb0"/>
+    <circle cx="${x + 14}" cy="${y - 2}" r="3.5" fill="#3f8f4f"/>`,
 };
 
 const NECK = {
@@ -147,6 +171,25 @@ const NECK = {
   medal: ({ x, y }) => `
     <path d="M${x - 12} ${y - 6} L${x} ${y + 12} L${x + 12} ${y - 6}" stroke="#2b6cb0" stroke-width="5" fill="none"/>
     <circle cx="${x}" cy="${y + 17}" r="8" fill="${GOLD}" stroke="${GOLD_DARK}" stroke-width="2"/>`,
+  pearls: ({ x, y, w }) =>
+    Array.from({ length: 9 }, (_, i) => {
+      const t = i / 8;
+      return `<circle cx="${x - w / 2 + 4 + t * (w - 8)}" cy="${y + 6 * Math.sin(Math.PI * t)}" r="4" fill="#fbf7f0" stroke="#d8cfc0" stroke-width="1"/>`;
+    }).join(""),
+  bandana: ({ x, y, w }) => `
+    <path d="M${x - w / 2} ${y - 4} L${x + w / 2} ${y - 4} L${x} ${y + 18} Z" fill="#2b6cb0"/>
+    <circle cx="${x - 6}" cy="${y + 2}" r="2" fill="#fff"/><circle cx="${x + 6}" cy="${y + 2}" r="2" fill="#fff"/><circle cx="${x}" cy="${y + 9}" r="2" fill="#fff"/>`,
+  // The cape itself hangs behind the body (BEHIND below). This is the clasp.
+  dragonCape: ({ x, y, w }) => `
+    <path d="M${x - w / 2 + 2} ${y - 3} Q${x} ${y + 6} ${x + w / 2 - 2} ${y - 3}" stroke="#2f6b3f" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="${x}" cy="${y + 2}" r="6" fill="${GOLD}" stroke="${GOLD_DARK}" stroke-width="2"/>`,
+};
+
+// Parts of a neck item drawn before the body, so they sit behind it.
+const BEHIND = {
+  dragonCape: ({ x, y, w }) => `
+    <path d="M${x - w / 2 - 4} ${y - 4} L${x + w / 2 + 4} ${y - 4} L${x + w / 2 + 34} ${y + 72} Q${x} ${y + 84} ${x - w / 2 - 34} ${y + 72} Z" fill="#3f8f4f"/>
+    <path d="M${x - w / 2 - 22} ${y + 48} q12 10 24 0 q12 10 24 0 q12 10 24 0" stroke="#2f6b3f" stroke-width="3" fill="none"/>`,
 };
 
 const FACE = {
@@ -158,6 +201,21 @@ const FACE = {
   monocle: (e) => `
     <circle cx="${e.rx}" cy="${e.y}" r="${e.r + 6}" stroke="${GOLD_DARK}" stroke-width="2.5" fill="#ffffff" fill-opacity="0.15"/>
     <path d="M${e.rx + e.r + 4} ${e.y + 4} Q${e.rx + e.r + 12} ${e.y + 24} ${e.rx + 2} ${e.y + 34}" stroke="${GOLD_DARK}" stroke-width="1.5" fill="none"/>`,
+  sunglasses: (e) => `
+    <rect x="${e.lx - e.r - 6}" y="${e.y - e.r - 3}" width="${2 * e.r + 12}" height="${2 * e.r + 6}" rx="5" fill="${INK}"/>
+    <rect x="${e.rx - e.r - 6}" y="${e.y - e.r - 3}" width="${2 * e.r + 12}" height="${2 * e.r + 6}" rx="5" fill="${INK}"/>
+    <line x1="${e.lx + e.r + 6}" y1="${e.y}" x2="${e.rx - e.r - 6}" y2="${e.y}" stroke="${INK}" stroke-width="3"/>`,
+  starGlasses: (e) => {
+    const star = (cx) => {
+      const pts = Array.from({ length: 10 }, (_, i) => {
+        const r = i % 2 ? (e.r + 4) * 0.5 : e.r + 8;
+        const a = (Math.PI / 5) * i - Math.PI / 2;
+        return `${cx + r * Math.cos(a)},${e.y + r * Math.sin(a)}`;
+      });
+      return `<polygon points="${pts.join(" ")}" fill="#f48fb1" fill-opacity="0.85" stroke="#b4506f" stroke-width="2"/>`;
+    };
+    return star(e.lx) + star(e.rx) + `<line x1="${e.lx + e.r + 4}" y1="${e.y}" x2="${e.rx - e.r - 4}" y2="${e.y}" stroke="#b4506f" stroke-width="2.5"/>`;
+  },
 };
 
 export function creatureSvg(creature, { size = 200, label } = {}) {
@@ -167,6 +225,7 @@ export function creatureSvg(creature, { size = 200, label } = {}) {
   const acc = creature.accessories || {};
   const name = label ?? (creature.name ? `${creature.name}, a ${SPECIES[species].label.toLowerCase()}` : SPECIES[species].label);
   return `<svg viewBox="0 0 200 200" width="${size}" height="${size}" role="img" aria-label="${escapeAttr(name)}">
+    ${BEHIND[acc.neck] ? BEHIND[acc.neck](s.neck) : ""}
     ${s.body}
     ${(NECK[acc.neck] || NECK.none)(s.neck)}
     ${eyes(s.eyes, p)}

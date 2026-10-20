@@ -1,6 +1,7 @@
 // Creature creator (SPEC §3): species, palette, accessories and a name.
 import { h, clear } from "../dom.js";
 import { creatureSvg } from "../creature-art.js";
+import { SHOP_BY_ID } from "../../data/shop.js";
 import { SPECIES, PALETTES, ACCESSORIES, ACCESSORY_SLOTS, NAME_IDEAS, LAST_NAME_IDEAS, NAME_MAX, defaultCreature, fullName } from "../../data/creatures.js";
 
 export function render(root, { game, advance, back, editing, track, refreshWho }) {
@@ -13,6 +14,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
   const speciesRow = h("div.tile-row");
   const paletteRow = h("div.swatch-row");
   const accessoryRows = h("div");
+  const backgroundRow = h("div.chip-group");
   const nameInput = h("input", { type: "text", maxlength: NAME_MAX, value: draft.name, id: "creature-name", autocomplete: "off" });
   const lastInput = h("input", { type: "text", maxlength: NAME_MAX, value: draft.lastName, id: "creature-last-name", autocomplete: "off", placeholder: "Optional" });
   const error = h("p.error", { role: "alert" });
@@ -45,18 +47,29 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
       );
     }
 
+    clear(backgroundRow);
+    for (const [key, text] of [["none", "Plain"], ...ownedOf("background")]) {
+      backgroundRow.append(h("button.chip", { type: "button", "aria-pressed": String((draft.background || "none") === key), onclick: () => set("background", key === "none" ? null : key) }, text));
+    }
+    preview.className = `creature-preview ${draft.background ? `creature-stage bg-${draft.background}` : ""}`;
+
     clear(accessoryRows);
     for (const [slot, label] of Object.entries(ACCESSORY_SLOTS)) {
       accessoryRows.append(
         h(
           "div.chip-group",
           h("span.chip-label", label),
-          Object.entries(ACCESSORIES[slot]).map(([key, text]) =>
+          [...Object.entries(ACCESSORIES[slot]), ...ownedOf(slot)].map(([key, text]) =>
             h("button.chip", { type: "button", "aria-pressed": String(draft.accessories[slot] === key), onclick: () => setAccessory(slot, key) }, text)
           )
         )
       );
     }
+  }
+
+  // Items bought in the shop join the choices (SPEC §18).
+  function ownedOf(kind) {
+    return (game.save.play?.owned || []).map((id) => SHOP_BY_ID[id]).filter((i) => i && i.kind === kind).map((i) => [i.id, `${i.icon} ${i.name}`]);
   }
 
   function set(field, value) {
@@ -109,8 +122,10 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
       h("h3", "Colors"),
       paletteRow,
       h("h3", "Accessories"),
-      h("p.note.tight", "You can buy more in the shop later."),
+      h("p.note.tight", "Buy more in the shop after Chapter 1."),
       accessoryRows,
+      ownedOf("background").length ? h("h3", "Background") : null,
+      ownedOf("background").length ? backgroundRow : null,
       h("h3", h("label", { for: "creature-name" }, "Name")),
       h("div.name-row", nameInput, ideaBtn),
       h("h3", h("label", { for: "creature-last-name" }, "Last name")),

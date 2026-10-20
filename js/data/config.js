@@ -16,10 +16,17 @@ export const CONFIG = {
 
   // The month loop after Chapter 1 (SPEC §8).
   play: {
-    // Placeholder work shift until the Phase 6 minigames: pay is $40 to $120.
-    shift: { base: 40, perCorrect: 20, items: 4 },
     raiseBonus: 10,
     cashAdvanceFee: { percent: 0.05, min: 10 },
+    // Work shift minigames (SPEC §17). Pay stays between min and max, plus experience.
+    jobs: {
+      pay: { min: 40, max: 120 },
+      // Every `everyShifts` shifts at one job adds `bonus` dollars, up to `max`.
+      experience: { everyShifts: 3, bonus: 5, max: 20 },
+      ledger: { seconds: 45, untimedItems: 12, perRight: 8, perWrong: 4 },
+      cashier: { seconds: 60, untimedCustomers: 6, perRight: 14 },
+      checks: { perField: 13 },
+    },
     monthRecordsKept: 6,
   },
 

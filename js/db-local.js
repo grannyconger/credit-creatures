@@ -40,7 +40,9 @@ export async function findClassByCode(code) {
 }
 
 export async function getClass(classId) {
-  return classId === LOCAL_CLASS.classId ? { id: classId, name: LOCAL_CLASS.name, releasedChapter: read("class/released") || 1 } : null;
+  return classId === LOCAL_CLASS.classId
+    ? { id: classId, name: LOCAL_CLASS.name, releasedChapter: read("class/released") || 1, leaderboard: read("class/leaderboard") ?? true }
+    : null;
 }
 
 export async function loadSave(uid) {
@@ -66,6 +68,28 @@ export async function sendFeedback(report) {
 // Local stand-in for the teacher's "Release next chapter" button.
 export async function releaseChapter(classId, chapter) {
   if (classId === LOCAL_CLASS.classId) write("class/released", chapter);
+}
+
+// Pretend classmates, so the leaderboard has something to rank against.
+const CLASSMATES = [
+  { uid: "c1", creatureName: "Nova Glimmerstone", displayName: "Avery", xp: 420, rank: "Knight", species: "crystalOwl", palette: "frost" },
+  { uid: "c2", creatureName: "Biscuit McScales", displayName: "Jordan", xp: 260, rank: "Squire", species: "mossDragon", palette: "sunny" },
+  { uid: "c3", creatureName: "Ember Lanternby", displayName: "Riley", xp: 610, rank: "Baron", species: "lanternFox", palette: "ember" },
+  { uid: "c4", creatureName: "Puddles", displayName: "Sam", xp: 90, rank: "Apprentice", species: "puddleGolem", palette: "midnight" },
+  { uid: "c5", creatureName: "Clover Thistledown", displayName: "Taylor", xp: 330, rank: "Knight", species: "mossDragon", palette: "rose" },
+];
+
+export async function writeLeaderboard(classId, uid, entry) {
+  write("leaderboard/me", { uid, ...entry });
+}
+
+export async function readLeaderboard() {
+  const me = read("leaderboard/me");
+  return [...CLASSMATES, ...(me ? [me] : [])].sort((a, b) => b.xp - a.xp);
+}
+
+export async function setLeaderboardOn(classId, on) {
+  write("class/leaderboard", on);
 }
 
 export function resetLocal() {

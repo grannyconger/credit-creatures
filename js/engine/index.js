@@ -36,5 +36,5 @@ export { minPayment, monthlyInterest, amortizedPayment, payoffPlan, minimumOnlyP
 export { createRng, seedFrom } from "./rng.js";
 export { getTeenDebitCard, tutorialShiftPay, timeSkip } from "./onboarding.js";
 export { replayLife } from "./replay.js";
-export { runSteps, resolveChoice, paymentOptions, paymentStep, drawLifeEvent, drawDecisionCards, shiftPay, ownCards, utilization, upcomingPayments } from "./cards.js";
+export { runSteps, resolveChoice, paymentOptions, paymentStep, drawLifeEvent, drawDecisionCards, ownCards, utilization, upcomingPayments } from "./cards.js";
 export { dollars } from "./util.js";

@@ -22,7 +22,7 @@
         <div id="classes" hidden>
           <h3>Your classes</h3>
           <table class="class-table">
-            <thead><tr><th>Class</th><th>Join code</th><th>Chapters open</th><th>Release</th></tr></thead>
+            <thead><tr><th>Class</th><th>Join code</th><th>Chapters open</th><th>Release</th><th>Leaderboard</th></tr></thead>
             <tbody id="class-rows"></tbody>
           </table>
           <form id="create-form" class="create-form">
@@ -31,6 +31,7 @@
             <button id="create" type="submit">Create class</button>
           </form>
           <p class="note">Give students the join code. They type it after they make their creature.</p>
+          <p class="note">The leaderboard ranks students in a class by XP and shows only creature names, display names and XP.</p>
           <p class="note">Chapter 1 is always open. Students can't play past the newest chapter you release. Each chapter is 3 game months (about 10 to 15 minutes).</p>
         </div>
         <button id="sign-out" class="secondary" type="button">Sign out</button>
@@ -52,7 +53,7 @@
       $("error").textContent = "Sign-in is not set up yet.";
     } else {
       const { signIn, signOut, onUser, isTeacher } = await import("../js/auth.js");
-      const { createClass, listMyClasses, releaseChapter } = await import("../js/db.js");
+      const { createClass, listMyClasses, releaseChapter, setLeaderboardOn } = await import("../js/db.js");
       let me = null;
 
       function addRow(c, detached = false) {
@@ -86,6 +87,28 @@
         });
         td.append(btn);
         tr.append(td);
+        const lbTd = document.createElement("td");
+        const lb = document.createElement("button");
+        const on = c.leaderboard !== false;
+        lb.type = "button";
+        lb.className = on ? "small" : "small secondary";
+        lb.textContent = on ? "On (turn off)" : "Off (turn on)";
+        lb.setAttribute("aria-pressed", String(on));
+        lb.addEventListener("click", async () => {
+          lb.disabled = true;
+          $("error").textContent = "";
+          try {
+            await setLeaderboardOn(c.id, !on);
+            c.leaderboard = !on;
+            tr.replaceWith(addRow(c, true));
+          } catch (err) {
+            console.error(err);
+            lb.disabled = false;
+            $("error").textContent = "Could not change the leaderboard. Check that the new Firestore rules are published.";
+          }
+        });
+        lbTd.append(lb);
+        tr.append(lbTd);
         if (detached) return tr;
         $("class-rows").append(tr);
       }

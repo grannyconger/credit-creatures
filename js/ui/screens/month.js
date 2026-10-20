@@ -1,12 +1,13 @@
 // One game month (SPEC §8): a life card, Decision cards, work shifts, bills,
 // then End Month. In practice mode the same screen runs on a throwaway copy.
 import { h, add, fill, money, ageLabel, toast } from "../dom.js";
-import { pay, moveToSavings, moveToChecking, shiftPay, ownCards, upcomingPayments, utilization, amountOwed } from "../../engine/index.js";
+import { pay, moveToSavings, moveToChecking, ownCards, upcomingPayments, utilization, amountOwed } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { chapterInfo } from "../../data/chapters.js";
 import * as P from "../../play.js";
 import { decisionCard } from "../decision-card.js";
-import { shiftGame } from "../shift.js";
+import { jobBoard } from "../job-board.js";
+import { notePayment } from "../../progress.js";
 import { billsPanel } from "../bills-panel.js";
 import { moneyChips, accountButtons } from "../wallet.js";
 import { createRng } from "../../engine/index.js";
@@ -19,6 +20,8 @@ export function render(root, { game, go, track, refreshWho }) {
   root.append(panel);
   let view = null;
   let monthStartedAt = Date.now();
+  // The job board, so a running minigame timer can stop when the screen repaints.
+  let board = null;
 
   const items = () => {
     const m = run.play.active.month;
@@ -43,6 +46,8 @@ export function render(root, { game, go, track, refreshWho }) {
   }
 
   function paint() {
+    board?.stop();
+    board = null;
     const play = run.play;
     if (!play.active) return go(play.summary ? "chapterEnd" : "hub");
     skipStale();
@@ -174,38 +179,22 @@ export function render(root, { game, go, track, refreshWho }) {
   function workView() {
     const play = run.play;
     const left = P.shiftsLeft(play);
-    const s = CONFIG.play.shift;
-    const wrap = h(
-      "div",
-      h("h2", "💼 Work a shift"),
-      h(
-        "p",
-        `You keep the books at The Gilded Vault. Sort ${s.items} items: is each one something you OWN or something you OWE? Pay is ${money(s.base + play.shiftBonus)} plus ${money(s.perCorrect)} for each right answer.`
-      )
-    );
+    const wrap = h("div", h("h2", "💼 Work a shift"), h("p", "Pick a job. Pay depends on how well you do, and it goes up as you get more experience at a job."));
     if (left <= 0) {
       add(wrap, h("p.callout", "No shifts left this month."), h("div.row", h("button", { type: "button", onclick: () => ((view = "end"), paint()) }, "Go to End Month")));
       return wrap;
     }
-    add(
-      wrap,
-      h("p.muted", `${left} shift${left === 1 ? "" : "s"} left this month.`),
-      shiftGame({
-        seed: `${run.life.seed}:shift:${run.life.month}:${play.active.month.shifts}`,
-        count: s.items,
-        payFor: (correct) => shiftPay(correct, play.shiftBonus),
-        track,
-        onCollect: async ({ correct, total, seconds }) => {
-          const r = P.workShift(play, run.life, correct);
-          if (!r.ok) return toast(r.message, "bad");
-          run.life = r.life;
-          track("workShift", { correct, total, pay: r.pay, seconds, n: play.active.month.shifts });
-          toast(`${money(r.pay)} went into checking.`, "good");
-          await save("shift");
-          paint();
-        },
-      })
-    );
+    board = jobBoard({
+      game,
+      run,
+      track,
+      save,
+      onCollected: (pay) => {
+        toast(`${money(pay)} went into checking.`, "good");
+        paint();
+      },
+    });
+    add(wrap, h("p.muted", `${left} shift${left === 1 ? "" : "s"} left this month.`), board);
     return wrap;
   }
 
@@ -216,8 +205,10 @@ export function render(root, { game, go, track, refreshWho }) {
       billsPanel({
         life: run.life,
         onPay: async (accountId, amount, kind) => {
-          const r = pay(run.life, accountId, amount);
+          const before = run.life;
+          const r = pay(before, accountId, amount);
           if (!r.ok) return toast(r.message, "bad");
+          notePayment(run.play, before, accountId, r.paid);
           run.life = r.life;
           track("billPay", { kind, amount: r.paid });
           toast(r.message, "good");
@@ -312,4 +303,5 @@ export function render(root, { game, go, track, refreshWho }) {
   }
 
   paint();
+  return () => board?.stop();
 }

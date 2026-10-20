@@ -95,3 +95,19 @@ Until you publish, students who reach the hub will see "We couldn't save just no
 2. In the class table, click **Release Chapter 2** for the class. Confirm the pop-up.
 3. Students on the hub click **Check again** (or reload) and **Start Chapter 2** appears.
 4. Each chapter is 3 game months. Release the next one when the class is ready. Students can't play past the newest released chapter, but they can replay finished chapters in practice mode, which never changes their real game.
+
+## 12. Publish the Phase 6 rules (once)
+
+Phase 6 adds the class leaderboard, so the rules need one more update. Same steps as before:
+
+1. Open https://console.firebase.google.com and click the **credit-life** project.
+2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
+3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
+4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
+5. Click **Publish**. Wait for "Rules published."
+
+Until you publish, the game still saves. Only the leaderboard stays empty.
+
+## 13. Turn the leaderboard on or off
+
+On `/credit-life/teacher/`, the **Leaderboard** column shows **On (turn off)** or **Off (turn on)** for each class. It starts on. It ranks students by XP and shows only creature names, display names and XP.
