@@ -1,5 +1,5 @@
 // Lesson moment: lenders vs payment networks (SPEC §7), 3 screens and a quick check.
-import { h, clear } from "../dom.js";
+import { h, add, clear } from "../dom.js";
 import { NETWORK_SLIDES, NETWORK_QUIZ } from "../../data/onboarding.js";
 
 export function render(root, { advance, track }) {
@@ -13,7 +13,8 @@ export function render(root, { advance, track }) {
     panel.append(h("p.step-label", "Chapter 1: who is behind a card"));
     if (k === NETWORK_SLIDES.length) return quiz();
     const s = NETWORK_SLIDES[k];
-    panel.append(
+    add(
+      panel,
       h("div.slide-icon", s.icon),
       h("h1", s.title),
       s.body.map((p) => h("p", p)),

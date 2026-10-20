@@ -1,6 +1,6 @@
 // Tutorial months (SPEC §6): a guided work shift, a debit purchase, End Month,
 // a "your report is thin" explainer and a tour of the 5 score factors.
-import { h, clear, money } from "../dom.js";
+import { h, add, clear, money } from "../dom.js";
 import { earn, debitPurchase, endMonth, tutorialShiftPay, creditReport } from "../../engine/index.js";
 import { SHIFT_ITEMS_PER_SHIFT, FIRST_PURCHASES, FACTOR_TOUR } from "../../data/onboarding.js";
 import { CONFIG } from "../../data/config.js";
@@ -296,5 +296,5 @@ function endMonthStage(el, { game, next, advance, track }, { title, text, button
     if (after) await advance(after);
     else await next();
   });
-  el.append(h("h1", title), text.map((t) => h("p", t)), h("div.row", btn));
+  add(el, h("h1", title), text.map((t) => h("p", t)), h("div.row", btn));
 }
