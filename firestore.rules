@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Phase 7 rules. Students write only their own data. Teachers read only their own classes.
+// Phase 8 rules. Students write only their own data. Teachers read only their own classes.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -82,11 +82,12 @@ service cloud.firestore {
       // Teachers change only these settings, within sensible ranges.
       allow update: if isTeacher()
         && resource.data.teacherEmail == myEmail()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'releasedChapter', 'leaderboard', 'paused', 'monthsPerChapter'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'releasedChapter', 'leaderboard', 'paused', 'monthsPerChapter', 'social'])
         && request.resource.data.releasedChapter is int
         && request.resource.data.releasedChapter >= 1 && request.resource.data.releasedChapter <= 30
         && request.resource.data.get('leaderboard', true) is bool
         && request.resource.data.get('paused', false) is bool
+        && request.resource.data.get('social', true) is bool
         && request.resource.data.get('monthsPerChapter', 3) is int
         && request.resource.data.get('monthsPerChapter', 3) >= 1
         && request.resource.data.get('monthsPerChapter', 3) <= 6
@@ -129,6 +130,115 @@ service cloud.firestore {
         && shortString('rank', 30)
         && shortString('species', 30)
         && shortString('palette', 30);
+    }
+
+    // ---------- Social (Phase 8): friends, groups and gifts ----------
+    // Everything lives under the class, so the class check comes from the path.
+    // Only classmates take part, and only while the teacher has Social on.
+    function classOf(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data.get('classId', '');
+    }
+    function socialOn(classId) {
+      return get(/databases/$(database)/documents/classes/$(classId)).data.get('social', true) == true;
+    }
+    function teachesClass(classId) {
+      return isTeacher() && get(/databases/$(database)/documents/classes/$(classId)).data.teacherEmail == myEmail();
+    }
+    function friendsIn(classId, a, b) {
+      return (exists(/databases/$(database)/documents/social/$(classId)/requests/$(a + '_' + b))
+          && get(/databases/$(database)/documents/social/$(classId)/requests/$(a + '_' + b)).data.status == 'accepted')
+        || (exists(/databases/$(database)/documents/social/$(classId)/requests/$(b + '_' + a))
+          && get(/databases/$(database)/documents/social/$(classId)/requests/$(b + '_' + a)).data.status == 'accepted');
+    }
+
+    // Friend requests. The id is fromUid_toUid. accepted means friends.
+    match /social/{classId}/requests/{id} {
+      allow read: if isSchool() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid || teachesClass(classId));
+      allow create: if isSchool()
+        && request.resource.data.keys().hasOnly(['from', 'to', 'fromName', 'toName', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.to != request.auth.uid
+        && id == request.resource.data.from + '_' + request.resource.data.to
+        && request.resource.data.status == 'pending'
+        && classOf(request.auth.uid) == classId
+        && classOf(request.resource.data.to) == classId
+        && socialOn(classId)
+        && !exists(/databases/$(database)/documents/social/$(classId)/requests/$(request.resource.data.to + '_' + request.auth.uid))
+        && shortString('fromName', 41)
+        && shortString('toName', 41);
+      // The person asked accepts or declines. Nothing else can change.
+      allow update: if isSchool()
+        && resource.data.to == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+        && request.resource.data.status in ['accepted', 'declined'];
+      // Either person can cancel a request or unfriend.
+      allow delete: if isSchool() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+    }
+
+    // Friend groups: a preset name and up to 6 members. A student can only add
+    // or remove themselves.
+    match /social/{classId}/groups/{groupId} {
+      allow read: if isSchool() && (classOf(request.auth.uid) == classId || teachesClass(classId));
+      allow create: if isSchool()
+        && request.resource.data.keys().hasOnly(['name', 'icon', 'members', 'createdBy', 'createdAt'])
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.members == [request.auth.uid]
+        && classOf(request.auth.uid) == classId
+        && socialOn(classId)
+        && shortString('name', 40)
+        && shortString('icon', 8);
+      allow update: if isSchool()
+        && classOf(request.auth.uid) == classId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members'])
+        && request.resource.data.members.size() <= 6
+        && (
+          (!(request.auth.uid in resource.data.members)
+            && request.resource.data.members.toSet() == resource.data.members.toSet().union([request.auth.uid].toSet())
+            && request.resource.data.members.size() == resource.data.members.size() + 1
+            && socialOn(classId))
+          || ((request.auth.uid in resource.data.members)
+            && !(request.auth.uid in request.resource.data.members)
+            && resource.data.members.toSet().difference(request.resource.data.members.toSet()) == [request.auth.uid].toSet())
+        );
+      // The last member to leave deletes the group.
+      allow delete: if isSchool() && resource.data.members == [request.auth.uid];
+    }
+
+    // Gifts between friends: $5 to $50 or a shop item, with a preset message.
+    // Sending writes the gift and giftLimits/{uid} in one batch, and the limit
+    // allows one gift every 40 hours, timed by the server.
+    match /social/{classId}/gifts/{giftId} {
+      allow read: if isSchool() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid || teachesClass(classId));
+      allow create: if isSchool()
+        && request.resource.data.keys().hasOnly(['from', 'to', 'fromName', 'kind', 'amount', 'itemId', 'message', 'sentAt', 'claimed'])
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.claimed == false
+        && request.resource.data.sentAt == request.time
+        && request.resource.data.message is int
+        && request.resource.data.message >= 0 && request.resource.data.message < 20
+        && ((request.resource.data.kind == 'money'
+            && request.resource.data.amount is int
+            && request.resource.data.amount >= 5 && request.resource.data.amount <= 50)
+          || (request.resource.data.kind == 'item' && shortString('itemId', 30)))
+        && shortString('fromName', 41)
+        && classOf(request.auth.uid) == classId
+        && socialOn(classId)
+        && friendsIn(classId, request.auth.uid, request.resource.data.to)
+        && getAfter(/databases/$(database)/documents/giftLimits/$(request.auth.uid)).data.lastSentAt == request.time;
+      // Only the receiver claims it, once.
+      allow update: if isSchool()
+        && resource.data.to == request.auth.uid
+        && resource.data.claimed == false
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimed', 'claimedAt'])
+        && request.resource.data.claimed == true;
+    }
+
+    match /giftLimits/{uid} {
+      allow read: if isMe(uid);
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['lastSentAt'])
+        && request.resource.data.lastSentAt == request.time
+        && (resource == null || request.time > resource.data.lastSentAt + duration.value(40, 'h'));
     }
 
     // Play telemetry (docs/FEEDBACK.md). Students write their own and never read.

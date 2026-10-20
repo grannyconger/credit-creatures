@@ -34,9 +34,9 @@ A classroom game where students raise a fantasy creature through its credit life
 | 4 | Simulation: hub, month loop, life events, ~20 scenarios, chapters, chapter release, reflections | Done, approved |
 | 5 | Account Management: wallet, statements, bills, AutoPay, My Score, report, Practice Desk, inbox, themes, Sparkle Points | Done, approved |
 | 6 | Economy and engagement: Ledger Sort, Cashier Rush, Check Writer, shop, BNPL checkout, 40+ achievements, XP, ranks, leaderboard | Done, approved |
-| 7 | Teacher: dashboard, roster, controls, CSV export, Tuning tab, rules hardening (plus unlock pop-ups, local credit unions, signature font) | Done, awaiting approval |
-| 8 | Social and customization: friend requests, friend groups, gifts every 40 hours, bigger creature customizer | Next |
-| 9 | Pilot: one class plays, tune numbers, add remaining content | |
+| 7 | Teacher: dashboard, roster, controls, CSV export, Tuning tab, rules hardening (plus unlock pop-ups, local credit unions, signature font) | Done, approved |
+| 8 | Social and customization: friend requests, friend groups, gifts every 40 hours, bigger creature customizer | Done, awaiting approval |
+| 9 | Pilot: one class plays, tune numbers, add remaining content | Next |
 
 ## Run locally
 

@@ -49,6 +49,7 @@ export async function getClass(classId) {
         leaderboard: read("class/leaderboard") ?? true,
         paused: read("class/paused") ?? false,
         monthsPerChapter: read("class/months") || 3,
+        social: read("class/social") ?? true,
       }
     : null;
 }
@@ -107,7 +108,7 @@ export async function listMyClasses() {
 }
 
 export async function updateClass(classId, fields) {
-  const keys = { releasedChapter: "class/released", leaderboard: "class/leaderboard", paused: "class/paused", monthsPerChapter: "class/months" };
+  const keys = { releasedChapter: "class/released", leaderboard: "class/leaderboard", paused: "class/paused", monthsPerChapter: "class/months", social: "class/social" };
   for (const [k, v] of Object.entries(fields)) if (keys[k]) write(keys[k], v);
 }
 
@@ -128,6 +129,105 @@ export async function listEvents(uid) {
 
 export async function listFeedback() {
   return (read("feedback") || []).map((f, i) => ({ id: `local-${i}`, ...f }));
+}
+
+// ---------- social, with pretend classmates who answer right away ----------
+
+const HOURS = 60 * 60 * 1000;
+
+function social() {
+  return (
+    read("social") || {
+      requests: [{ id: `c3_${LOCAL_USER.uid}`, from: "c3", to: LOCAL_USER.uid, fromName: "Ember Lanternby", toName: "", status: "pending" }],
+      groups: [{ id: "g1", name: "The Golden Lanterns", icon: "🏮", members: ["c1", "c2"], createdBy: "c1" }],
+      gifts: [{ id: "gift1", from: "c1", to: LOCAL_USER.uid, fromName: "Nova Glimmerstone", kind: "money", amount: 20, message: 4, sentAt: Date.now() - 2 * HOURS, claimed: false }],
+      lastGiftAt: null,
+    }
+  );
+}
+const saveSocial = (s) => write("social", s);
+
+export async function listRequests() {
+  const s = social();
+  // Pretend classmates accept requests as soon as they're sent.
+  for (const r of s.requests) if (r.from === LOCAL_USER.uid && r.status === "pending") r.status = "accepted";
+  saveSocial(s);
+  return s.requests;
+}
+
+export async function sendFriendRequest(classId, from, to, fromName, toName) {
+  const s = social();
+  if (s.requests.some((r) => r.id === `${to}_${from}`)) throw new Error("They already asked you.");
+  s.requests.push({ id: `${from}_${to}`, from, to, fromName, toName, status: "pending" });
+  saveSocial(s);
+}
+
+export async function answerFriendRequest(classId, id, status) {
+  const s = social();
+  s.requests.find((r) => r.id === id).status = status;
+  saveSocial(s);
+}
+
+export async function removeFriendRequest(classId, id) {
+  const s = social();
+  s.requests = s.requests.filter((r) => r.id !== id);
+  saveSocial(s);
+}
+
+export async function listGroups() {
+  return social().groups;
+}
+
+export async function createGroup(classId, uid, name, icon) {
+  const s = social();
+  const id = `g${Date.now()}`;
+  s.groups.push({ id, name, icon, members: [uid], createdBy: uid });
+  saveSocial(s);
+  return id;
+}
+
+export async function joinGroup(classId, groupId, uid) {
+  const s = social();
+  const g = s.groups.find((x) => x.id === groupId);
+  if (g.members.length >= 6) throw new Error("That group is full.");
+  if (!g.members.includes(uid)) g.members.push(uid);
+  saveSocial(s);
+}
+
+export async function leaveGroup(classId, groupId, uid, lastOne) {
+  const s = social();
+  if (lastOne) s.groups = s.groups.filter((x) => x.id !== groupId);
+  else s.groups.find((x) => x.id === groupId).members = s.groups.find((x) => x.id === groupId).members.filter((m) => m !== uid);
+  saveSocial(s);
+}
+
+export async function listGifts(classId, uid) {
+  const s = social();
+  return { incoming: s.gifts.filter((g) => g.to === uid), outgoing: s.gifts.filter((g) => g.from === uid) };
+}
+
+export async function lastGiftAt() {
+  return social().lastGiftAt;
+}
+
+// Same 40-hour limit as the Firestore rules.
+export async function sendGift(classId, gift) {
+  const s = social();
+  if (s.lastGiftAt && Date.now() - s.lastGiftAt < 40 * HOURS) throw Object.assign(new Error("Too soon"), { code: "permission-denied" });
+  s.gifts.push({ id: `gift${Date.now()}`, ...gift, sentAt: Date.now(), claimed: false });
+  s.lastGiftAt = Date.now();
+  saveSocial(s);
+}
+
+export async function claimGift(classId, giftId) {
+  const s = social();
+  s.gifts.find((g) => g.id === giftId).claimed = true;
+  saveSocial(s);
+}
+
+export async function listClassSocial() {
+  const s = social();
+  return { requests: s.requests, gifts: s.gifts };
 }
 
 export function resetLocal() {

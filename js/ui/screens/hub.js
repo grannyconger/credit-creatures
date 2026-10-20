@@ -104,7 +104,7 @@ export function render(root, { game, go, track, saveAndQuit }) {
       "section.panel.hub",
       h(
         "div.hero",
-        h("div.hero-art.creature-stage", { class: c.background ? `bg-${c.background}` : "", html: creatureSvg(c, { size: 150 }) }),
+        h("div.hero-art.creature-stage", { class: c.background ? `bg-${c.background}` : "", html: creatureSvg(c, { size: 150, ageMonths: life.ageMonths }) }),
         h(
           "div",
           h("p.step-label", "Your hub"),

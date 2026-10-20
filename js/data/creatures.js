@@ -15,7 +15,16 @@ export const PALETTES = {
   sunny: { label: "Sunny", body: "#f2c84b", belly: "#fff2c4", accent: "#c0901a", eye: "#3a2a10" },
   midnight: { label: "Midnight", body: "#40456e", belly: "#a7acd8", accent: "#252848", eye: "#f6f1e7" },
   rose: { label: "Rose", body: "#e88aa8", belly: "#fcdde7", accent: "#b4506f", eye: "#3a1a26" },
+  ocean: { label: "Ocean", body: "#2f8fa8", belly: "#c9eef5", accent: "#1d5f73", eye: "#0f2a33" },
+  mint: { label: "Mint", body: "#8fd6b4", belly: "#e8f8ef", accent: "#3f9a75", eye: "#1d3a2e" },
+  lavender: { label: "Lavender", body: "#b9a3e3", belly: "#f1ecfb", accent: "#7c62b8", eye: "#2a1f45" },
+  copper: { label: "Copper", body: "#b8733d", belly: "#f1d9c0", accent: "#7a4520", eye: "#2b1a0e" },
+  snow: { label: "Snow", body: "#eef1f6", belly: "#ffffff", accent: "#9aa7bd", eye: "#2b2340" },
 };
+
+// Face markings and eye styles (Phase 8 customizer).
+export const MARKINGS = { none: "None", blush: "Rosy cheeks", freckles: "Freckles", star: "Forehead star", heart: "Heart cheek" };
+export const EYE_STYLES = { round: "Round", happy: "Happy", sleepy: "Sleepy", sparkle: "Sparkly" };
 
 export const ACCESSORIES = {
   head: {
@@ -36,9 +45,15 @@ export const ACCESSORIES = {
     glasses: "Round glasses",
     monocle: "Monocle",
   },
+  held: {
+    none: "None",
+    balloon: "Balloon",
+    book: "Book",
+    lantern: "Lantern",
+  },
 };
 
-export const ACCESSORY_SLOTS = { head: "Head", neck: "Neck", face: "Face" };
+export const ACCESSORY_SLOTS = { head: "Head", neck: "Neck", face: "Face", held: "Paw" };
 
 export const NAME_IDEAS = ["Pip", "Mossy", "Biscuit", "Nova", "Pebble", "Ziggy", "Clover", "Ember", "Waffles", "Juniper", "Puddles", "Sprout"];
 
@@ -52,5 +67,5 @@ export function fullName(creature) {
 }
 
 export function defaultCreature() {
-  return { name: "", lastName: "", species: "mossDragon", palette: "moss", accessories: { head: "none", neck: "none", face: "none" } };
+  return { name: "", lastName: "", species: "mossDragon", palette: "moss", markings: "none", eyes: "round", accessories: { head: "none", neck: "none", face: "none", held: "none" } };
 }

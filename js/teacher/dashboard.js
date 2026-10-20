@@ -14,7 +14,7 @@ import { chapterInfo } from "../data/chapters.js";
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 const root = document.getElementById("teacher");
-const state = { me: null, db: null, classes: [], classId: null, tab: "roster", saves: [], rows: [], sort: ["studentName", 1], tuning: null, feedback: null };
+const state = { me: null, db: null, classes: [], classId: null, tab: "roster", saves: [], rows: [], sort: ["studentName", 1], tuning: null, feedback: null, social: null };
 
 boot();
 
@@ -105,7 +105,7 @@ function classPicker() {
     "div.chip-group",
     { role: "group", "aria-label": "Your classes" },
     state.classes.map((c) =>
-      h("button.chip", { type: "button", "aria-pressed": String(c.id === state.classId), onclick: () => ((state.classId = c.id), (state.tuning = null), (state.feedback = null), paint(), loadRoster()) }, c.name)
+      h("button.chip", { type: "button", "aria-pressed": String(c.id === state.classId), onclick: () => ((state.classId = c.id), (state.tuning = null), (state.feedback = null), (state.social = null), paint(), loadRoster()) }, c.name)
     )
   );
 }
@@ -181,6 +181,7 @@ function controls(c) {
         h("p", c.paused ? "⏸️ Paused" : "▶️ Running"),
         h("button.small", { type: "button", class: c.paused ? "" : "secondary", onclick: () => save({ paused: !c.paused }, "pause") }, c.paused ? "Resume play" : "Pause play")
       ),
+      h("div", h("strong", "Friends and gifts"), h("p", c.social === false ? "Off" : "On"), h("button.small.secondary", { type: "button", onclick: () => save({ social: c.social === false }, "friends and gifts") }, c.social === false ? "Turn on" : "Turn off")),
       h("div", h("strong", "Leaderboard"), h("p", c.leaderboard === false ? "Off" : "On"), h("button.small.secondary", { type: "button", onclick: () => save({ leaderboard: c.leaderboard === false }, "the leaderboard") }, c.leaderboard === false ? "Turn on" : "Turn off")),
       h("div", h("label", { for: "months" }, h("strong", "Months per chapter")), months, h("small.muted", "Applies to chapters students start from now on."))
     )
@@ -303,6 +304,8 @@ function detail(uid) {
   const d = studentDetail(raw);
   const r = d.row;
   const dialog = h("dialog.t-detail", { "aria-label": `Details for ${r.studentName}` });
+  const socialBox = h("div", h("p.muted", "Loading..."));
+  loadSocial(uid, socialBox);
   const close = () => (dialog.close(), dialog.remove());
   const reset = async () => {
     const typed = prompt(`Reset ${r.studentName}? Their creature, money, score, XP and reflections are deleted, and they start over at the next sign-in. This can't be undone. Type RESET to confirm.`);
@@ -353,6 +356,8 @@ function detail(uid) {
           h("tbody", d.decisions.map((x) => h("tr", h("td", `${x.icon || ""} ${x.title}`), h("td", x.label), h("td", x.quiz ? "Quiz" : x.quality || "–"))))
         )
       : h("p.muted", "No decisions yet."),
+    h("h3", "Friends and gifts"),
+    socialBox,
     h("h3", "Achievements"),
     d.achievements.length ? h("p", d.achievements.map((a) => h("span.t-badge", `${a.icon} ${a.title}`))) : h("p.muted", "None yet."),
     d.life && d.play ? h("details.t-section", h("summary", h("strong", "Score and the 5 parts")), scoreTab({ run: { life: d.life, play: d.play } })) : null,
@@ -361,6 +366,26 @@ function detail(uid) {
   );
   document.body.append(dialog);
   dialog.showModal();
+}
+
+// Friends and gifts for one student (Phase 8). Loaded once per class.
+async function loadSocial(uid, box) {
+  try {
+    state.social ??= await state.db.listClassSocial(state.classId);
+  } catch (err) {
+    console.error(err);
+    return fill(box, h("p.muted", "Couldn't load friends and gifts. Check that the newest Firestore rules are published."));
+  }
+  const name = (id) => state.rows.find((r) => r.uid === id)?.studentName || "a classmate";
+  const friends = state.social.requests.filter((r) => r.status === "accepted" && (r.from === uid || r.to === uid)).map((r) => name(r.from === uid ? r.to : r.from));
+  const gifts = state.social.gifts.filter((g) => g.from === uid || g.to === uid);
+  fill(
+    box,
+    h("p", friends.length ? `Friends: ${friends.join(", ")}` : "No friends yet."),
+    gifts.length
+      ? h("ul", gifts.map((g) => h("li", `${g.from === uid ? `Sent to ${name(g.to)}` : `From ${name(g.from)}`}: ${g.kind === "money" ? money(g.amount) : g.itemId}${g.sentAt ? `, ${new Date(g.sentAt).toLocaleDateString()}` : ""}${g.claimed ? "" : " (not opened)"}`)))
+      : h("p.muted", "No gifts sent or received.")
+  );
 }
 
 function stat(label, value) {

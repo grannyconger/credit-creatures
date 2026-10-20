@@ -94,11 +94,53 @@ const SHAPES = {
   }),
 };
 
-function eyes(e, p) {
-  const one = (x) => `
-    <circle cx="${x}" cy="${e.y}" r="${e.r}" fill="${p.eye}"/>
-    <circle cx="${x + e.r * 0.35}" cy="${e.y - e.r * 0.35}" r="${e.r * 0.38}" fill="#ffffff"/>`;
+// style: round | happy | sleepy | sparkle. scale makes teen eyes a bit bigger.
+function eyes(e, p, style = "round", scale = 1) {
+  const r = e.r * scale;
+  const one = (x) => {
+    if (style === "happy") return `<path d="M${x - r} ${e.y + 1} Q${x} ${e.y - r * 1.3} ${x + r} ${e.y + 1}" stroke="${p.eye}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    if (style === "sleepy")
+      return `<path d="M${x - r} ${e.y} Q${x} ${e.y + r} ${x + r} ${e.y} Z" fill="${p.eye}"/><path d="M${x - r - 1} ${e.y} L${x + r + 1} ${e.y}" stroke="${p.eye}" stroke-width="2" stroke-linecap="round"/>`;
+    const base = `<circle cx="${x}" cy="${e.y}" r="${r}" fill="${p.eye}"/><circle cx="${x + r * 0.35}" cy="${e.y - r * 0.35}" r="${r * 0.38}" fill="#ffffff"/>`;
+    if (style === "sparkle") return base + `<circle cx="${x - r * 0.35}" cy="${e.y + r * 0.3}" r="${r * 0.18}" fill="#ffffff"/>`;
+    return base;
+  };
   return one(e.lx) + one(e.rx);
+}
+
+function markings(e, kind) {
+  const cy = e.y + e.r + 6;
+  const lx = e.lx - e.r - 2;
+  const rx = e.rx + e.r + 2;
+  if (kind === "blush") return `<ellipse cx="${lx}" cy="${cy}" rx="6" ry="3.5" fill="#f48fb1" opacity="0.7"/><ellipse cx="${rx}" cy="${cy}" rx="6" ry="3.5" fill="#f48fb1" opacity="0.7"/>`;
+  if (kind === "freckles")
+    return [[-3, 0], [2, -2], [3, 3]].map(([dx, dy]) => `<circle cx="${lx + dx}" cy="${cy + dy}" r="1.3" fill="#8a5a3c"/><circle cx="${rx - dx}" cy="${cy + dy}" r="1.3" fill="#8a5a3c"/>`).join("");
+  if (kind === "star") {
+    const cx = (e.lx + e.rx) / 2;
+    const y = e.y - e.r - 12;
+    const pts = Array.from({ length: 10 }, (_, i) => {
+      const rr = i % 2 ? 2.6 : 6;
+      const a = (Math.PI / 5) * i - Math.PI / 2;
+      return `${cx + rr * Math.cos(a)},${y + rr * Math.sin(a)}`;
+    });
+    return `<polygon points="${pts.join(" ")}" fill="${GOLD}" stroke="${GOLD_DARK}" stroke-width="1"/>`;
+  }
+  if (kind === "heart") return `<path d="M${rx} ${cy + 4} l-5 -5 a3 3 0 0 1 5 -3 a3 3 0 0 1 5 3 z" fill="#e05a7a"/>`;
+  return "";
+}
+
+// Small signs of growing up (SPEC §3): eyebrows from 20, gray whisker tufts from 22.
+function ageDetails(e, ageMonths, p) {
+  if (!ageMonths) return "";
+  let out = "";
+  if (ageMonths >= 240) {
+    out += [e.lx, e.rx].map((x, i) => `<path d="M${x - e.r} ${e.y - e.r - 5 + (i ? 0 : 1)} Q${x} ${e.y - e.r - 9} ${x + e.r} ${e.y - e.r - 5 + (i ? 1 : 0)}" stroke="${p.eye}" stroke-width="2" fill="none" stroke-linecap="round"/>`).join("");
+  }
+  if (ageMonths >= 264) {
+    const y = e.y + e.r + 10;
+    out += [[e.lx - e.r - 6, -1], [e.rx + e.r + 6, 1]].map(([x, d]) => [0, 4].map((dy) => `<path d="M${x} ${y + dy} l${d * 9} ${dy ? 2 : -1}" stroke="#b9b9c2" stroke-width="1.6" stroke-linecap="round"/>`).join("")).join("");
+  }
+  return out;
 }
 
 function mouth(e, p) {
@@ -192,6 +234,17 @@ const BEHIND = {
     <path d="M${x - w / 2 - 22} ${y + 48} q12 10 24 0 q12 10 24 0 q12 10 24 0" stroke="#2f6b3f" stroke-width="3" fill="none"/>`,
 };
 
+// Held in the paw, to the creature's right.
+const HELD_AT = { x: 150, y: 132 };
+const HELD = {
+  none: () => "",
+  balloon: ({ x, y }) => `<path d="M${x} ${y} Q${x + 6} ${y - 30} ${x + 2} ${y - 52}" stroke="#7a7a8a" stroke-width="1.5" fill="none"/><ellipse cx="${x + 2}" cy="${y - 68}" rx="14" ry="17" fill="#e05a7a"/><path d="M${x - 2} ${y - 51} l4 0 l-2 4 z" fill="#b33d39"/><ellipse cx="${x - 3}" cy="${y - 74}" rx="4" ry="6" fill="#fff" opacity="0.5"/>`,
+  book: ({ x, y }) => `<rect x="${x - 12}" y="${y - 12}" width="24" height="30" rx="3" fill="#2b6cb0"/><rect x="${x - 9}" y="${y - 9}" width="18" height="24" rx="2" fill="#fbf7f0"/><line x1="${x - 5}" y1="${y - 3}" x2="${x + 5}" y2="${y - 3}" stroke="#9aa3b5" stroke-width="1.5"/><line x1="${x - 5}" y1="${y + 2}" x2="${x + 5}" y2="${y + 2}" stroke="#9aa3b5" stroke-width="1.5"/>`,
+  lantern: ({ x, y }) => `<path d="M${x} ${y - 22} q0 -8 0 -8" stroke="${INK}" stroke-width="2"/><rect x="${x - 10}" y="${y - 22}" width="20" height="26" rx="5" fill="${GOLD}" stroke="${GOLD_DARK}" stroke-width="2"/><circle cx="${x}" cy="${y - 9}" r="5" fill="#fff4c2"/><circle cx="${x}" cy="${y - 9}" r="12" fill="#ffd96a" opacity="0.25"/>`,
+  wand: ({ x, y }) => `<line x1="${x - 8}" y1="${y + 14}" x2="${x + 10}" y2="${y - 26}" stroke="#5a3a20" stroke-width="4" stroke-linecap="round"/><polygon points="${x + 11},${y - 38} ${x + 14},${y - 30} ${x + 22},${y - 30} ${x + 16},${y - 25} ${x + 18},${y - 17} ${x + 11},${y - 22} ${x + 4},${y - 17} ${x + 6},${y - 25} ${x},${y - 30} ${x + 8},${y - 30}" fill="${GOLD}" stroke="${GOLD_DARK}" stroke-width="1"/>`,
+  mug: ({ x, y }) => `<rect x="${x - 10}" y="${y - 12}" width="20" height="22" rx="3" fill="#d9534f"/><path d="M${x + 10} ${y - 6} q8 0 8 6 q0 6 -8 6" stroke="#d9534f" stroke-width="3" fill="none"/><path d="M${x - 4} ${y - 18} q3 -4 0 -8 M${x + 3} ${y - 18} q3 -4 0 -8" stroke="#b9b9c2" stroke-width="1.5" fill="none"/>`,
+};
+
 const FACE = {
   none: () => "",
   glasses: (e) => `
@@ -218,7 +271,8 @@ const FACE = {
   },
 };
 
-export function creatureSvg(creature, { size = 200, label } = {}) {
+// ageMonths (optional) adds small signs of growing up.
+export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {}) {
   const species = SHAPES[creature.species] ? creature.species : "mossDragon";
   const p = PALETTES[creature.palette] || PALETTES.moss;
   const s = SHAPES[species](p);
@@ -228,10 +282,13 @@ export function creatureSvg(creature, { size = 200, label } = {}) {
     ${BEHIND[acc.neck] ? BEHIND[acc.neck](s.neck) : ""}
     ${s.body}
     ${(NECK[acc.neck] || NECK.none)(s.neck)}
-    ${eyes(s.eyes, p)}
+    ${eyes(s.eyes, p, creature.eyes, ageMonths && ageMonths < 216 ? 1.15 : 1)}
+    ${markings(s.eyes, creature.markings)}
+    ${ageDetails(s.eyes, ageMonths, p)}
     ${s.noMouth ? "" : mouth(s.eyes, p)}
     ${(FACE[acc.face] || FACE.none)(s.eyes)}
     ${(HEAD[acc.head] || HEAD.none)(s.head)}
+    ${(HELD[acc.held] || HELD.none)(HELD_AT)}
   </svg>`;
 }
 

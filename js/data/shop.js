@@ -4,7 +4,7 @@
 
 import { createRng } from "../engine/index.js";
 
-// kind: "head" | "neck" | "face" | "background". Accessory ids are drawn by
+// kind: "head" | "neck" | "face" | "held" | "background". Accessory ids are drawn by
 // js/ui/creature-art.js and backgrounds by the .bg-<id> classes in css/app.css.
 export const SHOP_ITEMS = [
   { id: "topHat", kind: "head", name: "Top hat", icon: "🎩", price: 45 },
@@ -14,6 +14,8 @@ export const SHOP_ITEMS = [
   { id: "bandana", kind: "neck", name: "Bandana", icon: "🧣", price: 20 },
   { id: "starGlasses", kind: "face", name: "Star glasses", icon: "🤩", price: 40 },
   { id: "sunglasses", kind: "face", name: "Sunglasses", icon: "😎", price: 30 },
+  { id: "wand", kind: "held", name: "Sparkle wand", icon: "🪄", price: 45 },
+  { id: "mug", kind: "held", name: "Cocoa mug", icon: "☕", price: 20 },
   { id: "meadow", kind: "background", name: "Meadow", icon: "🌼", price: 40 },
   { id: "beach", kind: "background", name: "Glimmer Bay beach", icon: "🏖️", price: 70 },
   { id: "library", kind: "background", name: "Cozy library", icon: "📚", price: 60 },

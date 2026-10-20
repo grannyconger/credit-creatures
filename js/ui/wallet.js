@@ -71,6 +71,7 @@ export function accountButtons(game, go, unread) {
     h("button.secondary", { type: "button", onclick: open("desk") }, "🧮 Practice Desk"),
     h("button.secondary", { type: "button", onclick: () => go("shop") }, "🛍️ Shop"),
     h("button.secondary", { type: "button", onclick: () => go("trophies") }, "🏆 Trophies"),
+    game.classInfo?.social === false ? null : h("button.secondary", { type: "button", onclick: () => go("friends") }, "👥 Friends"),
     h(
       "button.secondary",
       { type: "button", onclick: open("inbox"), "aria-label": unread ? `Inbox, ${unread} unread` : "Inbox" },

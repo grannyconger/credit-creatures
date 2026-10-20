@@ -6,24 +6,17 @@ Last updated: 2026-10-20 (Phase 4)
 
 ## Status
 
-- **Phases 1 to 6: done, approved.** Phase 6 was approved 2026-10-20. The teacher is publishing the Phase 6 rules.
-- **Phase 7: done, awaiting approval.** 119 tests pass. The dashboard was clicked through in headless Chrome with `/teacher/?local`: roster, pause, months per chapter, student detail, Tuning and bug reports. The student side was checked for pause, unlock pop-ups and the new credit unions.
-- **Teacher action needed:** publish the Phase 7 `firestore.rules` (`docs/setup-firebase.md` section 14). Students appear on the roster after their next save.
-- **Next step:** get Phase 7 approval, then plan and build Phase 8 (social and customization).
+- **Phases 1 to 7: done, approved.** Phase 7 was approved 2026-10-20 ("keep going").
+- **Phase 8: done, awaiting approval.** 126 tests pass. Friends (accept, add, unfriend), groups (join), gifts (open, send, 40-hour wait), the new customizer and the teacher's friends and gifts view were clicked through in headless Chrome in `?local` mode.
+- **Teacher action needed:** publish the Phase 7 rules if not done yet, then the Phase 8 `firestore.rules` (`docs/setup-firebase.md` sections 14 and 16).
+- **Next step:** get Phase 8 approval, then plan Phase 9 (the pilot).
 
 ## Open decisions (ask once, then use the default)
 
-1. **Economy is loose.** **Default:** tune in the pilot (Phase 9) with real data from the Tuning tab.
+1. **Economy is loose.** **Default:** tune in the pilot with real Tuning-tab data.
 2. **Card pacing.** **Default:** up to 2 new and 1 everyday card per month.
-3. **Creature aging (SPEC §3).** **Default:** fold into the Phase 8 customizer as small details.
-4. **Phase 8: gifts.** **Default:**
-   - Gifts go only to accepted friends in the same class.
-   - Money gifts are $5 to $50 from checking, logged as engine actions on both sides. The receiver gets it as `receiveCash` when they claim it.
-   - Shop item gifts transfer an owned item.
-   - One gift sent per student every 40 hours, enforced by a server timestamp in the rules.
-   - Gifts can carry only preset messages (no free text), so there's nothing to moderate.
-   - The teacher can turn social features off for a class.
-5. **Phase 8: friend groups.** **Default:** up to 6 classmates. Members see each other's creature, rank and XP (the same as the leaderboard), plus a group XP total. Nothing private (money, score, report) is shared.
+3. **Phase 9: the tuning scripts** (`npm run tuning-report`, `npm run replay` from FEEDBACK.md). **Default:** build them at the start of Phase 9, before the class plays, so the first week's export can be read right away.
+4. **Phase 9: remaining content.** **Default:** add the rest of the SPEC §13 catalog (about 15 more cards), the Later minigames only if the pilot shows students want more variety, and more achievements for the new social and customizer features.
 
 ## Decisions already made
 
@@ -57,6 +50,15 @@ Last updated: 2026-10-20 (Phase 4)
 - **Telemetry:** `telemetry/{uid}/events/{autoId}` (one doc per flush, not per month as FEEDBACK.md first said, because flushes happen at every save and create-only rules forbid overwriting) plus the `telemetry/{uid}` rollup (merge with increments).
 - **Display name:** Google's name goes in `googleName`. `displayName` is the student's own choice and sign-in no longer overwrites it.
 - **First scores are moderate** (teacher request, 2026-10-20). Three tunables in `CONFIG.score`: `historyDepth` (payment history starts at 70% of full value and reaches 100% after 36 months on one account, and a parent's card counts at half its months), `authorizedAgeCapMonths: 12` (a parent's card counts as at most 1 year old for length), and a stricter length curve (`oldestFullMonths 96`, `averageFullMonths 60`, `lengthCurvePower 0.8`). Score at 18 with a parent's card: responsible about 735, average about 697, maxed about 513 (no parent: no score). Careful own card: about 695 at 6 months, 716 at 12, 749 at 24, 792 at 48.
+- **Phase 8 defaults** (2026-10-20):
+  - **Social data** lives under `social/{classId}/requests|groups|gifts`, plus `giftLimits/{uid}`. The class check comes from the path, the same as the leaderboard. The class directory is the leaderboard list. Students show up once they've earned XP.
+  - **Friend requests:** the id is `fromUid_toUid`. accepted means friends. Only the person asked can accept or decline, and either person can cancel or unfriend.
+  - **Groups:** preset names ("The Golden Lanterns") from `js/data/social.js`, up to 6 members. Students only add or remove themselves, and the last one out deletes the group. The group view shows members' creature, rank and XP, plus the group's XP total.
+  - **Gifts:** to accepted friends only, $5 to $50 or an owned shop item, with a preset message index. One every 40 hours, enforced by writing the gift and `giftLimits/{uid}.lastSentAt == request.time` in one batch. The sender's money leaves through `debitPurchase` ("gift to ..."). The receiver gets it through `receiveCash` when they open it, so it isn't income. Logic is in `js/social.js`.
+  - **Teacher:** a **Friends and gifts** on/off control (`classes/{id}.social`, which the rules check). Student detail lists friends and gifts.
+  - **Customizer:** 5 new palettes, eye styles (round, happy, sleepy, sparkly), face markings (blush, freckles, forehead star, heart cheek), and a Paw slot (balloon, book, lantern, plus a shop wand and mug).
+  - **Aging:** `creatureSvg(c, { ageMonths })` gives bigger eyes before 18, eyebrows from 20 and gray whisker tufts from 22. Used on the hub, the top bar and the editor.
+  - **New achievements:** Friendly, Generous and Squad Goals (54 in total). `play.social` keeps the counts.
 - **Phase 7 defaults and changes** (2026-10-20):
   - **Dashboard** (`teacher/index.html` loads `js/teacher/dashboard.js`, with the math in `js/teacher/analyze.js`, which is tested in Node):
     - roster with sort and CSV, student detail, controls (release, pause, leaderboard, months per chapter, reset)
@@ -120,6 +122,7 @@ Last updated: 2026-10-20 (Phase 4)
 | `js/play.js` | Pure month and chapter logic on `save.play`: start chapter, draw cards, choose, shifts, End Month, summary, reflection, recap, practice |
 | `js/ui/decision-card.js`, `pay-with.js`, `bills-panel.js`, `wallet.js`, `shift.js` | Card with choices, outcome and reactions. "Pay with" picker. Bills panel. Wallet strip and money chips. Shared work shift |
 | `js/data/scenarios.js` / `life-events.js` / `chapters.js` | 26 Decision cards (23 one-time, 3 everyday) / 14 life cards / chapter titles, intros and reflection questions |
+| `js/social.js`, `js/ui/screens/friends.js`, `js/data/social.js` | Friend, group and gift logic / Friends screen / preset group names and gift messages |
 | `js/teacher/dashboard.js` / `analyze.js` | Teacher dashboard UI / roster rows, flags, log check, CSV, tuning math |
 | `js/ui/celebrate.js` | Full-screen unlock pop-ups |
 | `fonts/` | Dancing Script (OFL) for typed signatures |
@@ -158,14 +161,13 @@ Last updated: 2026-10-20 (Phase 4)
 | Reckless | 429 | 0% | 100% | 93% |
 | Never pays | 397 | 0% | 100% | 100% |
 
-## Phase 8 starting notes (not yet planned in detail)
+## Phase 9 starting notes (the pilot, not yet planned in detail)
 
-Teacher request 2026-10-20. See open decisions 4 and 5.
-- **Friends:** send, accept and decline friend requests to classmates (the same class only). This needs new Firestore collections, with rules so only the two students involved can see a request.
-- **Friend groups:** create, join and leave. They show members' creatures, ranks and XP.
-- **Gifts:** money ($5 to $50) or an owned shop item, at most one every 40 hours per sender, with preset messages only. Each side's engine change must be a logged action so replay still works (`receiveCash` and `debitPurchase` already exist).
-- **Customization:** more species, colors, patterns and accessory slots, and small aging details as the creature grows (decision 3).
-- **Teacher:** a social on/off toggle for each class, and a "Gifts and friends" view on the student detail.
+From SPEC §23 and docs/FEEDBACK.md section 4:
+- Before the class plays, build `scripts/tuning-report.js` (reads the dashboard's tuning JSON export and suggests config changes with reasons) and `scripts/replay.js` (re-runs real students' logs with a candidate `config.js` and reports how scores, fees and debt would shift).
+- The first week: the teacher exports tuning data. Tune minutes per month (cards per month), shift pay and bills against the "$600 want every couple of chapters" target, and confusing cards.
+- Add the remaining scenario cards and any extra content the data asks for.
+- SPEC §24 definition of done: walk through it as a final checklist.
 
 ## End-of-phase checklist
 

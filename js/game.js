@@ -11,7 +11,7 @@ import { fullName } from "./data/creatures.js";
 export const STEPS = ["profile", "creature", "join", "teen", "tutorial", "skip", "networks", "design", "result", "done", "hub"];
 
 // Screens open once the student reaches the hub. The router guards each one.
-export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts", "shop", "trophies"]);
+export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts", "shop", "trophies", "friends"]);
 
 // Steps a student can go back to after moving past them.
 export const EDITABLE = new Set(["profile", "creature"]);

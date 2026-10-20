@@ -23,8 +23,9 @@ import * as chapterEnd from "./ui/screens/chapter-end.js";
 import * as accounts from "./ui/screens/accounts.js";
 import * as shop from "./ui/screens/shop.js";
 import * as trophies from "./ui/screens/trophies.js";
+import * as friends from "./ui/screens/friends.js";
 
-const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved, hub, month, chapterEnd, accounts, shop, trophies };
+const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved, hub, month, chapterEnd, accounts, shop, trophies, friends };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 
@@ -191,7 +192,7 @@ function updateWho() {
   clear(who);
   if (!c) return;
   who.append(
-    h("span.who-art", { html: creatureSvg(c, { size: 40 }) }),
+    h("span.who-art", { html: creatureSvg(c, { size: 40, ageMonths: game.life?.ageMonths || 0 }) }),
     h("span.who-text", h("strong", c.name || "Your creature"), h("small", game.life ? ageLabel(game.life.ageMonths) : "Not hatched yet"))
   );
 }

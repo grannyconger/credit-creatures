@@ -132,3 +132,20 @@ Then open `/credit-life/teacher/`. Each student shows up on the roster after the
 - **Reset this student** (inside their details) deletes their game so they start over. Type RESET to confirm. It can't be undone.
 - **Tuning:** click **Load tuning data** for time per month, how the class splits on each card, confusing cards, minigame pay, question accuracy and chapter ratings. **Export tuning data (JSON)** is the file to give Claude in Phase 9.
 - **Bug reports:** each 🐞 report, with a download Claude can use to replay the exact problem.
+
+## 16. Publish the Phase 8 rules (once)
+
+Phase 8 adds friends, friend groups and gifts. Same steps as before:
+
+1. Open https://console.firebase.google.com and click the **credit-life** project.
+2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
+3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
+4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
+5. Click **Publish**. Wait for "Rules published."
+
+What the rules enforce, so students can't get around them:
+- Only classmates can friend each other, see groups or send gifts, and only while **Friends and gifts** is on for the class (dashboard controls).
+- Gifts go only to accepted friends: $5 to $50, or a shop item, with a preset message. There's no free text anywhere.
+- One gift per student every 40 hours, timed by Google's servers, so changing the computer clock doesn't help.
+- Groups hold up to 6 students, and students can only add or remove themselves.
+- You can see each student's friends and gifts in their details on the dashboard.

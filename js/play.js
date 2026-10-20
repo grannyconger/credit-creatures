@@ -32,6 +32,8 @@ export function ensurePlay(play) {
   play.xpByChapter ??= {};
   play.answerXp ??= {};
   play.rankSeen ??= 1;
+  // Phase 8: social counts for achievements.
+  play.social ??= { friends: 0, giftsSent: 0, giftsReceived: 0, groupJoined: false };
   play.achievements ??= {};
   play.stats ??= { shifts: 0, paidInFull: 0, payoffSprints: 0, hadDebt: false };
   play.jobs ??= {};

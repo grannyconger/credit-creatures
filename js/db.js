@@ -7,6 +7,8 @@ import {
   setDoc,
   updateDoc,
   deleteDoc,
+  arrayUnion,
+  arrayRemove,
   addDoc,
   collection,
   query,
@@ -133,6 +135,85 @@ export async function setLeaderboardOn(classId, on) {
 // Rules let only the class's own teacher change it, and never its code.
 export async function releaseChapter(classId, chapter) {
   await updateDoc(doc(db, "classes", classId), { releasedChapter: chapter });
+}
+
+// ---------- social (Phase 8): friends, groups and gifts under social/{classId} ----------
+
+const socialCol = (classId, name) => collection(db, "social", classId, name);
+
+export async function listRequests(classId, uid) {
+  const [incoming, outgoing] = await Promise.all([
+    getDocs(query(socialCol(classId, "requests"), where("to", "==", uid))),
+    getDocs(query(socialCol(classId, "requests"), where("from", "==", uid))),
+  ]);
+  return [...incoming.docs, ...outgoing.docs].map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function sendFriendRequest(classId, from, to, fromName, toName) {
+  await setDoc(doc(db, "social", classId, "requests", `${from}_${to}`), { from, to, fromName, toName, status: "pending", createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+}
+
+export async function answerFriendRequest(classId, id, status) {
+  await updateDoc(doc(db, "social", classId, "requests", id), { status, updatedAt: serverTimestamp() });
+}
+
+export async function removeFriendRequest(classId, id) {
+  await deleteDoc(doc(db, "social", classId, "requests", id));
+}
+
+export async function listGroups(classId) {
+  const snap = await getDocs(socialCol(classId, "groups"));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function createGroup(classId, uid, name, icon) {
+  const ref = doc(socialCol(classId, "groups"));
+  await setDoc(ref, { name, icon, members: [uid], createdBy: uid, createdAt: serverTimestamp() });
+  return ref.id;
+}
+
+export async function joinGroup(classId, groupId, uid) {
+  await updateDoc(doc(db, "social", classId, "groups", groupId), { members: arrayUnion(uid) });
+}
+
+// The last member out deletes the group.
+export async function leaveGroup(classId, groupId, uid, lastOne) {
+  const ref = doc(db, "social", classId, "groups", groupId);
+  if (lastOne) await deleteDoc(ref);
+  else await updateDoc(ref, { members: arrayRemove(uid) });
+}
+
+export async function listGifts(classId, uid) {
+  const [incoming, outgoing] = await Promise.all([
+    getDocs(query(socialCol(classId, "gifts"), where("to", "==", uid), limit(50))),
+    getDocs(query(socialCol(classId, "gifts"), where("from", "==", uid), limit(50))),
+  ]);
+  const map = (d) => ({ id: d.id, ...d.data(), sentAt: d.data().sentAt?.toMillis?.() ?? null });
+  return { incoming: incoming.docs.map(map), outgoing: outgoing.docs.map(map) };
+}
+
+// Milliseconds since this student last sent a gift (null if never).
+export async function lastGiftAt(uid) {
+  const snap = await getDoc(doc(db, "giftLimits", uid));
+  return snap.exists() ? snap.data().lastSentAt?.toMillis?.() ?? null : null;
+}
+
+// The gift and the 40-hour limit go in one batch. Rules refuse both if it's too soon.
+export async function sendGift(classId, gift) {
+  const b = writeBatch(db);
+  b.set(doc(socialCol(classId, "gifts")), { ...plain(gift), sentAt: serverTimestamp(), claimed: false });
+  b.set(doc(db, "giftLimits", gift.from), { lastSentAt: serverTimestamp() });
+  await b.commit();
+}
+
+export async function claimGift(classId, giftId) {
+  await updateDoc(doc(db, "social", classId, "gifts", giftId), { claimed: true, claimedAt: serverTimestamp() });
+}
+
+// Teacher: everyone's requests and gifts in one class.
+export async function listClassSocial(classId) {
+  const [r, g] = await Promise.all([getDocs(socialCol(classId, "requests")), getDocs(socialCol(classId, "gifts"))]);
+  return { requests: r.docs.map((d) => ({ id: d.id, ...d.data() })), gifts: g.docs.map((d) => ({ id: d.id, ...d.data(), sentAt: d.data().sentAt?.toMillis?.() ?? null })) };
 }
 
 // ---------- teacher dashboard (SPEC §20). Rules allow only the class's own teacher ----------

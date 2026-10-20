@@ -17,6 +17,10 @@ export const CONFIG = {
     xp: { rightAnswer: 5, shift: 5, reflection: 25, answersPerChapter: 100 },
   },
 
+  // Friends, groups and gifts (Phase 8). firestore.rules repeats giftHours,
+  // giftMin, giftMax and groupMax, so change both places together.
+  social: { giftHours: 40, giftMin: 5, giftMax: 50, groupMax: 6 },
+
   // The month loop after Chapter 1 (SPEC §8).
   play: {
     raiseBonus: 10,

@@ -15,6 +15,7 @@ export const CATEGORIES = {
   minigames: "Minigames",
   creature: "Creature",
   persistence: "Persistence",
+  social: "Friends",
 };
 
 const chose = (f, id, keys) => f.decisions.some((d) => d.id === id && keys.includes(d.choice));
@@ -87,6 +88,9 @@ export const ACHIEVEMENTS = [
   { id: "chapterDone", cat: "persistence", icon: "📖", title: "Chapter Complete", how: "Finish a chapter after Chapter 1.", xp: 50, check: (f) => f.play.history.length >= 1 },
   { id: "seasoned", cat: "persistence", icon: "📚", title: "Seasoned", how: "Finish 3 chapters after Chapter 1.", xp: 100, check: (f) => f.play.history.length >= 3 },
   { id: "veteran", cat: "persistence", icon: "🏛️", title: "Veteran", how: "Finish 6 chapters after Chapter 1.", xp: 150, check: (f) => f.play.history.length >= 6 },
+  { id: "friendly", cat: "social", icon: "🤝", title: "Friendly", how: "Make your first friend.", xp: 20, check: (f) => f.play.social.friends >= 1 },
+  { id: "generous", cat: "social", icon: "🎁", title: "Generous", how: "Send a gift to a friend.", xp: 30, check: (f) => f.play.social.giftsSent >= 1 },
+  { id: "squad", cat: "social", icon: "🛡️", title: "Squad Goals", how: "Join or start a friend group.", xp: 20, check: (f) => f.play.social.groupJoined },
   { id: "deepThinker", cat: "persistence", icon: "💭", title: "Deep Thinker", how: "Write 3 chapter reflections.", xp: 50, check: (f) => f.play.history.filter((h) => h.reflection).length >= 3 },
 ];
 

@@ -705,6 +705,23 @@ ul.plain li { padding: 4px 0; }
   .lb-rank { display: none; }
 }
 
+/* Friends (Phase 8) */
+.fr-person { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.fr-avatar svg { display: block; }
+.fr-name { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.fr-name small { color: var(--muted); }
+.fr-actions { display: flex; gap: 6px; align-items: center; }
+.tight-row { margin-top: 0; }
+.fr-group { border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 16px; margin: 10px 0; background: #fff; }
+.fr-group.mine { border-color: var(--accent); background: var(--soft); }
+.fr-group h2 { margin: 0 0 4px; }
+.fr-avatars { display: flex; gap: 4px; margin: 6px 0; }
+.fr-gift { display: flex; gap: 12px; align-items: center; padding: 10px 14px; border-radius: 12px; background: #fff8e6; border: 1.5px solid var(--gold); margin: 8px 0; }
+.fr-gift > div { flex: 1; }
+.fr-gift-icon { font-size: 2rem; }
+.fr-send { border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 16px; background: #fff; }
+.fr-send select, .fr-send input { font: inherit; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 10px; width: 100%; max-width: 360px; }
+
 /* Unlock pop-ups (js/ui/celebrate.js) */
 .celebrate { border: 0; padding: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; background: radial-gradient(circle at 50% 40%, #fff8e1 0, #f3eefc 55%, #e6dcfa 100%); overflow: hidden; }
 .celebrate::backdrop { background: rgba(43, 35, 64, 0.6); }

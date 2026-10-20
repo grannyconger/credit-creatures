@@ -2,7 +2,7 @@
 import { h, clear } from "../dom.js";
 import { creatureSvg } from "../creature-art.js";
 import { SHOP_BY_ID } from "../../data/shop.js";
-import { SPECIES, PALETTES, ACCESSORIES, ACCESSORY_SLOTS, NAME_IDEAS, LAST_NAME_IDEAS, NAME_MAX, defaultCreature, fullName } from "../../data/creatures.js";
+import { SPECIES, PALETTES, ACCESSORIES, ACCESSORY_SLOTS, NAME_IDEAS, LAST_NAME_IDEAS, NAME_MAX, MARKINGS, EYE_STYLES, defaultCreature, fullName } from "../../data/creatures.js";
 
 export function render(root, { game, advance, back, editing, track, refreshWho }) {
   const start = game.save.creature || defaultCreature();
@@ -14,6 +14,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
   const speciesRow = h("div.tile-row");
   const paletteRow = h("div.swatch-row");
   const accessoryRows = h("div");
+  const faceRows = h("div");
   const backgroundRow = h("div.chip-group");
   const nameInput = h("input", { type: "text", maxlength: NAME_MAX, value: draft.name, id: "creature-name", autocomplete: "off" });
   const lastInput = h("input", { type: "text", maxlength: NAME_MAX, value: draft.lastName, id: "creature-last-name", autocomplete: "off", placeholder: "Optional" });
@@ -21,7 +22,23 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
   const caption = () => fullName(draft) || "Your creature";
 
   function paint() {
-    preview.innerHTML = creatureSvg(draft, { size: 260 });
+    preview.innerHTML = creatureSvg(draft, { size: 260, ageMonths: game.life?.ageMonths || 0 });
+
+    clear(faceRows);
+    for (const [field, label, options] of [
+      ["eyes", "Eyes", EYE_STYLES],
+      ["markings", "Marks", MARKINGS],
+    ]) {
+      faceRows.append(
+        h(
+          "div.chip-group",
+          h("span.chip-label", label),
+          Object.entries(options).map(([key, text]) =>
+            h("button.chip", { type: "button", "aria-pressed": String((draft[field] || Object.keys(options)[0]) === key), onclick: () => set(field, key) }, text)
+          )
+        )
+      );
+    }
     preview.append(h("p.creature-caption", caption(), h("small", SPECIES[draft.species].blurb)));
 
     clear(speciesRow);
@@ -60,7 +77,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
           "div.chip-group",
           h("span.chip-label", label),
           [...Object.entries(ACCESSORIES[slot]), ...ownedOf(slot)].map(([key, text]) =>
-            h("button.chip", { type: "button", "aria-pressed": String(draft.accessories[slot] === key), onclick: () => setAccessory(slot, key) }, text)
+            h("button.chip", { type: "button", "aria-pressed": String((draft.accessories[slot] || "none") === key), onclick: () => setAccessory(slot, key) }, text)
           )
         )
       );
@@ -121,6 +138,8 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
       speciesRow,
       h("h3", "Colors"),
       paletteRow,
+      h("h3", "Face"),
+      faceRows,
       h("h3", "Accessories"),
       h("p.note.tight", "Buy more in the shop after Chapter 1."),
       accessoryRows,
@@ -158,6 +177,9 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
       ideaUsed,
       hasLastName: Boolean(draft.lastName),
       lastIdeaUsed,
+      eyes: draft.eyes || "round",
+      markings: draft.markings || "none",
+      held: draft.accessories.held || "none",
       editing,
     });
     refreshWho();
