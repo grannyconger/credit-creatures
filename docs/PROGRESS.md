@@ -6,12 +6,10 @@ Last updated: 2026-10-20 (Phase 4)
 
 ## Status
 
-- **Phase 1: done, approved.** Live at https://www.coachw.club/credit-life/.
-- **Phase 2: done, approved** (2026-10-20).
-- **Phase 3: done, approved** (2026-10-20, "keep going"). The teacher tested Chapter 1 live and published the Phase 3 rules.
-- **Phase 4: done, awaiting approval.** 91 tests pass. A full run (onboarding, hub, Chapter 2 with 3 months, reflection, practice replay) was clicked through in headless Chrome at 1280px and 390px in `?local` mode with no errors.
-- **Teacher action needed:** publish the Phase 4 `firestore.rules` (`docs/setup-firebase.md` section 10, adds `play` to saves). Then release Chapter 2 from `/teacher/` (section 11).
-- **Next step:** get Phase 4 approval, then plan and build Phase 5 (Account Management).
+- **Phases 1 to 4: done, approved.** Phase 4 was approved 2026-10-20 ("ok do the next phase"). The teacher published the Phase 4 rules.
+- **Phase 5: done, awaiting approval.** 99 tests pass. Every Account Management tab, a Practice Desk visit, the inbox, the Night theme and a Factor Check were clicked through in headless Chrome in `?local` mode.
+- **No rules change in Phase 5.** Everything new saves inside `saves/{uid}.play`.
+- **Next step:** get Phase 5 approval, then plan and build Phase 6 (economy and engagement).
 
 ## Open decisions (ask once, then use the default)
 
@@ -19,7 +17,8 @@ Last updated: 2026-10-20 (Phase 4)
 2. **Card pacing.** 5 cards per month used up the ~20 pilot scenarios in about 4 months. **Default:** up to 2 new one-time cards and 1 everyday card per month, plus must-see priority cards (`CONFIG.pacing.newCardsPerMonth`, `everydayCardsPerMonth`). `decisionCardsPerMonth: 5` stays the cap. Raise these when Phase 8 adds the rest of the catalog.
 3. **Check Writer minigame (SPEC §17).** **Default:** Phase 6. Part 1 writes a check from a bill and signs the front. Part 2 endorses the back of a paycheck. Full-screen signature pad (touch, pen or mouse) or "type my signature" in a self-hosted cursive font (OFL). Drawings are never saved.
 4. **Creature aging (SPEC §3).** **Default:** after the pilot, small details only.
-5. **Phase 5: Factor Check after Decision cards** (SPEC §11). Cards already show a factor chip ("📊 Amounts owed ▼ goes down"). **Default:** add the optional one-question Factor Check in Phase 5 with the Practice Desk, since both feed Sparkle Points.
+5. **Phase 6: XP from Practice Desk.** **Default:** right answers give XP as well as Sparkle Points, so learning counts on the leaderboard. Sparkle still only nudges the displayed score.
+6. **Phase 6: shop prices** need to soak up the extra savings from decision 1. **Default:** wants from $20 to $600, with about one $300 to $600 item per chapter.
 
 ## Decisions already made
 
@@ -53,6 +52,14 @@ Last updated: 2026-10-20 (Phase 4)
 - **Telemetry:** `telemetry/{uid}/events/{autoId}` (one doc per flush, not per month as FEEDBACK.md first said, because flushes happen at every save and create-only rules forbid overwriting) plus the `telemetry/{uid}` rollup (merge with increments).
 - **Display name:** Google's name goes in `googleName`. `displayName` is the student's own choice and sign-in no longer overwrites it.
 - **First scores are moderate** (teacher request, 2026-10-20). Three tunables in `CONFIG.score`: `historyDepth` (payment history starts at 70% of full value and reaches 100% after 36 months on one account, and a parent's card counts at half its months), `authorizedAgeCapMonths: 12` (a parent's card counts as at most 1 year old for length), and a stricter length curve (`oldestFullMonths 96`, `averageFullMonths 60`, `lengthCurvePower 0.8`). Score at 18 with a parent's card: responsible about 735, average about 697, maxed about 513 (no parent: no score). Careful own card: about 695 at 6 months, 716 at 12, 749 at 24, 792 at 48.
+- **Phase 5 defaults** (announced 2026-10-20):
+  - Account Management is one screen (`#/accounts`) with tabs: Wallet, Statements, My Score, My Report, Practice Desk and Inbox. It opens from the hub and the month screen and goes back to the same place. Time is paused there.
+  - Wallet uses the shared bills panel, now with limit, APR, a utilization bar, a payoff preview ("Minimum only: N months, $X interest. $Y a month: ...") and AutoPay (off, minimum, full statement).
+  - Practice Desk: 5 multiple-choice questions per visit from 9 types (`js/data/practice-questions.js`), new numbers every visit, with the worked math after each answer. Accuracy is kept by standard and by type in `play.desk`.
+  - Factor Check: an optional one-question check after any decision with a factor chip. It counts as a `factorCheck` answer (Std 3).
+  - Sparkle Points: +1 for each right answer, capped at 10 per chapter and 30 total (`CONFIG.pacing.sparkle`). They show as "735 + 6✨" and are labeled a classroom bonus. They never change the engine score.
+  - Inbox: notes come from End Month events (fees, payments, statements, late marks, collections, score changes), plus "due soon" reminders for card minimums without AutoPay and a "Chapter N is open" note. It keeps the newest 40. There's an unread badge on the hub and month buttons.
+  - Themes: Royal, Forest, Ocean, Ember and Night (dark), applied only to Account Management, saved in `play.theme`.
 - **Phase 3 tweaks** (2026-10-20): every button row is centered, the score-parts tour has a color per part with a numbered, accessible progress tracker, and creatures have an optional last name printed on cards (`fullName()`).
 - **Phase 4 defaults** (announced 2026-10-20 with "keep going"):
   - **Replay (practice):** `startPractice()` rebuilds the life at a finished chapter's start with `replayLife(start, log, startLog)` and plays it in memory. Nothing is saved, and telemetry is tagged `practice`. Chapter 1 (onboarding) is not replayable.
@@ -89,6 +96,8 @@ Last updated: 2026-10-20 (Phase 4)
 | `js/play.js` | Pure month and chapter logic on `save.play`: start chapter, draw cards, choose, shifts, End Month, summary, reflection, recap, practice |
 | `js/ui/decision-card.js`, `pay-with.js`, `bills-panel.js`, `wallet.js`, `shift.js` | Card with choices, outcome and reactions. "Pay with" picker. Bills panel. Wallet strip and money chips. Shared work shift |
 | `js/data/scenarios.js` / `life-events.js` / `chapters.js` | 26 Decision cards (23 one-time, 3 everyday) / 14 life cards / chapter titles, intros and reflection questions |
+| `js/ui/screens/accounts.js`, `js/ui/accounts/*.js` | Account Management shell and its tabs: wallet, statements, score (gauge and history chart), report, desk, inbox |
+| `js/data/practice-questions.js` / `explainers.js` | Practice Desk and Factor Check generators / factor explainers, score bands, inbox types, themes |
 | `js/engine/cards.js`, `actions.js` | Card runner (`runSteps`, `drawLifeEvent`, `drawDecisionCards`, `paymentOptions`, `upcomingPayments`) / the named action map shared with replay |
 | `teacher/index.html` | Teacher access check, class list and "Create class" |
 | `js/firebase-config.js` | Public web config, `SCHOOL_DOMAIN`, `TEACHER_EMAILS` |
@@ -105,7 +114,7 @@ Last updated: 2026-10-20 (Phase 4)
 | `js/engine/onboarding.js` | `getTeenDebitCard`, `tutorialShiftPay`, `timeSkip` |
 | `js/engine/replay.js` | `replayLife(start, log, upTo)` |
 | `js/engine/report.js`, `score.js`, `payoff.js` | Report, score, payoff math |
-| `tests/` | Unit tests. `tests/play.test.js` checks every card on sample lives and plays whole chapters with bots. `tests/sim/` has the bots and the §24 assertions |
+| `tests/` | Unit tests. `tests/desk.test.js` checks every question type 300 times, the Sparkle caps and the inbox. `tests/play.test.js` checks every card on sample lives and plays whole chapters with bots. `tests/sim/` has the bots and the §24 assertions |
 | `scripts/sim-report.js` | `npm run sim` |
 
 ## Latest simulation (`npm run sim`, 1,000 lives, ages 18 to 22)
@@ -118,13 +127,12 @@ Last updated: 2026-10-20 (Phase 4)
 | Reckless | 429 | 0% | 100% | 93% |
 | Never pays | 397 | 0% | 100% | 100% |
 
-## Phase 5 starting notes (not yet planned in detail)
+## Phase 6 starting notes (not yet planned in detail)
 
-Scope from SPEC §14, §15, §11:
-- Account Management opens from the hub and the month screen without using game time. It replaces `js/ui/bills-panel.js` (keep its "comes out of checking" list and End Month warnings).
-- Wallet screen with full card art, statements month by month, payoff previews (`payoffPlan`, `minimumOnlyPlan`), AutoPay settings (`setAutopay` already exists), My Score (gauge, 5 factors with life-choice explainers, history chart from `life.scoreHistory`), My Credit Report (`creditReport`, the 24-month grid).
-- Practice Desk and Factor Check with Sparkle Points (caps in `CONFIG.pacing.sparkle`). Log every answer (type, standard, correct, seconds).
-- Notifications inbox from End Month events, plus a theme picker for the Account Management screens.
+Scope from SPEC §16, §17, §18 and the 2026-10-20 additions:
+- Minigames: Ledger Sort (asset, liability, equity, replaces the placeholder shift in `js/ui/shift.js`), Cashier Rush (making change), and Check Writer (write a check from a bill and sign the front, then endorse the back of a paycheck, with a full-screen signature pad and a "type my signature" cursive font served from the repo). Pay comes from performance. Log score, pay, duration and retries.
+- Shop: wants (creature items, backgrounds) and needs, with stock that rotates each chapter. Checkout uses the existing "Pay with" picker (`js/ui/pay-with.js`), which already supports BNPL.
+- Achievements (40+), XP that never goes down, kingdom ranks, and a class leaderboard (teacher toggle). The leaderboard needs a new Firestore collection and rules (creature name, display name and XP only), so the teacher will need rules steps.
 
 ## End-of-phase checklist
 

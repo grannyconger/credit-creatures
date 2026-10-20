@@ -6,7 +6,8 @@ import { CONFIG } from "./data/config.js";
 import { SCENARIOS, SCENARIO_BY_ID } from "./data/scenarios.js";
 import { LIFE_EVENTS, LIFE_EVENT_BY_ID } from "./data/life-events.js";
 import { chapterInfo } from "./data/chapters.js";
-import { drawLifeEvent, drawDecisionCards, resolveChoice, endMonth, earn, shiftPay, replayLife } from "./engine/index.js";
+import { INBOX_KEPT } from "./data/explainers.js";
+import { drawLifeEvent, drawDecisionCards, resolveChoice, endMonth, earn, shiftPay, replayLife, ownCards, dollars } from "./engine/index.js";
 
 // "Cosign for a friend?" reads badly as "Cosign for a friend?: ...".
 export function titled(title) {
@@ -14,7 +15,18 @@ export function titled(title) {
 }
 
 export function newPlay() {
-  return { chapter: 2, active: null, summary: null, history: [], seen: [], shiftBonus: 0, lastChange: null };
+  return ensurePlay({ chapter: 2, active: null, summary: null, history: [], seen: [], shiftBonus: 0, lastChange: null });
+}
+
+// Fields added after Phase 4. Older saves get them on load.
+export function ensurePlay(play) {
+  play.inbox ??= [];
+  play.nextNote ??= 1;
+  play.announced ??= 1;
+  play.desk ??= { visits: 0, byStandard: {}, byType: {} };
+  play.sparkle ??= { total: 0, byChapter: {} };
+  play.theme ??= "royal";
+  return play;
 }
 
 // Keeps only what the screens need, small enough to save.
@@ -153,6 +165,7 @@ export function finishMonth(play, life) {
   const a = play.active;
   a.records.push(record);
   play.lastChange = { delta: record.delta, factor: record.factor, message: record.change };
+  notesFromMonth(play, r, month);
   a.monthIndex++;
   const chapterDone = a.monthIndex >= CONFIG.pacing.monthsPerChapter;
   if (chapterDone) {
@@ -224,4 +237,94 @@ export function startPractice(save, chapter) {
   const play = { ...newPlay(), chapter, seen: h.seenAtStart.slice(), shiftBonus: h.shiftBonusAtStart || 0, lastChange: h.lastChangeAtStart || null };
   startChapter(play, life);
   return { life, play };
+}
+
+// ---------- Unicorn Sparkle Points (SPEC §15) ----------
+
+// +1 per correct Practice Desk or Factor Check answer, within the caps.
+// Returns how many points were given (0 or 1).
+export function awardSparkle(play) {
+  const cap = CONFIG.pacing.sparkle;
+  const s = play.sparkle;
+  const ch = String(play.chapter);
+  if (s.total >= cap.total || (s.byChapter[ch] || 0) >= cap.perChapter) return 0;
+  s.total++;
+  s.byChapter[ch] = (s.byChapter[ch] || 0) + 1;
+  return 1;
+}
+
+export function sparkleLeft(play) {
+  const cap = CONFIG.pacing.sparkle;
+  return Math.max(0, Math.min(cap.total - play.sparkle.total, cap.perChapter - (play.sparkle.byChapter[String(play.chapter)] || 0)));
+}
+
+// Practice Desk and Factor Check accuracy, by standard and by question type.
+export function recordAnswer(play, { type, standard, correct }) {
+  const bump = (map, key) => {
+    const k = String(key);
+    map[k] ??= { right: 0, total: 0 };
+    map[k].total++;
+    if (correct) map[k].right++;
+  };
+  bump(play.desk.byStandard, standard);
+  bump(play.desk.byType, type);
+  return correct ? awardSparkle(play) : 0;
+}
+
+// ---------- Notifications inbox (SPEC §14) ----------
+
+export function addNote(play, type, text, month) {
+  play.inbox.unshift({ id: play.nextNote++, type, text, month, read: false });
+  play.inbox.length = Math.min(play.inbox.length, INBOX_KEPT);
+}
+
+export function unreadCount(play) {
+  return play.inbox.filter((n) => !n.read).length;
+}
+
+export function markRead(play, id) {
+  const n = play.inbox.find((x) => x.id === id);
+  if (n) n.read = true;
+}
+
+export function markAllRead(play) {
+  for (const n of play.inbox) n.read = true;
+}
+
+const NOTE_FOR_EVENT = {
+  fee: "fee",
+  paymentReceived: "payment",
+  paidOff: "payment",
+  heldFundsReleased: "payment",
+  statement: "statement",
+  late: "alert",
+  collections: "alert",
+  cosignMissed: "alert",
+};
+
+// Turns End Month events into inbox notes, plus "due soon" reminders for
+// card minimums nothing will pay automatically.
+function notesFromMonth(play, r, month) {
+  for (const e of r.events) {
+    if (e.type === "scoreChange") {
+      if (e.delta || e.message.includes("first time")) addNote(play, e.delta < 0 ? "scoreDown" : "scoreUp", e.message, month);
+    } else if (NOTE_FOR_EVENT[e.type]) {
+      addNote(play, NOTE_FOR_EVENT[e.type], e.message, month);
+    }
+  }
+  for (const a of ownCards(r.life)) {
+    if (a.due && a.due.minDue > 0 && !a.autopay) {
+      addNote(play, "due", `${a.name}: pay at least ${dollars(a.due.minDue)} before the next End Month, or it will be late.`, month + 1);
+    }
+  }
+}
+
+// Once per chapter, when the teacher opens it.
+export function announceChapter(play, released) {
+  if (released > play.announced && play.chapter <= released) {
+    play.announced = released;
+    addNote(play, "chapter", `Chapter ${play.chapter} is open! Start it from your hub.`, null);
+    return true;
+  }
+  return false;
 }

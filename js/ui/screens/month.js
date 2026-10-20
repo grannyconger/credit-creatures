@@ -8,7 +8,9 @@ import * as P from "../../play.js";
 import { decisionCard } from "../decision-card.js";
 import { shiftGame } from "../shift.js";
 import { billsPanel } from "../bills-panel.js";
-import { moneyChips } from "../wallet.js";
+import { moneyChips, accountButtons } from "../wallet.js";
+import { createRng } from "../../engine/index.js";
+import { factorOptions, factorChoice } from "../../data/practice-questions.js";
 import { monthSummary } from "../month-summary.js";
 
 export function render(root, { game, go, track, refreshWho }) {
@@ -57,7 +59,8 @@ export function render(root, { game, go, track, refreshWho }) {
       h("p.step-label", `Chapter ${a.chapter}: ${info.title}`),
       h("h1", `Month ${a.monthIndex + 1} of ${CONFIG.pacing.monthsPerChapter}`),
       h("p.muted", `${game.save.creature.name} is ${ageLabel(life.ageMonths).replace(" old", "")} old.`),
-      moneyChips(life),
+      moneyChips(life, play.sparkle.total),
+      accountButtons(game, go, P.unreadCount(play)),
       fresh && a.records.length ? monthSummary(a.records.at(-1), "Last month") : null,
       h("div.month-grid", taskList(), h("div.month-main", mainView()))
     );
@@ -143,6 +146,21 @@ export function render(root, { game, go, track, refreshWho }) {
           await save(kind === "life" ? "lifeCard" : "card");
         }
         return r;
+      },
+      factorCheck: (choice) => {
+        if (!choice.factor) return null;
+        const { choices, answer } = factorOptions(createRng(`${run.life.seed}:fc:${run.life.month}:${def.id}`), choice.factor.key, choice.factor.dir);
+        return {
+          choices,
+          answer,
+          explain: factorChoice(choice.factor.key, choice.factor.dir),
+          onAnswer: async (correct) => {
+            const got = P.recordAnswer(play, { type: "factorCheck", standard: 3, correct });
+            track("factorCheck", { id: def.id, correct, sparkle: got });
+            await save("factorCheck");
+            return got;
+          },
+        };
       },
       onContinue: ({ reaction, confusing }) => {
         if (reaction || confusing) track("cardReaction", { id: def.id, reaction, confusing });

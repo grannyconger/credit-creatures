@@ -1,13 +1,14 @@
-// Pay your cards, and see what comes out of checking at End Month.
-// The full Account Management screens arrive in Phase 5.
-import { h, add, fill, money } from "./dom.js";
-import { ownCards, amountOwed, upcomingPayments, minimumOnlyPlan } from "../engine/index.js";
+// Pay your cards, set AutoPay, preview payoff time, and see what comes out of
+// checking at End Month. Used by the month's bills task and the Wallet tab.
+import { h, add, money, percent } from "./dom.js";
+import { ownCards, amountOwed, upcomingPayments, minimumOnlyPlan, payoffPlan } from "../engine/index.js";
 import { CONFIG } from "../data/config.js";
 
 // onPay(accountId, amount, kind) runs the payment and repaints.
 // onMove("toSavings" | "toChecking", amount) moves money between accounts.
-export function billsPanel({ life, onPay, onMove }) {
-  const cards = ownCards(life).filter((a) => amountOwed(a) > 0 || a.due);
+// onAutopay(accountId, mode) sets AutoPay: null, "min" or "full".
+export function billsPanel({ life, onPay, onMove, onAutopay }) {
+  const cards = ownCards(life);
   const cosigned = life.accounts.filter((a) => a.owner === "cosigned" && a.status === "open" && a.pastDue > 0);
   const up = upcomingPayments(life);
   const el = h("div.bills");
@@ -30,6 +31,9 @@ export function billsPanel({ life, onPay, onMove }) {
         h(
           "dl.bill-facts",
           fact("Owed now", money(owed)),
+          fact("Limit", money(a.limit)),
+          fact("APR", percent(a.apr, 1)),
+          fact("Utilization", h("span", percent(owed / a.limit), utilBar(owed / a.limit))),
           due ? fact("Last statement", money(due.statementBalance)) : fact("Last statement", "None yet"),
           due ? fact("Minimum still due", minLeft > 0 ? money(minLeft) : "✓ Paid") : null,
           fact("Due", !due ? "after your first statement" : minLeft > 0 || stmtLeft > 0 ? "at this End Month" : "Nothing due")
@@ -54,7 +58,9 @@ export function billsPanel({ life, onPay, onMove }) {
           ),
           owed <= 0 ? h("p.muted", "Nothing owed on this card.") : null
         ),
-        plan && plan.months > 1 ? h("p.note.tight", `If you paid only minimums on ${money(due.statementBalance)}: ${plan.months} months and ${money(plan.totalInterest)} in interest.`) : null
+        plan && plan.months > 1 ? h("p.note.tight", `If you paid only minimums on ${money(due.statementBalance)}: ${plan.months} months and ${money(plan.totalInterest)} in interest.`) : null,
+        owed > 0 ? payoffPreview(a, owed) : null,
+        onAutopay ? autopayControl(a, onAutopay) : null
       )
     );
   }
@@ -88,6 +94,51 @@ export function billsPanel({ life, onPay, onMove }) {
     savingsMover(life, onMove)
   );
   return el;
+}
+
+function utilBar(u) {
+  return h("span.util-bar", { "aria-hidden": "true" }, h("span", { class: u > 0.3 ? "high" : "", style: { width: `${Math.min(100, Math.round(u * 100))}%` } }));
+}
+
+// "Minimum only: 14 months, $86 interest. $60 a month: 4 months, $19 interest." (SPEC §14)
+function payoffPreview(a, owed) {
+  const id = `payoff-${a.id}`;
+  const out = h("p.payoff-out", { "aria-live": "polite" });
+  const input = h("input", { type: "number", id, min: 1, step: "1", inputmode: "decimal", value: Math.max(25, Math.ceil(owed / 4)) });
+  const paint = () => {
+    const monthly = Number(input.value);
+    const min = minimumOnlyPlan(owed, a.apr);
+    const lines = [`Minimum only: ${min.months} month${min.months === 1 ? "" : "s"}, ${money(min.totalInterest)} interest.`];
+    if (monthly > 0) {
+      const p = payoffPlan(owed, a.apr, monthly);
+      lines.push(p.neverPaysOff ? `${money(monthly)} a month never pays it off. It doesn't even cover the interest.` : `${money(monthly)} a month: ${p.months} month${p.months === 1 ? "" : "s"}, ${money(p.totalInterest)} interest.`);
+    }
+    out.textContent = lines.join(" ");
+  };
+  input.addEventListener("input", paint);
+  paint();
+  return h("div.payoff", h("label", { for: id }, `Payoff preview for ${money(owed)} at ${percent(a.apr, 1)} APR. If I pay this much a month:`), input, out);
+}
+
+const AUTOPAY = [
+  [null, "Off"],
+  ["min", "Minimum"],
+  ["full", "Full statement"],
+];
+
+function autopayControl(a, onAutopay) {
+  return h(
+    "div.autopay",
+    h("span.autopay-label", "AutoPay"),
+    h(
+      "div.chip-group",
+      { role: "group", "aria-label": `AutoPay for ${a.name}` },
+      AUTOPAY.map(([mode, label]) =>
+        h("button.chip", { type: "button", "aria-pressed": String((a.autopay || null) === mode), onclick: () => onAutopay(a.id, mode) }, label)
+      )
+    ),
+    h("p.note.tight", "AutoPay pays from checking at End Month. If checking runs short, the payment bounces with an overdraft fee.")
+  );
 }
 
 function savingsMover(life, onMove) {

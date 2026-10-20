@@ -5,7 +5,8 @@ import { cardArt } from "./card-art.js";
 import { ownCards, amountOwed, utilization } from "../engine/index.js";
 import { fullName } from "../data/creatures.js";
 
-export function moneyChips(life) {
+// sparkle: Unicorn Sparkle Points, shown apart from the real score (SPEC §15).
+export function moneyChips(life, sparkle = 0) {
   const util = utilization(life);
   const debt = life.accounts.filter((a) => a.owner === "self" && ["open", "collections"].includes(a.status)).reduce((s, a) => s + amountOwed(a), 0);
   return h(
@@ -13,7 +14,7 @@ export function moneyChips(life) {
     { "aria-label": "Your money right now" },
     chip("🏦", "Checking", money(life.checking), life.checking < 0 ? "bad" : ""),
     chip("🐷", "Savings", money(life.savings)),
-    chip("⭐", "Score", life.score ?? "None yet"),
+    chip("⭐", "Score", life.score == null ? "None yet" : sparkle ? `${life.score} + ${sparkle}✨` : life.score),
     util != null ? chip("📊", "Card utilization", percent(util), util > 0.3 ? "warn" : "") : null,
     chip("🧾", "You owe", money(debt))
   );
@@ -54,5 +55,25 @@ export function walletStrip(life, creature) {
           loans.map((a) => h("li", h("span", { "aria-hidden": "true" }, a.icon), ` ${a.name}: `, h("strong", money(amountOwed(a))), a.payment ? ` (${money(a.payment)}/month)` : ""))
         )
       : null
+  );
+}
+
+// Buttons into Account Management, with the inbox's unread count.
+export function accountButtons(game, go, unread) {
+  const open = (tab) => () => {
+    game.accountsTab = tab;
+    go("accounts");
+  };
+  return h(
+    "div.acct-buttons",
+    h("button.secondary", { type: "button", onclick: open("wallet") }, "🏦 Accounts"),
+    h("button.secondary", { type: "button", onclick: open("score") }, "⭐ My Score"),
+    h("button.secondary", { type: "button", onclick: open("desk") }, "🧮 Practice Desk"),
+    h(
+      "button.secondary",
+      { type: "button", onclick: open("inbox"), "aria-label": unread ? `Inbox, ${unread} unread` : "Inbox" },
+      "📬 Inbox",
+      unread ? h("span.count-badge", { "aria-hidden": "true" }, String(unread)) : null
+    )
   );
 }

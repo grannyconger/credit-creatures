@@ -6,7 +6,7 @@ import { fullName } from "../../data/creatures.js";
 import { chapterInfo } from "../../data/chapters.js";
 import { CONFIG } from "../../data/config.js";
 import * as P from "../../play.js";
-import { moneyChips, walletStrip } from "../wallet.js";
+import { moneyChips, walletStrip, accountButtons } from "../wallet.js";
 
 export function render(root, { game, go, track, saveAndQuit }) {
   game.practice = null;
@@ -82,7 +82,9 @@ export function render(root, { game, go, track, saveAndQuit }) {
     } catch (err) {
       console.warn("Could not check the class", err);
     }
-    track("releaseCheck", { released: game.classInfo?.releasedChapter || 1, chapter: play.chapter, manual });
+    const released = game.classInfo?.releasedChapter || 1;
+    track("releaseCheck", { released, chapter: play.chapter, manual });
+    if (P.announceChapter(play, released)) await game.persist("chapterOpen");
     paintChapter();
   }
 
@@ -94,7 +96,8 @@ export function render(root, { game, go, track, saveAndQuit }) {
         h("div.hero-art", { html: creatureSvg(c, { size: 150 }) }),
         h("div", h("p.step-label", "Your hub"), h("h1", fullName(c)), h("p.muted", `${ageLabel(life.ageMonths)}. Chapter ${play.chapter}.`))
       ),
-      moneyChips(life),
+      moneyChips(life, play.sparkle.total),
+      accountButtons(game, go, P.unreadCount(play)),
       chapterBox,
       recapBox(play, track),
       walletStrip(life, c),

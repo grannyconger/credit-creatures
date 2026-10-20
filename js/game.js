@@ -2,13 +2,13 @@
 import { LIFE_VERSION } from "./engine/index.js";
 import { track, flush } from "./telemetry.js";
 import { toast } from "./ui/dom.js";
-import { newPlay } from "./play.js";
+import { newPlay, ensurePlay } from "./play.js";
 
 // Onboarding steps in order (SPEC §5). After "done", students live in the hub.
 export const STEPS = ["profile", "creature", "join", "teen", "tutorial", "skip", "networks", "design", "result", "done", "hub"];
 
 // Screens open once the student reaches the hub. The router guards each one.
-export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd"]);
+export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts"]);
 
 // Steps a student can go back to after moving past them.
 export const EDITABLE = new Set(["profile", "creature"]);
@@ -55,7 +55,7 @@ export function createGame(user, db) {
 
     get play() {
       if (!game.save.play) game.save.play = newPlay();
-      return game.save.play;
+      return ensurePlay(game.save.play);
     },
 
     // What the month and chapter screens play on: the real save, or a

@@ -20,8 +20,9 @@ import * as saved from "./ui/screens/saved.js";
 import * as hub from "./ui/screens/hub.js";
 import * as month from "./ui/screens/month.js";
 import * as chapterEnd from "./ui/screens/chapter-end.js";
+import * as accounts from "./ui/screens/accounts.js";
 
-const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved, hub, month, chapterEnd };
+const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved, hub, month, chapterEnd, accounts };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 

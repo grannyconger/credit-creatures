@@ -14,7 +14,8 @@ const REACTIONS = [
 
 // choose(key, method) runs the choice and returns play.choose's result.
 // onContinue({ reaction, confusing }) moves on.
-export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue, track }) {
+// factorCheck(choice) returns an optional Factor Check (SPEC §11) or null.
+export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue, track, factorCheck }) {
   const shownAt = Date.now();
   const body = h("div.dc-body");
   const card = h(
@@ -115,6 +116,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         factor
       ),
       c.math ? h("details.math", { open: true }, h("summary", "Show the math"), h("p", c.math)) : null,
+      !r.denied && !c.quiz && factorCheck ? quickCheck(factorCheck(c)) : null,
       reactRow,
       h("div.row", cont)
     );
@@ -123,4 +125,30 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
 
   showChoices();
   return card;
+}
+
+// Optional one-question Factor Check after a decision (SPEC §11).
+function quickCheck(fc) {
+  if (!fc) return null;
+  const box = h("div.quick-check");
+  const buttons = fc.choices.map((c, i) =>
+    h(
+      "button.chip",
+      {
+        type: "button",
+        onclick: async () => {
+          const correct = i === fc.answer;
+          buttons.forEach((b, j) => {
+            b.disabled = true;
+            if (j === fc.answer) b.classList.add("right");
+            else if (j === i) b.classList.add("wrong");
+          });
+          const got = await fc.onAnswer(correct);
+          add(box, h("p", { role: "status" }, correct ? `Right! ${got ? "+1 ✨ Sparkle Point" : ""}` : `Not quite. It's ${fc.explain}.`));
+        },
+      },
+      c
+    )
+  );
+  return add(box, h("p", h("strong", "🧠 Quick check (optional): "), "Which part of your score moves, and which way?"), h("div.chip-group", buttons));
 }
