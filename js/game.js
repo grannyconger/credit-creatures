@@ -4,6 +4,7 @@ import { track, flush } from "./telemetry.js";
 import { toast } from "./ui/dom.js";
 import { newPlay, ensurePlay } from "./play.js";
 import { evaluate, rankFor } from "./progress.js";
+import { celebrate } from "./ui/celebrate.js";
 import { fullName } from "./data/creatures.js";
 
 // Onboarding steps in order (SPEC §5). After "done", students live in the hub.
@@ -93,6 +94,12 @@ export function createGame(user, db) {
       const life = game.life;
       return {
         classId: game.profile.classId || "",
+        // Lets the class's teacher find this save (firestore.rules checks it).
+        teacherEmail: game.classInfo?.teacherEmail || "",
+        studentEmail: (user.email || "").toLowerCase(),
+        studentName: (user.displayName || "").slice(0, 100),
+        displayName: (game.profile.displayName || "").slice(0, 30),
+        xp: game.save.play?.xp ?? 0,
         creatureName: game.save.creature?.name || "",
         step: game.step,
         score: life?.score ?? null,
@@ -106,10 +113,16 @@ export function createGame(user, db) {
     // are checked first, so their XP is in the same save.
     async persist(reason = "save") {
       if (game.step === "hub" && game.save.life) {
-        for (const a of evaluate(game.save)) {
-          toast(`🏆 ${a.title}! +${a.xp} XP`, "good");
-          track("achievement", { id: a.id, xp: a.xp, reason });
+        const earned = evaluate(game.save);
+        for (const a of earned) track("achievement", { id: a.id, xp: a.xp, reason });
+        const after = rankFor(game.play.xp);
+        const pops = earned.map((a) => ({ kind: "achievement", id: a.id, icon: a.icon, kicker: "Achievement unlocked!", title: a.title, text: a.how, xp: a.xp }));
+        // XP also comes from answers and shifts between saves, so compare with the last rank shown.
+        if (after.level > game.play.rankSeen) {
+          game.play.rankSeen = after.level;
+          pops.push({ kind: "rank", id: after.title, icon: after.icon, kicker: "New rank!", title: `You're a ${after.title} now`, text: after.next ? `Next up: ${after.next.icon} ${after.next.title} at ${after.next.xp} XP.` : "That's the top rank in the kingdom." });
         }
+        if (pops.length) celebrate(pops);
       }
       let ok = true;
       try {

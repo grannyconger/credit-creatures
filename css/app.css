@@ -1,3 +1,11 @@
+/* Dancing Script (SIL Open Font License, fonts/OFL.txt) for typed signatures. */
+@font-face {
+  font-family: "Dancing Script";
+  src: url("../fonts/DancingScript.ttf") format("truetype");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 /* Game screens. Desktop first, works at 1280px and down to phone width. */
 :root {
   --good: #2f7d4a;
@@ -271,6 +279,8 @@ li.current .factor-step { font-weight: 800; }
 .card-art.large { width: 380px; font-size: 0.95rem; }
 .card-top, .card-bottom { display: flex; justify-content: space-between; gap: 8px; }
 .card-issuer { font-weight: 700; }
+.brand-pill { display: inline-block; padding: 2px 10px; border-radius: 10px; font-weight: 800; }
+.card-issuer.brand-pill { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5); }
 .card-nick { font-style: italic; opacity: 0.9; }
 .card-chip { width: 42px; height: 30px; border-radius: 6px; background: linear-gradient(135deg, #f5d77a, #c9a23c); }
 .card-name { font-size: 1.05em; font-weight: 700; }
@@ -695,6 +705,22 @@ ul.plain li { padding: 4px 0; }
   .lb-rank { display: none; }
 }
 
+/* Unlock pop-ups (js/ui/celebrate.js) */
+.celebrate { border: 0; padding: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; background: radial-gradient(circle at 50% 40%, #fff8e1 0, #f3eefc 55%, #e6dcfa 100%); overflow: hidden; }
+.celebrate::backdrop { background: rgba(43, 35, 64, 0.6); }
+.celebrate-rays { position: absolute; inset: -50%; background: repeating-conic-gradient(from 0deg, rgba(201, 150, 43, 0.14) 0 10deg, transparent 10deg 20deg); animation: spin 30s linear infinite; }
+.celebrate-body { position: relative; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; gap: 4px; }
+.celebrate-body h2 { font-size: 2.2rem; margin: 0; }
+.celebrate-body p { max-width: 520px; font-size: 1.1rem; }
+.celebrate-icon { font-size: 6rem; line-height: 1; animation: pop 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+.celebrate-kicker { text-transform: uppercase; letter-spacing: 0.12em; font-weight: 800; color: var(--accent); margin: 12px 0 0; }
+.celebrate-xp { font-size: 1.6rem !important; font-weight: 800; color: #8a6400; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pop { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .celebrate-rays, .celebrate-icon { animation: none; }
+}
+
 /* Teacher page */
 .class-table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; }
 .class-table th, .class-table td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
@@ -702,3 +728,21 @@ ul.plain li { padding: 4px 0; }
 .create-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; margin-bottom: 16px; }
 .create-form label { width: 100%; margin: 0; }
 .create-form input { flex: 1; min-width: 200px; }
+.teacher-page { max-width: 1280px; }
+.t-controls { border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 18px; margin: 12px 0; background: #fff; }
+.t-controls h2 { margin: 0; }
+.t-control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 10px; }
+.t-control-grid > div { background: var(--soft); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.t-control-grid p { margin: 0; }
+.t-control-grid select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1.5px solid var(--border); }
+.t-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.t-toolbar .row { margin-top: 0; }
+.t-table-wrap { overflow-x: auto; }
+.roster th .link { padding: 0; font-weight: 700; color: var(--ink); text-decoration: none; }
+.roster td { white-space: nowrap; }
+.t-flag { font-size: 1.1rem; margin-right: 2px; cursor: help; }
+.t-detail { border: 0; border-radius: var(--radius); padding: 24px; width: min(1000px, calc(100vw - 24px)); max-height: calc(100vh - 24px); }
+.t-detail::backdrop { background: rgba(43, 35, 64, 0.5); }
+.t-badge { display: inline-block; background: #fff8e6; border: 1px solid var(--gold); border-radius: 999px; padding: 2px 10px; margin: 3px; font-size: 0.9rem; }
+.t-section { border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 14px; margin: 12px 0; }
+button.danger { color: var(--danger); border-color: var(--danger); }

@@ -89,7 +89,7 @@ function questionView(play, { track, save, repaint }) {
               if (ok) session.right++;
               const got = P.recordAnswer(play, { type: q.type, standard: meta.standard, correct: ok });
               session.sparkle += got.sparkle;
-              track("question", { type: q.type, standard: meta.standard, correct: ok, seconds: Math.round((Date.now() - session.shownAt) / 1000), sparkle: got.sparkle, xp: got.xp });
+              track("question", { qtype: q.type, standard: meta.standard, correct: ok, seconds: Math.round((Date.now() - session.shownAt) / 1000), sparkle: got.sparkle, xp: got.xp });
               repaint();
               await save("desk");
             },

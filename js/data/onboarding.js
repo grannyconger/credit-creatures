@@ -103,7 +103,7 @@ export const NETWORK_SLIDES = [
     icon: "🏦",
     title: "The issuer is the lender",
     body: [
-      "Capital One ⛵, Chase 🏛️ and Market Village Credit Union 🤝 are issuers.",
+      "Capital One ⛵, Chase 🏛️, and two local credit unions, Greenville Federal Credit Union 🌲 and Truliant 🌟, are issuers.",
       "The issuer looks at your application, decides yes or no, and sets your limit and your APR (the yearly interest rate).",
       "The issuer is who sends your bill each month.",
     ],

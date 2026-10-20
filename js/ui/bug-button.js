@@ -6,7 +6,7 @@ import { LIFE_VERSION } from "../engine/index.js";
 
 const NOTE_MAX = 500;
 
-// getContext() returns { uid, classId, life }. send(report) saves it.
+// getContext() returns { uid, classId, teacherEmail, life }. send(report) saves it.
 export function mountBugButton({ getContext, send }) {
   const note = h("textarea", { rows: 4, maxlength: NOTE_MAX, placeholder: "What happened? What did you expect?" });
   const status = h("p.error");
@@ -24,11 +24,12 @@ export function mountBugButton({ getContext, send }) {
   sendBtn.addEventListener("click", async () => {
     sendBtn.disabled = true;
     status.textContent = "";
-    const { uid, classId, life } = getContext();
+    const { uid, classId, teacherEmail, life } = getContext();
     try {
       await send({
         uid,
         classId: classId || "",
+        teacherEmail: teacherEmail || "",
         screen: currentScreen() || "",
         note: note.value.trim().slice(0, NOTE_MAX),
         seed: life?.seed || "",

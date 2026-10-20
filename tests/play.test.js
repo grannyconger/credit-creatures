@@ -40,7 +40,7 @@ function sampleLives() {
     return r.life;
   })();
   let secured = lifeWith({ seed: "secured", checking: 800 });
-  secured = E.applyForCard(secured, { issuer: "creditUnion", product: "secured", requestedLimit: 200 }).life;
+  secured = E.applyForCard(secured, { issuer: "greenvilleFcu", product: "secured", requestedLimit: 200 }).life;
   for (let i = 0; i < 8; i++) secured = E.endMonth(secured).life;
   lives.secured = secured;
   let au = E.joinAsAuthorizedUser(lifeWith({ seed: "au", checking: 700 }), "maxed").life;

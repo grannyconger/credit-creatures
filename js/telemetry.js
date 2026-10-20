@@ -26,7 +26,8 @@ export function initTelemetry({ sink, context }) {
 }
 
 export function track(type, data = {}) {
-  const e = { t: Math.round((Date.now() - state.sessionStart) / 1000), type, screen: state.screen, ...flat(data) };
+  // The event's own fields go last, so data can never overwrite its type.
+  const e = { ...flat(data), t: Math.round((Date.now() - state.sessionStart) / 1000), type, screen: state.screen };
   state.queue.push(e);
   if (state.queue.length > MAX_QUEUE) state.queue.shift();
   state.recent.push(e);

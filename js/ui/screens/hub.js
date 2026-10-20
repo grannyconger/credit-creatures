@@ -9,6 +9,7 @@ import * as P from "../../play.js";
 import { moneyChips, walletStrip, accountButtons } from "../wallet.js";
 import { rankFor } from "../../progress.js";
 import { xpBar } from "./trophies.js";
+import { celebrate } from "../celebrate.js";
 
 export function render(root, { game, go, track, saveAndQuit }) {
   game.practice = null;
@@ -21,12 +22,16 @@ export function render(root, { game, go, track, saveAndQuit }) {
     fill(chapterBox);
     const n = play.chapter;
     const info = chapterInfo(n);
+    if (game.classInfo?.paused) {
+      add(chapterBox, h("p.step-label", `Chapter ${n}`), h("h2", "⏸️ Play is paused"), h("p", "Your teacher paused the game for now. You can still visit your accounts, the Practice Desk, the shop and your trophies."));
+      return;
+    }
     if (play.active) {
       add(
         chapterBox,
         h("p.step-label", `Chapter ${n}`),
         h("h2", info.title),
-        h("p", `Month ${play.active.monthIndex + 1} of ${CONFIG.pacing.monthsPerChapter} is waiting for you.`),
+        h("p", `Month ${play.active.monthIndex + 1} of ${play.active.months || CONFIG.pacing.monthsPerChapter} is waiting for you.`),
         h("div.row", h("button.big", { type: "button", onclick: () => go("month") }, `Continue Chapter ${n}`))
       );
       return;
@@ -36,7 +41,7 @@ export function render(root, { game, go, track, saveAndQuit }) {
       const btn = h("button.big", { type: "button" }, `Start Chapter ${n}`);
       btn.addEventListener("click", async () => {
         btn.disabled = true;
-        P.startChapter(play, game.life);
+        P.startChapter(play, game.life, game.classInfo?.monthsPerChapter || CONFIG.pacing.monthsPerChapter);
         track("chapterStart", { chapter: n });
         await game.persist("chapterStart");
         go("month");
@@ -86,7 +91,11 @@ export function render(root, { game, go, track, saveAndQuit }) {
     }
     const released = game.classInfo?.releasedChapter || 1;
     track("releaseCheck", { released, chapter: play.chapter, manual });
-    if (P.announceChapter(play, released)) await game.persist("chapterOpen");
+    if (P.announceChapter(play, released)) {
+      const info = chapterInfo(play.chapter);
+      celebrate({ kind: "chapter", id: String(play.chapter), icon: "📣", kicker: "New chapter unlocked!", title: `Chapter ${play.chapter}: ${info.title}`, text: info.intro });
+      await game.persist("chapterOpen");
+    }
     paintChapter();
   }
 

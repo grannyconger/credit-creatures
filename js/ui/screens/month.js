@@ -18,6 +18,31 @@ export function render(root, { game, go, track, refreshWho }) {
   const run = game.run;
   const panel = h("section.panel.month");
   root.append(panel);
+  // The teacher can pause play for the class. Practice mode still works.
+  const paused = () =>
+    fill(
+      panel,
+      h("h1", "⏸️ Play is paused"),
+      h("p", "Your teacher paused the game for now. Your progress is saved. You can still look at your accounts and use the Practice Desk."),
+      h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back to hub"))
+    );
+  if (!run.practice && game.classInfo?.paused) {
+    paused();
+    return;
+  }
+  if (!run.practice && game.profile.classId) {
+    game.db
+      .getClass(game.profile.classId)
+      .then((cls) => {
+        if (!cls) return;
+        game.classInfo = cls;
+        if (cls.paused && panel.isConnected) {
+          board?.stop();
+          paused();
+        }
+      })
+      .catch(() => {});
+  }
   let view = null;
   let monthStartedAt = Date.now();
   // The job board, so a running minigame timer can stop when the screen repaints.
@@ -62,7 +87,7 @@ export function render(root, { game, go, track, refreshWho }) {
       panel,
       run.practice ? h("p.callout.warn.practice", "🔁 Practice mode. Nothing you do here is saved. Your real game is safe.") : null,
       h("p.step-label", `Chapter ${a.chapter}: ${info.title}`),
-      h("h1", `Month ${a.monthIndex + 1} of ${CONFIG.pacing.monthsPerChapter}`),
+      h("h1", `Month ${a.monthIndex + 1} of ${a.months || CONFIG.pacing.monthsPerChapter}`),
       h("p.muted", `${game.save.creature.name} is ${ageLabel(life.ageMonths).replace(" old", "")} old.`),
       moneyChips(life, play.sparkle.total),
       accountButtons(game, go, P.unreadCount(play)),

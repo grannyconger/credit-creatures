@@ -38,7 +38,7 @@ export function render(root, { game, advance, track }) {
     youStat("Hard inquiries", inquiries)
   );
 
-  const offersFor = (issuer) => OFFERS.filter((o) => o.issuer === issuer);
+  const offersFor = (issuer) => OFFERS.filter((o) => o.issuer === issuer && !o.legacy);
 
   function setIssuer(key) {
     if (app.issuer === key) return;
@@ -61,14 +61,15 @@ export function render(root, { game, advance, track }) {
 
   function paintChoices() {
     clear(issuerRow);
-    for (const [key, iss] of Object.entries(ISSUERS)) {
+    for (const [key, iss] of Object.entries(ISSUERS).filter(([, i]) => !i.legacy)) {
       const names = offersFor(key).map((o) => PRODUCTS[o.product].label.replace(/ card$/, ""));
       issuerRow.append(
         h(
           "button.tile.wide",
           { type: "button", "aria-pressed": String(app.issuer === key), onclick: () => setIssuer(key) },
           h("span.tile-emoji", iss.icon),
-          h("strong", iss.name),
+          h("strong", iss.brand ? h("span.brand-pill", { style: { background: iss.brand.bg, color: iss.brand.fg } }, iss.name) : iss.name),
+          iss.local ? h("small", "Local credit union") : null,
           h("small", names.join(" · "))
         )
       );

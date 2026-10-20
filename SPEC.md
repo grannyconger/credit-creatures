@@ -73,7 +73,7 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 
 ## 4. Real brands and icons
 
-- Use real brand and product names in text: Visa, Mastercard, American Express, Discover, Capital One, Chase, a local credit union, and product names such as Capital One Venture X or a credit-builder card.
+- Use real brand and product names in text: Visa, Mastercard, American Express, Discover, Capital One, Chase, two local credit unions (Greenville Federal Credit Union and Truliant Federal Credit Union, teacher request 2026-10-20), and product names such as Capital One Venture X or a credit-builder card.
 - **Never use or approximate real logos.** Represent each brand with an original emoji or simple shape instead. Do not recreate signature marks (for example, no overlapping red and yellow circles, no blue-and-gold wordmark).
 - Suggested icon mapping (adjust freely, keep it consistent):
 
@@ -85,7 +85,8 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 | Discover | 🧭 |
 | Capital One | ⛵ |
 | Chase | 🏛️ |
-| Credit union | 🤝 |
+| Greenville Federal Credit Union | 🌲 (name badge in its brand colors) |
+| Truliant Federal Credit Union | 🌟 (name badge in royal blue #0033a0 and gold #fdda24) |
 | Venture X (product) | ✈️ |
 
 - All APRs, fees and limits are **game values inspired by real offers**, not current real terms. Show a small note in the card shop: "Terms are simplified for the game."
@@ -512,7 +513,8 @@ The pilot is Phases 1 to 7. Stop and wait for approval at the end of each.
 | 5 | **Account Management:** wallet with debit card and digital wallet, statements, pay bills, AutoPay, My Score with life-choice explainers, credit report, Practice Desk, Factor Check, notifications inbox, theme picker, Unicorn Sparkle Points. |
 | 6 | **Economy and engagement:** Ledger Sort, Cashier Rush and Check Writer minigames, "Pay with" picker at checkout, shop with backgrounds and creature items, BNPL checkout, achievements (40+), XP, ranks, class leaderboard. |
 | 7 | **Teacher:** dashboard, roster, controls, CSV export, Firestore security rules hardening, school-only sign-in verification. |
-| 8 | **Pilot:** one class plays. Tune numbers, add remaining scenarios, minigames and achievements. |
+| 8 | **Social and customization (added 2026-10-20):** friend requests between classmates, friend groups, gifts of money or shop items (each student can send one gift every 40 hours), and a much bigger creature customizer. Teacher can turn social features off. |
+| 9 | **Pilot:** one class plays. Tune numbers, add remaining scenarios, minigames and achievements. |
 
 ---
 

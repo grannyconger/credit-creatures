@@ -1,6 +1,6 @@
 // Same functions as db.js, kept in this browser's localStorage.
 // Used only with ?local on localhost, so the game can be tested without signing in.
-export const LOCAL_CLASS = { code: "TEST01", classId: "local-class", name: "Local Test Class" };
+export const LOCAL_CLASS = { code: "TEST01", classId: "local-class", name: "Local Test Class", teacherEmail: "local.teacher@greermiddlecollege.org" };
 
 export const LOCAL_USER = {
   uid: "local-student",
@@ -41,7 +41,15 @@ export async function findClassByCode(code) {
 
 export async function getClass(classId) {
   return classId === LOCAL_CLASS.classId
-    ? { id: classId, name: LOCAL_CLASS.name, releasedChapter: read("class/released") || 1, leaderboard: read("class/leaderboard") ?? true }
+    ? {
+        id: classId,
+        name: LOCAL_CLASS.name,
+        teacherEmail: LOCAL_CLASS.teacherEmail,
+        releasedChapter: read("class/released") || 1,
+        leaderboard: read("class/leaderboard") ?? true,
+        paused: read("class/paused") ?? false,
+        monthsPerChapter: read("class/months") || 3,
+      }
     : null;
 }
 
@@ -90,6 +98,36 @@ export async function readLeaderboard() {
 
 export async function setLeaderboardOn(classId, on) {
   write("class/leaderboard", on);
+}
+
+// ---------- teacher dashboard, on the same browser storage ----------
+
+export async function listMyClasses() {
+  return [await getClass(LOCAL_CLASS.classId)].map((c) => ({ ...c, code: LOCAL_CLASS.code }));
+}
+
+export async function updateClass(classId, fields) {
+  const keys = { releasedChapter: "class/released", leaderboard: "class/leaderboard", paused: "class/paused", monthsPerChapter: "class/months" };
+  for (const [k, v] of Object.entries(fields)) if (keys[k]) write(keys[k], v);
+}
+
+export async function listClassSaves() {
+  const s = read(`saves/${LOCAL_USER.uid}`);
+  if (!s) return [];
+  return [{ uid: LOCAL_USER.uid, ...s.summary, creature: s.creature, play: s.play, onboarding: s.onboarding, lifeJson: s.life ? JSON.stringify(s.life) : "" }];
+}
+
+export async function deleteStudentSave(uid) {
+  localStorage.removeItem(key(`saves/${uid}`));
+  localStorage.removeItem(key("leaderboard/me"));
+}
+
+export async function listEvents(uid) {
+  return (read(`telemetry/${uid}`) || []).map(({ rollup, ...batch }) => batch);
+}
+
+export async function listFeedback() {
+  return (read("feedback") || []).map((f, i) => ({ id: `local-${i}`, ...f }));
 }
 
 export function resetLocal() {

@@ -50,7 +50,8 @@ export function render(root, { game, advance, track }) {
       }
       await game.db.saveProfileFields(game.user, { classId: found.classId, joinedClassAt: Date.now() });
       game.profile.classId = found.classId;
-      game.classInfo = { id: found.classId, name: found.name };
+      // The full class doc has teacherEmail, which every save carries for the teacher's roster.
+      game.classInfo = (await game.db.getClass(found.classId).catch(() => null)) || { id: found.classId, name: found.name };
       await advance("teen");
     } catch (err) {
       console.error(err);

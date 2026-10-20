@@ -9,11 +9,27 @@ export const NETWORKS = {
   discover: { name: "Discover", icon: "🧭" },
 };
 
+// brand: colors for the issuer's badge on cards and tiles (no logos, SPEC §4).
+const GREENVILLE = {
+  name: "Greenville Federal Credit Union",
+  short: "Greenville FCU",
+  icon: "🌲",
+  local: true,
+  // Placeholder until the teacher confirms Greenville FCU's colors (its site
+  // blocks automated visits). Change these two values only.
+  brand: { bg: "#1f5f3a", fg: "#ffffff" },
+};
+
 export const ISSUERS = {
   capitalOne: { name: "Capital One", icon: "⛵" },
   chase: { name: "Chase", icon: "🏛️" },
   discover: { name: "Discover", icon: "🧭" },
-  creditUnion: { name: "Market Village Credit Union", icon: "🤝" },
+  greenvilleFcu: GREENVILLE,
+  // Truliant's own site colors: royal blue #0033a0 and gold #fdda24.
+  truliant: { name: "Truliant Federal Credit Union", short: "Truliant", icon: "🌟", local: true, brand: { bg: "#0033a0", fg: "#fdda24" } },
+  // Saves from before 2026-10-20 used one "Market Village Credit Union". Its
+  // accounts and logged applications still need this key to show and replay.
+  creditUnion: { ...GREENVILLE, legacy: true },
 };
 
 // Each product sets its terms at the low end of the limit slider, plus how much
@@ -82,8 +98,13 @@ export const OFFERS = [
   { issuer: "chase", product: "premium", network: "visa", name: "Chase Sapphire Reserve", icon: "✈️" },
   { issuer: "discover", product: "secured", network: "discover", name: "Discover it Secured" },
   { issuer: "discover", product: "student", network: "discover", name: "Discover it Student" },
-  { issuer: "creditUnion", product: "secured", network: "visa", name: "Credit Union Secured Visa" },
-  { issuer: "creditUnion", product: "creditBuilder", network: "visa", name: "Credit Union Builder Visa" },
+  { issuer: "greenvilleFcu", product: "secured", network: "visa", name: "Greenville FCU Secured Visa" },
+  { issuer: "greenvilleFcu", product: "creditBuilder", network: "visa", name: "Greenville FCU Builder Visa" },
+  { issuer: "truliant", product: "secured", network: "visa", name: "Truliant Secured Visa" },
+  { issuer: "truliant", product: "student", network: "visa", name: "Truliant Student Visa" },
+  // Legacy offers, kept so old saves replay exactly. Not shown in the card shop.
+  { issuer: "creditUnion", product: "secured", network: "visa", name: "Credit Union Secured Visa", legacy: true },
+  { issuer: "creditUnion", product: "creditBuilder", network: "visa", name: "Credit Union Builder Visa", legacy: true },
 ];
 
 // Card looks. Fancy materials raise the fee and the bar for approval.

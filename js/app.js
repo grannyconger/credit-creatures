@@ -38,7 +38,7 @@ captureErrors();
 
 const { auth, db } = await loadBackends();
 const bug = mountBugButton({
-  getContext: () => ({ uid: game?.user.uid || "", classId: game?.profile.classId, life: game?.life }),
+  getContext: () => ({ uid: game?.user.uid || "", classId: game?.profile.classId, teacherEmail: game?.classInfo?.teacherEmail || "", life: game?.life }),
   send: (report) => db.sendFeedback(report),
 });
 bug.hide();

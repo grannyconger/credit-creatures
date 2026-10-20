@@ -2,7 +2,7 @@
 
 ## Context
 
-The current plan has no automatic way to collect feedback. SPEC §8, §19 and §22 all say to "tune in the pilot": 5 decision cards per month, 3 to 4 minutes per month, $40 to $120 per shift, the 15-minute session, and a "$600 want every couple of chapters." Phase 8 just says "tune numbers." As written, that would mean watching students and asking them questions. The teacher wants feedback collected automatically, inside the game.
+The current plan has no automatic way to collect feedback. SPEC §8, §19 and §22 all say to "tune in the pilot": 5 decision cards per month, 3 to 4 minutes per month, $40 to $120 per shift, the 15-minute session, and a "$600 want every couple of chapters." Phase 9 (the pilot, Phase 8 before 2026-10-20) just says "tune numbers." As written, that would mean watching students and asking them questions. The teacher wants feedback collected automatically, inside the game.
 
 Goal: every play session automatically produces tuning data. Students can flag problems in one tap. The teacher sees the results in a tuning view. Claude can turn an export into concrete config changes, checked by replaying real students' lives under the new numbers.
 
@@ -50,7 +50,7 @@ A **Tuning** tab next to the roster:
 - A bug report list.
 - One button: **Export tuning data** (JSON).
 
-### 4. Closing the loop with Claude (Phase 8)
+### 4. Closing the loop with Claude (Phase 9, the pilot)
 - `npm run tuning-report -- export.json` prints:
   - each tunable number,
   - what the real data says,
@@ -68,7 +68,7 @@ A **Tuning** tab next to the roster:
 - **Phase 5:** Practice Desk and Factor Check answer logging.
 - **Phase 6:** minigame and shop logging. Minigame reactions.
 - **Phase 7:** Tuning tab, rollup reads, JSON export. Teacher-editable class settings.
-- **Phase 8:** `scripts/tuning-report.js`, `scripts/replay.js`. One tuning pass after the first week of pilot play.
+- **Phase 9 (pilot):** `scripts/tuning-report.js`, `scripts/replay.js`. One tuning pass after the first week of pilot play.
 
 ## Critical files
 - New: `js/telemetry.js`, `js/ui/bug-button.js`, `scripts/tuning-report.js`, `scripts/replay.js`.

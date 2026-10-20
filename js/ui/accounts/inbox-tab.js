@@ -50,7 +50,7 @@ export function inboxTab({ run, track, save, repaint }) {
                   type: "button",
                   onclick: async () => {
                     P.markRead(play, n.id);
-                    track("inboxRead", { type: n.type });
+                    track("inboxRead", { noteType: n.type });
                     repaint();
                     await save("inbox");
                   },

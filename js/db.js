@@ -6,6 +6,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   addDoc,
   collection,
   query,
@@ -132,6 +133,35 @@ export async function setLeaderboardOn(classId, on) {
 // Rules let only the class's own teacher change it, and never its code.
 export async function releaseChapter(classId, chapter) {
   await updateDoc(doc(db, "classes", classId), { releasedChapter: chapter });
+}
+
+// ---------- teacher dashboard (SPEC §20). Rules allow only the class's own teacher ----------
+
+// Every save that names this teacher. Filtered to one class here, so Firestore
+// needs no composite index.
+export async function listClassSaves(teacherEmail, classId) {
+  const snap = await getDocs(query(collection(db, "saves"), where("teacherEmail", "==", teacherEmail.toLowerCase())));
+  return snap.docs.map((d) => ({ uid: d.id, ...d.data() })).filter((s) => s.classId === classId);
+}
+
+export async function updateClass(classId, fields) {
+  await updateDoc(doc(db, "classes", classId), fields);
+}
+
+// Reset: the student starts over at the next sign-in. Their profile and class stay.
+export async function deleteStudentSave(uid, classId) {
+  await deleteDoc(doc(db, "saves", uid));
+  await deleteDoc(doc(db, "leaderboards", classId, "players", uid)).catch(() => {});
+}
+
+export async function listEvents(uid, max = 300) {
+  const snap = await getDocs(query(collection(db, "telemetry", uid, "events"), limit(max)));
+  return snap.docs.map((d) => d.data());
+}
+
+export async function listFeedback(teacherEmail) {
+  const snap = await getDocs(query(collection(db, "feedback"), where("teacherEmail", "==", teacherEmail.toLowerCase()), limit(100)));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
 export async function listMyClasses(teacherEmail) {

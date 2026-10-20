@@ -82,7 +82,7 @@ export const STRATEGIES = {
       if (cards(life).length === 0 && life.month % 3 === 0) {
         life = tryApply(life, { issuer: "chase", product: "student", requestedLimit: 600 });
       }
-      if (life.month === 15) life = tryApply(life, { issuer: "creditUnion", product: "creditBuilder", requestedLimit: 400 });
+      if (life.month === 15) life = tryApply(life, { issuer: "greenvilleFcu", product: "creditBuilder", requestedLimit: 400 });
       life = payCards(life, () => (rng.chance(0.04) ? "none" : rng.chance(0.7) ? "full" : "min"));
       return spendOnCards(life, rng, [0.15, 0.4], rng.range(90, 160));
     },
@@ -115,7 +115,7 @@ export const STRATEGIES = {
       if (life.month % 6 === 0) {
         life = tryApply(life, { issuer: "capitalOne", product: "premium", requestedLimit: 15000, design: "metal" });
         life = tryApply(life, { issuer: "chase", product: "student", requestedLimit: 1000, design: "metal" });
-        life = tryApply(life, { issuer: "creditUnion", product: "creditBuilder", requestedLimit: 600 });
+        life = tryApply(life, { issuer: "greenvilleFcu", product: "creditBuilder", requestedLimit: 600 });
       }
       if (rng.chance(0.3)) {
         for (let i = 0; i < 2; i++) {
@@ -136,7 +136,7 @@ export const STRATEGIES = {
     month(life, rng) {
       life = workShifts(life, rng);
       if (cards(life).length < 2 && life.month % 4 === 0) {
-        life = tryApply(life, { issuer: "creditUnion", product: "creditBuilder", requestedLimit: 600 });
+        life = tryApply(life, { issuer: "greenvilleFcu", product: "creditBuilder", requestedLimit: 600 });
         life = tryApply(life, { issuer: "discover", product: "student", requestedLimit: 1000 });
       }
       return spendOnCards(life, rng, [0.8, 1]);

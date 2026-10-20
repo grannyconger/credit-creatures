@@ -6,19 +6,25 @@ Last updated: 2026-10-20 (Phase 4)
 
 ## Status
 
-- **Phases 1 to 5: done, approved.** Phase 5 was approved 2026-10-20 ("Build it").
-- **Phase 6: done, awaiting approval.** 112 tests pass. The job board with all 3 minigames (including the signature pad, both drawn and typed), the shop, achievements, ranks and the leaderboard were clicked through in headless Chrome in `?local` mode.
-- **Teacher action needed:** publish the Phase 6 `firestore.rules` (`docs/setup-firebase.md` section 12, adds `leaderboards/{classId}/players/{uid}`). The leaderboard toggle is on `/teacher/` (section 13).
-- **Waiting on the teacher:** OK to download the Dancing Script font (OFL) into `fonts/` for "Type my signature". Until then it uses the computer's built-in script fonts.
-- **Next step:** get Phase 6 approval, then plan and build Phase 7 (teacher dashboard).
+- **Phases 1 to 6: done, approved.** Phase 6 was approved 2026-10-20. The teacher is publishing the Phase 6 rules.
+- **Phase 7: done, awaiting approval.** 119 tests pass. The dashboard was clicked through in headless Chrome with `/teacher/?local`: roster, pause, months per chapter, student detail, Tuning and bug reports. The student side was checked for pause, unlock pop-ups and the new credit unions.
+- **Teacher action needed:** publish the Phase 7 `firestore.rules` (`docs/setup-firebase.md` section 14). Students appear on the roster after their next save.
+- **Waiting on the teacher:** Greenville Federal Credit Union's brand colors. Its website blocks automated visits, so `js/data/products.js` uses a placeholder (`brand: { bg: "#1f5f3a", fg: "#ffffff" }`).
+- **Next step:** get Phase 7 approval, then plan and build Phase 8 (social and customization).
 
 ## Open decisions (ask once, then use the default)
 
-1. **Economy looks loose.** A careful bot that works every shift (3 of 4 right) saves about $200 a month, so it has about $2,500 after 4 chapters. SPEC §19 aims for about $100 a month ("one $600 want every couple of chapters"). **Default: leave it until the Phase 6 shop gives money somewhere to go, then tune in the pilot** (`CONFIG.play.shift`, bills).
-2. **Card pacing.** 5 cards per month used up the ~20 pilot scenarios in about 4 months. **Default:** up to 2 new one-time cards and 1 everyday card per month, plus must-see priority cards (`CONFIG.pacing.newCardsPerMonth`, `everydayCardsPerMonth`). `decisionCardsPerMonth: 5` stays the cap. Raise these when Phase 8 adds the rest of the catalog.
-3. **Creature aging (SPEC §3).** **Default:** after the pilot, small details only.
-4. **Signature font.** **Default:** self-host Dancing Script (OFL) in `fonts/` once the teacher OKs the download. Until then, the CSS falls back to Segoe Script, Brush Script, Snell Roundhand and generic cursive.
-5. **Phase 7: who can see reflections and play data.** **Default:** only the class's own teacher (the `teacherEmail` on the class). Rules give teachers read access to `saves`, `telemetry` and `feedback` for students whose `users/{uid}.classId` is one of their classes.
+1. **Economy is loose.** **Default:** tune in the pilot (Phase 9) with real data from the Tuning tab.
+2. **Card pacing.** **Default:** up to 2 new and 1 everyday card per month.
+3. **Creature aging (SPEC §3).** **Default:** fold into the Phase 8 customizer as small details.
+4. **Phase 8: gifts.** **Default:**
+   - Gifts go only to accepted friends in the same class.
+   - Money gifts are $5 to $50 from checking, logged as engine actions on both sides. The receiver gets it as `receiveCash` when they claim it.
+   - Shop item gifts transfer an owned item.
+   - One gift sent per student every 40 hours, enforced by a server timestamp in the rules.
+   - Gifts can carry only preset messages (no free text), so there's nothing to moderate.
+   - The teacher can turn social features off for a class.
+5. **Phase 8: friend groups.** **Default:** up to 6 classmates. Members see each other's creature, rank and XP (the same as the leaderboard), plus a group XP total. Nothing private (money, score, report) is shared.
 
 ## Decisions already made
 
@@ -52,6 +58,18 @@ Last updated: 2026-10-20 (Phase 4)
 - **Telemetry:** `telemetry/{uid}/events/{autoId}` (one doc per flush, not per month as FEEDBACK.md first said, because flushes happen at every save and create-only rules forbid overwriting) plus the `telemetry/{uid}` rollup (merge with increments).
 - **Display name:** Google's name goes in `googleName`. `displayName` is the student's own choice and sign-in no longer overwrites it.
 - **First scores are moderate** (teacher request, 2026-10-20). Three tunables in `CONFIG.score`: `historyDepth` (payment history starts at 70% of full value and reaches 100% after 36 months on one account, and a parent's card counts at half its months), `authorizedAgeCapMonths: 12` (a parent's card counts as at most 1 year old for length), and a stricter length curve (`oldestFullMonths 96`, `averageFullMonths 60`, `lengthCurvePower 0.8`). Score at 18 with a parent's card: responsible about 735, average about 697, maxed about 513 (no parent: no score). Careful own card: about 695 at 6 months, 716 at 12, 749 at 24, 792 at 48.
+- **Phase 7 defaults and changes** (2026-10-20):
+  - **Dashboard** (`teacher/index.html` loads `js/teacher/dashboard.js`, with the math in `js/teacher/analyze.js`, which is tested in Node):
+    - roster with sort and CSV, student detail, controls (release, pause, leaderboard, months per chapter, reset)
+    - the Tuning tab with a JSON export, and bug reports with downloads
+    - `?local` on localhost runs it on the browser test save
+  - **How the teacher finds students:** every save now carries `teacherEmail` (from the class doc), `studentEmail`, `studentName`, `displayName` and `xp`. Rules let a teacher read and delete only saves with their email. Event logs (`telemetry/{uid}/events`) are readable when the student's save names that teacher, so the teacher's per-student queries need no collection-group index. Feedback docs carry `teacherEmail`.
+  - **Class settings honored by the game:** `paused` stops the month screen and chapter starts (Accounts, the Practice Desk, the shop and Trophies still work). `monthsPerChapter` is stored on each chapter when it starts (`play.active.months`), and practice replays use the original length.
+  - **"Numbers don't match the log" flag:** `logMismatches()` replays the life and compares checking, savings, held savings and every account's balance and status. Scores aren't compared, because score tuning changes them legitimately.
+  - **Local credit unions:** "Market Village Credit Union" is replaced by Greenville Federal Credit Union (🌲) and Truliant Federal Credit Union (🌟, #0033a0 and #fdda24 from truliantfcu.org). Old saves keep the hidden `creditUnion` issuer and offers, so they still show and replay.
+  - **Unlock pop-ups** (`js/ui/celebrate.js`): full-screen and dismissable (Continue or Escape) for new achievements, rank-ups (`play.rankSeen`) and new chapters. More than 3 at once fold into one summary pop-up. Motion is off with reduced-motion.
+  - **Signature font:** Dancing Script (OFL) is in `fonts/` with `OFL.txt`.
+  - **Telemetry fix:** event fields can no longer overwrite an event's `type`. Practice Desk answers log `qtype`.
 - **Phase 6 defaults** (announced 2026-10-20):
   - **Jobs:** a job board replaces the placeholder shift in the month. Ledger Sort is 45 seconds of asset, liability or equity. Cashier Rush is 60 seconds of exact change. Check Writer means writing a check from a bill and signing the front, then endorsing the back of the paycheck, with an optional "For deposit only". Every game has a "No timer" mode with a set number of items. Pay is $40 + performance, capped at $120, plus experience (+$5 every 3 shifts at a job, up to +$20) and any raise. Everything is in `CONFIG.play.jobs`. The tutorial keeps its guided 4-item sort (`js/ui/shift.js`).
   - **Signature pad** (`js/ui/signature-pad.js`): a full-screen `<dialog>` with a canvas (pointer events, so touch, pen and mouse all work, `touch-action: none`), or "Type my signature" in script. The drawing is shown on the check only and is never saved or sent.
@@ -103,6 +121,9 @@ Last updated: 2026-10-20 (Phase 4)
 | `js/play.js` | Pure month and chapter logic on `save.play`: start chapter, draw cards, choose, shifts, End Month, summary, reflection, recap, practice |
 | `js/ui/decision-card.js`, `pay-with.js`, `bills-panel.js`, `wallet.js`, `shift.js` | Card with choices, outcome and reactions. "Pay with" picker. Bills panel. Wallet strip and money chips. Shared work shift |
 | `js/data/scenarios.js` / `life-events.js` / `chapters.js` | 26 Decision cards (23 one-time, 3 everyday) / 14 life cards / chapter titles, intros and reflection questions |
+| `js/teacher/dashboard.js` / `analyze.js` | Teacher dashboard UI / roster rows, flags, log check, CSV, tuning math |
+| `js/ui/celebrate.js` | Full-screen unlock pop-ups |
+| `fonts/` | Dancing Script (OFL) for typed signatures |
 | `js/progress.js` | XP, ranks, achievements (`evaluate`), job pay and experience, payment and desk stats, records |
 | `js/ui/job-board.js`, `js/ui/minigames/*.js`, `js/ui/signature-pad.js` | Job picker and results. Ledger Sort, Cashier Rush, Check Writer. Full-screen signature pad |
 | `js/ui/screens/shop.js`, `trophies.js` | Shop with checkout / achievements, rank and records, leaderboard |
@@ -138,14 +159,14 @@ Last updated: 2026-10-20 (Phase 4)
 | Reckless | 429 | 0% | 100% | 93% |
 | Never pays | 397 | 0% | 100% | 100% |
 
-## Phase 7 starting notes (not yet planned in detail)
+## Phase 8 starting notes (not yet planned in detail)
 
-Scope from SPEC §20 and docs/FEEDBACK.md:
-- Teacher dashboard on `/teacher/`: roster (XP and rank, score, chapters played, reflections, on-time %, utilization, account types, practice accuracy by standard, achievement count, and flags for payday or title loans, collections, maxed cards, many inquiries, and a log that doesn't match the numbers).
-- Student detail: creature, credit report, score history, decisions, reflections, achievements. Everything is in `saves/{uid}` (`lifeJson` plus `play`), so the dashboard can rebuild with `creditReport` and check the log with `replayLife`.
-- Controls: pause play, release chapters (done), months per chapter, leaderboard toggle (done), reset a student. CSV export for the gradebook.
-- Tuning tab (FEEDBACK.md section 3) from `telemetry/{uid}` rollups, plus a JSON export.
-- Rules hardening: teacher reads of saves, telemetry and feedback for their own classes only. Tighter save field checks.
+Teacher request 2026-10-20. See open decisions 4 and 5.
+- **Friends:** send, accept and decline friend requests to classmates (the same class only). This needs new Firestore collections, with rules so only the two students involved can see a request.
+- **Friend groups:** create, join and leave. They show members' creatures, ranks and XP.
+- **Gifts:** money ($5 to $50) or an owned shop item, at most one every 40 hours per sender, with preset messages only. Each side's engine change must be a logged action so replay still works (`receiveCash` and `debitPurchase` already exist).
+- **Customization:** more species, colors, patterns and accessory slots, and small aging details as the creature grows (decision 3).
+- **Teacher:** a social on/off toggle for each class, and a "Gifts and friends" view on the student detail.
 
 ## End-of-phase checklist
 

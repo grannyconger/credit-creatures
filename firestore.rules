@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Phase 6 rules. Teacher reads of student data and full hardening come in Phase 7.
+// Phase 7 rules. Students write only their own data. Teachers read only their own classes.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -44,15 +44,30 @@ service cloud.firestore {
           || exists(/databases/$(database)/documents/classes/$(request.resource.data.classId)));
     }
 
-    // One save per student. The life is a JSON string.
+    // One save per student. The life is a JSON string. The class's teacher can
+    // read it (and delete it to reset the student) through teacherEmail.
+    // Written as a plain field check so a teacher's "where teacherEmail ==" query passes.
+    function isClassTeacher(data) {
+      return isTeacher() && data.teacherEmail == myEmail();
+    }
+
     match /saves/{uid} {
-      allow read: if isMe(uid);
+      allow read: if isMe(uid) || isClassTeacher(resource.data);
+      allow delete: if isClassTeacher(resource.data);
       allow create, update: if isMe(uid)
         && request.resource.data.keys().hasOnly(['creature', 'onboarding', 'chapter', 'play', 'lifeJson',
-          'classId', 'creatureName', 'step', 'score', 'month', 'ageMonths', 'engineVersion', 'updatedAt'])
+          'classId', 'teacherEmail', 'studentEmail', 'studentName', 'displayName', 'xp',
+          'creatureName', 'step', 'score', 'month', 'ageMonths', 'engineVersion', 'updatedAt'])
         && request.resource.data.lifeJson is string
         && request.resource.data.lifeJson.size() < 900000
-        && shortString('creatureName', 20);
+        && request.resource.data.get('studentEmail', myEmail()) == myEmail()
+        && request.resource.data.get('xp', 0) is int
+        && request.resource.data.get('chapter', 1) is int
+        && shortString('creatureName', 20)
+        && shortString('displayName', 30)
+        && shortString('studentName', 100)
+        && shortString('teacherEmail', 100)
+        && shortString('step', 20);
     }
 
     // Classes are created by teachers. Any school user can look one up by id.
@@ -64,10 +79,18 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['name', 'teacherEmail', 'code', 'releasedChapter', 'createdAt'])
         && request.resource.data.releasedChapter == 1
         && shortString('name', 40);
+      // Teachers change only these settings, within sensible ranges.
       allow update: if isTeacher()
         && resource.data.teacherEmail == myEmail()
-        && request.resource.data.teacherEmail == resource.data.teacherEmail
-        && request.resource.data.code == resource.data.code;
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'releasedChapter', 'leaderboard', 'paused', 'monthsPerChapter'])
+        && request.resource.data.releasedChapter is int
+        && request.resource.data.releasedChapter >= 1 && request.resource.data.releasedChapter <= 30
+        && request.resource.data.get('leaderboard', true) is bool
+        && request.resource.data.get('paused', false) is bool
+        && request.resource.data.get('monthsPerChapter', 3) is int
+        && request.resource.data.get('monthsPerChapter', 3) >= 1
+        && request.resource.data.get('monthsPerChapter', 3) <= 6
+        && shortString('name', 40);
     }
 
     // Join codes. A code can be read only by typing it exactly (no listing).
@@ -93,6 +116,8 @@ service cloud.firestore {
         return isTeacher() && get(/databases/$(database)/documents/classes/$(classId)).data.teacherEmail == myEmail();
       }
       allow read: if isSchool() && (inClass() || ownsClass());
+      // Resetting a student also clears their leaderboard entry.
+      allow delete: if ownsClass();
       allow create, update: if isMe(uid) && inClass()
         && request.resource.data.keys().hasOnly(['creatureName', 'displayName', 'xp', 'rank', 'species', 'palette', 'updatedAt'])
         && request.resource.data.xp is int
@@ -111,6 +136,9 @@ service cloud.firestore {
       allow create, update: if isMe(uid)
         && request.resource.data.keys().hasOnly(['flushes', 'sessions', 'secondsPlayed', 'errors', 'lastScreen', 'updatedAt']);
       match /events/{id} {
+        // The teacher of the student's class reads play data for the Tuning tab.
+        allow read: if isTeacher()
+          && get(/databases/$(database)/documents/saves/$(uid)).data.get('teacherEmail', '') == myEmail();
         allow create: if isMe(uid)
           && request.resource.data.events is list
           && request.resource.data.events.size() <= 200;
@@ -119,10 +147,11 @@ service cloud.firestore {
 
     // Bug reports from the 🐞 button. Create only.
     match /feedback/{id} {
+      allow read: if isClassTeacher(resource.data);
       allow create: if isSchool()
         && request.resource.data.uid == request.auth.uid
         && shortString('note', 500)
-        && request.resource.data.keys().hasOnly(['uid', 'classId', 'screen', 'note', 'seed', 'month', 'engineVersion',
+        && request.resource.data.keys().hasOnly(['uid', 'classId', 'teacherEmail', 'screen', 'note', 'seed', 'month', 'engineVersion',
           'sessionId', 'actionsJson', 'eventsJson', 'userAgent', 'createdAt'])
         && request.resource.data.actionsJson.size() < 50000
         && request.resource.data.eventsJson.size() < 50000;

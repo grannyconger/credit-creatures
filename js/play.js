@@ -31,6 +31,7 @@ export function ensurePlay(play) {
   play.xp ??= 0;
   play.xpByChapter ??= {};
   play.answerXp ??= {};
+  play.rankSeen ??= 1;
   play.achievements ??= {};
   play.stats ??= { shifts: 0, paidInFull: 0, payoffSprints: 0, hadDebt: false };
   play.jobs ??= {};
@@ -61,9 +62,11 @@ export function ctxFor(play, extra = {}) {
   return { chapter: play.active?.chapter ?? play.chapter, seen: play.seen, lastChange: play.lastChange, ...extra };
 }
 
-export function startChapter(play, life) {
+// months: the class's months per chapter (teacher setting), or the default.
+export function startChapter(play, life, months = CONFIG.pacing.monthsPerChapter) {
   play.active = {
     chapter: play.chapter,
+    months,
     startMonth: life.month,
     startScore: life.score,
     startChecking: life.checking,
@@ -179,7 +182,7 @@ export function finishMonth(play, life) {
   play.lastChange = { delta: record.delta, factor: record.factor, message: record.change };
   notesFromMonth(play, r, month);
   a.monthIndex++;
-  const chapterDone = a.monthIndex >= CONFIG.pacing.monthsPerChapter;
+  const chapterDone = a.monthIndex >= (a.months || CONFIG.pacing.monthsPerChapter);
   if (chapterDone) {
     play.summary = summarize(a, r.life);
     play.active = null;
@@ -198,6 +201,7 @@ function summarize(a, life) {
   const events = a.records.flatMap((r) => r.events);
   return {
     chapter: a.chapter,
+    months: a.months,
     title: chapterInfo(a.chapter).title,
     startMonth: a.startMonth,
     endMonth: life.month,
@@ -250,7 +254,7 @@ export function startPractice(save, chapter) {
   if (!h) return null;
   const life = replayLife(save.life.start, save.life.log, h.startLog);
   const play = { ...newPlay(), chapter, seen: h.seenAtStart.slice(), shiftBonus: h.shiftBonusAtStart || 0, lastChange: h.lastChangeAtStart || null };
-  startChapter(play, life);
+  startChapter(play, life, h.months);
   return { life, play };
 }
 

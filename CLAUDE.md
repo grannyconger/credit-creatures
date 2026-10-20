@@ -24,7 +24,7 @@ A classroom game where students raise a fantasy creature through its credit life
 - Feedback is built in (`docs/FEEDBACK.md`). Every new screen, choice, minigame and question logs telemetry through `js/telemetry.js`. Never ask students for personal info.
 - Sign-in is school-only (`@greermiddlecollege.org`). Firestore rules are the real gate. Any rules change must be pasted into the Firebase console by the teacher (give click-by-click steps).
 
-## Build phases (SPEC §23)
+## Build phases (SPEC §23, renumbered 2026-10-20: social is Phase 8, the pilot is Phase 9)
 
 | Phase | Scope | Status |
 |---|---|---|
@@ -33,9 +33,10 @@ A classroom game where students raise a fantasy creature through its credit life
 | 3 | Onboarding: profile, creature creator, class codes, age 16 options, tutorial, Design Your Card, saving | Done, approved |
 | 4 | Simulation: hub, month loop, life events, ~20 scenarios, chapters, chapter release, reflections | Done, approved |
 | 5 | Account Management: wallet, statements, bills, AutoPay, My Score, report, Practice Desk, inbox, themes, Sparkle Points | Done, approved |
-| 6 | Economy and engagement: Ledger Sort, Cashier Rush, Check Writer, shop, BNPL checkout, 40+ achievements, XP, ranks, leaderboard | Done, awaiting approval |
-| 7 | Teacher: dashboard, roster, controls, CSV export, rules hardening | Next |
-| 8 | Pilot: one class plays, tune numbers, add remaining content | |
+| 6 | Economy and engagement: Ledger Sort, Cashier Rush, Check Writer, shop, BNPL checkout, 40+ achievements, XP, ranks, leaderboard | Done, approved |
+| 7 | Teacher: dashboard, roster, controls, CSV export, Tuning tab, rules hardening (plus unlock pop-ups, local credit unions, signature font) | Done, awaiting approval |
+| 8 | Social and customization: friend requests, friend groups, gifts every 40 hours, bigger creature customizer | Next |
+| 9 | Pilot: one class plays, tune numbers, add remaining content | |
 
 ## Run locally
 

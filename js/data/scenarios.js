@@ -48,14 +48,14 @@ export const SCENARIOS = [
     priority: 3,
     fits: (life) => !everHadCard(life) && life.checking >= 220,
     text: () => [
-      "Market Village Credit Union offers a secured card. You put down a $200 deposit, and that deposit becomes your limit.",
+      "Truliant Federal Credit Union offers a secured card. You put down a $200 deposit, and that deposit becomes your limit.",
       "Because your own money backs it, almost everyone gets approved. Pay it on time and it builds your credit history.",
     ],
     choices: () => [
       {
         key: "apply",
         label: "Apply with a $200 deposit",
-        steps: [["applyForCard", { issuer: "creditUnion", product: "secured", requestedLimit: 200, design: "plasticGreen" }]],
+        steps: [["applyForCard", { issuer: "truliant", product: "secured", requestedLimit: 200, design: "plasticBlue" }]],
         outcome: (r) =>
           approvedText(
             r,
@@ -80,7 +80,7 @@ export const SCENARIOS = [
       const c = CONFIG.loans.creditBuilder;
       const pay = amortizedPayment(c.amount, c.apr, c.termMonths);
       return [
-        `Market Village Credit Union offers a credit-builder loan. They lock ${dollars(c.amount)} in a savings account for you.`,
+        `Greenville Federal Credit Union offers a credit-builder loan. They lock ${dollars(c.amount)} in a savings account for you.`,
         `You pay ${dollars(pay)} a month for ${c.termMonths} months. When you finish, the ${dollars(c.amount)} is yours, and every on-time payment goes on your report.`,
       ];
     },
@@ -203,7 +203,7 @@ export const SCENARIOS = [
     fits: (life) => !hasType(life, "autoLoan") && life.checking >= 550,
     text: () => [
       "The bus is slow and your bus pass costs $30 a month. A used car costs $4,000. Gas and insurance would add about $90 a month.",
-      "The credit union wants $500 down for a 48-month loan. The dealer offers $0 down for 72 months, but adds to the rate.",
+      "Truliant, a local credit union, wants $500 down for a 48-month loan. The dealer offers $0 down for 72 months, but adds to the rate.",
     ],
     choices: (life) => {
       const cu = quoteAutoLoan(life, { price: 4000, downPayment: 500, termMonths: 48 });
@@ -213,13 +213,13 @@ export const SCENARIOS = [
       return [
         {
           key: "creditUnion",
-          label: `Credit union loan: ${dollars(cu.payment)}/month`,
+          label: `Truliant loan: ${dollars(cu.payment)}/month`,
           detail: `$500 down, ${apr(cu.apr)} APR, 48 months`,
           steps: [["openAutoLoan", { price: 4000, downPayment: 500, termMonths: 48, lender: "creditUnion" }], ...carBills],
           outcome: (r) => (r.denied ? denied : "You got the car. A loan you pay on time builds history and adds an installment loan to your credit mix."),
           quality: "ok",
           factor: { key: "mix", dir: "up" },
-          math: `Credit union: ${dollars(cu.amount)} at ${apr(cu.apr)} for 48 months = ${dollars(cu.payment)} a month and ${dollars(cu.totalInterest)} in interest.`,
+          math: `Truliant: ${dollars(cu.amount)} at ${apr(cu.apr)} for 48 months = ${dollars(cu.payment)} a month and ${dollars(cu.totalInterest)} in interest.`,
         },
         {
           key: "dealer",
@@ -229,7 +229,7 @@ export const SCENARIOS = [
           outcome: (r) => (r.denied ? denied : "You got the car with nothing down, but you'll pay for it for 6 years and pay much more interest."),
           quality: "bad",
           factor: { key: "mix", dir: "up" },
-          math: `Dealer: ${dollars(dealer.amount)} at ${apr(dealer.apr)} for 72 months = ${dollars(dealer.payment)} a month and ${dollars(dealer.totalInterest)} in interest. That is ${dollars(dealer.totalInterest - cu.totalInterest)} more than the credit union.`,
+          math: `Dealer: ${dollars(dealer.amount)} at ${apr(dealer.apr)} for 72 months = ${dollars(dealer.payment)} a month and ${dollars(dealer.totalInterest)} in interest. That is ${dollars(dealer.totalInterest - cu.totalInterest)} more than Truliant.`,
         },
         { key: "bus", label: "Keep taking the bus", outcome: "No loan, no inquiry. Your $30 bus pass is still the cheapest ride in the kingdom.", quality: "good" },
       ];
@@ -470,7 +470,7 @@ export const SCENARIOS = [
     fits: (life) => life.checking < 150,
     text: () => [
       "Checking is low and your bills come out at the end of the month. A Quick Cash store offers a payday loan: $300 now, pay back $345 in two weeks. No credit check!",
-      "Market Village Credit Union offers a small loan instead: $300, paid back over 3 months.",
+      "Greenville Federal Credit Union offers a small loan instead: $300, paid back over 3 months.",
     ],
     choices: (life) => [
       {
@@ -483,8 +483,8 @@ export const SCENARIOS = [
       },
       {
         key: "creditUnion",
-        label: "Take the credit union loan",
-        steps: [["receiveCash", 300, "credit union small loan"], ["addBill", "Credit union loan payment", 104, 3]],
+        label: "Take the Greenville FCU loan",
+        steps: [["receiveCash", 300, "Greenville FCU small loan"], ["addBill", "Greenville FCU loan payment", 104, 3]],
         outcome: "You have $300 now and pay $104 a month for 3 months. That's $12 in interest instead of $45 in two weeks.",
         quality: "good",
         math: "3 payments of $104 = $312. The loan costs $12, about 18% APR.",

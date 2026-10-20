@@ -111,3 +111,24 @@ Until you publish, the game still saves. Only the leaderboard stays empty.
 ## 13. Turn the leaderboard on or off
 
 On `/credit-life/teacher/`, the **Leaderboard** column shows **On (turn off)** or **Off (turn on)** for each class. It starts on. It ranks students by XP and shows only creature names, display names and XP.
+
+## 14. Publish the Phase 7 rules (once)
+
+Phase 7 lets you (and only you) read your own students' saves, play data and bug reports for the dashboard. It also limits which class settings can change. Same steps as before:
+
+1. Open https://console.firebase.google.com and click the **credit-life** project.
+2. In the left menu, click **Build > Firestore Database**, then the **Rules** tab.
+3. Click inside the editor, press **Ctrl+A** (or **Cmd+A** on a Mac) and delete everything.
+4. Open https://github.com/grannyconger/credit-life/blob/main/firestore.rules, click the **Copy raw file** button, and paste it into the editor.
+5. Click **Publish**. Wait for "Rules published."
+
+Then open `/credit-life/teacher/`. Each student shows up on the roster after their next save (any button press that saves, like End Month), because that save adds your email to it.
+
+## 15. Using the dashboard
+
+- **Controls:** release the next chapter, pause or resume play, turn the leaderboard on or off, and set months per chapter (1 to 6, for chapters started from then on).
+- **Roster:** click a column to sort, click a name for details (reflections, decisions, credit report, score chart, achievements). **Download CSV** gives a gradebook-ready file.
+- **Flags:** 💵 payday loan, 🚨 collections, 📈 a card 90% or more used, 🔎 3 or more hard inquiries, ⚠️ numbers that don't match the activity log (a sign someone edited their save).
+- **Reset this student** (inside their details) deletes their game so they start over. Type RESET to confirm. It can't be undone.
+- **Tuning:** click **Load tuning data** for time per month, how the class splits on each card, confusing cards, minigame pay, question accuracy and chapter ratings. **Export tuning data (JSON)** is the file to give Claude in Phase 9.
+- **Bug reports:** each 🐞 report, with a download Claude can use to replay the exact problem.
