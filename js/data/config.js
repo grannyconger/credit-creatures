@@ -103,6 +103,10 @@ export const CONFIG = {
     lateRecency: [[0, 1], [12, 0.8], [24, 0.55], [48, 0.35]],
     openCollectionPenalty: 0.3,
     paidCollectionPenalty: 0.1,
+    // A short record proves less than a long one. Payment history starts at
+    // `floor` and reaches full value after `fullMonths` of reports on one account.
+    // A parent's card counts at `authorizedShare` of its months.
+    historyDepth: { fullMonths: 36, floor: 0.7, authorizedShare: 0.5 },
 
     // Amounts owed: utilization -> factor value (points are [utilization, value]).
     utilizationCurve: [[0, 0.9], [0.01, 1], [0.1, 0.97], [0.3, 0.82], [0.5, 0.55], [0.75, 0.3], [0.9, 0.15], [1, 0.05]],
@@ -111,9 +115,11 @@ export const CONFIG = {
     installmentShare: 0.2,
 
     // Length of history: months at which each part is maxed out.
-    oldestFullMonths: 60,
-    averageFullMonths: 36,
-    lengthCurvePower: 0.6,
+    oldestFullMonths: 96,
+    averageFullMonths: 60,
+    lengthCurvePower: 0.8,
+    // A parent's card counts as at most this old. You didn't build its history.
+    authorizedAgeCapMonths: 12,
 
     // Credit mix
     mixRevolving: 0.5,

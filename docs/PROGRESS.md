@@ -15,12 +15,11 @@ Last updated: 2026-10-20 (Phase 4)
 
 ## Open decisions (ask once, then use the default)
 
-1. **First-score height.** A responsible parent's card gives about 819 at 18. Careful players get about 757 at 6 months. **Default: leave as is.** To lower it, raise `score.lengthCurvePower` in `js/data/config.js`, then rerun `npm run sim`.
-2. **Economy looks loose.** A careful bot that works every shift (3 of 4 right) saves about $200 a month, so it has about $2,500 after 4 chapters. SPEC §19 aims for about $100 a month ("one $600 want every couple of chapters"). **Default: leave it until the Phase 6 shop gives money somewhere to go, then tune in the pilot** (`CONFIG.play.shift`, bills).
-3. **Card pacing.** 5 cards per month used up the ~20 pilot scenarios in about 4 months. **Default:** up to 2 new one-time cards and 1 everyday card per month, plus must-see priority cards (`CONFIG.pacing.newCardsPerMonth`, `everydayCardsPerMonth`). `decisionCardsPerMonth: 5` stays the cap. Raise these when Phase 8 adds the rest of the catalog.
-4. **Check Writer minigame (SPEC §17).** **Default:** Phase 6. Part 1 writes a check from a bill and signs the front. Part 2 endorses the back of a paycheck. Full-screen signature pad (touch, pen or mouse) or "type my signature" in a self-hosted cursive font (OFL). Drawings are never saved.
-5. **Creature aging (SPEC §3).** **Default:** after the pilot, small details only.
-6. **Phase 5: Factor Check after Decision cards** (SPEC §11). Cards already show a factor chip ("📊 Amounts owed ▼ goes down"). **Default:** add the optional one-question Factor Check in Phase 5 with the Practice Desk, since both feed Sparkle Points.
+1. **Economy looks loose.** A careful bot that works every shift (3 of 4 right) saves about $200 a month, so it has about $2,500 after 4 chapters. SPEC §19 aims for about $100 a month ("one $600 want every couple of chapters"). **Default: leave it until the Phase 6 shop gives money somewhere to go, then tune in the pilot** (`CONFIG.play.shift`, bills).
+2. **Card pacing.** 5 cards per month used up the ~20 pilot scenarios in about 4 months. **Default:** up to 2 new one-time cards and 1 everyday card per month, plus must-see priority cards (`CONFIG.pacing.newCardsPerMonth`, `everydayCardsPerMonth`). `decisionCardsPerMonth: 5` stays the cap. Raise these when Phase 8 adds the rest of the catalog.
+3. **Check Writer minigame (SPEC §17).** **Default:** Phase 6. Part 1 writes a check from a bill and signs the front. Part 2 endorses the back of a paycheck. Full-screen signature pad (touch, pen or mouse) or "type my signature" in a self-hosted cursive font (OFL). Drawings are never saved.
+4. **Creature aging (SPEC §3).** **Default:** after the pilot, small details only.
+5. **Phase 5: Factor Check after Decision cards** (SPEC §11). Cards already show a factor chip ("📊 Amounts owed ▼ goes down"). **Default:** add the optional one-question Factor Check in Phase 5 with the Practice Desk, since both feed Sparkle Points.
 
 ## Decisions already made
 
@@ -53,6 +52,7 @@ Last updated: 2026-10-20 (Phase 4)
 - **Saves:** `saves/{uid}` stores the life as a JSON string (`lifeJson`) plus summary fields (score, month, step) for the Phase 7 roster. It saves at every step, every End Month, and on Save and Quit.
 - **Telemetry:** `telemetry/{uid}/events/{autoId}` (one doc per flush, not per month as FEEDBACK.md first said, because flushes happen at every save and create-only rules forbid overwriting) plus the `telemetry/{uid}` rollup (merge with increments).
 - **Display name:** Google's name goes in `googleName`. `displayName` is the student's own choice and sign-in no longer overwrites it.
+- **First scores are moderate** (teacher request, 2026-10-20). Three tunables in `CONFIG.score`: `historyDepth` (payment history starts at 70% of full value and reaches 100% after 36 months on one account, and a parent's card counts at half its months), `authorizedAgeCapMonths: 12` (a parent's card counts as at most 1 year old for length), and a stricter length curve (`oldestFullMonths 96`, `averageFullMonths 60`, `lengthCurvePower 0.8`). Score at 18 with a parent's card: responsible about 735, average about 697, maxed about 513 (no parent: no score). Careful own card: about 695 at 6 months, 716 at 12, 749 at 24, 792 at 48.
 - **Phase 3 tweaks** (2026-10-20): every button row is centered, the score-parts tour has a color per part with a numbered, accessible progress tracker, and creatures have an optional last name printed on cards (`fullName()`).
 - **Phase 4 defaults** (announced 2026-10-20 with "keep going"):
   - **Replay (practice):** `startPractice()` rebuilds the life at a finished chapter's start with `replayLife(start, log, startLog)` and plays it in memory. Nothing is saved, and telemetry is tagged `practice`. Chapter 1 (onboarding) is not replayable.
@@ -112,11 +112,11 @@ Last updated: 2026-10-20 (Phase 4)
 
 | Play style | Median | 700+ | Under 600 | Collections |
 |---|---|---|---|---|
-| Careful | 817 | 100% | 0% | 0% |
-| Average | 746 | 70% | 14% | 6% |
-| Minimum payer | 660 | 30% | 10% | 0% |
-| Reckless | 455 | 0% | 100% | 93% |
-| Never pays | 422 | 0% | 100% | 100% |
+| Careful | 793 | 99% | 0% | 0% |
+| Average | 716 | 59% | 18% | 6% |
+| Minimum payer | 639 | 19% | 10% | 0% |
+| Reckless | 429 | 0% | 100% | 93% |
+| Never pays | 397 | 0% | 100% | 100% |
 
 ## Phase 5 starting notes (not yet planned in detail)
 

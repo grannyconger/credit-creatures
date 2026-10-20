@@ -47,8 +47,12 @@ function paymentFactor(report) {
   const open = report.collections.filter((c) => !c.paid).length;
   const paid = report.collections.length - open;
   penalty += open * S.openCollectionPenalty + paid * S.paidCollectionPenalty;
+  const d = S.historyDepth;
+  const depthMonths = Math.max(0, ...report.tradelines.map((t) => t.history.length * (t.owner === "authorized" ? d.authorizedShare : 1)));
+  const depth = d.floor + (1 - d.floor) * Math.min(1, depthMonths / d.fullMonths);
   return {
-    value: clamp(1 - penalty, 0, 1),
+    value: clamp((1 - penalty) * depth, 0, 1),
+    depthMonths,
     onTimePct: total ? ok / total : 1,
     lateEpisodes: episodes,
     latestLate: latest,
@@ -87,7 +91,9 @@ function countsForLength(t) {
 }
 
 function lengthFactor(report) {
-  const ages = report.tradelines.filter(countsForLength).map((t) => Math.max(0, t.ageMonths));
+  const ages = report.tradelines
+    .filter(countsForLength)
+    .map((t) => Math.max(0, t.owner === "authorized" ? Math.min(t.ageMonths, S.authorizedAgeCapMonths) : t.ageMonths));
   if (!ages.length) return { value: 0, oldestMonths: 0, averageMonths: 0 };
   const oldest = Math.max(...ages);
   const average = ages.reduce((a, b) => a + b, 0) / ages.length;

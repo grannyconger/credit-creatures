@@ -51,7 +51,7 @@ export const FACTOR_TOUR = [
     icon: "⏰",
     weight: "35%",
     title: "Payment history",
-    means: "Do you pay your bills on time? This is the biggest part of your score.",
+    means: "Do you pay your bills on time? This is the biggest part of your score. A long record of on-time payments counts more than a short one.",
     example: "You forget to pay your card while on a trip. A late payment lands on your record and your score drops.",
   },
   {
