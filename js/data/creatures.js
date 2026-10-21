@@ -75,9 +75,60 @@ export const ACCESSORIES = {
 
 export const ACCESSORY_SLOTS = { head: "Head", neck: "Neck", face: "Face", held: "Paw" };
 
-export const NAME_IDEAS = ["Pip", "Mossy", "Biscuit", "Nova", "Pebble", "Ziggy", "Clover", "Ember", "Waffles", "Juniper", "Puddles", "Sprout"];
+// "Give me an idea" names, many of them silly. All 20 letters or fewer.
+export const NAME_IDEAS = [
+  "Pip", "Mossy", "Biscuit", "Nova", "Pebble", "Ziggy", "Clover", "Ember", "Waffles", "Juniper", "Puddles",
+  "Sprout", "Noodle", "Pickles", "Meatball", "Nugget", "Taco", "Burrito", "Dumpling", "Pudding", "Muffin",
+  "Crouton", "Tater Tot", "Gravy", "Sprinkles", "Jellybean", "Gumdrop", "Marshmallow", "Cheeto", "Nacho",
+  "Pretzel", "Bagel", "Churro", "Wonton", "Kiwi", "Mango", "Turnip", "Radish", "Pickle", "Rutabaga",
+  "Zucchini", "Sir Fluffington", "Lady Snugglepuff", "Captain Wiggles", "Duke Snoozles", "Baron Von Floof",
+  "Princess Sneeze", "Count Snackula", "Professor Bloop", "Doctor Wobble", "Admiral Puddle", "Queen Crumbs",
+  "King Chonk", "Bloop", "Squish", "Wobble", "Gloop", "Zorp", "Blorbo", "Snorkel", "Fizzle", "Wiggles",
+  "Snoot", "Boop", "Bonk", "Floof", "Chonk", "Smol", "Toot", "Burp", "Hiccup", "Sneeze", "Giggles",
+  "Snickers", "Tickles", "Bubbles", "Dingle", "Doodle", "Noodlehead", "Goober", "Doofus", "Bumble", "Fumble",
+  "Mumble", "Grumble", "Spud", "Lumpy", "Chunky", "Fuzzy", "Dusty", "Rusty", "Crusty", "Stinky", "Soggy",
+  "Sparky", "Zippy", "Nibbles", "Munchkin", "Gizmo", "Widget", "Sprocket", "Doohickey", "Thingamajig",
+  "Whatsit", "Comet", "Pixel", "Echo", "Orbit", "Rocket", "Zephyr", "Storm", "Blaze", "Frost", "Luna", "Sol",
+  "Sage", "Willow", "Fern", "Maple", "Acorn", "Hazel", "Basil", "Thistle", "Bramble", "Cricket", "Wren",
+  "Robin", "Finch", "Mr Pants", "Steve", "Kevin", "Gary", "Linda", "Carl", "Brenda", "Doug",
+  "Bob", "Greg", "Susan", "Dave", "Todd", "Barbara", "Frank", "Gertrude", "Mildred",
+  "Herbert", "Bartholomew", "Reginald", "Percival", "Winifred", "Tofu", "Quinoa", "Kale", "Sriracha",
+  "Wasabi", "Tzatziki", "Hummus", "Kimchi", "Ramen", "Udon", "Gnocchi", "Ravioli", "Cannoli", "Tiramisu"
+];
 
-export const LAST_NAME_IDEAS = ["Mossbright", "Puddleton", "Featherbottom", "Glimmerstone", "McScales", "Quillsworth", "Lanternby", "Pebblefoot", "Sparkwhistle", "Thistledown"];
+export const LAST_NAME_IDEAS = [
+  "Mossbright", "Puddleton", "Featherbottom", "Glimmerstone", "McScales", "Quillsworth", "Lanternby",
+  "Pebblefoot", "Sparkwhistle", "Thistledown", "McNugget", "Von Snoot", "Wigglebottom", "Fluffernutter",
+  "Snugglesworth", "Picklebottom", "Butterbean", "Noodleman", "McFluff", "Puddingham", "Crumblesby",
+  "Cheeseworth", "Snorkelstein", "Wobbleton", "Bloopington", "Fizzlebottom", "Sneezeworth", "Gigglesnort",
+  "Tootsalot", "Burpington", "McSnackface", "Von Chonk", "Doodlebug", "Bumblesnout", "Fumblefingers",
+  "Mumblesworth", "Grumbleguts", "Snickerdoodle", "Ticklebelly", "Jellyroll", "Gumbootie", "Marshmallowby",
+  "Pretzelton", "Waffleton", "Pancakeby", "Muffinman", "Biscuitborough", "Stinkyfeet", "Soggybottom",
+  "Crustybuns", "Lumpkins", "Chunkington", "Fuzzbucket", "Dustbunny", "Rustbucket", "Nibblesworth",
+  "Munchington", "Gizmoworth", "Sprocketson", "Widgetbury", "Starwhisker", "Moonbeam", "Sunfeather",
+  "Cloudhopper", "Rainbottom", "Stormbringer", "Frostwhistle", "Emberheart", "Stonebelly", "Leafsworth",
+  "Fernsby", "Maplebrook", "Acornwood", "Hazelnutt", "Thornberry", "Brambleton", "Cricketfoot", "Wrenwood",
+  "Finchley", "Pantsington", "McGarbage", "Von Wobble", "Snootington", "Boopsalot", "Bonkers", "McBonk",
+  "Floofington", "Smolbean", "Hiccupsworth", "Sneezypaws", "Goobersmith", "Toastington",
+  "Butterworth", "Wafflesnout", "Noodlearms", "Spaghettiwiggle", "Meatballio", "Tacomancer", "Coinsworth",
+  "Pennywhistle", "Nickelbottom", "Dimewright", "Goldpockets", "Savesalot", "Budgeteer", "Ledgerwick",
+  "Vaultsby", "Interestingham", "Creditstone", "Mintcondition", "Moneybags", "Cashflow", "McSavings"
+];
+
+// Deals ideas like a shuffled deck: no repeats until every name has come up,
+// then a fresh shuffle that never starts with the name just shown.
+// bag: the names left in the deck (from last time, or []). Returns the pick and the new bag.
+export function nextIdea(list, bag, current, rand = Math.random) {
+  let left = (bag || []).filter((n) => list.includes(n) && n !== current);
+  if (!left.length) {
+    left = list.filter((n) => n !== current);
+    for (let i = left.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [left[i], left[j]] = [left[j], left[i]];
+    }
+  }
+  return { pick: left[0], bag: left.slice(1) };
+}
 
 export const NAME_MAX = 20;
 

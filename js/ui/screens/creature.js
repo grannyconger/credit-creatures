@@ -2,7 +2,7 @@
 // Looks unlock from the start, with XP or achievements, or in the shop (js/data/looks.js).
 import { h, clear } from "../dom.js";
 import { creatureSvg } from "../creature-art.js";
-import { SPECIES, PALETTES, NAME_IDEAS, LAST_NAME_IDEAS, NAME_MAX, defaultCreature, fullName } from "../../data/creatures.js";
+import { SPECIES, PALETTES, NAME_IDEAS, LAST_NAME_IDEAS, NAME_MAX, nextIdea, defaultCreature, fullName } from "../../data/creatures.js";
 import { LOOK_SLOTS, LOOK_OPTIONS, isUnlocked, lockText, getField, setField } from "../../data/looks.js";
 
 export function render(root, { game, advance, back, editing, track, refreshWho }) {
@@ -98,10 +98,24 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
     preview.querySelector(".creature-caption").firstChild.textContent = caption();
   });
 
+  // The rest of each shuffled deck is kept in this browser, so names don't
+  // repeat after a reload either. Storage can be blocked, so it's optional.
+  const deal = (kind, list, current) => {
+    const key = `credit-creatures:ideas:${kind}`;
+    let bag = [];
+    try {
+      bag = JSON.parse(localStorage.getItem(key) || "[]");
+    } catch {}
+    const r = nextIdea(list, bag, current);
+    try {
+      localStorage.setItem(key, JSON.stringify(r.bag));
+    } catch {}
+    return r.pick;
+  };
+
   const lastIdeaBtn = h("button.link", { type: "button" }, "Give me an idea");
   lastIdeaBtn.addEventListener("click", () => {
-    const options = LAST_NAME_IDEAS.filter((n) => n !== draft.lastName);
-    draft.lastName = options[Math.floor(Math.random() * options.length)];
+    draft.lastName = deal("last", LAST_NAME_IDEAS, draft.lastName);
     lastInput.value = draft.lastName;
     lastIdeaUsed = true;
     paint();
@@ -109,8 +123,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
 
   const ideaBtn = h("button.link", { type: "button" }, "Give me an idea");
   ideaBtn.addEventListener("click", () => {
-    const options = NAME_IDEAS.filter((n) => n !== draft.name);
-    draft.name = options[Math.floor(Math.random() * options.length)];
+    draft.name = deal("first", NAME_IDEAS, draft.name);
     nameInput.value = draft.name;
     ideaUsed = true;
     paint();
