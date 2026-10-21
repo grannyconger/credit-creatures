@@ -50,24 +50,32 @@ export function render(root, { game, go, track }) {
             )
           )
         : null,
-      h("div.hub-top", guardianCard(), chapterCard(status, checking)),
-      moneyChips(life, play),
-      kingdomMap({
-        creature: c,
-        ageMonths: life.ageMonths,
-        status,
-        home: play.home || [],
-        onOpen: (pl) => {
-          track("placeOpen", { place: pl.id, status: status[pl.id]?.text || "" });
-          if (status[pl.id]?.tone === "locked") return toast(`${pl.name}: ${status[pl.id].text.toLowerCase()}. Keep playing to unlock it!`, "info");
-          if (pl.id === "townhall" && !play.active && !play.summary) return startChapter();
-          go(pl.route);
-        },
-      }),
-      stageOf(play) === 0 ? null : h("p.note.center.hub-help", HUB_HELP),
+      // The map is the focal point (teacher request 2026-10-21): on wide screens
+      // the creature and money sit on its left and this chapter on its right.
+      h(
+        "div.hub-layout",
+        h("aside.hub-side.hub-left", guardianCard(), moneyChips(life, play)),
+        h("aside.hub-side.hub-right", chapterCard(status, checking)),
+        h("div.hub-center", hubMap(status), stageOf(play) === 0 ? null : h("p.note.center.hub-help", HUB_HELP))
+      ),
       run.practice ? null : recapBox(play, track),
       run.practice ? null : practiceBox(play, game, go, track)
     );
+  }
+
+  function hubMap(status) {
+    return kingdomMap({
+      creature: c,
+      ageMonths: life.ageMonths,
+      status,
+      home: play.home || [],
+      onOpen: (pl) => {
+        track("placeOpen", { place: pl.id, status: status[pl.id]?.text || "" });
+        if (status[pl.id]?.tone === "locked") return toast(`${pl.name}: ${status[pl.id].text.toLowerCase()}. Keep playing to unlock it!`, "info");
+        if (pl.id === "townhall" && !play.active && !play.summary) return startChapter();
+        go(pl.route);
+      },
+    });
   }
 
   // Lessons that play on arrival: Sage's welcome in the prologue, then one

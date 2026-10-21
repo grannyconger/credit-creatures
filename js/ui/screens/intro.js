@@ -24,8 +24,8 @@ export function render(root, { advance, track }) {
   root.append(panel);
   const started = Date.now();
 
-  const finish = async (skipped) => {
-    track("intro", { skipped, panel: k + 1, seconds: Math.round((Date.now() - started) / 1000) });
+  const finish = async () => {
+    track("intro", { panel: k + 1, seconds: Math.round((Date.now() - started) / 1000) });
     await advance("profile");
   };
 
@@ -41,8 +41,9 @@ export function render(root, { advance, track }) {
       h("div.dots", { "aria-hidden": "true" }, INTRO_PANELS.map((_, i) => h("span", { class: i === k ? "on" : "" }))),
       h(
         "div.row",
-        k > 0 ? h("button.secondary", { type: "button", onclick: () => ((k -= 1), paint()) }, "Back") : h("button.link", { type: "button", onclick: () => finish(true) }, "Skip the story"),
-        h("button.big", { type: "button", onclick: () => (last ? finish(false) : ((k += 1), paint())) }, last ? "Meet your creature" : "Next")
+        // No skipping (teacher request 2026-10-21): every student reads the story.
+        k > 0 ? h("button.secondary", { type: "button", onclick: () => ((k -= 1), paint()) }, "Back") : null,
+        h("button.big", { type: "button", onclick: () => (last ? finish() : ((k += 1), paint())) }, last ? "Meet your creature" : "Next")
       )
     );
     panel.querySelector("button.big").focus();

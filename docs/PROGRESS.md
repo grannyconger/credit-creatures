@@ -6,6 +6,11 @@ Last updated: 2026-10-21 (Phase 12: Lantern Alley)
 
 ## Status
 
+- **Teacher requests after Phase 12 (2026-10-21):**
+  - The opening story can't be skipped.
+  - Sign in once: Google remembers the student in that browser. "Save and exit" (was "Save and sign out") saves and goes back to the title. Begin resumes the game. The title shows "Signed in as ... Not you? Sign out" for shared laptops. A refresh mid-game goes straight back in (`sessionStorage` flag).
+  - Hub layout: the map is the focal point and always fits on screen. 1400px and wider: creature and money on the left, this chapter on the right. 900 to 1400px: both on the left. Phones: chapter box, map, then the creature. Map labels scale with the map.
+  - One sentence per line everywhere in the game (`js/ui/sentences.js`): a plain line break between sentences in paragraphs, list items, pop-ups and toasts. Buttons, headings, labels and the map are left alone.
 - **Phase 12, Lantern Alley (2026-10-21): awaiting the teacher's review.**
   - A new Chapter 5 place on the map (`js/data/alley.js`, `js/ui/screens/alley.js`). 10 stalls with a loud pitch and fine print one tap away: payday loan, title loan, rent-to-own, debt settlement, credit repair, deferred interest, pawn (traps) and a credit union small loan, a secured card, the free credit report (fair deals).
   - The student calls each one a trap or a fair deal, then sees the real cost worked out. A right call gives +10 bonus XP once (`CONFIG.pacing.xp.alleyStall`) and counts toward Standard 5 accuracy at the Academy. New achievement: Trap Spotter (8 right).

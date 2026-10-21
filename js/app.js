@@ -31,6 +31,7 @@ import * as cottage from "./ui/screens/cottage.js";
 import * as garage from "./ui/screens/garage.js";
 import * as records from "./ui/screens/records.js";
 import * as alley from "./ui/screens/alley.js";
+import { watchSentences } from "./ui/sentences.js";
 
 const SCREENS = { profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley };
 
@@ -41,8 +42,12 @@ const topbar = document.getElementById("topbar");
 const who = document.getElementById("who");
 let game = null;
 let cleanup = null;
+// Set once the student is in the game this tab, so a refresh skips the title.
+const ENTERED = "credit-creatures:entered";
 
 captureErrors();
+// Each sentence on its own line, everywhere in the game (js/ui/sentences.js).
+watchSentences(document.body);
 
 const { auth, db } = await loadBackends();
 const bug = mountBugButton({
@@ -54,28 +59,51 @@ bug.hide();
 if (!LOCAL && !isConfigured) {
   signedOut("Sign-in is not set up yet. Check back soon.");
 } else {
-  auth.onUser(async (user) => {
+  // Google remembers the student in this browser, so they sign in once
+  // (teacher request 2026-10-21). After that the title's Begin button resumes
+  // the game. A refresh mid-game goes straight back in.
+  auth.onUser((user) => {
     if (!user) return signedOut();
-    root.replaceChildren(h("section.panel.center", h("p", "Loading your creature...")));
-    game = createGame(user, db);
-    game.local = LOCAL;
-    try {
-      await game.load();
-    } catch (err) {
-      console.error(err);
-      return signedOut("We couldn't load your game. Please refresh the page.");
-    }
-    initTelemetry({
-      sink: (batch, rollup) => db.flushTelemetry(user.uid, batch, rollup),
-      context: () => ({ step: game.step, chapter: game.save.play?.chapter ?? 1, month: game.life?.month ?? -1, practice: Boolean(game.practice) }),
-    });
-    track("sessionStart", { returning: game.returning, step: game.step, local: LOCAL });
-    onSessionNudge(showNudge);
-    topbar.hidden = false;
-    bug.show();
-    window.addEventListener("hashchange", route);
-    route();
+    if (entered()) return enterGame(user);
+    signedOut("", user);
   });
+}
+
+function entered() {
+  try {
+    return sessionStorage.getItem(ENTERED) === "1";
+  } catch {
+    return false;
+  }
+}
+
+async function enterGame(user) {
+  if (game) return;
+  try {
+    sessionStorage.setItem(ENTERED, "1");
+  } catch {}
+  root.replaceChildren(h("section.panel.center", h("p", "Loading your creature...")));
+  game = createGame(user, db);
+  game.local = LOCAL;
+  try {
+    await game.load();
+  } catch (err) {
+    console.error(err);
+    try {
+      sessionStorage.removeItem(ENTERED);
+    } catch {}
+    return signedOut("We couldn't load your game. Please refresh the page.");
+  }
+  initTelemetry({
+    sink: (batch, rollup) => db.flushTelemetry(user.uid, batch, rollup),
+    context: () => ({ step: game.step, chapter: game.save.play?.chapter ?? 1, month: game.life?.month ?? -1, practice: Boolean(game.practice) }),
+  });
+  track("sessionStart", { returning: game.returning, step: game.step, local: LOCAL });
+  onSessionNudge(showNudge);
+  topbar.hidden = false;
+  bug.show();
+  window.addEventListener("hashchange", route);
+  route();
 }
 
 async function loadBackends() {
@@ -105,7 +133,9 @@ async function loadBackends() {
   return { auth, db };
 }
 
-function signedOut(error = "") {
+// The title screen. With a user (already signed in on this browser), Begin
+// resumes the game. Without one, Begin opens the sign-in card.
+function signedOut(error = "", user = null) {
   game = null;
   topbar.hidden = true;
   bug.hide();
@@ -115,6 +145,10 @@ function signedOut(error = "") {
     err.textContent = "";
     btn.disabled = true;
     try {
+      // Signing in goes straight into the game, not back to the title.
+      try {
+        sessionStorage.setItem(ENTERED, "1");
+      } catch {}
       await auth.signIn();
     } catch (e) {
       if (e.code !== "auth/popup-closed-by-user") {
@@ -144,9 +178,14 @@ function signedOut(error = "") {
   ];
   // Two parts (teacher request 2026-10-20): the title and a Begin button, then
   // the sign-in card. Coming back from signing out or an error skips the title.
-  const skipTitle = Boolean(saved || error);
+  const skipTitle = !user && Boolean(saved || error);
   const begin = h("button.big.signin-begin", { type: "button", hidden: skipTitle }, "Begin");
   begin.addEventListener("click", () => {
+    if (user) {
+      begin.disabled = true;
+      begin.textContent = "Loading...";
+      return enterGame(user);
+    }
     const card = root.querySelector(".signin-card");
     begin.hidden = true;
     card.hidden = false;
@@ -173,9 +212,15 @@ function signedOut(error = "") {
         ),
         h(
           "div.signin-card",
-          { hidden: !skipTitle },
+          { hidden: !skipTitle && !user },
           saved ? h("p.callout.good", "✓ Saved. ", saved !== "1" ? `${saved} will be right here next time.` : "Your game will be right here next time.") : null,
-          btn,
+          user
+            ? h(
+                "p.signin-who",
+                `Signed in as ${user.displayName || user.email}. `,
+                h("button.link", { type: "button", onclick: () => auth.signOut() }, "Not you? Sign out")
+              )
+            : btn,
           LOCAL ? h("p.note", "Local test mode. Your game saves in this browser only.") : null,
           err,
           settingsControls()
@@ -240,7 +285,7 @@ function show(name) {
       location.hash = `#/${step}`;
     },
     refreshWho: updateWho,
-    saveAndSignOut,
+    saveAndExit,
   };
   cleanup = SCREENS[name].render(root, ctx) || null;
   window.scrollTo(0, 0);
@@ -268,29 +313,35 @@ who.addEventListener("click", () => {
 
 // One button for leaving (teacher request 2026-10-20: "Save and quit" next to
 // "Sign out" looked like the same thing twice). The game saves as students
-// play, so this saves once more and signs out, which is safest on shared laptops.
-async function saveAndSignOut() {
+// play, so this saves once more and goes back to the title. Students stay
+// signed in (teacher request 2026-10-21), and the title has "Not you? Sign out"
+// for a shared laptop.
+async function saveAndExit() {
   if (game) {
-    track("saveAndSignOut", { step: game.step });
+    track("saveAndExit", { step: game.step });
     await game.persist("signOut");
     try {
       sessionStorage.setItem("credit-creatures:justSaved", game.save.creature?.name || "1");
     } catch {}
   }
-  auth.signOut();
+  try {
+    sessionStorage.removeItem(ENTERED);
+  } catch {}
+  location.hash = "";
+  location.reload();
 }
 
 function showNudge() {
   const bar = document.getElementById("nudge");
   bar.replaceChildren(
     h("span", "⏳ You've played for a while. This is a good time to save."),
-    h("button", { type: "button", onclick: () => ((bar.hidden = true), saveAndSignOut()) }, "Save and sign out"),
+    h("button", { type: "button", onclick: () => ((bar.hidden = true), saveAndExit()) }, "Save and exit"),
     h("button.secondary", { type: "button", onclick: () => ((bar.hidden = true), track("nudgeDismissed")) }, "Keep playing")
   );
   bar.hidden = false;
 }
 
-document.getElementById("sign-out").addEventListener("click", saveAndSignOut);
+document.getElementById("sign-out").addEventListener("click", saveAndExit);
 // A soft click for buttons (only when sound is on). Buttons with their own
 // sound (card flips, rewards) set data-sound="none".
 document.addEventListener("click", (e) => {

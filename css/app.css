@@ -1281,3 +1281,41 @@ button.danger { color: var(--danger); border-color: var(--danger); }
 .stall-verdict { margin: 0; display: flex; align-items: center; gap: 4px; }
 .bad-text { color: var(--danger); font-weight: 700; }
 .stall .row { justify-content: flex-start; }
+
+/* Hub layout (teacher request 2026-10-21): the map is the focal point and fits
+   on screen. Wide: creature and money on the left, this chapter on the right.
+   Medium: both stacked on the left. Phones: chapter, map, then the creature. */
+main.app:has(.panel.hub) { max-width: 1760px; padding-top: 16px; }
+.panel.hub { padding: 18px; }
+.hub-layout { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); grid-template-areas: "right" "center" "left"; }
+.hub-left { grid-area: left; }
+.hub-right { grid-area: right; }
+.hub-center { grid-area: center; min-width: 0; }
+.hub-side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.hub-side .money-chips { margin: 0; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+.hub-center .kingdom { margin: 0; }
+.kingdom-stage { container-type: inline-size; }
+.place { transform: translate(-50%, 2.6cqw); min-width: 0; }
+.place-name { font-size: clamp(0.72rem, 1.45cqw, 0.95rem); padding: clamp(3px, 0.55cqw, 6px) clamp(7px, 1.1cqw, 12px); }
+.place-badge { font-size: clamp(0.66rem, 1.15cqw, 0.78rem); }
+@media (min-width: 900px) {
+  .hub-layout { grid-template-columns: minmax(250px, 300px) minmax(0, 1fr); grid-template-areas: "left center" "right center"; grid-template-rows: auto 1fr; align-items: start; }
+  .hub-center { position: sticky; top: 84px; }
+  /* As big as fits: never taller than the screen below the top bar. */
+  .hub-center .kingdom-stage { max-width: calc((100dvh - 130px) * 5 / 3); margin: 0 auto; }
+  .hub-side .guardian { grid-template-columns: 1fr; justify-items: center; text-align: center; padding: 14px; }
+  .hub-side .guardian h1 { font-size: 1.45rem; }
+  .hub-side .dream-mini { justify-content: center; }
+  .hub-side .meters { min-width: 0; width: 100%; }
+  .hub-side .chapter-box { padding: 16px 18px; }
+  .hub-side .chapter-box h2 { font-size: 1.35rem; }
+}
+@media (min-width: 1400px) {
+  .hub-layout { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(260px, 320px); grid-template-areas: "left center right"; grid-template-rows: auto; }
+}
+.signin-who { margin: 0; text-align: center; color: var(--muted); }
+/* A small map keeps only the badges that need the student (action or warning). */
+@container (max-width: 760px) {
+  .place.tone-calm .place-badge, .place.tone-off .place-badge, .place.tone-locked .place-badge { display: none; }
+  .place-name { font-size: clamp(0.62rem, 1.6cqw, 0.8rem); }
+}
