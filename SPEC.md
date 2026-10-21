@@ -130,6 +130,8 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 
 ## 5. Player journey and semester timeline
 
+> **Phase 10 (2026-10-21) changed the journey.** Accounts and places now phase in one chapter at a time: a piggy-bank prologue, then checking (Ch 1), loans and the Garage (Ch 2), a credit card (Ch 3), the score and the Hall of Records (Ch 4), then pitfalls (Ch 5+). `docs/PROGRESSION.md` is the source of truth for the ladder. Sections 5 to 7 below describe the original Chapter 1 and still apply to saves made before Phase 10.
+
 ```
 Google sign-in (school accounts only) -> story intro -> create creature -> pick its dream -> join class with a code
 -> AGE 16: teen option (join a parent's card, or a teen debit card)
@@ -552,6 +554,7 @@ The pilot is Phases 1 to 7. Stop and wait for approval at the end of each.
 | 7 | **Teacher:** dashboard, roster, controls, CSV export, Firestore security rules hardening, school-only sign-in verification. |
 | 8 | **Social and customization (added 2026-10-20):** friend requests between classmates, friend groups, gifts of money or shop items (each student can send one gift every 40 hours), and a much bigger creature customizer. Teacher can turn social features off. |
 | 9 | **Pilot:** one class plays. Tune numbers, add remaining scenarios, minigames and achievements. |
+| 10 | **Progressive unlocks (added 2026-10-20):** the prologue and an unlock ladder for accounts, places, jobs and payment methods (`docs/PROGRESSION.md`), new Chapter 1 checking cards and Chapter 2 loan cards, the Garage and Cottage upgrades, the Hall of Records, lessons from Sage in place of the Kingdom Tour. Old saves keep everything unlocked. |
 
 ---
 

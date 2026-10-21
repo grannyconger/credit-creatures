@@ -1257,3 +1257,5 @@ button.danger { color: var(--danger); border-color: var(--danger); }
 .bank-accounts h3 { margin: 0 0 4px; }
 .loan-picker .chip-group { flex-wrap: wrap; }
 .loan-picker .chip-label { flex-basis: 100%; }
+.my-ride .row { justify-content: flex-start; }
+@media (max-width: 600px) { .my-ride { flex-direction: column; text-align: center; } .my-ride .row { justify-content: center; } }

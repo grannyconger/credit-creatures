@@ -166,6 +166,7 @@ function controls(c) {
         "div",
         h("strong", "Chapters open"),
         h("p", `1 to ${c.releasedChapter || 1}`),
+        h("small.muted", "Chapter 1 opens on its own after each student's prologue."),
         h(
           "button.small",
           {

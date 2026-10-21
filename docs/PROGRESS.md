@@ -6,11 +6,7 @@ Last updated: 2026-10-20 (redesign: kingdom hub and story)
 
 ## Status
 
-- **Phase 10, progressive unlocks (in progress, committed locally, NOT pushed). Resume here.** Design: `docs/PROGRESSION.md`. 159 tests pass, and the simulation is unchanged.
-  - Working end to end (headless run, scratchpad `p10.mjs`): prologue (piggy bank, Cashier Rush, Market, Cottage, bank opening), Ch 1 checking cards, time skip to 18, Ch 2 loans with the Garage and Cottage upgrades, card application at the Vault, Ch 3, score reveal and the Hall of Records in Ch 4. Lessons from Sage replace the Kingdom Tour. The Academy has a Lessons shelf.
-  - Still to do before pushing:
-    1. The Garage label overlaps the Vault's badge on the map. Move the Garage (places.js x/y).
-    2. Check phone width and dark mode for the new screens (bank opening, Garage, Hall of Records, prologue box).
-    3. A Ch 1 reflection checkpoint: Ch 1 cards drawn per month look right, but tune `newCardsPerMonth` for Ch 1.
-    4. Update the teacher dashboard wording (chapters now start at 1, with no release needed for Ch 1), SPEC.md and CLAUDE.md.
-    5. Rerun p6/p8 (they assume an old save), then push.
+- **Phase 10, progressive unlocks (2026-10-21): done and pushed, awaiting the teacher's review.** Design: `docs/PROGRESSION.md`. 159 tests pass, and the simulation is unchanged (careful 793, reckless 429).
+  - Checked end to end in headless Chrome: prologue, Ch 1, time skip, Ch 2 with the Garage, card application, Ch 3, score reveal in Ch 4. An old save still loads with everything unlocked and no lessons. Phone and dark mode checked on the new screens.
+  - Auto loans now also need the payment to fit income (`CONFIG.loans.autoAfford`).
+  - Next ideas: more Ch 2 and Ch 3 cards, a Ch 5 lesson, and a "pitfalls" place on the map.

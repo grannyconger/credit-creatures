@@ -23,7 +23,7 @@ export const PLACES = [
   { id: "vault", name: "The Gilded Vault", icon: "vault", route: "accounts", feature: "vault", does: "Your bank: checking, savings, bills and letters", x: 17, y: 34 },
   { id: "guild", name: "Guild Hall", icon: "guild", route: "guild", feature: "guild", does: "Work a shift to earn money", x: 83, y: 34 },
   { id: "records", name: "Hall of Records", icon: "scroll", route: "records", feature: "records", does: "Your credit report and credit score", x: 67, y: 47 },
-  { id: "garage", name: "The Garage", icon: "car", route: "garage", feature: "garage", does: "Buy a ride with cash or a loan", x: 25, y: 55 },
+  { id: "garage", name: "The Garage", icon: "car", route: "garage", feature: "garage", does: "Buy a ride with cash or a loan", x: 27, y: 59 },
   { id: "market", name: "Shimmer Market", icon: "market", route: "shop", feature: "market", does: "Spend money on things for your creature", x: 12, y: 76 },
   { id: "cottage", name: "Your Cottage", icon: "cottage", route: "cottage", feature: "cottage", does: "Your creature, its dream, its home and your settings", x: 40, y: 67 },
   { id: "plaza", name: "Friendship Plaza", icon: "plaza", route: "friends", feature: "plaza", does: "Friends, groups and gifts", x: 64, y: 76 },

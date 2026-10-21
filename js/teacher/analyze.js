@@ -74,13 +74,15 @@ export function rosterRow(raw) {
     studentEmail: raw.studentEmail || "",
     displayName: raw.displayName || "",
     creatureName: [s.creature?.name, s.creature?.lastName].filter(Boolean).join(" "),
-    step: raw.step || "",
+    // Phase 10 saves show "prologue" until the bank account opens.
+    step: play?.progression === 2 && play.prologue && !play.prologue.done ? "prologue" : raw.step || "",
     updatedAt: raw.updatedAt || null,
     xp: play?.xp ?? 0,
     rank: rankFor(play?.xp ?? 0).title,
     score: life?.score ?? null,
     chapter: play?.chapter ?? 1,
-    chaptersDone: (play?.history.length ?? 0) + (raw.step === "hub" || raw.step === "done" ? 1 : 0),
+    // Before Phase 10, finishing onboarding counted as Chapter 1.
+    chaptersDone: (play?.history.length ?? 0) + (play?.progression !== 2 && (raw.step === "hub" || raw.step === "done") ? 1 : 0),
     reflections: play?.history.filter((h) => h.reflection).length ?? 0,
     onTimePct: null,
     utilization: null,
