@@ -7,7 +7,8 @@ import { h, add, fill, money, ageLabel } from "../ui/dom.js";
 import { creatureSvg } from "../ui/creature-art.js";
 import { reportTab } from "../ui/accounts/report-tab.js";
 import { scoreTab } from "../ui/accounts/score-tab.js";
-import { rosterRow, studentDetail, rosterCsv, tuning, tuningExport, FLAGS } from "./analyze.js";
+import { rosterRow, studentDetail, rosterCsv, tuning, tuningExport, classAlley, FLAGS, LESSON_COUNT } from "./analyze.js";
+import { STALLS } from "../data/alley.js";
 import { STANDARD_LABELS } from "../data/practice-questions.js";
 import { CONFIG } from "../data/config.js";
 import { chapterInfo } from "../data/chapters.js";
@@ -234,6 +235,9 @@ const COLUMNS = [
   ["onTimePct", "On-time %"],
   ["utilization", "Util %"],
   ["achievements", "🏆"],
+  ["alleyRight", "Alley"],
+  ["lessons", "Lessons"],
+  ["dreamStage", "Dream"],
   ["flags", "Flags"],
 ];
 
@@ -289,13 +293,35 @@ function roster() {
               h("td", r.onTimePct ?? "–"),
               h("td", r.utilization ?? "–"),
               h("td", r.achievements),
+              h("td", r.alleyRight == null ? "–" : `${r.alleyRight}/${r.alleyChecked}`),
+              h("td", `${r.lessons}/${LESSON_COUNT}`),
+              h("td", `${r.dreamStage}/3`),
               h("td", r.flags.map((f) => h("span.t-flag", { title: FLAGS[f].label, "aria-label": FLAGS[f].label }, FLAGS[f].icon)))
             )
           )
         )
       )
     ),
-    h("p.grid-key", Object.values(FLAGS).map((f) => h("span", `${f.icon} ${f.label}`)))
+    h("p.grid-key", Object.values(FLAGS).map((f) => h("span", `${f.icon} ${f.label}`))),
+    alleyTable()
+  );
+}
+
+// Which Lantern Alley offers fool the class (Phase 14). Traps first, the
+// hardest at the top. Good for a class discussion.
+function alleyTable() {
+  const rows = classAlley(state.saves);
+  if (!rows.some((r) => r.n)) return h("p.muted", "Lantern Alley opens in Chapter 5. Its results will show here.");
+  const p = (v) => (v == null ? "–" : `${v}%`);
+  return h(
+    "section.t-section",
+    h("h3", "Lantern Alley: which offers fool the class"),
+    h("p.muted", "Each offer is a trap or a fair deal. \"Read first\" means the student opened the fine print before deciding."),
+    h(
+      "table.class-table",
+      h("thead", h("tr", h("th", "Offer"), h("th", "It's"), h("th", "Students"), h("th", "Called right"), h("th", "Read first"), h("th", "Right when read first"))),
+      h("tbody", rows.map((r) => h("tr", h("td", `${r.icon} ${r.name}`), h("td", r.trap ? "Trap" : "Fair deal"), h("td", r.n), h("td", p(r.rightPct)), h("td", p(r.readPct)), h("td", p(r.rightWhenReadPct)))))
+    )
   );
 }
 
@@ -346,6 +372,16 @@ function detail(uid) {
       : null,
     h("h3", "Practice accuracy by standard"),
     h("ul.upcoming", Object.entries(STANDARD_LABELS).map(([s, label]) => h("li", h("span", label), h("strong", r.accuracy[s] == null ? "No answers yet" : `${r.accuracy[s]}%`)))),
+    d.play?.alley && Object.keys(d.play.alley.checked).length
+      ? h(
+          "details.t-section",
+          h("summary", h("strong", `Lantern Alley: ${r.alleyRight} of ${r.alleyChecked} called right`)),
+          h("ul.upcoming", STALLS.filter((s) => d.play.alley.checked[s.id]).map((s) => {
+            const c = d.play.alley.checked[s.id];
+            return h("li", h("span", `${s.icon} ${s.name} (${s.trap ? "trap" : "fair deal"})`), h("strong", `${c.right ? "Right" : "Missed"}${c.readFine ? ", read the fine print" : ""}`));
+          }))
+        )
+      : null,
     h("h3", "Reflections"),
     d.reflections.length
       ? d.reflections.map((x) => h("div.callout", h("p", h("strong", `Chapter ${x.chapter}: ${x.title}`), h("small.muted", `  Fun ${x.fun}/5 · Clear ${x.clear}/5 · Score ${x.startScore ?? "none"} → ${x.endScore ?? "none"}`)), h("p", x.text)))

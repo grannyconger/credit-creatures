@@ -5,6 +5,8 @@ import { ensurePlay } from "../play.js";
 import { rankFor } from "../progress.js";
 import { ACHIEVEMENTS } from "../data/achievements.js";
 import { STANDARD_LABELS } from "../data/practice-questions.js";
+import { STALLS, alleyProgress } from "../data/alley.js";
+import { LESSON_ORDER } from "../data/lessons.js";
 
 const ACCOUNT_LABELS = {
   card: "Card",
@@ -19,6 +21,7 @@ const ACCOUNT_LABELS = {
 
 export const FLAGS = {
   payday: { icon: "💵", label: "Took a payday loan" },
+  titleLoan: { icon: "🛻", label: "Took a title loan" },
   collections: { icon: "🚨", label: "An account went to collections" },
   maxed: { icon: "📈", label: "A card is 90% or more used" },
   inquiries: { icon: "🔎", label: "3 or more hard inquiries this year" },
@@ -90,6 +93,11 @@ export function rosterRow(raw) {
     accuracy: {},
     accuracyAll: null,
     achievements: Object.keys(play?.achievements || {}).length,
+    // Phase 14: the newer parts of the game.
+    alleyRight: null,
+    alleyChecked: 0,
+    lessons: play?.lessonsSeen?.length ?? 0,
+    dreamStage: play ? (play.dreamDone ? 3 : play.dreamStage || 0) : 0,
     flags: [],
     mismatches: [],
   };
@@ -118,10 +126,14 @@ export function rosterRow(raw) {
       t += v.total;
     }
     row.accuracyAll = pct(r, t);
+    const alley = alleyProgress(play);
+    row.alleyChecked = alley.checked;
+    row.alleyRight = alley.checked ? alley.right : null;
   }
 
   const decisions = decisionsOf(play);
   if (decisions.some((d) => d.id === "paydayLoan" && d.choice === "payday") || life.log.some((e) => e.action === "receiveCash" && /payday/i.test(e.args[1] || ""))) row.flags.push("payday");
+  if (decisions.some((d) => (d.id === "titleLoan" && d.choice === "take") || (d.id === "carRepairOffer" && d.choice === "title")) || life.log.some((e) => e.action === "receiveCash" && /title loan/i.test(e.args[1] || ""))) row.flags.push("titleLoan");
   if (life.accounts.some((a) => ["collections", "collectionPaid"].includes(a.status))) row.flags.push("collections");
   if (life.accounts.some((a) => a.kind === "revolving" && a.owner === "self" && a.status === "open" && a.limit > 0 && amountOwed(a) / a.limit >= 0.9)) row.flags.push("maxed");
   if (hardInquiriesInWindow(life) >= 3) row.flags.push("inquiries");
@@ -145,6 +157,28 @@ export function studentDetail(raw) {
     achievements: ACHIEVEMENTS.filter((a) => play?.achievements[a.id]).map((a) => ({ ...a, ...play.achievements[a.id] })),
   };
 }
+
+// Lantern Alley for the whole class: which offers fool students, and whether
+// reading the fine print first helps. One row per stall, traps first.
+export function classAlley(saves) {
+  const plays = saves.map((s) => parseSave(s).play).filter(Boolean);
+  return STALLS.map((st) => {
+    const calls = plays.map((p) => p.alley?.checked?.[st.id]).filter(Boolean);
+    const read = calls.filter((c) => c.readFine);
+    return {
+      id: st.id,
+      icon: st.icon,
+      name: st.name,
+      trap: st.trap,
+      n: calls.length,
+      rightPct: pct(calls.filter((c) => c.right).length, calls.length),
+      readPct: pct(read.length, calls.length),
+      rightWhenReadPct: pct(read.filter((c) => c.right).length, read.length),
+    };
+  }).sort((a, b) => Number(b.trap) - Number(a.trap) || (a.rightPct ?? 101) - (b.rightPct ?? 101));
+}
+
+export const LESSON_COUNT = LESSON_ORDER.length;
 
 // The tuning export (docs/PILOT.md): no names or emails, just numbers and each
 // student's action log, which scripts/replay.js re-runs under new settings.
@@ -177,6 +211,9 @@ const CSV_COLUMNS = [
   ["XP", (r) => r.xp],
   ["Rank", (r) => r.rank],
   ["Achievements", (r) => r.achievements],
+  ["Lantern Alley right", (r) => (r.alleyRight == null ? null : `${r.alleyRight} of ${r.alleyChecked}`)],
+  ["Lessons", (r) => r.lessons],
+  ["Dream stage", (r) => r.dreamStage],
   ["Score", (r) => r.score],
   ["On-time %", (r) => r.onTimePct],
   ["Utilization %", (r) => r.utilization],

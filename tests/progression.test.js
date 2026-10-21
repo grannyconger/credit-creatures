@@ -150,3 +150,26 @@ test("Chapters 6 to 8 have their own story and a full deck, and later chapters r
   assert.ok(again.length >= 1, "the reshuffle brings cards back");
   for (const id of again) assert.notEqual(SCENARIOS.find((s) => s.id === id).replay, false, `${id} is a milestone`);
 });
+
+test("the teacher sees Lantern Alley, lessons, dream stage and title loans", async () => {
+  const { rosterRow, classAlley } = await import("../js/teacher/analyze.js");
+  const play = phased();
+  play.prologue.done = true;
+  play.lessonsSeen = ["welcome", "guild"];
+  play.dreamStage = 2;
+  P.ensurePlay(play);
+  play.alley.checked = { payday: { right: true, readFine: true }, creditUnion: { right: false, readFine: false } };
+  let life = E.createLife({ seed: "teach", ageMonths: 228 });
+  life = E.receiveCash(life, 300, "title loan").life;
+  const raw = { uid: "u1", lifeJson: JSON.stringify(life), play };
+  const row = rosterRow(raw);
+  assert.equal(row.alleyRight, 1);
+  assert.equal(row.alleyChecked, 2);
+  assert.equal(row.lessons, 2);
+  assert.equal(row.dreamStage, 2);
+  assert.ok(row.flags.includes("titleLoan"));
+  const table = classAlley([raw, { uid: "u2", play: phased() }]);
+  const payday = table.find((t) => t.id === "payday");
+  assert.deepEqual([payday.n, payday.rightPct, payday.readPct, payday.rightWhenReadPct], [1, 100, 100, 100]);
+  assert.ok(table[0].trap, "traps are listed first");
+});

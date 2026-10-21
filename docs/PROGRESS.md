@@ -6,7 +6,11 @@ Last updated: 2026-10-21 (Phase 12: Lantern Alley)
 
 ## Status
 
-- **Phase 13, the late game (2026-10-21): awaiting the teacher's review.**
+- **Phase 14, the teacher sees the new game (2026-10-21): awaiting the teacher's review.**
+  - Roster and CSV: Lantern Alley (called right of checked), Sage's lessons finished, dream stage, and a new 🛻 title loan flag.
+  - Under the roster: "Lantern Alley: which offers fool the class", one row per offer with % called right, % who read the fine print first, and % right when they did. Traps first, hardest at the top.
+  - Student detail: their Lantern Alley calls. Alley calls now save whether the fine print was read first.
+- **Phase 13, the late game (2026-10-21): approved ("continue").**
   - Before this, the deck ran dry after Chapter 5 (0.6 new cards a month in Chapter 6, none by Chapter 9).
   - Chapters 6 to 8 get their own titles, intros and reflection questions: Moving out, Setbacks and comebacks, Building your future (`js/data/chapters.js`). Old saves get them too.
   - 20 new cards in `js/data/scenarios-late.js`. Ch 6: a place of your own (alone, roommate or family), moving day, the power company's credit check, renter's insurance, a roommate who's short, furnishing on store credit. Ch 7: payday is a week away, a broken laptop (insurance pays off), call before you miss, a goodwill letter, a fake debt collector, a ride repair next to a title-loan sign. Ch 8: a retirement match, a 3-month emergency fund, lifestyle creep after a raise, a data breach and credit freeze, shopping insurance, mortgage readiness, pay off debt or save, refinancing an auto loan.

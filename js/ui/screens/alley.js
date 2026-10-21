@@ -106,7 +106,7 @@ export function render(root, { game, go, track, refreshWho }) {
     opened.add(s.id);
     const got = run.practice ? { xp: 0 } : P.recordAnswer(play, { type: "alley", standard: 5, correct: right });
     const bonus = right && !run.practice ? P.addXp(play, CONFIG.pacing.xp.alleyStall) : 0;
-    play.alley.checked[s.id] = { right, xp: got.xp + bonus };
+    play.alley.checked[s.id] = { right, xp: got.xp + bonus, readFine };
     track("alleyCall", { stall: s.id, trap: s.trap, saidTrap, correct: right, readFine, seconds: Math.round((Date.now() - shownAt) / 1000), xp: got.xp + bonus });
     refreshWho();
     paint();
