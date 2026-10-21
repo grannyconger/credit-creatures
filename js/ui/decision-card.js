@@ -2,7 +2,7 @@
 // picker when a choice costs money, then the outcome with a 👍/😐/👎 reaction.
 import { h, add, fill } from "./dom.js";
 import { payWith } from "./pay-with.js";
-import { sound } from "./sound.js";
+import { sfx } from "./sound.js";
 import { FACTOR_LABELS } from "../engine/index.js";
 import { GROUP_LABELS } from "../data/scenarios.js";
 
@@ -75,7 +75,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
   function showOutcome(c, r) {
     const still = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (still || !card.isConnected) return fillOutcome(c, r);
-    sound("flip");
+    sfx.cardFlip();
     card.classList.add("flip-out");
     setTimeout(() => {
       fillOutcome(c, r);

@@ -9,6 +9,7 @@ import { creatureSvg } from "../creature-art.js";
 import { payWith, methodLabel } from "../pay-with.js";
 import { moneyChips } from "../wallet.js";
 import { firstVisitLesson } from "../guide.js";
+import { sfx } from "../sound.js";
 
 const KIND = { head: "Head", neck: "Neck", face: "Face", held: "Held in paw", feet: "Feet", effect: "Magic effect", background: "Background" };
 
@@ -71,6 +72,7 @@ export function render(root, { game, go, track }) {
           run.life = r.life;
           play.owned.push(item.id);
           track("shopBuy", { id: item.id, price: item.price, method: method.startsWith("card:") ? "card" : method, big: Boolean(item.big) });
+          sfx.purchase();
           toast(`You bought the ${item.name.toLowerCase()} with ${methodLabel(method, run.life)}.`, "good");
           await run.persist("shop");
           paint();

@@ -69,7 +69,7 @@ export function toast(message, kind = "info") {
     document.body.append(box);
   }
   const t = h("div.toast", { class: kind }, message);
-  if (kind === "bad") import("./sound.js").then((m) => m.sound("oops"));
+  if (kind === "bad") import("./sound.js").then((m) => m.sfx.error());
   box.append(t);
   setTimeout(() => t.remove(), 4000);
 }

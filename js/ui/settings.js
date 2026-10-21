@@ -1,5 +1,5 @@
 // Appearance (light, dark or system), reading (standard or dyslexia-friendly)
-// and sound effects (off by default, js/ui/sound.js).
+// and sound effects (off by default, js/ui/sound.js, also the speaker in the top bar).
 // Kept in this browser so it applies before sign-in finishes, and in the save
 // (play.settings) so it follows the student to another computer.
 const KEY = "credit-creatures:settings";
@@ -28,6 +28,8 @@ export function applySettings(settings) {
   } catch {
     // Private windows can refuse storage. The setting still applies for now.
   }
+  // The sound module and the speaker in the top bar listen for this.
+  globalThis.dispatchEvent?.(new CustomEvent("cc:settings", { detail: s }));
   return s;
 }
 

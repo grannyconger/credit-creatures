@@ -5,7 +5,7 @@
 import { h, fill } from "./dom.js";
 import { icon } from "./icons.js";
 import { creatureSvg } from "./creature-art.js";
-import { sound } from "./sound.js";
+import { sfx } from "./sound.js";
 import { LESSONS, GUIDE } from "../data/lessons.js";
 import { isLegacy } from "../progression.js";
 
@@ -170,13 +170,13 @@ export function startGuide({ steps: STEPS, id, track, onFinish, returnTo = null 
             const right = k === qz.answer;
             track("lessonQuiz", { lesson: id, step: i + 1, right });
             if (right) {
-              sound("coin");
+              sfx.correct();
               buttons.forEach((b) => (b.disabled = true));
               e.currentTarget.classList.add("right");
               fill(result, h("strong", "Right! "), qz.why);
               onRight();
             } else {
-              sound("oops");
+              sfx.error();
               e.currentTarget.classList.add("wrong");
               e.currentTarget.disabled = true;
               fill(result, "Not quite. Try another answer.");
@@ -197,7 +197,7 @@ export function startGuide({ steps: STEPS, id, track, onFinish, returnTo = null 
     removeEventListener("keydown", keys, true);
     layer.remove();
     document.body.classList.remove("touring");
-    if (done) sound("coin");
+    if (done) sfx.questComplete();
     location.hash = returnTo ? `#/${returnTo}` : startHash || "#/hub";
     onFinish?.(done);
   }

@@ -102,7 +102,7 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 - **Shiny cards:** light sweep, holographic stripe on premium cards, embossed numbers and a gentle tilt. All motion stops under reduced-motion.
 - **Town Hall quest board:** the month's cards are pinned parchment notes with Done stamps, and decision cards flip over to their outcome.
 - **Micro-animations:** coins fly into checking after a shift or a money gift, the score needle sweeps, statements get a stamp (Late fee, All clear, Interest charged, No interest), and achievements get confetti.
-- **Sound effects:** made in the browser (no audio files), off by default. Students turn them on in Settings. The teacher can mute the whole class from the dashboard.
+- **Sound effects:** real CC0 audio files from Kenney (`sounds/`, credits in `sounds/CREDITS.md`) played with Howler.js (vendored in `js/vendor/`), all through named events in `js/ui/sound.js`. Off by default, since students may be in a classroom. A speaker in the top bar turns them on or off in one tap (also in Settings), saved in the browser and the game. Master volume 0.4, lower under Calm motion or reduce motion, which also drops button taps and card flips. Each repeat varies pitch by up to 5%, each event has a minimum gap, and the same sound never stacks. Howler loads only after the first tap or key press with sound on. Sounds play only at meaningful moments: taps, coins in and out, rank ups, quests and chapters, gifts, purchases, mistakes, right answers and score changes (2026-10-21). The teacher can mute the whole class from the dashboard.
 
 ---
 

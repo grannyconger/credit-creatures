@@ -4,12 +4,14 @@ import { isConfigured, SCHOOL_DOMAIN } from "./firebase-config.js";
 import { createGame, STEPS, EDITABLE, HUB_SCREENS } from "./game.js";
 import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge } from "./telemetry.js";
 import { mountBugButton } from "./ui/bug-button.js";
-import { sound, setClassMuted } from "./ui/sound.js";
+import { sfx, setClassMuted, soundOn, classIsMuted } from "./ui/sound.js";
 import { PLACES } from "./places.js";
 import { hasFeature, prologueStep } from "./progression.js";
 import { creatureSvg } from "./ui/creature-art.js";
 import { h, clear, ageLabel } from "./ui/dom.js";
-import { firstSettings, openSettings } from "./ui/settings-dialog.js";
+import { firstSettings, openSettings, saveSettings } from "./ui/settings-dialog.js";
+import { applySettings, loadLocalSettings } from "./ui/settings.js";
+import { icon } from "./ui/icons.js";
 import * as settingsScreen from "./ui/screens/settings.js";
 import * as profile from "./ui/screens/profile.js";
 import * as creature from "./ui/screens/creature.js";
@@ -388,11 +390,28 @@ document.getElementById("settings-btn").addEventListener("click", () => {
   if (game.step === "hub") location.hash = "#/settings";
   else openSettings({ game, track });
 });
+// The speaker in the top bar turns sound on or off in one tap. Off until the
+// student turns it on, since they may be in a quiet classroom.
+const soundBtn = document.getElementById("sound-btn");
+function paintSoundBtn() {
+  const on = soundOn();
+  soundBtn.disabled = classIsMuted();
+  soundBtn.setAttribute("aria-pressed", String(on));
+  soundBtn.title = classIsMuted() ? "Your teacher turned sound off for the class" : on ? "Sound is on. Tap to mute it." : "Sound is off. Tap to turn it on.";
+  soundBtn.replaceChildren(icon(on ? "volume" : "mute", { size: 22 }), h("span.icon-btn-text", on ? "Sound on" : "Sound off"));
+}
+soundBtn.addEventListener("click", () => {
+  const s = applySettings({ ...loadLocalSettings(), sound: soundOn() ? "off" : "on" });
+  if (s.sound === "on") sfx.coinGain();
+  if (game) saveSettings(game, track, s);
+});
+addEventListener("cc:settings", paintSoundBtn);
+paintSoundBtn();
 // A soft click for buttons (only when sound is on). Buttons with their own
 // sound (card flips, rewards) set data-sound="none".
 document.addEventListener("click", (e) => {
   const b = e.target.closest?.("button, a.brand");
-  if (b && !b.disabled && b.dataset.sound !== "none") sound("click");
+  if (b && !b.disabled && b.dataset.sound !== "none") sfx.tap();
 });
 // The title always goes home: the kingdom once the student has one, otherwise
 // the onboarding step they're on.

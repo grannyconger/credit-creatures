@@ -3,7 +3,7 @@
 // presets. Firestore rules enforce the class, friendship and the 40-hour gift limit.
 import { h, add, fill, money, toast } from "../dom.js";
 import { coinsFly } from "../fx.js";
-import { sound } from "../sound.js";
+import { sfx } from "../sound.js";
 import { firstVisitLesson } from "../guide.js";
 import { placeHeader } from "../place-header.js";
 import { icon } from "../icons.js";
@@ -279,8 +279,9 @@ export function render(root, { game, go, track, refreshWho }) {
                     const r = S.applyClaimedGift({ life: game.life, play, gift: g });
                     game.life = r.life;
                     track("giftClaim", { kind: g.kind, amount: g.amount || 0 });
-                    if (g.kind === "money") coinsFly(openBtn);
-                    else sound("fanfare");
+                    sfx.chestOpen();
+                    // The coins chime after the gift opens, not on top of it.
+                    if (g.kind === "money") coinsFly(openBtn, { chime: 450 });
                     toast(r.note, "good");
                     refreshWho();
                     await game.persist("giftClaim");

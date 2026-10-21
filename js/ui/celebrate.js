@@ -2,7 +2,7 @@
 // with Continue or Escape. Used for achievements, rank-ups and new chapters.
 import { h } from "./dom.js";
 import { track } from "../telemetry.js";
-import { sound } from "./sound.js";
+import { sfx } from "./sound.js";
 import { confetti } from "./fx.js";
 
 const queue = [];
@@ -14,8 +14,11 @@ const MAX_IN_A_ROW = 3;
 
 // item = { kind, icon, kicker, title, text, xp }
 
+// A new rank or a dream come true levels up, a bought Cottage upgrade or ride rings up the sale,
+// and everything else (achievements, chapters, unlocks) is a quest complete.
+const SOUND_FOR = { rank: "levelUp", dream: "levelUp", home: "purchase", ride: "purchase" };
+
 export function celebrate(items) {
-  sound("fanfare");
   const list = [].concat(items);
   if (list.length > MAX_IN_A_ROW) {
     const rest = list.slice(MAX_IN_A_ROW - 1);
@@ -69,6 +72,7 @@ function next() {
   });
   document.body.append(dialog);
   dialog.showModal();
+  sfx[SOUND_FOR[item.kind] || "questComplete"]();
   cont.focus();
   track("celebrateShown", { kind: item.kind, id: item.id || "" });
 }

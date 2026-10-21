@@ -13,6 +13,7 @@ import { decisionCard } from "../decision-card.js";
 import { moneyChips } from "../wallet.js";
 import { placeHeader } from "../place-header.js";
 import { icon } from "../icons.js";
+import { sfx } from "../sound.js";
 import { createRng } from "../../engine/index.js";
 import { factorOptions, factorChoice } from "../../data/practice-questions.js";
 import { monthSummary } from "../month-summary.js";
@@ -240,7 +241,7 @@ export function render(root, { game, go, track, refreshWho }) {
   }
 
   function endButton(label) {
-    const btn = h("button.big", { type: "button" }, label);
+    const btn = h("button.big", { type: "button", "data-sound": "none" }, label);
     btn.addEventListener("click", async () => {
       btn.disabled = true;
       const play = run.play;
@@ -272,6 +273,10 @@ export function render(root, { game, go, track, refreshWho }) {
       track("monthTime", { chapter, monthIndex, seconds: Math.round((Date.now() - monthStartedAt) / 1000) });
       monthStartedAt = Date.now();
       if (r.chapterDone) track("chapterDone", { chapter, score: life.score ?? -1 });
+      // Fees first, then the score change a beat later, so the two never overlap.
+      const delta = r.scoreChange.delta ?? 0;
+      if (fees > 0) sfx.coinLoss();
+      if (delta) setTimeout(delta > 0 ? sfx.creditScoreUp : sfx.creditScoreDown, fees > 0 ? 600 : 0);
       await save("endMonth");
       view = null;
       if (r.chapterDone) go("chapterEnd");

@@ -1,6 +1,7 @@
 // Cashier Rush (SPEC §17): count back exact change by tapping bills and coins.
 // 60 seconds, or a no-timer mode with a set number of customers.
 import { h, fill } from "../dom.js";
+import { sfx } from "../sound.js";
 import { createRng } from "../../engine/index.js";
 import { DENOMINATIONS, CASHIER_ITEMS } from "../../data/minigames.js";
 import { CONFIG } from "../../data/config.js";
@@ -31,7 +32,7 @@ export function cashierRush({ seed, timed, onDone, track }) {
     { role: "group", "aria-label": "Bills and coins" },
     DENOMINATIONS.map((c) => h("button.cash-piece", { type: "button", class: c >= 100 ? "bill" : "coin", onclick: () => addPiece(c), "aria-label": `Add ${label(c)}` }, label(c)))
   );
-  const giveBtn = h("button.big", { type: "button", onclick: () => give() }, "Give change");
+  const giveBtn = h("button.big", { type: "button", "data-sound": "none", onclick: () => give() }, "Give change");
   const el = h(
     "div.minigame.cashier",
     h("div.mg-bar", clock, score),
@@ -69,9 +70,12 @@ export function cashierRush({ seed, timed, onDone, track }) {
     const sum = given.reduce((a, b) => a + b, 0);
     served++;
     const ok = sum === want;
-    if (ok) right++;
-    else {
+    if (ok) {
+      right++;
+      sfx.correct();
+    } else {
       wrong++;
+      sfx.error();
       misses.push(`${fmt(customer.paid)} − ${fmt(customer.price)} = ${fmt(want)} (you gave ${fmt(sum)})`);
     }
     flash.className = `mg-flash ${ok ? "good" : "bad"}`;
@@ -83,6 +87,7 @@ export function cashierRush({ seed, timed, onDone, track }) {
   function end() {
     over = true;
     clearInterval(timer);
+    sfx.questComplete();
     track("minigameEnd", { game: "cashier", right, wrong, timed });
     onDone({ right, wrong, total: served, seconds: Math.round((Date.now() - started) / 1000), misses });
   }

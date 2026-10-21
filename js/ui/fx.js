@@ -2,14 +2,16 @@
 // confetti and a statement stamp. Every effect is skipped under reduced motion,
 // and none of them carries meaning on its own (the words always say it too).
 import { h } from "./dom.js";
-import { sound } from "./sound.js";
+import { sfx } from "./sound.js";
 
 const reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 // Coins fly from an element (a Collect button) to the Checking chip, or to the
-// creature in the top bar when no chip is on screen.
-export function coinsFly(from) {
-  sound("coin");
+// creature in the top bar when no chip is on screen. chime: ms to wait before
+// the coin sound (0 plays it right away).
+export function coinsFly(from, { chime = 0 } = {}) {
+  if (chime) setTimeout(sfx.coinGain, chime);
+  else sfx.coinGain();
   if (reduced() || !from?.getBoundingClientRect) return;
   const target = document.querySelector(".money-chips li") || document.getElementById("who");
   if (!target) return;
@@ -62,6 +64,6 @@ export function confetti(n = 42) {
 // A rubber stamp for a statement. land: animate it landing (the newest one).
 export function stamp(text, tone, land = false) {
   const el = h("span.fx-stamp", { class: `${tone}${land && !reduced() ? " land" : ""}` }, text);
-  if (land) setTimeout(() => sound("stamp"), 260);
+  if (land) setTimeout(sfx.stamp, 260);
   return el;
 }

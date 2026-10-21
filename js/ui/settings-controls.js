@@ -2,7 +2,7 @@
 // onChange(settings) runs after a change (the Cottage saves it to the game).
 import { h, fill } from "./dom.js";
 import { applySettings, loadLocalSettings, APPEARANCE_LABELS, READING_LABELS, SOUND_LABELS, MOTION_LABELS } from "./settings.js";
-import { sound, classIsMuted } from "./sound.js";
+import { sfx, classIsMuted } from "./sound.js";
 
 export function settingsControls({ current = loadLocalSettings(), onChange = () => {} } = {}) {
   const box = h("div.settings-row");
@@ -22,7 +22,7 @@ export function settingsControls({ current = loadLocalSettings(), onChange = () 
               s = applySettings({ ...s, [key]: v });
               paint();
               onChange(s);
-              if (key === "sound" && v === "on") sound("coin");
+              if (key === "sound" && v === "on") sfx.coinGain();
             },
           },
           text

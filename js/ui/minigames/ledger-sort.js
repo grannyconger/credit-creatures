@@ -1,6 +1,7 @@
 // Ledger Sort (SPEC §17): sort items into ASSET, LIABILITY or EQUITY.
 // 45 seconds, or a no-timer mode with a set number of items. Keys 1, 2, 3 work too.
 import { h, fill } from "../dom.js";
+import { sfx } from "../sound.js";
 import { createRng } from "../../engine/index.js";
 import { LEDGER_ITEMS, LEDGER_BINS } from "../../data/minigames.js";
 import { CONFIG } from "../../data/config.js";
@@ -36,7 +37,7 @@ export function ledgerSort({ seed, timed, onDone, track }) {
   const bins = h(
     "div.ledger-bins",
     Object.entries(LEDGER_BINS).map(([key, b]) =>
-      h("button.ledger-bin", { type: "button", onclick: () => sort(key), "aria-keyshortcuts": b.key }, h("span.bin-icon", { "aria-hidden": "true" }, b.icon), h("strong", b.label), h("small", b.hint), h("kbd", b.key))
+      h("button.ledger-bin", { type: "button", "data-sound": "none", onclick: () => sort(key), "aria-keyshortcuts": b.key }, h("span.bin-icon", { "aria-hidden": "true" }, b.icon), h("strong", b.label), h("small", b.hint), h("kbd", b.key))
     )
   );
   const el = h("div.minigame.ledger", h("div.mg-bar", clock, score), card, bins, flash);
@@ -50,9 +51,12 @@ export function ledgerSort({ seed, timed, onDone, track }) {
     if (over) return;
     total++;
     const ok = key === item.answer;
-    if (ok) right++;
-    else {
+    if (ok) {
+      right++;
+      sfx.correct();
+    } else {
       wrong++;
+      sfx.error();
       misses.push(item);
     }
     flash.className = `mg-flash ${ok ? "good" : "bad"}`;
@@ -75,6 +79,7 @@ export function ledgerSort({ seed, timed, onDone, track }) {
     over = true;
     clearInterval(timer);
     document.removeEventListener("keydown", onKey);
+    sfx.questComplete();
     track("minigameEnd", { game: "ledger", right, wrong, timed });
     onDone({ right, wrong, total, seconds: Math.round((Date.now() - started) / 1000), misses: misses.map((m) => `${m.item}: ${LEDGER_BINS[m.answer].label}. ${m.why}`) });
   }

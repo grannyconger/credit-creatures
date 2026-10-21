@@ -6,6 +6,7 @@ import { h, fill } from "../dom.js";
 import { icon } from "../icons.js";
 import { placeHeader } from "../place-header.js";
 import { firstVisitLesson } from "../guide.js";
+import { sfx } from "../sound.js";
 import { STALLS, alleyProgress } from "../../data/alley.js";
 import { CONFIG } from "../../data/config.js";
 import * as P from "../../play.js";
@@ -78,8 +79,8 @@ export function render(root, { game, go, track, refreshWho }) {
       h("p.tight", h("strong", "Trap or fair deal?")),
       h(
         "div.row",
-        h("button", { type: "button", onclick: () => decide(s, true) }, icon("alert", { size: 16 }), " It's a trap"),
-        h("button", { type: "button", onclick: () => decide(s, false) }, icon("check", { size: 16 }), " Fair deal")
+        h("button", { type: "button", "data-sound": "none", onclick: () => decide(s, true) }, icon("alert", { size: 16 }), " It's a trap"),
+        h("button", { type: "button", "data-sound": "none", onclick: () => decide(s, false) }, icon("check", { size: 16 }), " Fair deal")
       ),
       closeBtn()
     );
@@ -107,6 +108,8 @@ export function render(root, { game, go, track, refreshWho }) {
     const got = run.practice ? { xp: 0 } : P.recordAnswer(play, { type: "alley", standard: 5, correct: right });
     const bonus = right && !run.practice ? P.addXp(play, CONFIG.pacing.xp.alleyStall) : 0;
     play.alley.checked[s.id] = { right, xp: got.xp + bonus, readFine };
+    if (right) sfx.correct();
+    else sfx.error();
     track("alleyCall", { stall: s.id, trap: s.trap, saidTrap, correct: right, readFine, seconds: Math.round((Date.now() - shownAt) / 1000), xp: got.xp + bonus });
     refreshWho();
     paint();

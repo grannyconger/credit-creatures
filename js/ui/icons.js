@@ -48,6 +48,8 @@ const P = {
   dream: '<path d="M12 3 9.5 9H3l5 4-2 7 6-4.5 6 4.5-2-7 5-4h-6.5z"/><path d="M12 3v13.5"/>',
   pause: '<path d="M9 5v14M15 5v14"/>',
   lantern: '<path d="M12 2v2M9 4h6"/><path d="M8 7h8l-1.2 11H9.2z"/><path d="M7 7h10M7 21h10M12 18v3"/><path d="M12 10.5c1 1 1 2.5 0 3.5-1-1-1-2.5 0-3.5z"/>',
+  volume: '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
+  mute: '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m17 9.5 5 5M22 9.5l-5 5"/>',
   logout: '<path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/>',
 };
 

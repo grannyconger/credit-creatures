@@ -1,15 +1,49 @@
-// Sound effects (SPEC visual plan item 9), made with the Web Audio API so there
-// are no audio files to download. Off by default. A student turns them on in
-// settings, and the teacher can mute the whole class (classes/{id}.sound).
-//   sound("click" | "coin" | "fanfare" | "stamp" | "flip" | "whoosh" | "oops")
+// Sound effects: real CC0 audio files (sounds/, credits in sounds/CREDITS.md)
+// played with Howler.js (js/vendor/howler.core.min.js). Off by default, since
+// students may be in a quiet classroom. A student turns them on with the
+// speaker in the top bar or in settings, and the teacher can mute the whole
+// class (classes/{id}.sound).
+//
+// Every sound in the game goes through one named event:
+//   sfx.tap()  sfx.coinGain()  sfx.coinLoss()  sfx.levelUp()  sfx.questComplete()
+//   sfx.chestOpen()  sfx.purchase()  sfx.error()  sfx.creditScoreUp()
+//   sfx.creditScoreDown()  sfx.cardFlip()  sfx.correct()  sfx.stamp()
 import { loadLocalSettings } from "./settings.js";
 
-let ctx = null;
+// Master volume. Reduced motion is taken as a hint to keep audio quieter too.
+export const MASTER_VOLUME = 0.4;
+export const CALM_VOLUME = 0.25;
+// Each repeat plays up to 5% higher or lower so it doesn't get tiring.
+export const PITCH_SPREAD = 0.05;
+
+// file: in sounds/ (.ogg, with .m4a for older Safari). volume: relative to
+// the master. gap: the shortest time in ms between two plays of this event.
+// calm: false skips it under Calm motion or reduce motion (small UI sounds).
+export const EVENTS = {
+  tap: { file: "tap", volume: 0.5, gap: 90, calm: false },
+  coinGain: { file: "coin-gain", volume: 0.8, gap: 250 },
+  coinLoss: { file: "coin-loss", volume: 0.7, gap: 250 },
+  levelUp: { file: "level-up", volume: 0.9, gap: 1200 },
+  questComplete: { file: "quest-complete", volume: 0.9, gap: 1000 },
+  chestOpen: { file: "chest-open", volume: 0.8, gap: 800 },
+  purchase: { file: "purchase", volume: 0.8, gap: 500 },
+  error: { file: "error", volume: 0.6, gap: 400 },
+  creditScoreUp: { file: "score-up", volume: 0.8, gap: 600 },
+  creditScoreDown: { file: "score-down", volume: 0.8, gap: 600 },
+  cardFlip: { file: "card-flip", volume: 0.6, gap: 200, calm: false },
+  correct: { file: "correct", volume: 0.7, gap: 300 },
+  stamp: { file: "stamp", volume: 0.7, gap: 300 },
+};
+
+export const SOUND_EVENTS = Object.keys(EVENTS);
+
 let classMuted = false;
 
 // The teacher's master switch. Called when the class doc loads.
 export function setClassMuted(muted) {
+  if (classMuted === Boolean(muted)) return;
   classMuted = Boolean(muted);
+  globalThis.dispatchEvent?.(new CustomEvent("cc:settings"));
 }
 
 export function classIsMuted() {
@@ -20,81 +54,93 @@ export function soundOn() {
   return !classMuted && loadLocalSettings().sound === "on";
 }
 
-function audio() {
-  if (!ctx) {
-    const AC = globalThis.AudioContext || globalThis.webkitAudioContext;
-    if (!AC) return null;
-    ctx = new AC();
+const calm = () =>
+  loadLocalSettings().motion === "calm" || Boolean(globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+
+// A playback rate within the pitch spread. rand is in [0, 1).
+export function pitchFor(rand = Math.random()) {
+  return 1 + (rand * 2 - 1) * PITCH_SPREAD;
+}
+
+// Throttle: false when this event played less than its gap ago.
+const lastPlayed = new Map();
+export function allowPlay(name, now = Date.now()) {
+  const ev = EVENTS[name];
+  if (!ev) return false;
+  const last = lastPlayed.get(name);
+  if (last != null && now - last < ev.gap) return false;
+  lastPlayed.set(name, now);
+  return true;
+}
+
+// Howler loads only after the student's first tap or key press, and only when
+// sound is on, so browsers never block it (autoplay rules) and a muted game
+// downloads nothing.
+let loading = null;
+let howls = null;
+
+function load() {
+  if (loading) return loading;
+  loading = import("../vendor/howler.core.min.js")
+    .then(() => {
+      const { Howl, Howler } = globalThis;
+      if (!Howl) throw new Error("Howler did not load");
+      Howler.volume(calm() ? CALM_VOLUME : MASTER_VOLUME);
+      howls = {};
+      for (const [name, ev] of Object.entries(EVENTS)) {
+        const base = new URL(`../../sounds/${ev.file}`, import.meta.url).href;
+        howls[name] = new Howl({ src: [`${base}.ogg`, `${base}.m4a`], volume: ev.volume, preload: true });
+      }
+      return howls;
+    })
+    .catch((err) => {
+      // Sound is a nice extra. Never let it break the game.
+      console.warn("Sound effects unavailable", err);
+      loading = null;
+      return null;
+    });
+  return loading;
+}
+
+// Call after the sound or motion setting changes.
+export function refreshSound() {
+  if (!soundOn()) {
+    if (howls) Object.values(howls).forEach((s) => s.stop());
+    return;
   }
-  if (ctx.state === "suspended") ctx.resume();
-  return ctx;
+  if (howls) globalThis.Howler?.volume(calm() ? CALM_VOLUME : MASTER_VOLUME);
+  else load();
 }
 
-// One soft note: frequency in Hz, start offset and length in seconds.
-function tone(a, { freq, start = 0, dur = 0.15, type = "sine", gain = 0.12, slide = 0 }) {
-  const t = a.currentTime + start;
-  const osc = a.createOscillator();
-  const g = a.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, t);
-  if (slide) osc.frequency.exponentialRampToValueAtTime(Math.max(40, freq + slide), t + dur);
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(gain, t + 0.012);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  osc.connect(g).connect(a.destination);
-  osc.start(t);
-  osc.stop(t + dur + 0.02);
+function unlock() {
+  if (soundOn()) load();
+}
+if (typeof document !== "undefined") {
+  for (const type of ["pointerdown", "keydown"]) document.addEventListener(type, unlock, { capture: true, passive: true });
+  // applySettings (js/ui/settings.js) announces every change.
+  globalThis.addEventListener("cc:settings", refreshSound);
 }
 
-// A short burst of filtered noise (paper and stamps).
-function noise(a, { start = 0, dur = 0.12, gain = 0.15, freq = 900 }) {
-  const t = a.currentTime + start;
-  const buf = a.createBuffer(1, Math.ceil(a.sampleRate * dur), a.sampleRate);
-  const data = buf.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
-  const src = a.createBufferSource();
-  src.buffer = buf;
-  const filter = a.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.value = freq;
-  const g = a.createGain();
-  g.gain.value = gain;
-  src.connect(filter).connect(g).connect(a.destination);
-  src.start(t);
-}
-
-const SOUNDS = {
-  click: (a) => tone(a, { freq: 660, dur: 0.05, type: "triangle", gain: 0.05 }),
-  coin: (a) => {
-    tone(a, { freq: 988, dur: 0.12, type: "square", gain: 0.05 });
-    tone(a, { freq: 1319, start: 0.08, dur: 0.3, type: "square", gain: 0.05 });
-  },
-  fanfare: (a) => {
-    [523, 659, 784].forEach((f, i) => tone(a, { freq: f, start: i * 0.11, dur: 0.16, type: "triangle", gain: 0.1 }));
-    tone(a, { freq: 1047, start: 0.33, dur: 0.5, type: "triangle", gain: 0.12 });
-    tone(a, { freq: 784, start: 0.33, dur: 0.5, type: "sine", gain: 0.06 });
-  },
-  stamp: (a) => {
-    noise(a, { dur: 0.09, gain: 0.35, freq: 500 });
-    tone(a, { freq: 140, dur: 0.12, type: "sine", gain: 0.18, slide: -60 });
-  },
-  flip: (a) => noise(a, { dur: 0.16, gain: 0.12, freq: 2400 }),
-  whoosh: (a) => tone(a, { freq: 300, dur: 0.25, type: "sine", gain: 0.06, slide: 500 }),
-  oops: (a) => {
-    tone(a, { freq: 392, dur: 0.14, type: "triangle", gain: 0.08 });
-    tone(a, { freq: 330, start: 0.12, dur: 0.22, type: "triangle", gain: 0.08 });
-  },
-};
-
-export function sound(name) {
+function play(name) {
   if (!soundOn()) return;
-  const a = audio();
-  if (!a || !SOUNDS[name]) return;
+  const ev = EVENTS[name];
+  if (!ev || (ev.calm === false && calm())) return;
+  if (!allowPlay(name)) return;
+  // Not loaded yet (the very first tap, or sound just turned on): play once it is.
+  if (howls) playNow(name);
+  else load().then((hs) => hs && playNow(name));
+}
+
+function playNow(name) {
   try {
-    SOUNDS[name](a);
+    const s = howls[name];
+    // Never stack the same sound: a new play cuts off the one still ringing.
+    s.stop();
+    const id = s.play();
+    s.rate(pitchFor(), id);
   } catch {
     // Sound is a nice extra. Never let it break the game.
   }
 }
 
-export const SOUND_NAMES = Object.keys(SOUNDS);
+export const sfx = Object.fromEntries(SOUND_EVENTS.map((name) => [name, () => play(name)]));
