@@ -7,6 +7,8 @@ export const SPECIES = {
   crystalOwl: { label: "Crystal owl", blurb: "Sees every number on the page." },
   mossDragon: { label: "Moss dragon", blurb: "Small wings, big heart, mossy back." },
   puddleGolem: { label: "Puddle golem", blurb: "Calm, squishy and very patient." },
+  starJellycorn: { label: "Star jellycorn", blurb: "Half jellyfish, half unicorn. Floats on pure sparkle." },
+  emberPhoenix: { label: "Ember phoenix", blurb: "Rises from the ashes, just like a credit score." },
 };
 
 // body, belly, accent (wings, ears, spots), eye
@@ -101,7 +103,7 @@ export const LAST_NAME_IDEAS = [
   "Pebblefoot", "Sparkwhistle", "Thistledown", "McNugget", "Von Snoot", "Wigglebottom", "Fluffernutter",
   "Snugglesworth", "Picklebottom", "Butterbean", "Noodleman", "McFluff", "Puddingham", "Crumblesby",
   "Cheeseworth", "Snorkelstein", "Wobbleton", "Bloopington", "Fizzlebottom", "Sneezeworth", "Gigglesnort",
-  "Tootsalot", "Burpington", "McSnackface", "Von Chonk", "Doodlebug", "Bumblesnout", "Fumblefingers",
+  "Honkington", "Burpington", "McSnackface", "Von Chonk", "Doodlebug", "Bumblesnout", "Fumblefingers",
   "Mumblesworth", "Grumbleguts", "Snickerdoodle", "Ticklebelly", "Jellyroll", "Gumbootie", "Marshmallowby",
   "Pretzelton", "Waffleton", "Pancakeby", "Muffinman", "Biscuitborough", "Stinkyfeet", "Soggybottom",
   "Crustybuns", "Lumpkins", "Chunkington", "Fuzzbucket", "Dustbunny", "Rustbucket", "Nibblesworth",

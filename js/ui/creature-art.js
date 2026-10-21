@@ -124,6 +124,59 @@ const SHAPES = {
     noMouth: true,
   }),
 
+  // Outlandish: a floating jellyfish bell with a unicorn horn and star-tipped tentacles.
+  starJellycorn: (p) => ({
+    body: `
+      ${[56, 76, 100, 124, 144].map((x, i) => `<path d="M${x} 120 q${i % 2 ? 9 : -9} 14 0 28 q${i % 2 ? -9 : 9} 14 0 28" stroke="${p.accent}" stroke-width="7" fill="none" stroke-linecap="round"/>`).join("")}
+      ${[56, 76, 100, 124, 144].map((x) => `<path d="M${x} 170 l2.4 5 5.4 .6 -4 3.7 1.1 5.3 -4.9 -2.7 -4.9 2.7 1.1 -5.3 -4 -3.7 5.4 -.6 Z" fill="#ffe27a"/>`).join("")}
+      <path d="M92 56 L100 14 L108 56 Z" fill="#f2c84b"/>
+      <path d="M95 44 L105 40 M96 33 L104 30 M98 23 L102 21" stroke="#c0901a" stroke-width="2" stroke-linecap="round"/>
+      <path d="M40 120 Q40 50 100 48 Q160 50 160 120 Q148 130 132 122 Q116 134 100 125 Q84 134 68 122 Q52 130 40 120 Z" fill="${p.body}"/>
+      <path d="M44 118 Q56 126 68 120 Q84 130 100 122 Q116 130 132 120 Q144 126 156 118" stroke="${p.accent}" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="100" cy="96" rx="38" ry="24" fill="${p.belly}" opacity="0.6"/>
+      <path d="M62 74 Q72 58 92 56" stroke="#ffffff" stroke-width="5" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <circle cx="58" cy="98" r="2.5" fill="#ffffff" opacity="0.8"/>
+      <circle cx="142" cy="92" r="2" fill="#ffffff" opacity="0.8"/>
+      <circle cx="128" cy="68" r="1.8" fill="#ffffff" opacity="0.8"/>`,
+    eyes: { lx: 86, rx: 114, y: 94, r: 6.5 },
+    head: { x: 100, y: 52 },
+    neck: { x: 100, y: 122, w: 92 },
+    area: { cx: 100, cy: 90, rx: 54, ry: 34 },
+    feet: [{ x: 88, y: 180 }, { x: 112, y: 180 }],
+  }),
+
+  // A firebird: flame wings, a fiery crest and long tail plumes. The flame
+  // tips stay gold and orange in every palette so it always glows.
+  emberPhoenix: (p) => ({
+    body: `
+      <path d="M94 150 C76 160 62 176 50 190 C46 196 36 196 30 190 C44 190 48 182 54 172 C62 160 74 150 86 142 Z" fill="${p.accent}"/>
+      <path d="M106 150 C124 160 138 176 150 190 C154 196 164 196 170 190 C156 190 152 182 146 172 C138 160 126 150 114 142 Z" fill="${p.accent}"/>
+      <path d="M95 158 C92 176 97 188 100 198 C103 188 108 176 105 158 Z" fill="${p.accent}"/>
+      <circle cx="36" cy="190" r="5" fill="#f6c445"/><circle cx="36" cy="190" r="2" fill="#f08a24"/>
+      <circle cx="164" cy="190" r="5" fill="#f6c445"/><circle cx="164" cy="190" r="2" fill="#f08a24"/>
+      <circle cx="100" cy="192" r="3.5" fill="#f6c445"/>
+      <path d="M78 128 Q40 126 22 100 Q14 86 18 66 Q26 78 34 78 Q28 60 32 40 Q42 58 50 62 Q48 48 54 32 Q62 58 66 70 Q72 86 82 98 Z" fill="${p.accent}"/>
+      <path d="M122 128 Q160 126 178 100 Q186 86 182 66 Q174 78 166 78 Q172 60 168 40 Q158 58 150 62 Q152 48 146 32 Q138 58 134 70 Q128 86 118 98 Z" fill="${p.accent}"/>
+      <path d="M78 120 Q50 116 36 96 Q42 100 48 100 Q44 84 48 68 Q56 86 62 88 Q64 102 80 108 Z" fill="#f6c445" opacity="0.9"/>
+      <path d="M122 120 Q150 116 164 96 Q158 100 152 100 Q156 84 152 68 Q144 86 138 88 Q136 102 120 108 Z" fill="#f6c445" opacity="0.9"/>
+      <path d="M76 112 Q60 108 52 98 Q58 98 62 96 Q62 88 64 82 Q68 94 76 100 Z" fill="#f08a24" opacity="0.9"/>
+      <path d="M124 112 Q140 108 148 98 Q142 98 138 96 Q138 88 136 82 Q132 94 124 100 Z" fill="#f08a24" opacity="0.9"/>
+      <path d="M90 56 Q78 36 84 18 Q90 34 96 40 Q96 22 102 10 Q106 30 104 42 Q112 30 120 24 Q118 44 110 56 Z" fill="#f08a24"/>
+      <path d="M94 56 Q88 42 92 30 Q96 42 100 46 Q102 34 106 26 Q108 40 106 56 Z" fill="#f6c445"/>
+      <ellipse cx="100" cy="128" rx="34" ry="44" fill="${p.body}"/>
+      <circle cx="100" cy="80" r="28" fill="${p.body}"/>
+      <ellipse cx="100" cy="140" rx="21" ry="28" fill="${p.belly}"/>
+      <path d="M90 128 Q100 134 110 128 M90 142 Q100 148 110 142 M92 156 Q100 161 108 156" stroke="${p.accent}" stroke-width="1.6" fill="none" opacity="0.5" stroke-linecap="round"/>
+      <path d="M93 88 L107 88 L100 99 Z" fill="#f2b84b"/>
+      <path d="M82 172 l-6 10 M88 172 v12 M94 172 l6 10 M106 172 l-6 10 M112 172 v12 M118 172 l6 10" stroke="#f2b84b" stroke-width="3" stroke-linecap="round"/>`,
+    eyes: { lx: 89, rx: 111, y: 77, r: 5.5 },
+    head: { x: 100, y: 54 },
+    neck: { x: 100, y: 106, w: 44 },
+    area: { cx: 100, cy: 130, rx: 32, ry: 40 },
+    feet: [{ x: 88, y: 182 }, { x: 112, y: 182 }],
+    noMouth: true,
+  }),
+
   // Facing you on all fours: a tall domed shell with hexagon plates and a
   // scalloped rim, the head poking out under the front edge, four stubby legs.
   shellTurtle: (p) => ({
@@ -443,7 +496,7 @@ const FACE = {
 };
 
 // Idle motion for each body, played only where a container has .cc-anim (css/app.css).
-const MOTION = { cloudBunny: "hop", crystalOwl: "float", mossDragon: "float" };
+const MOTION = { cloudBunny: "hop", crystalOwl: "float", mossDragon: "float", starJellycorn: "float", emberPhoenix: "float" };
 
 // ageMonths (optional) adds small signs of growing up.
 export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {}) {

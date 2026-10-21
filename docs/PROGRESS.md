@@ -74,7 +74,7 @@ Last updated: 2026-10-20 (redesign: kingdom hub and story)
 - **Customization expansion** (2026-10-20, teacher request):
   - Two new body types: cloud bunny and shell turtle.
   - **More looks 2026-10-20 (teacher):** eye styles Wink (free) and Starry (450 XP). 11 three-color palettes from Sanzo Wada's combinations (wscolors.com/palettes), unlocked with XP (150 to 1,800) or achievements (Fully Dressed, Rainy Day Fund, Workhorse, Dream Come True). A gentle idle motion on big creature views (bunny hops, owl and dragon float, others breathe), off under reduced motion. Three or more looks unlocked at once share one pop-up.
-  - **Starters changed 2026-10-20 (teacher):** new students pick from the lantern fox, cloud bunny and shell turtle. The crystal owl unlocks at 100 XP, the moss dragon at 300 XP and the puddle golem at 600 XP. Students who already have one of those keep it.
+  - **Starters changed 2026-10-20 (teacher):** new students pick from the lantern fox, cloud bunny and shell turtle. The crystal owl unlocks at 100 XP, the moss dragon at 300 XP and the puddle golem at 600 XP. Students who already have one of those keep it. Two more unlock after the golem: the star jellycorn (1,000 XP) and the ember phoenix (1,600 XP).
   - New layers: body pattern (clipped to the body via `area`), eye color, feet (via `feet` anchors), magic effects (a glow behind and/or sparkles in front), and 4 new palettes (2 earned with XP).
   - About 17 new items for head, neck, face and paw.
   - Every option and how it unlocks is in `js/data/looks.js` (`LOOK_OPTIONS`): free, `{ xp }`, `{ achievement }` or `{ shop: price }`. There are 112 looks in total.
@@ -170,6 +170,7 @@ Last updated: 2026-10-20 (redesign: kingdom hub and story)
 | `js/social.js`, `js/ui/screens/friends.js`, `js/data/social.js` | Friend, group and gift logic / Friends screen / preset group names and gift messages |
 | `js/teacher/dashboard.js` / `analyze.js` | Teacher dashboard UI / roster rows, flags, log check, CSV, tuning math |
 | `js/ui/celebrate.js` | Full-screen unlock pop-ups |
+| `img/` | Favicon (SVG plus 32px PNG) and the 180px home-screen icon |
 | `fonts/` | Fredoka (headings), OpenDyslexic (dyslexia mode), Dancing Script (signatures), all OFL |
 | `js/progress.js` | XP, ranks, achievements (`evaluate`), job pay and experience, payment and desk stats, records |
 | `js/ui/job-board.js`, `js/ui/minigames/*.js`, `js/ui/signature-pad.js` | Job picker and results. Ledger Sort, Cashier Rush, Check Writer. Full-screen signature pad |

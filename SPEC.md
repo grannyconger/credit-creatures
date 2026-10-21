@@ -67,7 +67,7 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 
 - **Theme:** fantasy kingdom.
 - **Players are not humans.** Each student adopts and names a fictional, fantastic creature (think Webkinz). The student makes credit decisions on the creature's behalf.
-- **Creature creator:** pick a species from a starter list (original designs only: a lantern fox, a cloud bunny or a shell turtle; the crystal owl, moss dragon and puddle golem unlock with XP, in that order), then a color palette and a few accessories. Name is required and editable later. An optional last name (added 2026-10-20) makes a full name, printed on the creature's bank cards and used for check writing and signatures.
+- **Creature creator:** pick a species from a starter list (original designs only: a lantern fox, a cloud bunny or a shell turtle; the crystal owl, moss dragon, puddle golem, star jellycorn and ember phoenix unlock with XP, in that order), then a color palette and a few accessories. Name is required and editable later. An optional last name (added 2026-10-20) makes a full name, printed on the creature's bank cards and used for check writing and signatures.
 - **Aging (later, not a priority):** the creature looks a little older as it ages, with small details only (for example a few gray whisker tufts, reading glasses, a slightly softer posture). Same species, palette and accessories. Planned after the pilot unless there is spare time in Phase 8.
 - Accessories and backgrounds can be bought in the Shop (Section 15).
 - All art is original. No Nintendo, Webkinz or other existing characters.
