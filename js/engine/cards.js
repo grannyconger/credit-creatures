@@ -100,8 +100,11 @@ export function resolveChoice(life, choice, method = null) {
   return runSteps(life, steps);
 }
 
+// ctx.has(feature) says what the student has unlocked (js/progression.js).
+// Without it (old saves, the simulation) every feature counts as unlocked.
 function available(card, ctx) {
   if ((card.minChapter || 2) > ctx.chapter) return false;
+  if (card.needs?.length && ctx.has && !card.needs.every(ctx.has)) return false;
   if (card.maxChapter && card.maxChapter < ctx.chapter) return false;
   if (card.once !== false && ctx.seen.includes(card.id)) return false;
   return true;

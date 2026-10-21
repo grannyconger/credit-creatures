@@ -51,6 +51,8 @@ export const CONFIG = {
 
   // Monthly bills that start at age 18.
   bills: {
+    // Chapter 1 (age 16): the first bill, paid from checking.
+    teenPhone: 25,
     phone: 45,
     busPass: 30,
   },
@@ -96,6 +98,10 @@ export const CONFIG = {
     autoAprNoScore: 0.15,
     autoMinScore: 500,
     autoTerms: [36, 48, 60, 72],
+    // Store and lender loans for a purchase (a couch, cottage repairs). Approved
+    // when the payment is at most maxPaymentShare of monthly income (counting
+    // at least minIncome), or with a score of scoreOverride or more.
+    purchase: { apr: 0.12, maxPaymentShare: 0.4, minIncome: 200, scoreOverride: 650 },
   },
 
   // Parent card profiles for the authorized-user option (SPEC §6).

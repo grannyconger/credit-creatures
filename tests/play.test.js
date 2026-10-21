@@ -20,6 +20,7 @@ function checkText(s, where) {
 function sampleLives() {
   const lives = {};
   lives.fresh = lifeWith({ seed: "fresh", checking: 600 });
+  lives.subscribed = E.addBill(lifeWith({ seed: "sub", checking: 300 }), "MonsterTunes", 10).life;
   lives.broke = lifeWith({ seed: "broke", checking: 60 });
   lives.broke = E.moveToSavings(E.receiveCash(lives.broke, 300, "gift").life, 250).life;
   let { life, id } = withCard(lifeWith({ seed: "card", checking: 900 }), { limit: 500 });
@@ -86,11 +87,11 @@ test("every card and life event has unique ids and valid fields", () => {
   assert.equal(new Set(ids).size, ids.length);
   assert.ok(SCENARIOS.length >= 20, `only ${SCENARIOS.length} scenarios`);
   for (const s of SCENARIOS) {
-    assert.ok(["types", "costs", "pitfalls", "profile"].includes(s.group), s.id);
+    assert.ok(["banking", "types", "costs", "pitfalls", "profile"].includes(s.group), s.id);
     assert.ok(s.standards.length > 0, s.id);
     checkText(s.title, s.id);
   }
-  for (const g of ["types", "costs", "pitfalls", "profile"]) assert.ok(SCENARIOS.filter((s) => s.group === g).length >= 3, g);
+  for (const g of ["banking", "types", "costs", "pitfalls", "profile"]) assert.ok(SCENARIOS.filter((s) => s.group === g).length >= 3, g);
 });
 
 test("every card fits some life, and every choice runs, logs and replays", () => {

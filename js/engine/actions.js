@@ -24,6 +24,7 @@ export const ACTIONS = {
   removeAuthorizedUser: accounts.removeAuthorizedUser,
   openCreditBuilderLoan: accounts.openCreditBuilderLoan,
   openAutoLoan: accounts.openAutoLoan,
+  openPurchaseLoan: accounts.openPurchaseLoan,
   openFederalStudentLoan: accounts.openFederalStudentLoan,
   openPrivateStudentLoan: accounts.openPrivateStudentLoan,
   startSchool: accounts.startSchool,

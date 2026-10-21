@@ -208,3 +208,6 @@ export const LIFE_EVENTS = [
 ];
 
 export const LIFE_EVENT_BY_ID = Object.fromEntries(LIFE_EVENTS.map((e) => [e.id, e]));
+
+// Life events that also fit Chapter 1 (age 16, a checking account and no credit yet).
+for (const id of ["bikeRepair", "brokenPhone", "birthdayMoney", "extraShift", "raise", "cutHours", "friendGift", "concert", "workShoes", "foundMoney"]) LIFE_EVENTS.find((e) => e.id === id).minChapter = 1;

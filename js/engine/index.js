@@ -21,6 +21,8 @@ export {
   openCreditBuilderLoan,
   quoteAutoLoan,
   openAutoLoan,
+  quotePurchaseLoan,
+  openPurchaseLoan,
   openFederalStudentLoan,
   startSchool,
   leaveSchool,

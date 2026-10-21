@@ -24,6 +24,7 @@ import {
   hardInquiriesInWindow,
   FACTOR_LABELS,
 } from "../engine/index.js";
+import { EARLY_SCENARIOS } from "./scenarios-early.js";
 
 const pct = (x) => `${Math.round(x * 100)}%`;
 const apr = (x) => `${(x * 100).toFixed(1)}%`;
@@ -1212,9 +1213,26 @@ export const SCENARIOS = [
   },
 ];
 
+// What each card needs unlocked first (Phase 10, js/progression.js). Old saves
+// have everything unlocked, so this only paces new games.
+const NEEDS = {
+  card: ["securedSecondChance", "securedUpgrade", "limitIncrease", "storeCard", "minimumTrap", "cashAdvance", "lateRecovery", "maxedTrip", "closeOldest", "smallCharge", "balanceTransfer", "deferredInterest", "annualFee", "parentCard"],
+  bnpl: ["bnplStack"],
+  loans: ["creditBuilder", "carDecision", "carLease", "studentLoan", "graduation"],
+  score: ["prescreened", "rewardsCard", "threeCards", "identityAlert", "scoreDrop", "reportError", "checkReport", "landlordCheck"],
+  pitfalls: ["paydayLoan", "paydayRollover", "rentToOwn", "titleLoan", "settlementAd", "cosignPhone", "medicalNotice"],
+};
+for (const [feature, ids] of Object.entries(NEEDS)) for (const id of ids) (SCENARIOS.find((s) => s.id === id).needs ??= []).push(feature);
+
+// Everyday money cards that also fit Chapter 1.
+for (const id of ["weekendPlans", "payYourselfFirst"]) SCENARIOS.find((s) => s.id === id).minChapter = 1;
+
+SCENARIOS.unshift(...EARLY_SCENARIOS);
+
 export const SCENARIO_BY_ID = Object.fromEntries(SCENARIOS.map((s) => [s.id, s]));
 
 export const GROUP_LABELS = {
+  banking: "Bank accounts",
   types: "Types of credit",
   costs: "Costs of credit",
   pitfalls: "Pitfalls",

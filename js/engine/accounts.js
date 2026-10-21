@@ -1,7 +1,7 @@
 // Account actions the player takes during a month (time paused).
 // Every exported action returns { life, ok, message, ... } and never changes its input.
 import { CONFIG } from "../data/config.js";
-import { copyLife, findAccount, logAction } from "./life.js";
+import { copyLife, findAccount, logAction, monthlyIncome } from "./life.js";
 import { rngOn } from "./rng.js";
 import { money, dollars } from "./util.js";
 import { amortizedPayment } from "./payoff.js";
@@ -397,6 +397,35 @@ export function openAutoLoan(life, { price, downPayment = 0, termMonths = 60, le
   });
   logAction(next, "openAutoLoan", args, { approved: true });
   return { life: next, ok: true, accountId: a.id, quote: q, message: `Approved at ${(q.apr * 100).toFixed(1)}% APR. Payment ${dollars(q.payment)} a month.` };
+}
+
+// A store or lender pays for something now and you pay it back monthly
+// (a couch, cottage repairs). The money goes straight to the seller, so only
+// the down payment leaves checking. Approval looks at the payment against
+// income: lenders want it to fit your budget.
+export function quotePurchaseLoan(life, { price, downPayment = 0, termMonths = 12, apr = CONFIG.loans.purchase.apr }) {
+  const amount = money(price - downPayment);
+  const payment = amortizedPayment(amount, apr, termMonths);
+  const income = monthlyIncome(life);
+  const fits = payment <= Math.max(CONFIG.loans.purchase.minIncome, income) * CONFIG.loans.purchase.maxPaymentShare;
+  const approved = fits || (life.score != null && life.score >= CONFIG.loans.purchase.scoreOverride);
+  return { amount, apr, termMonths, payment, totalInterest: money(payment * termMonths - amount), approved };
+}
+
+export function openPurchaseLoan(life, { item, price, downPayment = 0, termMonths = 12, apr = CONFIG.loans.purchase.apr, lender = "creditUnion", type = "purchaseLoan", icon = "🧾" }) {
+  if (downPayment > life.checking) return fail(life, "You don't have that much for a down payment.");
+  const q = quotePurchaseLoan(life, { price, downPayment, termMonths, apr });
+  const args = [{ item, price, downPayment, termMonths, apr, lender, type, icon }];
+  const next = copyLife(life);
+  addInquiry(next, `${item} loan`);
+  if (!q.approved) {
+    logAction(next, "openPurchaseLoan", args, { approved: false });
+    return { life: next, ok: false, quote: q, message: `Denied. A ${dollars(q.payment)} monthly payment is too big for your income right now.` };
+  }
+  next.checking = money(next.checking - downPayment);
+  const a = openInstallment(next, { type, name: `${item[0].toUpperCase()}${item.slice(1)} loan`, icon, issuer: lender, original: q.amount, balance: q.amount, apr, termMonths, firstDueMonth: next.month + 1 });
+  logAction(next, "openPurchaseLoan", args, { approved: true });
+  return { life: next, ok: true, accountId: a.id, quote: q, message: `Approved. Pay ${dollars(q.payment)} a month for ${termMonths} months.` };
 }
 
 // Deferred while in school. Repayment starts after the grace period.

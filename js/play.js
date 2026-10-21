@@ -2,6 +2,7 @@
 // Pure functions over the save's `play` object and the engine life: no DOM,
 // no Firebase, so a whole chapter can be tested in Node. Functions that take
 // `play` change it in place. The life is never changed, only replaced.
+import { PROGRESSION_VERSION, newPrologue, hasFeature } from "./progression.js";
 import { CONFIG } from "./data/config.js";
 import { SCENARIOS, SCENARIO_BY_ID } from "./data/scenarios.js";
 import { LIFE_EVENTS, LIFE_EVENT_BY_ID } from "./data/life-events.js";
@@ -15,8 +16,13 @@ export function titled(title) {
   return /[?!]$/.test(title) ? `${title} ` : `${title}: `;
 }
 
-export function newPlay() {
-  return ensurePlay({ chapter: 2, active: null, summary: null, history: [], seen: [], shiftBonus: 0, lastChange: null });
+// phased: a Phase 10 save (js/progression.js). It starts with the prologue and
+// Chapter 1. Without it (old saves, most tests) everything is unlocked and
+// play starts at Chapter 2, the way it did before.
+export function newPlay({ phased = false } = {}) {
+  const play = { chapter: 2, active: null, summary: null, history: [], seen: [], shiftBonus: 0, lastChange: null };
+  if (phased) Object.assign(play, { chapter: 1, progression: PROGRESSION_VERSION, prologue: newPrologue(), unlocksSeen: [] });
+  return ensurePlay(play);
 }
 
 // Fields added after Phase 4. Older saves get them on load.
@@ -65,11 +71,12 @@ export function monthRecord(month, result) {
 }
 
 export function canPlay(play, releasedChapter) {
+  if (play.prologue && !play.prologue.done) return false;
   return play.chapter <= (releasedChapter || 1);
 }
 
 export function ctxFor(play, extra = {}) {
-  return { chapter: play.active?.chapter ?? play.chapter, seen: play.seen, lastChange: play.lastChange, ...extra };
+  return { chapter: play.active?.chapter ?? play.chapter, seen: play.seen, lastChange: play.lastChange, has: (f) => hasFeature(play, f), ...extra };
 }
 
 // months: the class's months per chapter (teacher setting), or the default.
