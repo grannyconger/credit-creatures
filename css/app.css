@@ -853,12 +853,13 @@ ul.plain li { padding: 4px 0; }
 .guardian-art:hover { border-color: var(--accent); }
 .guardian-art svg { display: block; }
 .dream-mini { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-top: 6px; }
-.meters { display: inline-flex; flex-wrap: wrap; gap: 10px; }
-.meter-mini { display: inline-flex; flex-direction: column; gap: 2px; min-width: 90px; }
-.meter-mini small { font-weight: 700; color: var(--muted); }
-.meter-track { display: block; height: 8px; width: 100%; background: var(--border); border-radius: 99px; overflow: hidden; }
-.meter-track span { display: block; height: 100%; background: var(--gold); border-radius: 99px; }
-.meter-track span.ok { background: var(--good); }
+.meters { display: inline-flex; flex-direction: column; gap: 4px; min-width: 220px; max-width: 340px; }
+.stage-track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.stage-seg { display: block; height: 10px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.stage-seg span { display: block; height: 100%; background: var(--gold); border-radius: 99px; }
+.stage-seg.done span { background: var(--good); }
+.stage-seg.current { box-shadow: 0 0 0 2px var(--gold); }
+.stage-text { color: var(--muted); font-weight: 600; font-size: 0.8rem; line-height: 1.3; }
 .chapter-box { margin: 0; text-align: left; display: flex; flex-direction: column; justify-content: center; }
 .chapter-box .row { justify-content: flex-start; margin-top: 10px; }
 .next-step { display: flex; gap: 6px; align-items: flex-start; font-weight: 600; margin: 4px 0; }
@@ -1141,3 +1142,16 @@ button.danger { color: var(--danger); border-color: var(--danger); }
 .brand:hover { text-decoration: none; opacity: 0.85; }
 .save-state { color: var(--muted); font-size: 0.8rem; margin-right: 8px; }
 @media (max-width: 700px) { .save-state { display: none; } }
+
+/* Dream stages as a quest path (Cottage) */
+.dream-path { list-style: none; margin: 14px 0 6px; padding: 0 0 0 14px; border-left: 3px dashed var(--border); display: flex; flex-direction: column; gap: 12px; }
+.stage { position: relative; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); }
+.stage.current { background: var(--gold-soft); box-shadow: 0 0 0 2px var(--gold); }
+.stage.locked { opacity: 0.7; }
+.stage.locked .dream-goals { font-size: 0.85rem; }
+.stage-head { display: flex; align-items: center; gap: 8px; }
+.stage-num { position: absolute; left: -29px; top: 10px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 0.85rem; background: var(--panel); border: 2px solid var(--border); }
+.stage.current .stage-num { border-color: var(--gold); background: var(--gold); color: #2b1f05; }
+.stage.done .stage-num { border-color: var(--good); background: var(--good); color: var(--panel); }
+.stage-cost { font-weight: 600; font-size: 0.9rem; }
+.dream-stage-list { margin: 4px 0 0; padding-left: 18px; font-size: 0.85rem; color: var(--muted); text-align: left; }

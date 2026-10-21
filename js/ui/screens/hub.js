@@ -70,7 +70,7 @@ export function render(root, { game, go, track }) {
   function guardianCard() {
     const r = rankFor(play.xp);
     const dream = c.dream ? DREAMS[c.dream] : null;
-    const prog = c.dream ? dreamProgress(life, c.dream) : null;
+    const prog = c.dream ? dreamProgress(life, c.dream, play) : null;
     return h(
       "section.guardian",
       h("button.guardian-art", { type: "button", "aria-label": `Open ${c.name}'s cottage`, onclick: () => go("cottage"), html: creatureSvg(c, { size: 96, ageMonths: life.ageMonths, label: "" }) }),
@@ -153,19 +153,25 @@ export function render(root, { game, go, track }) {
   refreshRelease();
 }
 
-// Three small meters: savings, score and habits. Never color alone: each has words.
+// The dream's 3 stages as a track, plus the current stage's goals. Never
+// color alone: the words say which stage and how many goals are met.
 export function meters(prog) {
-  const bar = (label, share, ok, text) =>
-    h(
-      "span.meter-mini",
-      h("small", ok ? "✓ " : "", label),
-      h("span.meter-track", { role: "img", "aria-label": `${label}: ${text}` }, h("span", { class: ok ? "ok" : "", style: { width: `${Math.round(share * 100)}%` } }))
-    );
+  if (!prog) return null;
+  const total = prog.stages.length;
+  const cur = prog.stage;
+  const met = cur ? cur.goals.filter((g) => g.ok).length : 0;
+  const text = prog.complete ? "All 3 stages done!" : `Stage ${prog.stageIndex + 1} of ${total}: ${cur.title}. ${met} of ${cur.goals.length} goals met.`;
   return h(
     "span.meters",
-    bar("Savings", prog.savings.share, prog.savings.ok, `${money(prog.savings.value)} of ${money(prog.savings.goal)}`),
-    bar("Score", prog.score.share, prog.score.ok, prog.score.value == null ? `no score yet, goal ${prog.score.goal}` : `${prog.score.value} of ${prog.score.goal}`),
-    bar("Habits", prog.habits.share, prog.habits.ok, prog.habits.list.map((x) => `${x.ok ? "yes" : "not yet"}: ${x.label}`).join(". "))
+    h(
+      "span.stage-track",
+      { role: "img", "aria-label": text },
+      prog.stages.map((st) => {
+        const share = st.done ? 1 : st.current ? st.goals.reduce((s, g) => s + g.share, 0) / st.goals.length : 0;
+        return h("span.stage-seg", { class: st.done ? "done" : st.current ? "current" : "" }, h("span", { style: { width: `${Math.round(share * 100)}%` } }));
+      })
+    ),
+    h("small.stage-text", { "aria-hidden": "true" }, text)
   );
 }
 

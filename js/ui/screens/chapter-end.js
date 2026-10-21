@@ -42,7 +42,7 @@ export function render(root, { game, go, track, refreshWho }) {
       s.best ? moment("👍 Best move", s.best, "good") : null,
       s.worst ? moment("👎 Toughest moment", s.worst, "bad") : h("div.callout.good", h("p", h("strong", "👎 Toughest moment")), h("p", "No risky choices this chapter. Nice."))
     ),
-    c.dream && DREAMS[c.dream] ? dreamBlock(c, run.life) : null,
+    c.dream && DREAMS[c.dream] ? dreamBlock(c, run.life, run.play) : null,
     h(
       "details.months",
       h("summary", "Month by month"),
@@ -59,14 +59,14 @@ export function render(root, { game, go, track, refreshWho }) {
 }
 
 // Where the dream stands after this chapter (teacher request: keep the purpose in view).
-function dreamBlock(c, life) {
+function dreamBlock(c, life, play) {
   const d = DREAMS[c.dream];
-  const prog = dreamProgress(life, c.dream);
+  const prog = dreamProgress(life, c.dream, play);
   return h(
     "section.dream-card",
     h("h3", `${d.icon} ${c.name}'s dream: ${d.title}`),
     meters(prog),
-    h("p.note.tight", prog.ready ? "Everything's ready. Make it come true in your Cottage!" : `${Math.round(prog.overall * 100)}% of the way there. Saving and paying on time move it forward.`)
+    h("p.note.tight", prog.complete ? "Your creature's dream came true!" : prog.ready ? `Stage ${prog.stageIndex + 1} is ready. Finish it in your Cottage!` : `${Math.round(prog.overall * 100)}% of the way there. Every goal you meet moves it forward.`)
   );
 }
 

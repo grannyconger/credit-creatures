@@ -47,10 +47,10 @@ export function placeStatus({ life, play, creature, classInfo }) {
   out.academy = xpLeft ? { text: `${xpLeft} XP to earn`, tone: "action" } : { text: "All answer XP earned", tone: "calm" };
   out.plaza = classInfo?.social === false ? { text: "Closed by your teacher", tone: "off" } : { text: "Friends and gifts", tone: "calm" };
 
-  const dream = creature?.dream ? dreamProgress(life, creature.dream) : null;
+  const dream = creature?.dream ? dreamProgress(life, creature.dream, play) : null;
   if (!creature?.dream) out.cottage = { text: "Pick your creature's dream", tone: "action" };
   else if (play.dreamDone) out.cottage = { text: `${DREAMS[creature.dream].title}: done!`, tone: "calm" };
-  else if (dream?.ready) out.cottage = { text: "Your dream is ready!", tone: "action" };
+  else if (dream?.ready) out.cottage = { text: `Dream stage ${dream.stageIndex + 1} is ready!`, tone: "action" };
   else out.cottage = { text: `Dream ${Math.round((dream?.overall || 0) * 100)}% there`, tone: "calm" };
   return out;
 }

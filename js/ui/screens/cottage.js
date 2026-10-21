@@ -1,11 +1,10 @@
 // Your Cottage: the creature menu, open from anywhere by clicking the creature
 // in the top bar. Its dream, its look, its rank, and your settings.
-import { h, add, fill, money, ageLabel, toast } from "../dom.js";
+import { h, add, fill, ageLabel, toast } from "../dom.js";
 import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
 import { fullName } from "../../data/creatures.js";
-import { DREAMS, dreamProgress } from "../../data/dreams.js";
-import { moveToChecking, debitPurchase } from "../../engine/index.js";
+import { DREAMS, dreamProgress, finishStage, stageCostText } from "../../data/dreams.js";
 import { rankFor } from "../../progress.js";
 import { placeHeader } from "../place-header.js";
 import { settingsControls } from "../settings-controls.js";
@@ -24,7 +23,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
     const life = game.life;
     const r = rankFor(play.xp);
     const dream = c.dream ? DREAMS[c.dream] : null;
-    const prog = dream ? dreamProgress(life, c.dream) : null;
+    const prog = dream ? dreamProgress(life, c.dream, play) : null;
     fill(
       panel,
       placeHeader({ go, iconName: "cottage", title: `${c.name}'s Cottage`, subtitle: "Your creature, its dream, and your settings." }),
@@ -49,48 +48,59 @@ export function render(root, { game, go, track, refreshWho, back }) {
     );
   }
 
+  // The dream as a quest path: finished stages, the current one with its
+  // goals and a finish button, and the stages still to come.
   function dreamCard(dream, prog) {
     if (!dream) {
       return h("section.dream-card", h("h3", icon("dream", { size: 20 }), " No dream picked yet"), h("p", "Every creature in Coinhaven has a dream. Pick one to work toward."), h("div.row", h("button", { type: "button", onclick: () => go("dream") }, "Pick a dream")));
     }
-    const box = h("section.dream-card", h("h3", `${dream.icon} ${dream.title}`), h("p", dream.story), h("p.note.tight", dream.why));
-    if (play.dreamDone) {
+    const box = h("section.dream-card", h("h3", `${dream.icon} ${dream.title}`), h("p", dream.story), h("p.note.tight", dream.why), meters(prog));
+    if (prog.complete) {
       add(box, h("p.callout.good", icon("check", { size: 16 }), " ", dream.finish), h("div.row", h("button.secondary", { type: "button", onclick: () => go("dream") }, "Pick a new dream")));
       return box;
     }
-    add(
-      box,
-      meters(prog),
-      h(
-        "ul.dream-goals",
-        h("li", { class: prog.savings.ok ? "ok" : "" }, prog.savings.ok ? icon("check", { size: 14 }) : icon("piggy", { size: 14 }), ` Save ${money(prog.savings.goal)} in savings (now ${money(prog.savings.value)})`),
-        h("li", { class: prog.score.ok ? "ok" : "" }, prog.score.ok ? icon("check", { size: 14 }) : icon("gauge", { size: 14 }), ` Credit score of ${prog.score.goal} or more (now ${prog.score.value ?? "none yet"})`),
-        prog.habits.list.map((x) => h("li", { class: x.ok ? "ok" : "" }, x.ok ? icon("check", { size: 14 }) : icon("alert", { size: 14 }), ` ${x.label}`))
-      )
-    );
-    if (prog.ready && !game.practice) {
-      const btn = h("button.big", { type: "button" }, `Make the dream come true (${money(dream.savings)} from savings)`);
-      btn.addEventListener("click", async () => {
-        btn.disabled = true;
-        let r = moveToChecking(game.life, dream.savings);
-        if (r.ok) r = debitPurchase(r.life, dream.savings, `dream: ${dream.title}`);
-        if (!r.ok) {
-          btn.disabled = false;
-          return toast(r.message, "bad");
-        }
-        game.life = r.life;
-        play.dreamDone = { dream: c.dream, month: game.life.month };
-        track("dreamAchieved", { dream: c.dream, score: game.life.score ?? -1 });
-        celebrate({ kind: "dream", id: c.dream, icon: dream.icon, kicker: "Dream come true!", title: dream.title, text: dream.finish });
-        refreshWho();
-        await game.persist("dream");
-        paint();
-      });
-      add(box, h("div.row", btn));
-    } else {
-      add(box, h("p.note.tight", "Keep paying on time and saving. The Vault and the Guild Hall are how you get there."), h("div.row", h("button.link", { type: "button", onclick: () => go("dream") }, "Change the dream")));
-    }
+    add(box, h("ol.dream-path", prog.stages.map((st) => stageItem(st))));
+    add(box, h("div.row", h("button.link", { type: "button", onclick: () => go("dream") }, "Change the dream")));
     return box;
+  }
+
+  function stageItem(st) {
+    const life = game.life;
+    const head = h("div.stage-head", h("span.stage-num", st.done ? icon("check", { size: 16 }) : String(st.index + 1)), h("strong", st.title), st.done ? h("small.good-text", " Done") : !st.current ? h("small.muted", " Locked") : null);
+    if (st.done) return h("li.stage.done", head);
+    const goals = h(
+      "ul.dream-goals",
+      st.goals.map((g) => h("li", { class: g.ok ? "ok" : "" }, icon(g.ok ? "check" : g.icon, { size: 14 }), ` ${g.label}`, st.current ? h("small.muted", ` (${g.text})`) : null))
+    );
+    if (!st.current) return h("li.stage.locked", head, goals);
+    const item = h("li.stage.current", head, h("p.note.tight", st.story), goals, st.cost ? h("p.stage-cost", icon("coins", { size: 14 }), " ", stageCostText(st, life)) : null);
+    if (!st.ready) {
+      add(item, h("p.note.tight", "Meet every goal to finish this stage. Town Hall, the Guild Hall, the Vault and the Academy all help."));
+      return item;
+    }
+    if (game.practice) return add(item, h("p.note.tight", "Leave practice to finish this stage."));
+    const last = st.index === DREAMS[c.dream].stages.length - 1;
+    const btn = h("button.big", { type: "button", "data-sound": "none" }, last ? `Make the dream come true${st.cost ? ` ($${st.cost.toLocaleString()})` : ""}` : `Finish stage ${st.index + 1}${st.cost ? ` ($${st.cost.toLocaleString()})` : ""}`);
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      const r = finishStage(game.life, play, c.dream);
+      if (!r.ok) {
+        btn.disabled = false;
+        return toast(r.message, "bad");
+      }
+      game.life = r.life;
+      track(r.complete ? "dreamAchieved" : "dreamStage", { dream: c.dream, stage: st.index + 1, cost: st.cost || 0, score: game.life.score ?? -1 });
+      const d = DREAMS[c.dream];
+      celebrate(
+        r.complete
+          ? { kind: "dream", id: c.dream, icon: d.icon, kicker: "Dream come true!", title: d.title, text: d.finish, xp: st.xp }
+          : { kind: "dreamStage", id: `${c.dream}:${st.index + 1}`, icon: d.icon, kicker: `Dream stage ${st.index + 1} of 3 done!`, title: st.title, text: `Next up: ${d.stages[st.index + 1].title}.`, xp: st.xp }
+      );
+      refreshWho();
+      await game.persist("dream");
+      paint();
+    });
+    return add(item, h("div.row", btn));
   }
 
   function settingsCard() {

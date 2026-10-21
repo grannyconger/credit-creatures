@@ -36,6 +36,8 @@ export function ensurePlay(play) {
   play.social ??= { friends: 0, giftsSent: 0, giftsReceived: 0, groupJoined: false };
   // Appearance and reading mode (js/ui/settings.js). Old "night" theme means dark.
   play.dreamDone ??= null;
+  // Dream stages finished (js/data/dreams.js). An old finished dream counts as all 3.
+  play.dreamStage ??= play.dreamDone ? 3 : 0;
   play.settings ??= play.theme === "night" ? { appearance: "dark", reading: "standard" } : null;
   play.achievements ??= {};
   play.stats ??= { shifts: 0, paidInFull: 0, payoffSprints: 0, hadDebt: false };
