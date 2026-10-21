@@ -1191,3 +1191,30 @@ button.danger { color: var(--danger); border-color: var(--danger); }
 .tour-offer { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 .tour-offer > div { flex: 1; min-width: 220px; }
 .tour-offer svg { display: block; }
+
+/* Title screen part 1: Begin, then the card slides in. A shooting star crosses
+   the sky soon after the page loads, then now and then. */
+.signin-begin { margin: 14px 0 6px; min-width: 220px; font-size: 1.35rem; padding: 14px 40px; border-radius: 999px; box-shadow: 0 6px 0 #3a2370, 0 12px 24px rgba(40, 20, 100, 0.3); animation: begin-glow 2.4s ease-in-out infinite; }
+.signin-begin:active { transform: translateY(3px); box-shadow: 0 3px 0 #3a2370; }
+@keyframes begin-glow { 50% { box-shadow: 0 6px 0 #3a2370, 0 0 0 8px rgba(255, 212, 92, 0.35), 0 12px 24px rgba(40, 20, 100, 0.3); } }
+.signin-card.reveal { animation: card-rise 0.45s cubic-bezier(.2,.9,.3,1.2) both; }
+@keyframes card-rise { from { opacity: 0; transform: translateY(24px) scale(0.97); } }
+.signin-card[hidden], .signin-begin[hidden] { display: none; }
+
+.shooting-star {
+  position: absolute; top: 63%; left: 4%; width: 160px; height: 3px; border-radius: 99px; opacity: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 75%, #fff6c8);
+  filter: drop-shadow(0 0 6px #fff6c8);
+  --tilt: 9deg; --travel: 720px;
+  transform: rotate(var(--tilt));
+  animation: shooting-star 11s ease-out 1.4s infinite;
+}
+.shooting-star::after { content: ""; position: absolute; right: -4px; top: -3px; width: 9px; height: 9px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px 4px #fff6c8; }
+.shooting-star.second { top: 2%; left: 64%; width: 100px; --tilt: 13deg; --travel: 400px; animation-delay: 6.8s; animation-duration: 13s; }
+@keyframes shooting-star {
+  0% { opacity: 0; transform: rotate(var(--tilt)) translateX(0); }
+  2% { opacity: 1; }
+  9% { opacity: 0; transform: rotate(var(--tilt)) translateX(var(--travel)); }
+  100% { opacity: 0; transform: rotate(var(--tilt)) translateX(var(--travel)); }
+}
+@media (prefers-reduced-motion: reduce) { .shooting-star { display: none; } }

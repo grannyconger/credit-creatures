@@ -141,10 +141,22 @@ function signedOut(error = "") {
     { species: "mossDragon", palette: "moss", accessories: { head: "crown" } },
     { species: "puddleGolem", palette: "lavender", accessories: { held: "balloon" } },
   ];
+  // Two parts (teacher request 2026-10-20): the title and a Begin button, then
+  // the sign-in card. Coming back from signing out or an error skips the title.
+  const skipTitle = Boolean(saved || error);
+  const begin = h("button.big.signin-begin", { type: "button", hidden: skipTitle }, "Begin");
+  begin.addEventListener("click", () => {
+    const card = root.querySelector(".signin-card");
+    begin.hidden = true;
+    card.hidden = false;
+    card.classList.add("reveal");
+    card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    btn.focus({ preventScroll: true });
+  });
   root.replaceChildren(
     h(
       "section.signin-hero",
-      h("div.signin-sky", { "aria-hidden": "true" }),
+      h("div.signin-sky", { "aria-hidden": "true" }, h("span.shooting-star"), h("span.shooting-star.second")),
       h(
         "div.signin-inner",
         h("p.signin-kicker", "Welcome to the Kingdom of Coinhaven"),
@@ -152,6 +164,7 @@ function signedOut(error = "") {
         // outline never draws over the letters.
         h("h1.signin-title", h("span.t-back", { "aria-hidden": "true" }, "Credit Creatures"), h("span.t-front", "Credit Creatures")),
         h("p.signin-tagline", "Raise a creature. Build its credit. Watch every choice add up."),
+        begin,
         h(
           "div.signin-parade",
           { role: "img", "aria-label": "Eight creatures: a lantern fox, a cloud bunny, a shell turtle, a star jellycorn, an ember phoenix, a crystal owl, a moss dragon and a puddle golem" },
@@ -159,6 +172,7 @@ function signedOut(error = "") {
         ),
         h(
           "div.signin-card",
+          { hidden: !skipTitle },
           saved ? h("p.callout.good", "✓ Saved. ", saved !== "1" ? `${saved} will be right here next time.` : "Your game will be right here next time.") : null,
           btn,
           LOCAL ? h("p.note", "Local test mode. Your game saves in this browser only.") : null,
