@@ -47,6 +47,7 @@ const P = {
   palette: '<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-.8-.5-1.2-.5-2s.7-1.5 1.5-1.5H17a4 4 0 0 0 4-4c0-5-4-9-9-9z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/>',
   dream: '<path d="M12 3 9.5 9H3l5 4-2 7 6-4.5 6 4.5-2-7 5-4h-6.5z"/><path d="M12 3v13.5"/>',
   pause: '<path d="M9 5v14M15 5v14"/>',
+  lantern: '<path d="M12 2v2M9 4h6"/><path d="M8 7h8l-1.2 11H9.2z"/><path d="M7 7h10M7 21h10M12 18v3"/><path d="M12 10.5c1 1 1 2.5 0 3.5-1-1-1-2.5 0-3.5z"/>',
   logout: '<path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/>',
 };
 

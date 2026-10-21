@@ -14,7 +14,8 @@ export const CONFIG = {
     sparkle: { perChapter: 10, total: 30 },
     // XP (SPEC §16). It never goes down, and there's no lifetime cap. Only right
     // answers repeat without limit, so their XP is capped per chapter.
-    xp: { rightAnswer: 5, shift: 5, reflection: 25, answersPerChapter: 100 },
+    // alleyStall: bonus XP for each Lantern Alley stall called right, once each.
+    xp: { rightAnswer: 5, shift: 5, reflection: 25, answersPerChapter: 100, alleyStall: 10 },
   },
 
   // Friends, groups and gifts (Phase 8). firestore.rules repeats giftHours,

@@ -48,6 +48,8 @@ export function ensurePlay(play) {
   // Phase 10: the ride at the Garage and the Cottage upgrades.
   play.garage ??= null;
   play.home ??= [];
+  // Phase 12: Lantern Alley stalls checked ({ [stallId]: { right, xp } }).
+  play.alley ??= { checked: {} };
   play.tourDone ??= null;
   play.tourSkipped ??= false;
   play.settings ??= play.theme === "night" ? { appearance: "dark", reading: "standard" } : null;

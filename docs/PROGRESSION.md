@@ -15,7 +15,7 @@ ask it.
 | Chapter 2: Borrow and pay back | 18 (time skip at the end of Ch 1) | Installment loans: vehicles (Garage), cottage upgrades (home improvement loan), credit-builder and student loans | The Garage | + Ledger Sort |
 | Chapter 3: Your first credit card | 18 | Credit card (Design Your Card at the end of Ch 2), statements, utilization, card AutoPay, credit and buy now, pay later at checkout | | |
 | Chapter 4: Your credit score | 19 | The score, My Score and My Report, score-based offers | The Hall of Records | |
-| Chapter 5 and on | 19+ | Pitfalls: payday and title loans, rent-to-own, settlement ads, cosigning, collections | | |
+| Chapter 5 and on | 19+ | Pitfalls: payday and title loans, rent-to-own, settlement ads, cosigning, collections | Lantern Alley (Phase 12) | |
 
 A feature unlocks when the student reaches its stage (`play.chapter`, or the prologue
 before that). Owning an account always unlocks its feature too (safety net).
@@ -35,6 +35,8 @@ before that). Owning an account always unlocks its feature too (safety net).
   Ch 3 ends with the score reveal.
 - **First visits** to Town Hall, the Academy and Friendship Plaza play a short lesson. Chapter 5
   opens with "Watch out for traps". Dream goals that need a later feature say when it opens.
+- **Lantern Alley** (Chapter 5): 10 stalls, each a pitch plus fine print. Trap or fair deal?
+  Then the real cost is worked out. Seven traps and three fair deals, so "trap" every time loses.
 
 ## Old saves
 

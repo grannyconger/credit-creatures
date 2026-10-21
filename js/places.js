@@ -4,6 +4,7 @@ import { upcomingPayments } from "./engine/index.js";
 import { DREAMS, dreamProgress } from "./data/dreams.js";
 import * as P from "./play.js";
 import { hasFeature, opensText, prologueStep, stageOf } from "./progression.js";
+import { alleyProgress } from "./data/alley.js";
 
 // The one next thing to do in the prologue (coach panel and chapter box).
 export const PROLOGUE_TEXT = {
@@ -27,6 +28,7 @@ export const PLACES = [
   { id: "market", name: "Shimmer Market", icon: "market", route: "shop", feature: "market", does: "Spend money on things for your creature", x: 12, y: 76 },
   { id: "cottage", name: "Your Cottage", icon: "cottage", route: "cottage", feature: "cottage", does: "Your creature, its dream, its home and your settings", x: 40, y: 67 },
   { id: "plaza", name: "Friendship Plaza", icon: "plaza", route: "friends", feature: "plaza", does: "Friends, groups and gifts", x: 64, y: 76 },
+  { id: "alley", name: "Lantern Alley", icon: "lantern", route: "alley", feature: "pitfalls", does: "Read the fine print on tricky offers", x: 33, y: 40 },
   { id: "academy", name: "The Academy", icon: "academy", route: "academy", feature: "academy", does: "Lessons and practice to earn XP, trophies and ranks", x: 87, y: 77 },
 ];
 
@@ -65,6 +67,9 @@ export function placeStatus({ life, play, creature, classInfo }) {
 
   out.garage = { text: play.garage?.vehicle ? "Your ride is here" : "Rides for sale", tone: "calm" };
   out.records = { text: life?.score == null ? "No score yet" : `Score ${life.score}`, tone: "calm" };
+  const alley = alleyProgress(play);
+  const stallsLeft = alley.total - alley.checked;
+  out.alley = stallsLeft ? { text: `${stallsLeft} offer${stallsLeft === 1 ? "" : "s"} to check`, tone: "action", count: stallsLeft } : { text: `${alley.right} of ${alley.total} called right`, tone: "calm" };
 
   // The prologue: Sage's current step lights up its place.
   if (prologue) {

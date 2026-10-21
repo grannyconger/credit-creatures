@@ -30,8 +30,9 @@ import * as academy from "./ui/screens/academy.js";
 import * as cottage from "./ui/screens/cottage.js";
 import * as garage from "./ui/screens/garage.js";
 import * as records from "./ui/screens/records.js";
+import * as alley from "./ui/screens/alley.js";
 
-const SCREENS = { profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records };
+const SCREENS = { profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 

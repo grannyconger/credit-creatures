@@ -40,7 +40,8 @@ A classroom game (formerly Credit Life) where students are the Guardian of Coin 
 | 9 | Pilot: one class plays, tune numbers, add remaining content | Built, waiting for pilot data (docs/PILOT.md) |
 | Redesign | Design system (tokens, dark, dyslexia, icons, shiny cards), story intro, dreams, illustrated kingdom hub | Done |
 | 10 | Progressive unlocks: piggy-bank prologue, one new account per chapter, Garage, Hall of Records, Sage's lessons (`docs/PROGRESSION.md`) | Done, approved |
-| 11 | Fill out the ladder: more Chapter 2 loan cards, Town Hall/Academy/Plaza/pitfalls lessons, locked dream goals say when they open | Done, awaiting the teacher's review |
+| 11 | Fill out the ladder: more Chapter 2 loan cards, Town Hall/Academy/Plaza/pitfalls lessons, locked dream goals say when they open | Done, approved |
+| 12 | Lantern Alley: a Chapter 5 place to read the fine print on 10 offers, trap or fair deal, with the real cost worked out | Done, awaiting the teacher's review |
 
 ## Run locally
 

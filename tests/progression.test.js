@@ -105,3 +105,31 @@ test("Chapter 2 has a full deck of loan cards", () => {
   const ch2 = SCENARIOS.filter((s) => (s.minChapter || 2) === 2 && (s.needs || []).includes("loans"));
   assert.ok(ch2.length >= 9, `${ch2.length} Chapter 2 loan cards`);
 });
+
+test("Lantern Alley opens in Chapter 5 with a mix of traps and fair deals in plain words", async () => {
+  const { STALLS, alleyProgress } = await import("../js/data/alley.js");
+  const { PLACES, placeStatus } = await import("../js/places.js");
+  const alley = PLACES.find((p) => p.id === "alley");
+  assert.equal(G.opensText(alley.feature), "Opens in Chapter 5");
+  assert.equal(new Set(STALLS.map((s) => s.id)).size, STALLS.length);
+  const traps = STALLS.filter((s) => s.trap).length;
+  assert.ok(traps >= 5 && STALLS.length - traps >= 3, "calling everything a trap can't get them all");
+  for (const s of STALLS) {
+    const text = [s.name, s.pitch, ...s.fine, ...s.math, s.clue, s.better].join(" ");
+    assert.ok(!/[—;]/.test(text), `${s.id} follows the text rules`);
+    assert.ok(s.fine.length >= 2 && s.math.length >= 2, s.id);
+  }
+  const play = phased();
+  play.prologue.done = true;
+  play.chapter = 4;
+  const life = E.createLife({ seed: "alley", ageMonths: 228 });
+  assert.equal(placeStatus({ life, play, creature: { name: "Pip" } }).alley.tone, "locked");
+  play.chapter = 5;
+  assert.equal(placeStatus({ life, play, creature: { name: "Pip" } }).alley.count, STALLS.length);
+  P.ensurePlay(play);
+  play.alley.checked = { payday: { right: true }, creditUnion: { right: false } };
+  assert.deepEqual(alleyProgress(play), { checked: 2, right: 1, total: STALLS.length });
+  const got = P.recordAnswer(play, { type: "alley", standard: 5, correct: true });
+  assert.ok(got.xp > 0);
+  assert.equal(play.desk.byStandard["5"].right, 1, "alley calls count toward Standard 5");
+});

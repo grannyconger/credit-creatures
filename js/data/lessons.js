@@ -155,8 +155,23 @@ export const LESSONS = {
         quiz: { q: "A $300 payday loan costs $45 for two weeks. About what APR is that?", choices: ["15%", "45%", "Almost 400%"], answer: 2, why: "$45 on $300 is 15% for just two weeks. Over a whole year, that's about 390% APR. A credit card is closer to 25%." },
       },
       { route: "hub", target: ['.place[data-place="townhall"]', '.place-row[data-place="townhall"]'], title: "Offers show up at Town Hall", text: ["When money is tight, these offers appear on your cards. A small emergency fund in savings is the best protection.", "If something sounds too easy, it usually costs too much."] },
+      { route: "hub", target: ['.place[data-place="alley"]', '.place-row[data-place="alley"]'], title: "Lantern Alley is open", text: ["A side street full of bright signs. Practice spotting traps there before one shows up for real."] },
+    ],
+  },
+  alley: {
+    title: "Read the fine print",
+    feature: "pitfalls",
+    steps: [
+      { route: "alley", target: [".stall-grid", ".place-header"], title: "Every stall has a pitch", text: ["The big sign tells you the good part. The fine print tells you the cost.", "Open each offer, read the fine print, then decide: trap or fair deal?"] },
+      {
+        route: "alley",
+        target: [".lesson-box", ".place-header"],
+        title: "Not every offer is a trap",
+        text: ["Some deals here are honest. A fair deal has a clear APR, a payment you can afford and a set end date.", "A right call earns bonus XP, once per stall."],
+        quiz: { q: "Which one is a warning sign?", choices: ["A clear APR on the first page", "\"Stop paying your bills and pay us instead\"", "A loan reported to the credit bureaus"], answer: 1, why: "Nobody honest tells you to stop paying your bills. Missed payments hurt the biggest part of your score." },
+      },
     ],
   },
 };
 
-export const LESSON_ORDER = ["welcome", "guild", "market", "cottage", "checking", "townhall", "academy", "plaza", "loans", "card", "score", "pitfalls"];
+export const LESSON_ORDER = ["welcome", "guild", "market", "cottage", "checking", "townhall", "academy", "plaza", "loans", "card", "score", "pitfalls", "alley"];

@@ -99,6 +99,17 @@ const BUILDINGS = {
       <rect x="-11" y="4" width="22" height="30" rx="3" fill="var(--k-door)"/>
       <rect x="-52" y="32" width="104" height="7" rx="3" fill="var(--k-trim)"/>
     </g>`,
+  // Lantern Alley (Chapter 5): two crooked, narrow shops with loud signs and
+  // paper lanterns strung between them.
+  alley: ({ x, y }) => `
+    <g transform="translate(${x} ${y})">
+      <g transform="rotate(-3)"><rect x="-58" y="-44" width="46" height="80" rx="3" fill="var(--k-wall)"/><path d="M-64 -42 L-35 -74 L-6 -42 Z" fill="var(--k-roof-plum)"/>${win(-48, -30, 12, 14)}<rect x="-46" y="6" width="22" height="30" rx="3" fill="var(--k-door)"/></g>
+      <g transform="rotate(4)"><rect x="12" y="-36" width="46" height="72" rx="3" fill="var(--k-stone)"/><path d="M6 -34 L35 -64 L64 -34 Z" fill="var(--k-roof-plum)"/>${win(40, -24, 12, 14)}<rect x="22" y="8" width="22" height="28" rx="3" fill="var(--k-door)"/></g>
+      <rect x="-54" y="-14" width="38" height="14" rx="2" fill="var(--k-sign)" transform="rotate(-8 -35 -7)"/><text x="-35" y="-3" text-anchor="middle" font-size="10" font-weight="800" fill="var(--k-trim)" transform="rotate(-8 -35 -7)">$$$!</text>
+      <rect x="14" y="-12" width="40" height="12" rx="2" fill="var(--k-flag)"/><text x="34" y="-2" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">0%*</text>
+      <path d="M-20 -50 Q0 -36 20 -46" stroke="var(--k-trim)" stroke-width="1.5" fill="none"/>
+      ${[[-12, -44, "#ff8a3d"], [0, -41, "#e05a7a"], [12, -43, "#f2c84b"]].map(([cx, cy, c]) => `<g class="k-lantern"><path d="M${cx} ${cy} v3" stroke="var(--k-trim)" stroke-width="1.2"/><ellipse cx="${cx}" cy="${cy + 9}" rx="5" ry="6.5" fill="${c}"/></g>`).join("")}
+    </g>`,
   academy: ({ x, y }) => `
     <g transform="translate(${x} ${y})">
       <rect x="-56" y="-30" width="112" height="66" rx="4" fill="var(--k-stone)"/>
