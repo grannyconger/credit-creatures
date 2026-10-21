@@ -1319,3 +1319,31 @@ main.app:has(.panel.hub) { max-width: 1760px; padding-top: 16px; }
   .place.tone-calm .place-badge, .place.tone-off .place-badge, .place.tone-locked .place-badge { display: none; }
   .place-name { font-size: clamp(0.62rem, 1.6cqw, 0.8rem); }
 }
+
+/* Title screen (teacher request 2026-10-21): Begin and the sign-in card sit
+   below the creatures, at the bottom center. */
+.signin-inner { min-height: 100vh; box-sizing: border-box; }
+.signin-parade { margin-top: auto; }
+.signin-inner .signin-begin { margin: 22px 0 8px; position: relative; }
+.signin-inner .signin-card { margin-top: 18px; }
+/* A standard Google sign-in button: white, Google's "G", dark text. */
+.google-btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; background: #fff; color: #1f1f1f; border: 1px solid #747775; border-radius: 999px; padding: 12px 22px 12px 16px; font-family: Roboto, Arial, sans-serif; font-weight: 500; font-size: 1rem; box-shadow: none; }
+.google-btn:hover:not(:disabled) { background: #f6f8fc; box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3); }
+.google-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.google-btn:disabled { opacity: 0.6; }
+.google-g { display: inline-flex; width: 20px; height: 20px; }
+.google-g svg { display: block; }
+/* The gear in the top bar. */
+.icon-btn { display: inline-flex; align-items: center; gap: 6px; background: none; color: var(--ink); border: 2px solid transparent; border-radius: 999px; padding: 6px 10px; font-weight: 600; }
+.icon-btn:hover, .icon-btn:focus-visible { border-color: var(--accent); background: var(--soft); }
+@media (max-width: 700px) { .icon-btn-text { display: none; } }
+/* Settings pop-up and the Account settings page. */
+.settings-dialog { border: 0; border-radius: 22px; padding: 24px 28px; max-width: 520px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); box-shadow: var(--shadow-lift); }
+.settings-dialog::backdrop { background: rgba(43, 35, 64, 0.55); }
+.settings-dialog h2 { margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+.settings-dialog .settings-row, .settings-section .settings-row { align-items: flex-start; margin: 14px 0; }
+.settings-dialog .row { justify-content: flex-end; }
+.settings-section { border: 1.5px solid var(--border); border-radius: 16px; padding: 14px 18px; margin-top: 14px; background: var(--panel); }
+.settings-section h2 { font-size: 1.2rem; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+.settings-section .row { justify-content: flex-start; }
+.settings-dialog .settings-row, .settings-section .settings-row { flex-direction: column; align-items: flex-start; }

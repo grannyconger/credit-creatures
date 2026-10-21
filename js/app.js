@@ -1,6 +1,6 @@
 // App shell: sign-in, loading the save, and a hash router over the screens.
 // Add ?local to a localhost URL to play with browser storage and no sign-in.
-import { isConfigured } from "./firebase-config.js";
+import { isConfigured, SCHOOL_DOMAIN } from "./firebase-config.js";
 import { createGame, STEPS, EDITABLE, HUB_SCREENS } from "./game.js";
 import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge } from "./telemetry.js";
 import { mountBugButton } from "./ui/bug-button.js";
@@ -9,7 +9,8 @@ import { PLACES } from "./places.js";
 import { hasFeature, prologueStep } from "./progression.js";
 import { creatureSvg } from "./ui/creature-art.js";
 import { h, clear, ageLabel } from "./ui/dom.js";
-import { settingsControls } from "./ui/settings-controls.js";
+import { firstSettings, openSettings } from "./ui/settings-dialog.js";
+import * as settingsScreen from "./ui/screens/settings.js";
 import * as profile from "./ui/screens/profile.js";
 import * as creature from "./ui/screens/creature.js";
 import * as join from "./ui/screens/join.js";
@@ -33,7 +34,7 @@ import * as records from "./ui/screens/records.js";
 import * as alley from "./ui/screens/alley.js";
 import { watchSentences } from "./ui/sentences.js";
 
-const SCREENS = { profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley };
+const SCREENS = { profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley, settings: settingsScreen };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 
@@ -44,6 +45,8 @@ let game = null;
 let cleanup = null;
 // Set once the student is in the game this tab, so a refresh skips the title.
 const ENTERED = "credit-creatures:entered";
+// Google's own "G", as on a standard Google sign-in button.
+const GOOGLE_G = '<svg viewBox="0 0 48 48" width="20" height="20"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
 
 captureErrors();
 // Each sentence on its own line, everywhere in the game (js/ui/sentences.js).
@@ -104,6 +107,8 @@ async function enterGame(user) {
   bug.show();
   window.addEventListener("hashchange", route);
   route();
+  // Look, reading and sound pop up once after signing in on this browser.
+  firstSettings({ game, track });
 }
 
 async function loadBackends() {
@@ -140,7 +145,8 @@ function signedOut(error = "", user = null) {
   topbar.hidden = true;
   bug.hide();
   const err = h("p.error", { role: "alert" }, error);
-  const btn = h("button.big", { type: "button", disabled: !auth }, "Sign in with your school Google account");
+  // Looks like a standard Google sign-in button (teacher request 2026-10-21).
+  const btn = h("button.google-btn", { type: "button", disabled: !auth }, h("span.google-g", { "aria-hidden": "true", html: GOOGLE_G }), h("span", `Sign in with your ${SCHOOL_DOMAIN} account`));
   btn.addEventListener("click", async () => {
     err.textContent = "";
     btn.disabled = true;
@@ -204,12 +210,13 @@ function signedOut(error = "", user = null) {
         // outline never draws over the letters.
         h("h1.signin-title", h("span.t-back", { "aria-hidden": "true" }, "Credit Creatures"), h("span.t-front", "Credit Creatures")),
         h("p.signin-tagline", "Raise a creature. Build its credit. Watch every choice add up."),
-        begin,
         h(
           "div.signin-parade",
           { role: "img", "aria-label": "Eight creatures: a lantern fox, a cloud bunny, a shell turtle, a star jellycorn, an ember phoenix, a crystal owl, a moss dragon and a puddle golem" },
           parade.map((c, i) => h("span.signin-critter", { style: { "--i": i }, html: creatureSvg(c, { size: 160, label: "" }) }))
         ),
+        // Begin sits below the creatures, at the bottom center (teacher request 2026-10-21).
+        begin,
         h(
           "div.signin-card",
           { hidden: !skipTitle && !user },
@@ -222,8 +229,7 @@ function signedOut(error = "", user = null) {
               )
             : btn,
           LOCAL ? h("p.note", "Local test mode. Your game saves in this browser only.") : null,
-          err,
-          settingsControls()
+          err
         )
       )
     )
@@ -286,6 +292,7 @@ function show(name) {
     },
     refreshWho: updateWho,
     saveAndExit,
+    saveAndSignOut,
   };
   cleanup = SCREENS[name].render(root, ctx) || null;
   window.scrollTo(0, 0);
@@ -331,6 +338,20 @@ async function saveAndExit() {
   location.reload();
 }
 
+// Settings page: leave and sign out, for a shared laptop.
+async function saveAndSignOut() {
+  if (game) {
+    track("saveAndSignOut", { step: game.step });
+    await game.persist("signOut");
+  }
+  try {
+    sessionStorage.removeItem(ENTERED);
+  } catch {}
+  await auth.signOut();
+  location.hash = "";
+  location.reload();
+}
+
 function showNudge() {
   const bar = document.getElementById("nudge");
   bar.replaceChildren(
@@ -342,6 +363,14 @@ function showNudge() {
 }
 
 document.getElementById("sign-out").addEventListener("click", saveAndExit);
+// The gear opens Account settings (teacher request 2026-10-21). Before the
+// kingdom exists, the same settings open in a pop-up.
+document.getElementById("settings-btn").addEventListener("click", () => {
+  if (!game) return;
+  track("settingsOpen", { from: location.hash.replace(/^#\/?/, "") || game.step });
+  if (game.step === "hub") location.hash = "#/settings";
+  else openSettings({ game, track });
+});
 // A soft click for buttons (only when sound is on). Buttons with their own
 // sound (card flips, rewards) set data-sound="none".
 document.addEventListener("click", (e) => {

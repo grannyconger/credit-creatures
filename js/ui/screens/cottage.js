@@ -7,7 +7,6 @@ import { fullName } from "../../data/creatures.js";
 import { DREAMS, dreamProgress, finishStage, stageCostText } from "../../data/dreams.js";
 import { rankFor } from "../../progress.js";
 import { placeHeader } from "../place-header.js";
-import { settingsControls } from "../settings-controls.js";
 import { celebrate } from "../celebrate.js";
 import { firstVisitLesson } from "../guide.js";
 import { hasFeature } from "../../progression.js";
@@ -35,7 +34,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
     const prog = dream ? dreamProgress(life, c.dream, play) : null;
     fill(
       panel,
-      placeHeader({ go, iconName: "cottage", title: `${c.name}'s Cottage`, subtitle: "Your creature, its dream, and your settings." }),
+      placeHeader({ go, iconName: "cottage", title: `${c.name}'s Cottage`, subtitle: "Your creature, its dream and its home." }),
       h(
         "div.cottage-grid",
         h(
@@ -156,19 +155,13 @@ export function render(root, { game, go, track, refreshWho, back }) {
     return box;
   }
 
+  // Settings moved to their own page (teacher request 2026-10-21).
   function settingsCard() {
     return h(
       "section.settings-card",
       h("h3", icon("gear", { size: 20 }), " Settings"),
-      h("p.note.tight", "Dark mode and a dyslexia-friendly font. These follow you to any computer."),
-      settingsControls({
-        current: { appearance: "system", reading: "standard", ...(play.settings || {}) },
-        onChange: async (s) => {
-          play.settings = s;
-          track("settingsChanged", s);
-          await game.persist("settings");
-        },
-      })
+      h("p.note.tight", "Look, reading and sound are on the Account settings page. Tap the gear at the top any time."),
+      h("div.row", h("button.secondary.small", { type: "button", onclick: () => go("settings") }, "Open settings"))
     );
   }
 

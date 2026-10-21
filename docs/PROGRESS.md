@@ -6,6 +6,7 @@ Last updated: 2026-10-21 (Phase 12: Lantern Alley)
 
 ## Status
 
+- **Title and settings (teacher request 2026-10-21):** Begin sits at the bottom center below the creatures, and the sign-in card appears there too. The sign-in button is a standard Google-style button with the Google "G": "Sign in with your greermiddlecollege.org account". Look, reading and sound left the sign-in card. They pop up once after signing in on each browser (`js/ui/settings-dialog.js`) and live on a new Account settings page (`#/settings`, `js/ui/screens/settings.js`) opened by the cog in the top bar. That page also has Save and exit, Save and sign out, and a link to the Cottage. The Cottage points to it instead of repeating the switches. Telemetry: `settingsOpen`, `settingsFirst`, `settingsPage`, `settingsChanged`.
 - **Phase 14, the teacher sees the new game (2026-10-21): awaiting the teacher's review.**
   - Roster and CSV: Lantern Alley (called right of checked), Sage's lessons finished, dream stage, and a new 🛻 title loan flag.
   - Under the roster: "Lantern Alley: which offers fool the class", one row per offer with % called right, % who read the fine print first, and % right when they did. Traps first, hardest at the top.
