@@ -145,18 +145,29 @@ const SHAPES = {
   }),
 };
 
-// style: round | happy | sleepy | sparkle. scale makes teen eyes a bit bigger.
+// A 5-point star centered on (cx, cy), for starry eyes.
+function star(cx, cy, r, fill) {
+  const pts = Array.from({ length: 10 }, (_, i) => {
+    const d = i % 2 ? r * 0.45 : r;
+    const a = (Math.PI / 5) * i - Math.PI / 2;
+    return `${(cx + d * Math.cos(a)).toFixed(1)},${(cy + d * Math.sin(a)).toFixed(1)}`;
+  });
+  return `<polygon points="${pts.join(" ")}" fill="${fill}"/>`;
+}
+
+// style: round | happy | sleepy | sparkle | wink | starry. scale makes teen eyes a bit bigger.
 function eyes(e, p, style = "round", scale = 1) {
   const r = e.r * scale;
-  const one = (x) => {
-    if (style === "happy") return `<path d="M${x - r} ${e.y + 1} Q${x} ${e.y - r * 1.3} ${x + r} ${e.y + 1}" stroke="${p.eye}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+  const one = (x, side) => {
+    if (style === "happy" || (style === "wink" && side === "right")) return `<path d="M${x - r} ${e.y + 1} Q${x} ${e.y - r * 1.3} ${x + r} ${e.y + 1}" stroke="${p.eye}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
     if (style === "sleepy")
       return `<path d="M${x - r} ${e.y} Q${x} ${e.y + r} ${x + r} ${e.y} Z" fill="${p.eye}"/><path d="M${x - r - 1} ${e.y} L${x + r + 1} ${e.y}" stroke="${p.eye}" stroke-width="2" stroke-linecap="round"/>`;
     const base = `<circle cx="${x}" cy="${e.y}" r="${r}" fill="${p.eye}"/><circle cx="${x + r * 0.35}" cy="${e.y - r * 0.35}" r="${r * 0.38}" fill="#ffffff"/>`;
     if (style === "sparkle") return base + `<circle cx="${x - r * 0.35}" cy="${e.y + r * 0.3}" r="${r * 0.18}" fill="#ffffff"/>`;
+    if (style === "starry") return `<circle cx="${x}" cy="${e.y}" r="${r * 1.1}" fill="${p.eye}"/>` + star(x, e.y, r * 0.75, "#ffe27a");
     return base;
   };
-  return one(e.lx) + one(e.rx);
+  return one(e.lx, "left") + one(e.rx, "right");
 }
 
 function markings(e, kind) {
@@ -420,6 +431,9 @@ const FACE = {
   },
 };
 
+// Idle motion for each body, played only where a container has .cc-anim (css/app.css).
+const MOTION = { cloudBunny: "hop", crystalOwl: "float", mossDragon: "float" };
+
 // ageMonths (optional) adds small signs of growing up.
 export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {}) {
   const species = SHAPES[creature.species] ? creature.species : "mossDragon";
@@ -432,6 +446,7 @@ export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {})
   const name = label ?? (creature.name ? `${creature.name}, a ${SPECIES[species].label.toLowerCase()}` : SPECIES[species].label);
   return `<svg viewBox="0 0 200 200" width="${size}" height="${size}" role="img" aria-label="${escapeAttr(name)}">
     ${EFFECT_BEHIND[acc.effect] ? EFFECT_BEHIND[acc.effect]() : ""}
+    <g class="cc-body cc-${MOTION[species] || "breathe"}">
     ${BEHIND[acc.neck] ? BEHIND[acc.neck](s.neck) : ""}
     ${s.body}
     ${pattern(s, creature.pattern, p, clipId)}
@@ -444,6 +459,7 @@ export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {})
     ${(FACE[acc.face] || FACE.none)(s.eyes)}
     ${(HEAD[acc.head] || HEAD.none)(s.head)}
     ${(HELD[acc.held] || HELD.none)(HELD_AT)}
+    </g>
     ${EFFECT_FRONT[acc.effect] ? EFFECT_FRONT[acc.effect]() : ""}
   </svg>`;
 }

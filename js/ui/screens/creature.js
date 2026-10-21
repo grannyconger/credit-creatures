@@ -72,7 +72,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
         h(
           "button.swatch",
           { type: "button", class: ok ? "" : "locked", disabled: !ok, title: ok ? p.label : `${p.label}: ${lockText(o)}`, "aria-label": ok ? p.label : `${p.label}, locked. ${lockText(o)}`, "aria-pressed": String(draft.palette === o.id), onclick: () => set("palette", o.id) },
-          h("span", { style: { background: `linear-gradient(135deg, ${p.body} 55%, ${p.accent} 55%)` } }, ok ? null : "🔒")
+          h("span", { style: { background: `linear-gradient(135deg, ${p.body} 0 50%, ${p.belly} 50% 70%, ${p.accent} 70%)` } }, ok ? null : "🔒")
         )
       );
     }

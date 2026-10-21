@@ -961,3 +961,29 @@ ul.plain li { padding: 4px 0; }
 .t-badge { display: inline-block; background: var(--gold-soft); border: 1px solid var(--gold); border-radius: 999px; padding: 2px 10px; margin: 3px; font-size: 0.9rem; }
 .t-section { border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 14px; margin: 12px 0; }
 button.danger { color: var(--danger); border-color: var(--danger); }
+
+/* Creature idle motion (teacher request 2026-10-20): slight, and only on the
+   big views. The global reduced-motion rule in tokens.css stops it. */
+:is(.creature-preview, .cottage-stage, .guardian-art, .intro-art, .kingdom-stage, .creature-stage) .cc-body {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+:is(.creature-preview, .cottage-stage, .guardian-art, .intro-art, .kingdom-stage, .creature-stage) .cc-breathe { animation: cc-breathe 3.2s ease-in-out infinite; }
+:is(.creature-preview, .cottage-stage, .guardian-art, .intro-art, .kingdom-stage, .creature-stage) .cc-float { animation: cc-float 3.6s ease-in-out infinite; }
+:is(.creature-preview, .cottage-stage, .guardian-art, .intro-art, .kingdom-stage, .creature-stage) .cc-hop { animation: cc-hop 2.4s ease-in-out infinite; }
+.intro-row > span:nth-child(2) .cc-body { animation-delay: -0.9s; }
+.intro-row > span:nth-child(3) .cc-body { animation-delay: -1.8s; }
+@keyframes cc-breathe {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.02, 0.975); }
+}
+@keyframes cc-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3%); }
+}
+@keyframes cc-hop {
+  0%, 60%, 100% { transform: translateY(0) scale(1, 1); }
+  68% { transform: translateY(0) scale(1.04, 0.95); }
+  80% { transform: translateY(-5%) scale(0.98, 1.03); }
+  92% { transform: translateY(0) scale(1.03, 0.97); }
+}

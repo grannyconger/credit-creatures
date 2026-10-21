@@ -27,11 +27,24 @@ export const PALETTES = {
   forest: { label: "Forest", body: "#4f7f4a", belly: "#cfe3bf", accent: "#2f5530", eye: "#1a2a16" },
   goldLeaf: { label: "Gold leaf", body: "#e2b23c", belly: "#fff4d0", accent: "#9a6f12", eye: "#3a2a10" },
   galaxy: { label: "Galaxy", body: "#3b2f7a", belly: "#b8a9f0", accent: "#e05ab0", eye: "#fff4c2" },
+  // Three-color combos from Sanzo Wada's color dictionary (wscolors.com/palettes).
+  // The number is the combination's number there.
+  coralReef: { label: "Coral reef", body: "#f48067", belly: "#fbe6a0", accent: "#00908a", eye: "#112f2c" }, // 443
+  cottonCandy: { label: "Cotton candy", body: "#f9c1ce", belly: "#fdd4bd", accent: "#78cdd0", eye: "#3a2a33" }, // 13
+  apricot: { label: "Apricot", body: "#f3a257", belly: "#f8b6ba", accent: "#c27544", eye: "#3a2210" }, // 113
+  sunsetLagoon: { label: "Sunset lagoon", body: "#78cdd0", belly: "#fdbf68", accent: "#f48067", eye: "#123a3c" }, // 474
+  seafoam: { label: "Seafoam", body: "#62c6bf", belly: "#bce4e5", accent: "#6450a1", eye: "#1d2b44" }, // 175
+  meadowMist: { label: "Meadow mist", body: "#437742", belly: "#f5ecc2", accent: "#97acc8", eye: "#f5ecc2" }, // 200
+  roseGarden: { label: "Rose garden", body: "#ca92a8", belly: "#f5ecc2", accent: "#837e31", eye: "#3a1a26" }, // 134
+  berryTart: { label: "Berry tart", body: "#a72144", belly: "#ffefae", accent: "#78cdd0", eye: "#ffefae" }, // 164
+  fireAndTide: { label: "Fire and tide", body: "#dd4027", belly: "#b7c2a9", accent: "#0093a5", eye: "#2b1a0e" }, // 144
+  twilightBanner: { label: "Twilight banner", body: "#5a82b3", belly: "#d6b43e", accent: "#7d133a", eye: "#1d1a2e" }, // 180
+  royalVelvet: { label: "Royal velvet", body: "#4f4086", belly: "#f99d1b", accent: "#82241f", eye: "#fff4c2" }, // 179
 };
 
 // Face markings and eye styles (Phase 8 customizer).
 export const MARKINGS = { none: "None", blush: "Rosy cheeks", freckles: "Freckles", star: "Forehead star", heart: "Heart cheek" };
-export const EYE_STYLES = { round: "Round", happy: "Happy", sleepy: "Sleepy", sparkle: "Sparkly" };
+export const EYE_STYLES = { round: "Round", happy: "Happy", sleepy: "Sleepy", sparkle: "Sparkly", wink: "Wink", starry: "Starry" };
 
 export const ACCESSORIES = {
   head: {

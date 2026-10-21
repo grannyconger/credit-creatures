@@ -125,10 +125,11 @@ export function createGame(user, db) {
           game.play.rankSeen = after.level;
           pops.push({ kind: "rank", id: after.title, icon: after.icon, kicker: "New rank!", title: `You're a ${after.title} now`, text: after.next ? `Next up: ${after.next.icon} ${after.next.title} at ${after.next.xp} XP.` : "That's the top rank in the kingdom." });
         }
-        for (const o of newlyUnlocked(game.play)) {
-          pops.push({ kind: "look", id: o.key, icon: "🎨", kicker: "New look unlocked!", title: o.name, text: `${o.slot}. Try it on in Edit my creature.` });
-          track("lookUnlocked", { look: o.key });
-        }
+        const looks = newlyUnlocked(game.play);
+        for (const o of looks) track("lookUnlocked", { look: o.key });
+        // Several at once (new looks added to the game) share one pop-up.
+        if (looks.length > 2) pops.push({ kind: "look", id: looks.map((o) => o.key).join(","), icon: "🎨", kicker: `${looks.length} new looks unlocked!`, title: looks.map((o) => o.name).join(", "), text: "Try them on in Your Cottage." });
+        else for (const o of looks) pops.push({ kind: "look", id: o.key, icon: "🎨", kicker: "New look unlocked!", title: o.name, text: `${o.slot}. Try it on in Edit my creature.` });
         if (pops.length) celebrate(pops);
       }
       let ok = true;

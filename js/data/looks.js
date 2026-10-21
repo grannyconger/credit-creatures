@@ -30,7 +30,21 @@ const shop = (kind) => SHOP_ITEMS.filter((i) => i.kind === kind).map((i) => ({ i
 
 export const LOOK_OPTIONS = {
   species: list(SPECIES, { crystalOwl: xp(100), mossDragon: xp(300), puddleGolem: xp(600) }),
-  palette: list(PALETTES, { goldLeaf: xp(1000), galaxy: xp(2400) }),
+  palette: list(PALETTES, {
+    goldLeaf: xp(1000),
+    galaxy: xp(2400),
+    cottonCandy: xp(150),
+    apricot: xp(250),
+    coralReef: xp(400),
+    seafoam: xp(500),
+    sunsetLagoon: xp(750),
+    roseGarden: ach("fullyDressed"),
+    meadowMist: ach("rainyDay"),
+    fireAndTide: ach("workhorse"),
+    berryTart: xp(1300),
+    twilightBanner: xp(1800),
+    royalVelvet: ach("dreamComeTrue"),
+  }),
   pattern: [
     { id: "none", name: "None" },
     { id: "spots", name: "Spots" },
@@ -39,7 +53,7 @@ export const LOOK_OPTIONS = {
     { id: "hearts", name: "Hearts", unlock: xp(300) },
     { id: "sparkles", name: "Sparkles", unlock: xp(600) },
   ],
-  eyes: list(EYE_STYLES),
+  eyes: list(EYE_STYLES, { starry: xp(450) }),
   eyeColor: [
     { id: "default", name: "Natural" },
     { id: "blue", name: "Blue" },
