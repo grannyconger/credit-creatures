@@ -2,6 +2,7 @@
 // picker when a choice costs money, then the outcome with a 👍/😐/👎 reaction.
 import { h, add, fill } from "./dom.js";
 import { payWith } from "./pay-with.js";
+import { sound } from "./sound.js";
 import { FACTOR_LABELS } from "../engine/index.js";
 import { GROUP_LABELS } from "../data/scenarios.js";
 
@@ -43,7 +44,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         choices.map((c) =>
           h(
             "button.dc-choice",
-            { type: "button", disabled: Boolean(c.disabled), onclick: () => pick(c) },
+            { type: "button", "data-sound": "none", disabled: Boolean(c.disabled), onclick: () => pick(c) },
             h("strong", c.label),
             c.detail ? h("small", c.detail) : null,
             c.cost ? h("small", "Choose how to pay next") : null,
@@ -69,7 +70,21 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
     showOutcome(c, r);
   }
 
+  // The card flips over to its outcome (visual plan item 7).
   function showOutcome(c, r) {
+    const still = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (still || !card.isConnected) return fillOutcome(c, r);
+    sound("flip");
+    card.classList.add("flip-out");
+    setTimeout(() => {
+      fillOutcome(c, r);
+      card.classList.remove("flip-out");
+      card.classList.add("flip-in");
+      setTimeout(() => card.classList.remove("flip-in"), 260);
+    }, 230);
+  }
+
+  function fillOutcome(c, r) {
     let reaction = "";
     let confusing = false;
     const factor = c.factor && !r.denied ? h("p.factor-chip", { class: c.factor.dir }, `${FACTOR_ICONS[c.factor.key]} ${FACTOR_LABELS[c.factor.key]} ${c.factor.dir === "up" ? "▲ goes up" : "▼ goes down"}`) : null;

@@ -104,9 +104,10 @@ export function render(root, { game, go, track, refreshWho }) {
       return { key: item, label: kind === "life" ? "News" : `Decision ${n + (m.life ? 0 : 1)}`, title: def.title, done: state.done, skipped: state.skipped };
     });
     steps.push({ key: "end", label: "End Month", title: "End the month", done: false });
+    // The quest board (visual plan item 7): one pinned note per step.
     return h(
-      "ol.agenda",
-      { "aria-label": "This month" },
+      "ol.agenda.quest-board",
+      { "aria-label": "This month's quests" },
       steps.map((st) =>
         h(
           "li",
@@ -125,10 +126,11 @@ export function render(root, { game, go, track, refreshWho }) {
                 paint();
               },
             },
-            st.done ? icon("check", { size: 14 }) : st.key === "end" ? icon("moon", { size: 14 }) : null,
-            ` ${st.label}`,
-            st.done ? h("span.sr-only", " (done)") : null,
-            st.skipped ? h("small", " (skipped)") : null
+            h("span.quest-pin", { "aria-hidden": "true" }),
+            h("span.quest-label", st.key === "end" ? icon("moon", { size: 14 }) : null, ` ${st.label}`),
+            h("span.quest-title", st.key === "end" ? "Close the month" : st.title),
+            st.done ? h("span.quest-stamp", { "aria-hidden": "true" }, st.skipped ? "Skipped" : "Done") : null,
+            st.done ? h("span.sr-only", st.skipped ? " (skipped)" : " (done)") : null
           )
         )
       )
