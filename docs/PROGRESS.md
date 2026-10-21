@@ -2,7 +2,11 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-21 (Phase 12: Lantern Alley)
+Last updated: 2026-10-21 (Phase 15: motion)
+
+## Next step
+
+Phase 16 (particles, sparkles, animated icons), then Phase 17 (detailed creatures, eyes that follow the mouse). The full plan and the teacher's decisions are in `docs/MOTION.md`. "Keep going" approves Phase 15 and starts Phase 16.
 
 ## Status
 
