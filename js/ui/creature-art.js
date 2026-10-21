@@ -10,8 +10,8 @@ const SHAPES = {
   mossDragon: (p) => ({
     body: `
       <path d="M138 152 Q188 154 180 112 Q172 134 142 134 Z" fill="${p.body}"/>
-      <path d="M72 108 Q34 66 54 124 Z" fill="${p.accent}"/>
-      <path d="M128 108 Q166 66 146 124 Z" fill="${p.accent}"/>
+      <path class="cc-wing cc-wing-l" d="M72 108 Q34 66 54 124 Z" fill="${p.accent}"/>
+      <path class="cc-wing cc-wing-r" d="M128 108 Q166 66 146 124 Z" fill="${p.accent}"/>
       <ellipse cx="78" cy="181" rx="13" ry="7" fill="${p.accent}"/>
       <ellipse cx="122" cy="181" rx="13" ry="7" fill="${p.accent}"/>
       <ellipse cx="100" cy="142" rx="45" ry="41" fill="${p.body}"/>
@@ -37,7 +37,7 @@ const SHAPES = {
   lanternFox: (p) => ({
     body: `
       <path d="M134 152 Q196 142 180 86 Q166 122 134 130 Z" fill="${p.body}"/>
-      <circle cx="179" cy="82" r="20" fill="#ffd96a" opacity="0.35"/>
+      <circle class="cc-lantern" cx="179" cy="82" r="20" fill="#ffd96a" opacity="0.35"/>
       <circle cx="179" cy="82" r="11" fill="#ffd96a"/>
       <ellipse cx="80" cy="181" rx="11" ry="7" fill="${p.accent}"/>
       <ellipse cx="120" cy="181" rx="11" ry="7" fill="${p.accent}"/>
@@ -71,7 +71,7 @@ const SHAPES = {
       <circle cx="84" cy="92" r="20" fill="${p.belly}"/>
       <circle cx="116" cy="92" r="20" fill="${p.belly}"/>
       <ellipse cx="100" cy="146" rx="30" ry="32" fill="${p.belly}"/>
-      <path d="M100 118 L110 134 L100 152 L90 134 Z" fill="#ffffff" opacity="0.7" stroke="${p.accent}" stroke-width="1.5"/>
+      <path class="cc-facet" d="M100 118 L110 134 L100 152 L90 134 Z" fill="#ffffff" opacity="0.7" stroke="${p.accent}" stroke-width="1.5"/>
       <path d="M80 140 L86 132 L92 142 L86 152 Z" fill="#ffffff" opacity="0.55" stroke="${p.accent}" stroke-width="1.2"/>
       <path d="M108 142 L114 134 L120 144 L114 154 Z" fill="#ffffff" opacity="0.55" stroke="${p.accent}" stroke-width="1.2"/>
       <path d="M94 104 L106 104 L100 115 Z" fill="#f2b84b"/>`,
@@ -85,7 +85,7 @@ const SHAPES = {
 
   puddleGolem: (p) => ({
     body: `
-      <ellipse cx="100" cy="178" rx="64" ry="10" fill="${p.accent}" opacity="0.45"/>
+      <ellipse class="cc-puddle" cx="100" cy="178" rx="64" ry="10" fill="${p.accent}" opacity="0.45"/>
       <path d="M50 176 Q38 122 60 96 Q80 60 100 60 Q120 60 140 96 Q162 122 150 176 Z" fill="${p.body}"/>
       <path d="M52 150 Q44 160 50 168 Q58 162 52 150 Z" fill="${p.body}"/>
       <path d="M148 140 Q158 152 151 160 Q143 152 148 140 Z" fill="${p.body}"/>
@@ -135,9 +135,9 @@ const SHAPES = {
       <path d="M44 118 Q56 126 68 120 Q84 130 100 122 Q116 130 132 120 Q144 126 156 118" stroke="${p.accent}" stroke-width="4" fill="none" stroke-linecap="round"/>
       <ellipse cx="100" cy="96" rx="38" ry="24" fill="${p.belly}" opacity="0.6"/>
       <path d="M62 74 Q72 58 92 56" stroke="#ffffff" stroke-width="5" fill="none" opacity="0.4" stroke-linecap="round"/>
-      <circle cx="58" cy="98" r="2.5" fill="#ffffff" opacity="0.8"/>
-      <circle cx="142" cy="92" r="2" fill="#ffffff" opacity="0.8"/>
-      <circle cx="128" cy="68" r="1.8" fill="#ffffff" opacity="0.8"/>`,
+      <circle class="cc-twinkle" cx="58" cy="98" r="2.5" fill="#ffffff" opacity="0.8"/>
+      <circle class="cc-twinkle" cx="142" cy="92" r="2" fill="#ffffff" opacity="0.8"/>
+      <circle class="cc-twinkle" cx="128" cy="68" r="1.8" fill="#ffffff" opacity="0.8"/>`,
     eyes: { lx: 86, rx: 114, y: 94, r: 6.5 },
     head: { x: 100, y: 52 },
     neck: { x: 100, y: 122, w: 92 },
@@ -170,7 +170,8 @@ const SHAPES = {
       body: `
       ${tail}${eyesSpots}
       ${wing(74, -1)}${wing(126, 1)}
-      ${crest}
+      <g class="cc-crest">${crest}</g>
+      <circle class="cc-spark" cx="82" cy="40" r="2.2" fill="#f6c445" opacity="0"/><circle class="cc-spark" cx="118" cy="34" r="1.8" fill="#f6c445" opacity="0"/><circle class="cc-spark" cx="100" cy="26" r="1.5" fill="#ffe08a" opacity="0"/>
       <ellipse cx="100" cy="128" rx="34" ry="42" fill="${p.body}"/>
       <circle cx="100" cy="82" r="27" fill="${p.body}"/>
       <ellipse cx="100" cy="140" rx="21" ry="27" fill="${p.belly}"/>
@@ -535,7 +536,7 @@ export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {})
   // Same look, same id, so repeated drawings stay identical.
   const clipId = `pat-${species}-${creature.pattern || "none"}`;
   const name = label ?? (creature.name ? `${creature.name}, a ${SPECIES[species].label.toLowerCase()}` : SPECIES[species].label);
-  return `<svg viewBox="0 0 200 200" width="${size}" height="${size}" role="img" aria-label="${escapeAttr(name)}">
+  return `<svg class="cc cc-sp-${species}" viewBox="0 0 200 200" width="${size}" height="${size}" role="img" aria-label="${escapeAttr(name)}">
     ${EFFECT_BEHIND[acc.effect] ? EFFECT_BEHIND[acc.effect]() : ""}
     <g class="cc-body cc-${MOTION[species] || "breathe"}">
     ${BEHIND[acc.neck] ? BEHIND[acc.neck](s.neck) : ""}
@@ -543,7 +544,7 @@ export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {})
     ${pattern(s, creature.pattern, p, clipId)}
     ${FEET[acc.feet] ? s.feet.map((f) => FEET[acc.feet](f)).join("") : ""}
     ${(NECK[acc.neck] || NECK.none)(s.neck)}
-    ${eyes(s.eyes, eyeP, creature.eyes, ageMonths && ageMonths < 216 ? 1.15 : 1)}
+    <g class="cc-eyes">${eyes(s.eyes, eyeP, creature.eyes, ageMonths && ageMonths < 216 ? 1.15 : 1)}</g>
     ${s.over ? s.over(s.eyes) : ""}
     ${markings(s.eyes, creature.markings)}
     ${ageDetails(s.eyes, ageMonths, p)}

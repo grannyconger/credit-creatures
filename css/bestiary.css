@@ -1,0 +1,1085 @@
+/* The Mossy Bestiary (2026-10-21 redesign). Every rule here styles with the
+   --b-* tokens in css/tokens.css, never raw colors. For now only the adoption
+   screen (js/ui/screens/creature.js) is a bestiary page. */
+
+/* The page lies on the sanctuary floor, edge to edge under the top bar. */
+main.app:has(> .bestiary) {
+  max-width: none;
+  padding: 0;
+}
+
+.bestiary input.bst-input,
+.bestiary input.bst-input:focus {
+  box-shadow: none;
+}
+.bestiary {
+  position: relative;
+  /* clip, not hidden: hidden would make this a scroll box and stop the
+     sticky board and the sticky portrait from sticking. */
+  overflow: clip;
+  min-height: calc(100vh - 56px);
+  padding: var(--b-s6) clamp(16px, 4vw, 64px) 96px;
+  color: var(--b-ink);
+  font-family: var(--b-body);
+  font-size: var(--b-text);
+  line-height: var(--b-leading);
+  background:
+    var(--b-grain),
+    radial-gradient(120% 90% at 50% 0%, transparent 40%, var(--b-ground-deep) 100%),
+    var(--b-ground);
+  caret-color: var(--b-plum);
+}
+.bestiary ::selection {
+  background: var(--b-paper-edge);
+  color: var(--b-ink);
+}
+/* Focus is a dashed pencil trace, so it never looks like "chosen". */
+.bestiary :focus-visible {
+  outline: 2.5px dashed var(--b-plum);
+  outline-offset: 5px;
+}
+.bestiary h1,
+.bestiary h2,
+.bestiary h3 {
+  font-family: var(--b-display);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--b-ink);
+}
+
+/* ---- Ferns and moss around the book -------------------------------------- */
+.bst-decor > span {
+  position: absolute;
+  pointer-events: none;
+  line-height: 0;
+}
+.bst-fern-left {
+  left: max(-20px, calc(50% - 760px));
+  bottom: 40px;
+  color: var(--b-fern);
+  transform: rotate(-14deg);
+  transform-origin: 50% 100%;
+}
+.bst-fern-right {
+  right: max(-10px, calc(50% - 740px));
+  top: 30px;
+  color: var(--b-moss-1);
+  transform: rotate(160deg);
+  transform-origin: 50% 100%;
+}
+/* Moss grows over the page corners: top left of the left page, bottom
+   right of the right page. */
+.bst-moss-corner {
+  position: absolute;
+  z-index: 3;
+  line-height: 0;
+  pointer-events: none;
+}
+.bst-left > .bst-moss-corner { top: -30px; left: 22px; }
+.bst-right > .bst-moss-corner { bottom: -22px; right: 18px; transform: scaleX(-1); }
+.bst-moss { display: block; }
+
+/* ---- The open book ------------------------------------------------------- */
+.bst-book {
+  position: relative;
+  z-index: 2;
+  max-width: 1380px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+.bst-page {
+  position: relative;
+  background:
+    radial-gradient(38px 30px at 82% 14%, var(--b-foxing), transparent 70%),
+    radial-gradient(22px 18px at 12% 88%, var(--b-foxing), transparent 70%),
+    radial-gradient(14px 12px at 64% 72%, var(--b-foxing), transparent 70%),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+}
+.bst-left {
+  padding: var(--b-s6) var(--b-s5) var(--b-s5) var(--b-s6);
+  transform: rotate(-0.5deg);
+  transform-origin: 100% 50%;
+}
+.bst-right {
+  margin-left: -4px;
+  padding: var(--b-s5) var(--b-s6) var(--b-s5) var(--b-s5);
+  transform: rotate(0.6deg) translateY(10px);
+  transform-origin: 0% 50%;
+  display: grid;
+  grid-template-columns: minmax(220px, 290px) minmax(0, 1fr);
+  grid-template-areas:
+    "head head"
+    "plate label"
+    "error error"
+    "actions actions"
+    "index index";
+  column-gap: var(--b-s4);
+  align-content: start;
+}
+/* The shade where the pages curve into the binding. */
+.bst-left::after,
+.bst-right::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+/* The fold: both sheets darken as they curve down into the binding. */
+.bst-left::after { background: linear-gradient(270deg, color-mix(in srgb, var(--b-shadow-ink) 34%, transparent), color-mix(in srgb, var(--b-shadow-ink) 8%, transparent) 2.5%, transparent 9%); }
+.bst-right::after { background: linear-gradient(90deg, color-mix(in srgb, var(--b-shadow-ink) 38%, transparent), color-mix(in srgb, var(--b-shadow-ink) 10%, transparent) 3%, transparent 10%); }
+
+/* ---- Left page: heading and the specimen board -------------------------- */
+.bst-head h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 3.6vw, 3.8rem);
+  line-height: 0.98;
+  max-width: 15ch;
+  text-wrap: balance;
+}
+.bst-lede {
+  margin: var(--b-s3) 0 0;
+  max-width: 44ch;
+  text-wrap: pretty;
+}
+.bst-margin {
+  font-family: var(--b-hand);
+  color: var(--b-plum);
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+/* A pressed fern taped into the empty corner of the page. */
+.bst-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--b-s4);
+  margin-top: var(--b-s6);
+}
+.bst-pressed {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--b-s3);
+  color: var(--b-moss-3);
+}
+.bst-pressed .bst-fern {
+  transform: rotate(-24deg);
+  filter: drop-shadow(1px 2px 1px color-mix(in srgb, var(--b-shadow-ink) 25%, transparent));
+}
+.bst-pressed .bst-tape {
+  position: absolute;
+  left: 22px;
+  top: 86px;
+  rotate: -18deg;
+}
+.bst-pressed-note {
+  flex: none;
+  width: 16ch;
+  margin: 0 0 var(--b-s4);
+  font-family: var(--b-hand);
+  font-size: 1.08rem;
+  line-height: 1.3;
+  color: var(--b-ink-soft);
+  transform: rotate(2deg);
+}
+.bst-margin-board {
+  margin: 0 0 0 auto;
+  max-width: 30ch;
+  transform: rotate(-1.4deg);
+  text-align: right;
+}
+
+.bst-board {
+  list-style: none;
+  margin: var(--b-s5) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 34px 20px;
+}
+/* Pinned by hand: no two at the same angle or height. */
+.bst-board li:nth-child(1) { --rot: -4.5deg; --dy: 6px; }
+.bst-board li:nth-child(2) { --rot: 3deg; --dy: -12px; }
+.bst-board li:nth-child(3) { --rot: -1.5deg; --dy: 16px; }
+.bst-board li:nth-child(4) { --rot: 5deg; --dy: -2px; }
+.bst-board li:nth-child(5) { --rot: 2.5deg; --dy: -8px; }
+.bst-board li:nth-child(6) { --rot: -4deg; --dy: 12px; }
+.bst-board li:nth-child(7) { --rot: 4deg; --dy: -14px; }
+.bst-board li:nth-child(8) { --rot: -2.5deg; --dy: 4px; }
+.bst-board li {
+  animation: bst-drop var(--b-settle) var(--ease-bouncy) both;
+  animation-delay: calc(var(--i) * 70ms + 120ms);
+}
+
+.bst-specimen {
+  position: relative;
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: var(--b-s4) var(--b-s2) var(--b-s3);
+  font: inherit;
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 1px solid var(--b-paper-edge);
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-card);
+  transform: translateY(var(--dy)) rotate(var(--rot));
+  transition: transform var(--b-settle) var(--ease-bouncy), box-shadow var(--b-quick) ease-out;
+  cursor: var(--b-cursor-lens), pointer;
+}
+/* Tags on string get a luggage-tag top, taped ones a straight sheet. */
+.bst-specimen.attach-string { border-radius: 28px 28px var(--b-s1) var(--b-s1) / 22px 22px var(--b-s1) var(--b-s1); padding-top: var(--b-s5); }
+.bst-specimen.attach-tape { border-radius: 2px; }
+.bst-specimen:hover:not(:disabled) {
+  transform: translateY(calc(var(--dy) - 8px)) rotate(calc(var(--rot) * 0.3));
+  box-shadow: var(--b-shadow-lift);
+}
+.bst-specimen:active:not(:disabled) {
+  transform: translateY(calc(var(--dy) - 2px)) rotate(0deg) scale(0.97);
+  transition-duration: 0.12s;
+}
+.bst-specimen[aria-pressed="true"] {
+  transform: translateY(calc(var(--dy) - 10px)) rotate(0deg) scale(1.05);
+  box-shadow: var(--b-shadow-lift), 0 0 0 2px var(--b-paper), 0 0 0 4px var(--b-plum);
+  z-index: 2;
+}
+/* A word, not only a ring: the naturalist writes "chosen" under it. */
+.bst-specimen[aria-pressed="true"]::after {
+  content: "chosen";
+  position: absolute;
+  bottom: -30px;
+  right: 8px;
+  font-family: var(--b-hand);
+  font-size: 1.15rem;
+  color: var(--b-plum);
+  transform: rotate(-6deg);
+}
+.bst-attach {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  translate: -50% 0;
+  line-height: 0;
+  z-index: 2;
+}
+.attach-tape .bst-attach { top: -8px; rotate: -4deg; }
+.attach-string .bst-attach { top: -30px; left: 26%; }
+.bst-specimen-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 132px;
+  line-height: 0;
+}
+.bst-specimen-art svg {
+  width: min(132px, 100%);
+  height: auto;
+  overflow: visible;
+}
+.bst-specimen-label {
+  display: grid;
+  margin-top: var(--b-s2);
+  text-align: center;
+  line-height: 1.15;
+}
+.bst-specimen-label strong {
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: 1.32rem;
+  color: var(--sp);
+  text-decoration: underline wavy var(--sp) 1px;
+  text-underline-offset: 5px;
+}
+.bst-specimen-label em {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  color: var(--b-ink-soft);
+}
+
+/* Not yet observed: the creature sits under a sheet of tracing paper. */
+.bst-specimen.locked {
+  cursor: not-allowed;
+  box-shadow: var(--b-shadow-card);
+}
+.bst-specimen.locked .bst-specimen-art svg {
+  filter: grayscale(1) contrast(0.6) brightness(1.05);
+  opacity: 0.32;
+}
+/* The tracing paper covers only the drawing, and the note sits on it. */
+.bst-specimen.locked .bst-specimen-art::before {
+  content: "";
+  position: absolute;
+  inset: -4px 0 2px;
+  background: var(--b-grain), var(--b-tracing);
+  border-radius: 2px;
+  transform: rotate(-2deg);
+  transition: transform var(--b-quick) ease-out;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--b-shadow-ink) 20%, transparent);
+}
+.bst-specimen.locked:hover .bst-specimen-art::before {
+  transform: rotate(-4deg) translate(-3px, -4px);
+}
+.bst-specimen.locked .bst-specimen-label strong {
+  color: var(--b-ink-soft);
+  text-decoration-color: var(--b-rule);
+}
+.bst-locknote {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+  padding: 0 var(--b-s1);
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  color: var(--b-ink);
+}
+.bst-locknote b {
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: 1.12rem;
+}
+.bst-locknote .ico-wrap {
+  color: var(--b-plum);
+  line-height: 0;
+}
+
+/* ---- Right page: the entry ------------------------------------------------ */
+.bst-entry-head {
+  grid-area: head;
+  margin-bottom: var(--b-s4);
+}
+.bst-entry-name {
+  margin: 0;
+  font-size: clamp(2.3rem, 3vw, 3.2rem);
+  line-height: 1;
+  color: var(--sp) !important;
+}
+.bst-entry-latin {
+  margin: var(--b-s1) 0 0;
+  font-style: italic;
+  color: var(--b-ink-soft);
+}
+
+.bst-plate {
+  grid-area: plate;
+  margin: 0;
+  cursor: var(--b-cursor-lens), zoom-in;
+}
+.bst-plate-frame {
+  position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  padding: var(--b-s3);
+  background: var(--b-paper);
+  border: 4px double var(--b-rule);
+  border-radius: 2px;
+  box-shadow: inset 0 0 22px color-mix(in srgb, var(--b-shadow-ink) 12%, transparent);
+}
+.bst-plate-frame.creature-stage {
+  border-radius: 2px;
+}
+.bst-plate-art {
+  line-height: 0;
+}
+.bst-plate-art svg {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  overflow: visible;
+}
+.bst-notes {
+  margin-top: var(--b-s3);
+  font-family: var(--b-hand);
+  font-size: 1.22rem;
+  line-height: 1.35;
+  color: var(--b-plum);
+  transform: rotate(-1.2deg);
+}
+.bst-notes span {
+  display: block;
+}
+
+/* The specimen label, tied on with string, a little crooked. */
+.bst-label {
+  grid-area: label;
+  align-self: start;
+  position: relative;
+  margin-top: var(--b-s3);
+  padding: var(--b-s4) var(--b-s4) var(--b-s3);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 1px solid var(--b-paper-edge);
+  outline: 1px solid var(--b-rule);
+  outline-offset: -7px;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(1.3deg);
+}
+.bst-label::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: -34px;
+  width: 40px;
+  border-top: 1.6px solid var(--b-string);
+  rotate: 14deg;
+}
+.bst-label-title {
+  margin: 0 0 var(--b-s2);
+  font-family: var(--b-display);
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+.bst-field + .bst-field {
+  margin-top: var(--b-s3);
+}
+.bst-field label {
+  display: block;
+  font-size: var(--b-small);
+  font-weight: 700;
+  color: var(--b-ink-soft);
+}
+.bst-field-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--b-s3);
+  flex-wrap: wrap;
+}
+.bestiary input.bst-input {
+  flex: 1 1 10ch;
+  width: auto;
+  min-width: 0;
+  padding: 2px 0 4px;
+  font-family: var(--b-hand);
+  font-size: 1.55rem;
+  color: var(--b-ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px dashed var(--b-rule);
+  border-radius: 0;
+}
+.bestiary input.bst-input::placeholder {
+  color: var(--b-ink-soft);
+  opacity: 1;
+}
+.bestiary input.bst-input:focus {
+  outline: 2.5px dashed var(--b-plum);
+  outline-offset: 5px;
+  border-bottom-style: solid;
+}
+.bst-link {
+  padding: 4px 2px;
+  font: inherit;
+  font-size: var(--b-small);
+  font-weight: 700;
+  color: var(--b-plum);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.bst-link:hover {
+  text-decoration-style: wavy;
+}
+.bst-label-note {
+  margin: var(--b-s3) 0 0;
+  font-size: var(--b-small);
+  line-height: 1.35;
+  color: var(--b-ink-soft);
+}
+
+/* ---- The index: paper tabs and their panel ------------------------------- */
+.bst-index {
+  grid-area: index;
+  margin-top: var(--b-s5);
+}
+.bst-tabs {
+  display: flex;
+  gap: 4px;
+  padding-left: var(--b-s3);
+}
+.bst-tab {
+  position: relative;
+  top: 1px;
+  padding: var(--b-s2) var(--b-s4) 10px;
+  font-family: var(--b-display);
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--b-ink-soft);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 0;
+  border-radius: 10px 14px 0 0 / 12px 10px 0 0;
+  box-shadow: inset 0 -6px 8px -6px color-mix(in srgb, var(--b-shadow-ink) 25%, transparent);
+  transform: translateY(5px);
+  transition: transform var(--b-quick) var(--ease-snappy);
+  cursor: pointer;
+}
+.bst-tab:nth-child(2) { border-radius: 14px 9px 0 0 / 10px 13px 0 0; }
+.bst-tab:hover { transform: translateY(1px); color: var(--b-ink); }
+.bst-tab[aria-selected="true"] {
+  z-index: 1;
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper-insert);
+  box-shadow: none;
+  transform: none;
+  text-decoration: underline;
+  text-decoration-color: var(--b-plum);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+/* The panel is the same cut sheet as the chosen tab: an insert tucked into
+   the page, with an irregular edge and no outline. */
+.bst-panel {
+  position: relative;
+  padding: var(--b-s4) var(--b-s4) var(--b-s3);
+  background: var(--b-grain), var(--b-paper-insert);
+  border-radius: 2px 9px 5px 11px / 9px 4px 12px 5px;
+  box-shadow: var(--b-shadow-card);
+  min-height: 220px;
+}
+/* Options on the left, the live portrait pinned beside them. */
+.bst-index-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: var(--b-s4);
+  align-items: start;
+}
+.bst-index-body .bst-opts { grid-template-columns: 5.6rem minmax(0, 1fr); }
+.bst-mirror {
+  position: sticky;
+  top: calc(var(--b-topbar) + var(--b-s3));
+  margin: 0;
+  padding: var(--b-s3) var(--b-s3) var(--b-s2);
+  background: var(--b-grain), var(--b-paper);
+  border: 4px double var(--b-rule);
+  border-radius: 2px;
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(1.8deg);
+}
+.bst-mirror .bst-attach { top: -12px; }
+.bst-mirror-art {
+  display: grid;
+  place-items: center;
+  line-height: 0;
+  border-radius: 2px;
+}
+.bst-mirror-art svg {
+  width: 100%;
+  max-width: 170px;
+  height: auto;
+  overflow: visible;
+}
+.bst-mirror-note {
+  margin-top: var(--b-s2);
+  text-align: center;
+  font-family: var(--b-hand);
+  font-size: 1.08rem;
+  line-height: 1.25;
+  color: var(--b-plum);
+}
+.bst-panel-note {
+  margin: 0 0 var(--b-s3);
+  font-size: var(--b-small);
+  color: var(--b-ink-soft);
+}
+
+.bst-opts {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: var(--b-s2) var(--b-s3);
+  align-items: baseline;
+  padding: var(--b-s2) 0;
+}
+.bst-opts + .bst-opts {
+  border-top: 1px dashed var(--b-rule);
+}
+.bst-opts-swatches {
+  display: block;
+  padding-top: 0;
+}
+.bst-opts-label {
+  font-family: var(--b-display);
+  font-size: 1.12rem;
+  color: var(--b-ink);
+}
+.bst-opts-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--b-s1);
+}
+.bst-opt {
+  position: relative;
+  padding: 5px 11px;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--b-ink);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  /* A dotted ink line says "you can pick this" before you hover. */
+  text-decoration: underline dotted var(--b-rule) 1.5px;
+  text-underline-offset: 6px;
+}
+.bst-opt:hover {
+  text-decoration: underline wavy var(--b-plum) 1.5px;
+  text-underline-offset: 6px;
+}
+.bst-opt[aria-pressed="true"] { text-decoration: none; }
+.bst-opt[aria-pressed="true"] {
+  font-weight: 700;
+  color: var(--b-plum);
+}
+.bst-opt-ring {
+  position: absolute;
+  inset: -3px -6px;
+  color: var(--b-plum);
+  pointer-events: none;
+  animation: bst-ring-in 0.45s var(--ease-snappy) both;
+}
+.bst-opt-ring svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.bst-undiscovered {
+  flex-basis: 100%;
+  margin: var(--b-s1) 0 0 11px;
+  font-size: var(--b-small);
+  color: var(--b-ink-soft);
+}
+.bst-undiscovered summary {
+  cursor: pointer;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.bst-undiscovered summary .ico-wrap { color: var(--b-plum); }
+.bst-undiscovered ul {
+  margin: var(--b-s2) 0 0;
+  padding-left: 1.1rem;
+  columns: 2 16rem;
+  line-height: 1.4;
+}
+.bst-undiscovered b {
+  color: var(--b-ink);
+  font-weight: 700;
+}
+
+/* Watercolor samples: three dabs of paint that bleed into each other. */
+.bst-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+  gap: var(--b-s3) var(--b-s2);
+}
+.bst-swatch {
+  position: relative;
+  height: 64px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: var(--b-r-blob);
+  cursor: pointer;
+  transform: rotate(calc((var(--i) - 9) * 2.3deg));
+  transition: transform var(--b-quick) var(--ease-bouncy);
+}
+.bst-swatch:hover { transform: rotate(0deg) scale(1.08); }
+.bst-dab {
+  position: absolute;
+  inset: 0;
+  line-height: 0;
+  mix-blend-mode: multiply;
+}
+.bst-dab svg { width: 100%; height: 100%; overflow: visible; }
+.bst-swatch[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  inset: -4px -2px -2px -4px;
+  border: 2.5px solid var(--b-plum);
+  border-radius: var(--b-r-blob);
+  transform: rotate(-8deg);
+}
+.bst-swatch-check {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  color: var(--b-paper);
+  background: var(--b-plum);
+  border-radius: 50%;
+}
+.bst-swatch-name {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  translate: -50% 0;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--b-plum);
+  opacity: 0;
+}
+.bst-swatch[aria-pressed="true"] .bst-swatch-name,
+.bst-swatch:hover .bst-swatch-name,
+.bst-swatch:focus-visible .bst-swatch-name {
+  opacity: 1;
+}
+
+/* ---- Errors and the wax seal --------------------------------------------- */
+.bst-error {
+  grid-area: error;
+  min-height: 1.6em;
+  margin: var(--b-s2) 0 0;
+  font-weight: 700;
+  color: var(--b-rust-ink);
+}
+.bst-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--b-s3) var(--b-s4);
+}
+.bst-next {
+  flex-basis: 100%;
+  margin: 0;
+  text-align: right;
+  font-family: var(--b-hand);
+  font-size: 1.15rem;
+  color: var(--b-plum);
+}
+.bst-seal-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  font: inherit;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.bst-seal-wax {
+  position: relative;
+  z-index: 1;
+  line-height: 0;
+  transition: transform var(--b-settle) var(--ease-wobbly);
+}
+.bst-seal-text {
+  margin-left: -40px;
+  padding: 13px 34px 13px 52px;
+  font-family: var(--b-display);
+  font-size: 1.45rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  color: var(--b-on-rust);
+  background: var(--b-grain), var(--b-rust);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 50%, 100% 100%, 0 100%);
+  filter: drop-shadow(0 6px 8px color-mix(in srgb, var(--b-shadow-ink) 35%, transparent));
+}
+.bst-seal-btn:hover .bst-seal-wax { transform: rotate(-14deg) scale(1.05); }
+.bst-seal-btn:active .bst-seal-wax,
+.bst-seal-btn.pressed .bst-seal-wax {
+  transform: scale(0.9, 0.84);
+  transition-duration: 0.12s;
+}
+.bst-seal-btn:disabled { opacity: 1; cursor: progress; }
+.bst-cancel { font-size: var(--b-text); }
+
+/* The stamp that lands on the plate when you adopt. */
+.bst-stamp-slot {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  color: var(--b-plum);
+  opacity: 0;
+}
+.bst-stamp-slot svg {
+  width: 86%;
+  height: auto;
+}
+.bst-stamped .bst-stamp-slot {
+  animation: bst-stamp 0.5s var(--ease-bouncy) forwards;
+}
+
+/* ---- Motion ---------------------------------------------------------------
+   One entrance: the specimens drop onto the board and settle on their pins.
+   Then each creature idles in its own way, and blinks. */
+@keyframes bst-drop {
+  from { opacity: 0; transform: translateY(-26px) rotate(-6deg); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes bst-page-in {
+  from { opacity: 0; translate: 0 18px; }
+  to { opacity: 1; translate: 0 0; }
+}
+.bst-left { animation: bst-page-in 0.6s var(--ease-gentle) both; }
+.bst-right { animation: bst-page-in 0.6s var(--ease-gentle) 0.08s both; }
+.bst-fern-left svg, .bst-fern-right svg { animation: bst-unfurl 1.4s var(--ease-gentle) 0.2s both; transform-origin: 50% 100%; }
+@keyframes bst-unfurl {
+  from { transform: scale(0.55) rotate(-16deg); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.bst-swap .bst-plate-art,
+.bst-swap .bst-entry-name {
+  animation: bst-plate-in 0.6s var(--ease-bouncy) both;
+}
+@keyframes bst-plate-in {
+  from { opacity: 0.2; transform: translateX(-16px) rotate(-3deg) scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes bst-ring-in {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes bst-stamp {
+  0% { opacity: 0; transform: scale(1.9) rotate(-22deg); }
+  60% { opacity: 0.95; }
+  100% { opacity: 0.9; transform: scale(1) rotate(-11deg); }
+}
+.bst-poked { animation: bst-poke 0.5s var(--ease-wobbly); }
+@keyframes bst-poke {
+  30% { transform: scale(1.08, 0.9); }
+  60% { transform: scale(0.96, 1.05); }
+}
+
+/* Every creature blinks now and then, never all at once. */
+.bestiary .cc-eyes {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: bst-blink 6s infinite;
+  animation-delay: calc(var(--i, 3) * -0.83s);
+}
+.bst-specimen:hover .cc-eyes { animation: bst-blink 0.5s 1; }
+@keyframes bst-blink {
+  0%, 93%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.12); }
+}
+.bestiary .cc-body {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.bestiary .bst-plate-art .cc-body,
+.bestiary .bst-specimen-art .cc-body { animation: bst-breathe 4.2s ease-in-out infinite; }
+@keyframes bst-breathe {
+  50% { transform: scale(1.015, 0.985); }
+}
+/* The lantern fox's lantern flickers. */
+.bestiary .cc-lantern {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: bst-flicker 2.8s infinite;
+}
+@keyframes bst-flicker {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  12% { opacity: 0.6; transform: scale(1.12); }
+  18% { opacity: 0.28; }
+  40% { opacity: 0.52; transform: scale(1.06); }
+  70% { opacity: 0.3; transform: scale(0.96); }
+}
+/* The cloud bunny drifts. */
+.bestiary .cc-sp-cloudBunny .cc-body { animation: bst-drift 5s ease-in-out infinite !important; }
+@keyframes bst-drift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  35% { transform: translate(3px, -6px) rotate(-2deg); }
+  70% { transform: translate(-2px, -2px) rotate(1.5deg); }
+}
+/* The puddle golem's puddle ripples, and it settles. */
+.bestiary .cc-puddle {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: bst-ripple 3.4s ease-in-out infinite;
+}
+@keyframes bst-ripple {
+  50% { transform: scale(1.1, 0.85); opacity: 0.25; }
+}
+.bestiary .cc-sp-puddleGolem .cc-body { animation: bst-squish 3.4s ease-in-out infinite !important; }
+@keyframes bst-squish {
+  50% { transform: scale(1.03, 0.96); }
+}
+/* The ember phoenix throws sparks and its crest sways. */
+.bestiary .cc-spark {
+  transform-box: fill-box;
+  animation: bst-spark 2.6s ease-out infinite;
+}
+.bestiary .cc-spark:nth-of-type(2) { animation-delay: -0.9s; }
+.bestiary .cc-spark:nth-of-type(3) { animation-delay: -1.7s; }
+@keyframes bst-spark {
+  0% { opacity: 0; transform: translate(0, 10px); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(4px, -22px) scale(0.4); }
+}
+.bestiary .cc-crest {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: bst-sway 3.2s ease-in-out infinite;
+}
+@keyframes bst-sway {
+  50% { transform: rotate(4deg); }
+}
+/* The star jellycorn twinkles. */
+.bestiary .cc-twinkle {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: bst-twinkle 2.2s ease-in-out infinite;
+}
+.bestiary .cc-twinkle:nth-of-type(2n) { animation-delay: -0.8s; }
+@keyframes bst-twinkle {
+  50% { opacity: 0.15; transform: scale(0.5); }
+}
+.bestiary .cc-sp-starJellycorn .cc-body { animation: bst-bob 4s ease-in-out infinite !important; }
+@keyframes bst-bob {
+  50% { transform: translateY(-5px); }
+}
+/* The crystal owl's facets catch the light. */
+.bestiary .cc-facet { animation: bst-shimmer 3.6s ease-in-out infinite; }
+@keyframes bst-shimmer {
+  50% { opacity: 1; }
+  60% { opacity: 0.4; }
+}
+/* The moss dragon's small wings flap. */
+.bestiary .cc-wing {
+  transform-box: fill-box;
+  animation: bst-flap 2.4s ease-in-out infinite;
+}
+.bestiary .cc-wing-l { transform-origin: 100% 70%; }
+.bestiary .cc-wing-r { transform-origin: 0% 70%; animation-name: bst-flap-r; }
+@keyframes bst-flap { 50% { transform: rotate(-10deg); } }
+@keyframes bst-flap-r { 50% { transform: rotate(10deg); } }
+/* The shell turtle takes its time. */
+.bestiary .cc-sp-shellTurtle .cc-body { animation-duration: 7s !important; }
+
+/* Calm motion: everything holds still (the computer's reduce-motion setting
+   is handled in css/tokens.css). */
+:root[data-motion="calm"] .bestiary *,
+:root[data-motion="calm"] .bestiary *::before,
+:root[data-motion="calm"] .bestiary *::after {
+  animation: none !important;
+  transition: none !important;
+}
+:root[data-motion="calm"] .bestiary .bst-stamped .bst-stamp-slot { opacity: 0.9; transform: rotate(-11deg); }
+
+/* Dark mode: watercolor dabs can't multiply on a dark page. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-appearance="light"]) .bst-dab { mix-blend-mode: normal; }
+}
+:root[data-appearance="dark"] .bst-dab { mix-blend-mode: normal; }
+
+/* Dyslexia mode: no italics, smaller sizes for OpenDyslexic's wide letters,
+   and labels sit straight. */
+:root[data-reading="dyslexia"] .bestiary :is(h1, h2, h3, .bst-tab, .bst-opts-label, .bst-seal-text, .bst-specimen-label strong) {
+  letter-spacing: var(--letter);
+}
+:root[data-reading="dyslexia"] .bst-head h1 { font-size: clamp(2rem, 2.8vw, 2.8rem); }
+:root[data-reading="dyslexia"] .bst-entry-name { font-size: clamp(1.9rem, 2.4vw, 2.5rem); }
+:root[data-reading="dyslexia"] .bestiary input.bst-input { font-size: 1.1rem; }
+:root[data-reading="dyslexia"] .bst-specimen-label strong { font-size: 1rem; }
+:root[data-reading="dyslexia"] .bst-notes,
+:root[data-reading="dyslexia"] .bst-margin { font-size: 1rem; }
+:root[data-reading="dyslexia"] .bst-right { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "plate" "label" "error" "actions" "index"; }
+/* OpenDyslexic is tall: names get room and a plain rule, and the lock
+   note replaces the hidden drawing so it can't run into the name. */
+:root[data-reading="dyslexia"] .bst-specimen-label { line-height: 1.35; }
+:root[data-reading="dyslexia"] .bst-specimen-label strong { text-decoration: none; border-bottom: 1.5px solid var(--sp); padding-bottom: 2px; }
+:root[data-reading="dyslexia"] .bst-specimen.locked .bst-specimen-art > span:first-child { visibility: hidden; position: absolute; }
+:root[data-reading="dyslexia"] .bst-specimen.locked .bst-locknote { position: relative; inset: auto; padding: var(--b-s3) var(--b-s1); }
+:root[data-reading="dyslexia"] .bst-specimen.locked .bst-specimen-art { min-height: 132px; }
+:root[data-reading="dyslexia"] .bst-plate { max-width: 280px; }
+:root[data-reading="dyslexia"] .bst-mirror { transform: none; }
+:root[data-reading="dyslexia"] .bst-tab { white-space: nowrap; font-size: 0.95rem; padding: var(--b-s2) var(--b-s3) 10px; }
+/* Dyslexia mode: no italics, and labels sit straight. */
+:root[data-reading="dyslexia"] .bestiary :is(em, .bst-entry-latin) {
+  font-style: normal;
+}
+:root[data-reading="dyslexia"] .bestiary :is(.bst-notes, .bst-margin-board, .bst-label) {
+  transform: none;
+}
+:root[data-reading="dyslexia"] .bst-margin-board { text-align: left; margin-left: 0; }
+:root[data-reading="dyslexia"] .bst-next { text-align: left; }
+
+/* ---- Smaller screens ------------------------------------------------------ */
+/* Wide screens: the board stays in view while the entry scrolls. */
+@media (min-width: 1181px) {
+  .bst-left {
+    align-self: start;
+    position: sticky;
+    top: calc(var(--b-topbar) + var(--b-s3));
+  }
+}
+@media (max-width: 1400px) {
+  .bst-book { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .bst-left { padding: var(--b-s5) var(--b-s4) var(--b-s4) var(--b-s5); }
+  .bst-right { padding: var(--b-s5) var(--b-s5) var(--b-s4) var(--b-s4); grid-template-columns: minmax(200px, 240px) minmax(0, 1fr); }
+  .bst-board { gap: 34px 14px; }
+  .bst-specimen-label strong { font-size: 1.18rem; }
+}
+@media (max-width: 1180px) {
+  .bst-book { grid-template-columns: minmax(0, 1fr); gap: var(--b-s6); }
+  .bst-left, .bst-right { transform: none; margin-left: 0; }
+  .bst-left::after, .bst-right::after { display: none; }
+}
+@media (max-width: 760px) {
+  .bestiary { --b-topbar: 58px; padding: var(--b-s6) 16px 72px; }
+  .bst-seal-text { font-size: 1.2rem; padding: 12px 26px 12px 48px; }
+  .bst-pressed { display: none; }
+  .bst-left { padding: var(--b-s5) var(--b-s4) var(--b-s4); }
+  .bst-right {
+    padding: var(--b-s5) var(--b-s4) var(--b-s4);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "head" "plate" "label" "error" "actions" "index";
+  }
+  /* Customizing is optional, so on phones the seal comes right after the
+     label, in the same order as the keyboard. */
+  .bst-seal-text { white-space: normal; }
+  .bst-index { margin-top: var(--b-s5); }
+  /* Phones: the portrait becomes a strip pinned to the top of the screen
+     while you scroll the options. */
+  .bst-index-body { grid-template-columns: minmax(0, 1fr); gap: var(--b-s3); }
+  .bst-index-body .bst-opts { grid-template-columns: minmax(0, 1fr); }
+  .bst-mirror {
+    order: -1;
+    top: var(--b-topbar);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: var(--b-s3);
+    padding: var(--b-s2) var(--b-s3);
+    transform: none;
+  }
+  .bst-mirror .bst-attach { display: none; }
+  .bst-mirror-art svg { width: 96px; }
+  .bst-mirror-note { margin: 0; text-align: left; }
+  .bst-actions { margin-top: var(--b-s3); }
+  .bst-board { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 16px; }
+  .bst-plate { max-width: 300px; justify-self: center; width: 100%; }
+  .bst-label { margin-top: var(--b-s4); }
+  .bst-opts { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .bst-tabs { padding-left: 0; overflow-x: auto; }
+  .bst-tab { padding: var(--b-s2) var(--b-s3) 10px; font-size: 1.05rem; white-space: nowrap; }
+  .bst-actions { justify-content: center; }
+  .bst-next { text-align: center; }
+  .bst-fern-left, .bst-fern-right { opacity: 0.6; }
+  .bst-fern-right { display: none; }
+  .bst-moss-corner svg { width: 220px; }
+}

@@ -1,14 +1,16 @@
 // Creature creator options (SPEC §3). All designs are original.
 export const SPECIES = {
   // Starters first, then the ones that unlock with XP (js/data/looks.js).
-  lanternFox: { label: "Lantern fox", blurb: "Its tail glows when it is thinking." },
-  cloudBunny: { label: "Cloud bunny", blurb: "Soft as a cloud, hops when it's happy." },
-  shellTurtle: { label: "Shell turtle", blurb: "Slow, steady and always prepared." },
-  crystalOwl: { label: "Crystal owl", blurb: "Sees every number on the page." },
-  mossDragon: { label: "Moss dragon", blurb: "Small wings, big heart, mossy back." },
-  puddleGolem: { label: "Puddle golem", blurb: "Calm, squishy and very patient." },
-  starJellycorn: { label: "Star jellycorn", blurb: "Half jellyfish, half unicorn. Floats on pure sparkle." },
-  emberPhoenix: { label: "Ember phoenix", blurb: "Rises from the ashes, just like a credit score." },
+  // latin and note are the Mossy Bestiary's field notes (adoption screen).
+  // natural: the palette each one is drawn in on the specimen board.
+  lanternFox: { label: "Lantern fox", blurb: "Its tail glows when it is thinking.", latin: "Vulpes lucerna", note: "On a big decision you can read by it.", natural: "ember" },
+  cloudBunny: { label: "Cloud bunny", blurb: "Soft as a cloud, hops when it's happy.", latin: "Lepus nimbus", note: "Drifts a little when very happy. Hold on to it on windy days.", natural: "cottonCandy" },
+  shellTurtle: { label: "Shell turtle", blurb: "Slow, steady and always prepared.", latin: "Testudo constans", note: "Has never once paid a bill late. Has also never once hurried.", natural: "seafoam" },
+  crystalOwl: { label: "Crystal owl", blurb: "Sees every number on the page.", latin: "Strix crystallina", note: "Reads the small print first. Then reads it again.", natural: "lavender" },
+  mossDragon: { label: "Moss dragon", blurb: "Small wings, big heart, mossy back.", latin: "Draco muscosus", note: "Dragons are known for hoarding. This one prefers a savings account.", natural: "moss" },
+  puddleGolem: { label: "Puddle golem", blurb: "Calm, squishy and very patient.", latin: "Golem lacunae", note: "Leaves a small puddle wherever it waits. It is very good at waiting.", natural: "ocean" },
+  starJellycorn: { label: "Star jellycorn", blurb: "Half jellyfish, half unicorn. Floats on pure sparkle.", latin: "Medusa stellicornis", note: "Science has stopped asking how. It just floats.", natural: "galaxy" },
+  emberPhoenix: { label: "Ember phoenix", blurb: "Rises from the ashes, just like a credit score.", latin: "Phoenix favilla", note: "It has had a lot of practice at comebacks.", natural: "fireAndTide" },
 };
 
 // body, belly, accent (wings, ears, spots), eye

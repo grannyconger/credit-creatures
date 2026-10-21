@@ -17,6 +17,43 @@
   font-weight: 400 900;
   font-display: swap;
 }
+/* The Mossy Bestiary (2026-10-21 redesign, adoption screen first). OFL
+   licenses beside each file in fonts/.
+   IM Fell English: 1680s Oxford letterpress, for headings and specimen names.
+   Alegreya: a warm calligraphic book serif for reading.
+   Mynerve: a loose ink hand, only for the naturalist's margin notes. */
+@font-face {
+  font-family: "IM Fell English";
+  src: url("../fonts/IMFellEnglish-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IM Fell English";
+  src: url("../fonts/IMFellEnglish-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Alegreya";
+  src: url("../fonts/Alegreya.woff2") format("woff2");
+  font-weight: 400 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Alegreya";
+  src: url("../fonts/Alegreya-Italic.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Mynerve";
+  src: url("../fonts/Mynerve-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
 /* Only the regular file: OpenDyslexic Bold is spaced much wider, so bold
    text uses the browser's bolding of the regular letters instead. */
 @font-face {
@@ -151,6 +188,186 @@
   --f2: #199e70;
   --f3: #c98500;
   --f4: #d55181;
+}
+
+/* ---------------------------------------------------------------------------
+   The Mossy Bestiary world. Scoped to .bestiary until the teacher approves a
+   rollout, then these move up to :root. Every page of the bestiary styles
+   itself with --b-* only. Contrast (checked 2026-10-21): ink on paper 11.5:1,
+   ink-soft on paper 5.7:1, plum on paper 8.1:1, rust-ink on paper 5.1:1,
+   gold-ink on paper 4.9:1, white on rust 5.0:1, on-ground on moss 7:1,
+   foxfire on moss 6.6:1. Foxfire and gold are for the dark ground only. */
+.bestiary {
+  /* Ground: the sanctuary floor the pages lie on */
+  --b-ground: #2f4a3a;
+  --b-ground-deep: #1e3127;
+  --b-on-ground: #dce2cc;
+  --b-on-ground-soft: #b9c6ad;
+  /* Paper: grey-green herbarium sheets, not cream */
+  --b-paper: #d9dec8;
+  --b-paper-2: #cbd2b8;
+  --b-paper-edge: #aab394;
+  --b-paper-insert: #dfe3cf;
+  --b-foxing: rgba(150, 110, 50, 0.14);
+  --b-ink: #1b2420;
+  --b-ink-soft: #4a5547;
+  --b-rule: #8e977c;
+  /* Jewel tones. Rust seals decisions, plum marks what's chosen, gold is
+     money and XP, foxfire is a creature's glow. */
+  --b-rust: #b5532e;
+  --b-rust-ink: #93401f;
+  --b-on-rust: #ffffff;
+  --b-seal-deep: #7d3519;
+  --b-seal-shine: #f3b08e;
+  --b-plum: #5b2a4e;
+  --b-plum-wash: rgba(91, 42, 78, 0.12);
+  --b-gold: #d9a441;
+  --b-gold-ink: #7a5410;
+  --b-foxfire: #c8e04b;
+  /* Little things on the page */
+  --b-pin: #c9a24a;
+  --b-pin-edge: #7a5d1c;
+  --b-pin-shine: #fff3c9;
+  --b-tape: rgba(236, 232, 205, 0.72);
+  --b-string: #8a6a46;
+  --b-tracing: rgba(217, 222, 200, 0.82);
+  --b-moss-1: #4f7a3a;
+  --b-moss-2: #6c9446;
+  --b-moss-3: #3b5e33;
+  --b-moss-stalk: #a8873e;
+  --b-fern: #5f8a48;
+  --b-shadow-ink: #0c1510;
+  /* Each creature's own accent: its thread, ribbon and name ink */
+  --sp-lanternFox: #8f4a12;
+  --sp-cloudBunny: #4f6189;
+  --sp-shellTurtle: #265e50;
+  --sp-crystalOwl: #5a4a96;
+  --sp-mossDragon: #3a6128;
+  --sp-puddleGolem: #255a72;
+  --sp-starJellycorn: #8e3f7d;
+  --sp-emberPhoenix: #9e3420;
+
+  /* Type */
+  --b-display: "IM Fell English", "Alegreya", Georgia, serif;
+  --b-body: "Alegreya", Georgia, serif;
+  --b-hand: "Mynerve", "Alegreya", cursive;
+  --b-text: 1.1875rem;
+  --b-small: 1rem;
+  --b-leading: 1.5;
+
+  /* Space: one rhythm, a little uneven on purpose in the layout */
+  --b-s1: 4px;
+  --b-s2: 8px;
+  --b-s3: 12px;
+  --b-s4: 20px;
+  --b-s5: 32px;
+  --b-s6: 52px;
+
+  /* Shapes: paper is never quite square */
+  --b-r-paper: 3px 7px 4px 6px / 6px 3px 7px 4px;
+  --b-r-tag: 4px 10px 6px 12px / 10px 5px 12px 6px;
+  --b-r-blob: 46% 54% 42% 58% / 55% 44% 56% 45%;
+
+  /* Depth: an offset, soft shadow, like paper lifted off the ground */
+  --b-shadow-page: 0 18px 40px -18px rgba(12, 21, 16, 0.75), 0 2px 4px rgba(12, 21, 16, 0.3);
+  --b-shadow-card: 0 10px 18px -10px rgba(12, 21, 16, 0.6), 0 1px 2px rgba(12, 21, 16, 0.25);
+  --b-shadow-lift: 0 22px 30px -14px rgba(12, 21, 16, 0.7), 0 3px 6px rgba(12, 21, 16, 0.25);
+
+  /* Motion: weighty and a little springy (the --ease-* spring curves above) */
+  --b-settle: 0.7s;
+  --b-quick: 0.22s;
+
+  /* The game's top bar stays pinned, so sticky things sit below it. */
+  --b-topbar: 74px;
+
+  /* Textures: a tiny tiling grain (SVG noise) for paper and ground */
+  --b-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .13 0 0 0 0 .09 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --b-fibers: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='%23556b4a' stroke-opacity='.13' stroke-width='.8'%3E%3Cpath d='M12 40q30-8 50 4M150 20q20 10 44 2M40 150q24-12 60-2M170 190q18-8 40 6M90 90q14 6 30-4M200 110q-10 16 6 34'/%3E%3C/g%3E%3C/svg%3E");
+  --b-cursor-lens: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='13' cy='13' r='8.5' fill='%23ffffff' fill-opacity='.25' stroke='%231b2420' stroke-width='2.5'/%3E%3Ccircle cx='13' cy='13' r='8.5' fill='none' stroke='%23d9dec8' stroke-width='1' transform='translate(1 1)'/%3E%3Cpath d='M19.5 19.5l8 8' stroke='%235b2a4e' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") 13 13;
+}
+
+/* Night in the sanctuary: the pages darken, the ink turns pale. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-appearance="light"]) .bestiary {
+    --b-ground: #101a14;
+    --b-ground-deep: #0a110d;
+    --b-on-ground: #dce2cc;
+    --b-on-ground-soft: #a9b5a0;
+    --b-paper: #1f2b24;
+    --b-paper-2: #26342c;
+    --b-paper-edge: #3a4b40;
+    --b-paper-insert: #24312a;
+    --b-foxing: rgba(0, 0, 0, 0.18);
+    --b-ink: #dce2cc;
+    --b-ink-soft: #a9b5a0;
+    --b-rule: #556553;
+    --b-rust: #b5532e;
+    --b-rust-ink: #ec9a74;
+    --b-seal-deep: #6e2d14;
+    --b-plum: #dba6cd;
+    --b-plum-wash: rgba(219, 166, 205, 0.14);
+    --b-gold-ink: #e2b65a;
+    --b-tape: rgba(120, 130, 105, 0.55);
+    --b-tracing: rgba(31, 43, 36, 0.84);
+    --b-moss-1: #3c5f2d;
+    --b-moss-2: #4f7334;
+    --b-moss-3: #2d4a27;
+    --b-fern: #4b6f3a;
+    --b-shadow-ink: #000000;
+    --sp-lanternFox: #e39a52;
+    --sp-cloudBunny: #a9b8dc;
+    --sp-shellTurtle: #73bfa8;
+    --sp-crystalOwl: #b3a6ea;
+    --sp-mossDragon: #95c27a;
+    --sp-puddleGolem: #7fbad6;
+    --sp-starJellycorn: #dc8fc9;
+    --sp-emberPhoenix: #ee8a6c;
+  }
+}
+:root[data-appearance="dark"] .bestiary {
+  --b-paper-insert: #24312a;
+  --b-foxing: rgba(0, 0, 0, 0.18);
+  --b-ground: #101a14;
+  --b-ground-deep: #0a110d;
+  --b-on-ground: #dce2cc;
+  --b-on-ground-soft: #a9b5a0;
+  --b-paper: #1f2b24;
+  --b-paper-2: #26342c;
+  --b-paper-edge: #3a4b40;
+  --b-ink: #dce2cc;
+  --b-ink-soft: #a9b5a0;
+  --b-rule: #556553;
+  --b-rust: #b5532e;
+  --b-rust-ink: #ec9a74;
+  --b-seal-deep: #6e2d14;
+  --b-plum: #dba6cd;
+  --b-plum-wash: rgba(219, 166, 205, 0.14);
+  --b-gold-ink: #e2b65a;
+  --b-tape: rgba(120, 130, 105, 0.55);
+  --b-tracing: rgba(31, 43, 36, 0.84);
+  --b-moss-1: #3c5f2d;
+  --b-moss-2: #4f7334;
+  --b-moss-3: #2d4a27;
+  --b-fern: #4b6f3a;
+  --b-shadow-ink: #000000;
+  --sp-lanternFox: #e39a52;
+  --sp-cloudBunny: #a9b8dc;
+  --sp-shellTurtle: #73bfa8;
+  --sp-crystalOwl: #b3a6ea;
+  --sp-mossDragon: #95c27a;
+  --sp-puddleGolem: #7fbad6;
+  --sp-starJellycorn: #dc8fc9;
+  --sp-emberPhoenix: #ee8a6c;
+}
+/* Dyslexia mode in the bestiary: OpenDyslexic for every voice, the hand
+   included, and no italics. */
+:root[data-reading="dyslexia"] .bestiary {
+  --b-display: "OpenDyslexic", system-ui, sans-serif;
+  --b-body: "OpenDyslexic", system-ui, sans-serif;
+  --b-hand: "OpenDyslexic", system-ui, sans-serif;
+  --b-text: 1.05rem;
+  --b-small: 0.92rem;
+  --b-leading: 1.7;
 }
 
 /* Dyslexia mode: OpenDyslexic everywhere, with more space between letters,

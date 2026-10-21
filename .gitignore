@@ -5,3 +5,7 @@ node_modules/
 
 # Pilot exports from the teacher dashboard. Student data never goes in the repo.
 pilot-data/
+
+# Impeccable: per-developer hook consent and cache
+.impeccable/config.local.json
+.impeccable/hook.cache.json
