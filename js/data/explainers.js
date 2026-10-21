@@ -63,12 +63,3 @@ export const INBOX_TYPES = {
 };
 
 export const INBOX_KEPT = 40;
-
-// Account Management themes (SPEC §14). Every one keeps text at 4.5:1 or better.
-export const THEMES = {
-  royal: { label: "Royal purple", swatch: "#6a4fc2" },
-  forest: { label: "Forest", swatch: "#2f6b3f" },
-  ocean: { label: "Ocean", swatch: "#1f5f99" },
-  ember: { label: "Ember", swatch: "#a3471c" },
-  night: { label: "Night (dark)", swatch: "#26223a" },
-};

@@ -1,0 +1,181 @@
+/* Credit Creatures design tokens: color, type, space and motion.
+   Every screen styles itself with these variables, never with raw colors, so
+   light, dark and dyslexia modes work everywhere.
+   - Appearance: [data-appearance="dark"] on <html>, or the system setting when
+     it's "system" (no attribute).
+   - Reading: [data-reading="dyslexia"] on <html>.
+   Factor colors (--f0 to --f4) are the dataviz reference palette's first five
+   slots, in validated order: they pass the color-blind (CVD) and normal-vision
+   checks in both modes. Light-mode marks under 3:1 always carry labels. */
+
+@font-face {
+  font-family: "Fredoka";
+  src: url("../fonts/Fredoka.ttf") format("truetype");
+  font-weight: 300 700;
+  font-display: swap;
+}
+/* Only the regular file: OpenDyslexic Bold is spaced much wider, so bold
+   text uses the browser's bolding of the regular letters instead. */
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("../fonts/OpenDyslexic-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+/* Dancing Script (fonts/DancingScript-OFL.txt) for typed signatures. */
+@font-face {
+  font-family: "Dancing Script";
+  src: url("../fonts/DancingScript.ttf") format("truetype");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Fredoka", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --letter: normal;
+  --word: normal;
+  --leading: 1.5;
+
+  /* Surfaces and text */
+  --bg: #f4efe6;
+  --panel: #fffdf8;
+  --surface-2: #f7f2ea;
+  --ink: #231f33;
+  --muted: #5d5672;
+  --border: #e2dacb;
+  --shadow: 0 2px 12px rgba(35, 31, 51, 0.07);
+  --shadow-lift: 0 10px 28px rgba(35, 31, 51, 0.16);
+
+  /* Brand */
+  --accent: #5b3fc4;
+  --accent-ink: #ffffff;
+  --soft: #efeafb;
+  --gold: #b8861b;
+  --gold-soft: #fbf0d2;
+
+  /* Status: always paired with an icon and a word */
+  --good: #0b7d3b;
+  --good-bg: #e3f4e8;
+  --warn: #8a5a00;
+  --warn-bg: #fdf1d6;
+  --danger: #b3261e;
+  --bad-bg: #fbe7e5;
+  --info: #1f5f99;
+  --info-bg: #e4eefa;
+
+  /* Score factors (validated categorical order) */
+  --f0: #2a78d6;
+  --f1: #eb6834;
+  --f2: #1baf7a;
+  --f3: #eda100;
+  --f4: #e87ba4;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --space: 16px;
+}
+
+/* Dark: the system setting, unless the student picked light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-appearance="light"]) {
+    color-scheme: dark;
+    --bg: #13111c;
+    --panel: #1c1a26;
+    --surface-2: #252233;
+    --ink: #f1edfb;
+    --muted: #b9b2cf;
+    --border: #3a3550;
+    --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    --shadow-lift: 0 10px 28px rgba(0, 0, 0, 0.5);
+    --accent: #a996ff;
+    --accent-ink: #15121f;
+    --soft: #2c2747;
+    --gold: #e6c06a;
+    --gold-soft: #3a3020;
+    --good: #6fd39a;
+    --good-bg: #17301f;
+    --warn: #f0c35a;
+    --warn-bg: #3a2f15;
+    --danger: #ff8f87;
+    --bad-bg: #3d1d1c;
+    --info: #8cc0f2;
+    --info-bg: #172a3d;
+    --f0: #3987e5;
+    --f1: #d95926;
+    --f2: #199e70;
+    --f3: #c98500;
+    --f4: #d55181;
+  }
+}
+:root[data-appearance="dark"] {
+  color-scheme: dark;
+  --bg: #13111c;
+  --panel: #1c1a26;
+  --surface-2: #252233;
+  --ink: #f1edfb;
+  --muted: #b9b2cf;
+  --border: #3a3550;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lift: 0 10px 28px rgba(0, 0, 0, 0.5);
+  --accent: #a996ff;
+  --accent-ink: #15121f;
+  --soft: #2c2747;
+  --gold: #e6c06a;
+  --gold-soft: #3a3020;
+  --good: #6fd39a;
+  --good-bg: #17301f;
+  --warn: #f0c35a;
+  --warn-bg: #3a2f15;
+  --danger: #ff8f87;
+  --bad-bg: #3d1d1c;
+  --info: #8cc0f2;
+  --info-bg: #172a3d;
+  --f0: #3987e5;
+  --f1: #d95926;
+  --f2: #199e70;
+  --f3: #c98500;
+  --f4: #d55181;
+}
+
+/* Dyslexia mode: OpenDyslexic everywhere, with more space between letters,
+   words and lines, left-aligned text and no italics. */
+:root[data-reading="dyslexia"] {
+  --font-body: "OpenDyslexic", system-ui, sans-serif;
+  --font-display: "OpenDyslexic", system-ui, sans-serif;
+  /* OpenDyslexic's letters already carry wide spacing, so pull it in a little. */
+  --letter: -0.05em;
+  --word: 0;
+  --leading: 1.7;
+}
+:root[data-reading="dyslexia"] body {
+  font-size: 0.95rem;
+}
+/* Headings, labels and buttons set their own spacing, so match them here. */
+:root[data-reading="dyslexia"] :is(h1, h2, h3, button, .chip, .step-label, .brand, .big-score, .stat-value) {
+  letter-spacing: var(--letter);
+}
+:root[data-reading="dyslexia"] p,
+:root[data-reading="dyslexia"] li {
+  max-width: 68ch;
+}
+:root[data-reading="dyslexia"] .center,
+:root[data-reading="dyslexia"] p {
+  text-align: left;
+}
+:root[data-reading="dyslexia"] em,
+:root[data-reading="dyslexia"] i {
+  font-style: normal;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

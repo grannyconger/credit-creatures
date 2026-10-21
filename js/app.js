@@ -6,6 +6,7 @@ import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge 
 import { mountBugButton } from "./ui/bug-button.js";
 import { creatureSvg } from "./ui/creature-art.js";
 import { h, clear, ageLabel } from "./ui/dom.js";
+import { settingsControls } from "./ui/settings-controls.js";
 import * as profile from "./ui/screens/profile.js";
 import * as creature from "./ui/screens/creature.js";
 import * as join from "./ui/screens/join.js";
@@ -122,11 +123,12 @@ function signedOut(error = "") {
     h(
       "section.panel.signin",
       h("div.signin-art", { html: creatureSvg({ species: "lanternFox", palette: "royal", accessories: { head: "crown" } }, { size: 160, label: "A lantern fox in a crown" }) }),
-      h("h1", "Credit Life"),
+      h("h1", "Credit Creatures"),
       h("p.tagline", "Raise a creature. Build its credit. Watch every choice add up."),
       btn,
       LOCAL ? h("p.note", "Local test mode. Your game saves in this browser only.") : null,
-      err
+      err,
+      settingsControls()
     )
   );
 }

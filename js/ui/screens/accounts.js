@@ -1,8 +1,8 @@
 // Account Management (SPEC §14). Time is paused here: nothing on these tabs
 // ends a month. Opens from the hub or the month screen and goes back there.
 import { h, fill } from "../dom.js";
+import { icon } from "../icons.js";
 import * as P from "../../play.js";
-import { THEMES } from "../../data/explainers.js";
 import { walletTab } from "../accounts/wallet-tab.js";
 import { statementsTab } from "../accounts/statements-tab.js";
 import { scoreTab } from "../accounts/score-tab.js";
@@ -11,12 +11,12 @@ import { deskTab } from "../accounts/desk-tab.js";
 import { inboxTab } from "../accounts/inbox-tab.js";
 
 const TABS = [
-  ["wallet", "💳", "Wallet", walletTab],
-  ["statements", "🧾", "Statements", statementsTab],
-  ["score", "⭐", "My Score", scoreTab],
-  ["report", "📄", "My Report", reportTab],
-  ["desk", "🧮", "Practice Desk", deskTab],
-  ["inbox", "📬", "Inbox", inboxTab],
+  ["wallet", "wallet", "Wallet", walletTab],
+  ["statements", "statement", "Statements", statementsTab],
+  ["score", "gauge", "My Score", scoreTab],
+  ["report", "report", "My Report", reportTab],
+  ["desk", "academy", "Practice Desk", deskTab],
+  ["inbox", "inbox", "Inbox", inboxTab],
 ];
 
 export function render(root, { game, go, track, refreshWho }) {
@@ -40,7 +40,6 @@ export function render(root, { game, go, track, refreshWho }) {
 
   function paint() {
     const tab = game.accountsTab;
-    shell.dataset.theme = play.theme;
     const unread = P.unreadCount(play);
     fill(
       shell,
@@ -53,7 +52,7 @@ export function render(root, { game, go, track, refreshWho }) {
       h(
         "nav.acct-tabs",
         { "aria-label": "Account Management" },
-        TABS.map(([key, icon, label]) =>
+        TABS.map(([key, ico, label]) =>
           h(
             "button",
             {
@@ -66,44 +65,15 @@ export function render(root, { game, go, track, refreshWho }) {
                 paint();
               },
             },
-            h("span", { "aria-hidden": "true" }, icon),
+            icon(ico),
             ` ${label}`,
             key === "inbox" && unread ? h("span.count-badge", { "aria-label": `${unread} unread` }, String(unread)) : null
           )
         )
       ),
-      fill(body, TABS.find(([k]) => k === tab)[3](ctx)),
-      themePicker(play, ctx)
+      fill(body, TABS.find(([k]) => k === tab)[3](ctx))
     );
   }
 
   paint();
-}
-
-function themePicker(play, ctx) {
-  return h(
-    "footer.theme-picker",
-    h("span", "🎨 Theme"),
-    h(
-      "div.chip-group",
-      { role: "group", "aria-label": "Color theme for these screens" },
-      Object.entries(THEMES).map(([key, t]) =>
-        h(
-          "button.chip",
-          {
-            type: "button",
-            "aria-pressed": String(play.theme === key),
-            onclick: async () => {
-              play.theme = key;
-              ctx.track("themeSet", { theme: key });
-              ctx.repaint();
-              await ctx.save("theme");
-            },
-          },
-          h("span.design-dot", { style: { background: t.swatch } }),
-          t.label
-        )
-      )
-    )
-  );
 }

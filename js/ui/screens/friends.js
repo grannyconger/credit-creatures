@@ -2,6 +2,7 @@
 // the class leaderboard list. No free text: group names and gift messages are
 // presets. Firestore rules enforce the class, friendship and the 40-hour gift limit.
 import { h, add, fill, money, toast } from "../dom.js";
+import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
 import { fullName } from "../../data/creatures.js";
 import { SHOP_BY_ID } from "../../data/shop.js";
@@ -81,9 +82,9 @@ export function render(root, { game, go, track, refreshWho }) {
     const st = S.friendState(data.requests, me);
     const unclaimed = data.gifts.incoming.filter((g) => !g.claimed).length;
     const tabs = [
-      ["friends", "🤝 Friends", st.incoming.length],
-      ["groups", "🛡️ Groups", 0],
-      ["gifts", "🎁 Gifts", unclaimed],
+      ["friends", "people", "Friends", st.incoming.length],
+      ["groups", "plaza", "Groups", 0],
+      ["gifts", "gift", "Gifts", unclaimed],
     ];
     fill(
       panel,
@@ -91,11 +92,12 @@ export function render(root, { game, go, track, refreshWho }) {
       h(
         "nav.acct-tabs",
         { "aria-label": "Friends" },
-        tabs.map(([k, label, n]) =>
+        tabs.map(([k, ico, label, n]) =>
           h(
             "button",
             { type: "button", "aria-current": tab === k ? "page" : null, onclick: () => ((tab = k), track("friendsTab", { tab: k }), paint()) },
-            label,
+            icon(ico),
+            ` ${label}`,
             n ? h("span.count-badge", { "aria-label": `${n} new` }, String(n)) : null
           )
         )

@@ -3,13 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Credit Life</title>
+  <title>Credit Creatures</title>
+  <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/app.css">
+  <script>
+    // Apply the saved appearance and reading mode before the page draws (js/ui/settings.js).
+    try {
+      const s = JSON.parse(localStorage.getItem("credit-creatures:settings")) || {};
+      if (s.appearance && s.appearance !== "system") document.documentElement.dataset.appearance = s.appearance;
+      if (s.reading === "dyslexia") document.documentElement.dataset.reading = "dyslexia";
+    } catch {}
+  </script>
 </head>
 <body>
   <header id="topbar" class="topbar" hidden>
-    <span class="brand">🐉 Credit Life</span>
+    <span class="brand"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V9l3 2V7l4-3 4 3v4l3-2v12"/><path d="M10 21v-5a2 2 0 0 1 4 0v5"/></svg> Credit Creatures</span>
     <span id="who" class="who"></span>
     <span class="topbar-actions">
       <button id="save-quit" class="secondary small" type="button">Save and quit</button>

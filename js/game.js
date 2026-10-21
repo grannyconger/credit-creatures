@@ -5,6 +5,7 @@ import { toast } from "./ui/dom.js";
 import { newPlay, ensurePlay } from "./play.js";
 import { evaluate, rankFor } from "./progress.js";
 import { celebrate } from "./ui/celebrate.js";
+import { applySettings } from "./ui/settings.js";
 import { fullName } from "./data/creatures.js";
 import { newlyUnlocked, publicLook } from "./data/looks.js";
 
@@ -54,6 +55,7 @@ export function createGame(user, db) {
         };
         game.returning = true;
       }
+      if (game.save.play?.settings) applySettings(game.save.play.settings);
       if (game.profile.classId) game.classInfo = await db.getClass(game.profile.classId).catch(() => null);
     },
 

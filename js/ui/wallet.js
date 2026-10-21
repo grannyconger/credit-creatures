@@ -1,6 +1,7 @@
 // The creature's digital wallet (SPEC §14): the Gilded Vault debit card that
 // comes with checking at 18, every open credit card, and loans at a glance.
 import { h, money, percent } from "./dom.js";
+import { icon } from "./icons.js";
 import { cardArt } from "./card-art.js";
 import { ownCards, amountOwed, utilization } from "../engine/index.js";
 import { fullName } from "../data/creatures.js";
@@ -12,16 +13,16 @@ export function moneyChips(life, sparkle = 0) {
   return h(
     "ul.money-chips",
     { "aria-label": "Your money right now" },
-    chip("🏦", "Checking", money(life.checking), life.checking < 0 ? "bad" : ""),
-    chip("🐷", "Savings", money(life.savings)),
-    chip("⭐", "Score", life.score == null ? "None yet" : sparkle ? `${life.score} + ${sparkle}✨` : life.score),
-    util != null ? chip("📊", "Card utilization", percent(util), util > 0.3 ? "warn" : "") : null,
-    chip("🧾", "You owe", money(debt))
+    chip("vault", "Checking", money(life.checking), life.checking < 0 ? "bad" : ""),
+    chip("piggy", "Savings", money(life.savings)),
+    chip("gauge", "Score", life.score == null ? "None yet" : sparkle ? `${life.score} + ${sparkle}✨` : life.score),
+    util != null ? chip("chart", "Card utilization", percent(util), util > 0.3 ? "warn" : "") : null,
+    chip("receipt", "You owe", money(debt))
   );
 }
 
-function chip(icon, label, value, cls = "") {
-  return h("li", { class: cls }, h("span", { "aria-hidden": "true" }, icon), h("small", label), h("strong", String(value)));
+function chip(ico, label, value, cls = "") {
+  return h("li", { class: cls }, icon(ico, { size: 22 }), h("small", label), h("strong", String(value)));
 }
 
 export function walletStrip(life, creature) {

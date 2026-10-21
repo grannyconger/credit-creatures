@@ -53,7 +53,7 @@ test("factor checks offer the right factor and direction", () => {
 });
 
 test("My Score and inbox text follow the student text rules", () => {
-  for (const s of strings([X.FACTOR_EXPLAINERS, X.SCORE_BANDS, X.INBOX_TYPES, X.THEMES, FACTOR_CHECKS])) clean(s, "explainers");
+  for (const s of strings([X.FACTOR_EXPLAINERS, X.SCORE_BANDS, X.INBOX_TYPES, FACTOR_CHECKS])) clean(s, "explainers");
   assert.deepEqual(Object.keys(X.FACTOR_EXPLAINERS).sort(), ["length", "mix", "newCredit", "owed", "payment"]);
   assert.equal(X.bandFor(300).label, "Poor");
   assert.equal(X.bandFor(735).label, "Good");

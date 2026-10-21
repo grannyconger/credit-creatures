@@ -3,9 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Credit Life Teacher</title>
+  <title>Credit Creatures Teacher</title>
+  <link rel="stylesheet" href="../css/tokens.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/app.css">
+  <script>
+    // Apply the saved appearance and reading mode before the page draws (js/ui/settings.js).
+    try {
+      const s = JSON.parse(localStorage.getItem("credit-creatures:settings")) || {};
+      if (s.appearance && s.appearance !== "system") document.documentElement.dataset.appearance = s.appearance;
+      if (s.reading === "dyslexia") document.documentElement.dataset.reading = "dyslexia";
+    } catch {}
+  </script>
 </head>
 <body>
   <main class="app teacher-page">
@@ -13,7 +22,7 @@
       <header class="acct-head">
         <div>
           <h1>📣 Teacher Dashboard</h1>
-          <p class="tagline">Credit Life classroom controls.</p>
+          <p class="tagline">Credit Creatures classroom controls.</p>
         </div>
         <button id="sign-out" class="secondary" type="button" hidden>Sign out</button>
       </header>

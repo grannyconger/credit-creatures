@@ -1,14 +1,15 @@
 // Trophies (SPEC §16): achievements, XP and rank, personal records, and the
 // class leaderboard (ranked by XP, so careful play wins, not cash).
 import { h, fill, add } from "../dom.js";
+import { icon } from "../icons.js";
 import { ACHIEVEMENTS, CATEGORIES, RANKS } from "../../data/achievements.js";
 import { rankFor, bestXpChapter } from "../../progress.js";
 import { creatureSvg } from "../creature-art.js";
 
 const TABS = [
-  ["badges", "🏆 Achievements"],
-  ["rank", "🎖️ Rank and records"],
-  ["board", "📊 Leaderboard"],
+  ["badges", "trophy", "Achievements"],
+  ["rank", "star", "Rank and records"],
+  ["board", "chart", "Leaderboard"],
 ];
 
 let tab = "badges";
@@ -32,7 +33,7 @@ export function render(root, { game, go, track }) {
       h(
         "nav.acct-tabs",
         { "aria-label": "Trophies" },
-        TABS.map(([key, label]) =>
+        TABS.map(([key, ico, label]) =>
           h(
             "button",
             {
@@ -44,7 +45,8 @@ export function render(root, { game, go, track }) {
                 paint();
               },
             },
-            label
+            icon(ico),
+            ` ${label}`
           )
         )
       ),

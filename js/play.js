@@ -34,6 +34,8 @@ export function ensurePlay(play) {
   play.rankSeen ??= 1;
   // Phase 8: social counts for achievements.
   play.social ??= { friends: 0, giftsSent: 0, giftsReceived: 0, groupJoined: false };
+  // Appearance and reading mode (js/ui/settings.js). Old "night" theme means dark.
+  play.settings ??= play.theme === "night" ? { appearance: "dark", reading: "standard" } : null;
   play.achievements ??= {};
   play.stats ??= { shifts: 0, paidInFull: 0, payoffSprints: 0, hadDebt: false };
   play.jobs ??= {};
