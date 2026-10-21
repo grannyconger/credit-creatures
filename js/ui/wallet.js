@@ -1,5 +1,6 @@
 // The creature's digital wallet (SPEC §14): the Gilded Vault debit card that
 // comes with checking at 18, every open credit card, and loans at a glance.
+import { moneyChipKeys } from "../progression.js";
 import { h, money, percent } from "./dom.js";
 import { icon } from "./icons.js";
 import { cardArt } from "./card-art.js";
@@ -7,18 +8,23 @@ import { ownCards, amountOwed, utilization } from "../engine/index.js";
 import { fullName } from "../data/creatures.js";
 
 // sparkle: Unicorn Sparkle Points, shown apart from the real score (SPEC §15).
-export function moneyChips(life, sparkle = 0) {
+// Only the numbers a student has learned about so far (js/progression.js):
+// a piggy bank in the prologue, then checking and savings, then debt, a card
+// and finally the score.
+export function moneyChips(life, play) {
+  const keys = moneyChipKeys(play, life);
+  const sparkle = play?.sparkle?.total || 0;
   const util = utilization(life);
   const debt = life.accounts.filter((a) => a.owner === "self" && ["open", "collections"].includes(a.status)).reduce((s, a) => s + amountOwed(a), 0);
-  return h(
-    "ul.money-chips",
-    { "aria-label": "Your money right now" },
-    chip("vault", "Checking", money(life.checking), life.checking < 0 ? "bad" : ""),
-    chip("piggy", "Savings", money(life.savings)),
-    chip("gauge", "Score", life.score == null ? "None yet" : sparkle ? `${life.score} + ${sparkle}✨` : life.score),
-    util != null ? chip("chart", "Card utilization", percent(util), util > 0.3 ? "warn" : "") : null,
-    chip("receipt", "You owe", money(debt))
-  );
+  const chips = {
+    piggy: () => chip("piggy", "Piggy bank", money(life.checking)),
+    checking: () => chip("vault", "Checking", money(life.checking), life.checking < 0 ? "bad" : ""),
+    savings: () => chip("piggy", "Savings", money(life.savings)),
+    score: () => chip("gauge", "Score", life.score == null ? "None yet" : sparkle ? `${life.score} + ${sparkle}✨` : life.score),
+    util: () => (util != null ? chip("chart", "Card utilization", percent(util), util > 0.3 ? "warn" : "") : null),
+    owed: () => chip("receipt", "You owe", money(debt)),
+  };
+  return h("ul.money-chips", { "aria-label": "Your money right now", class: `chips-${keys.length}` }, keys.map((k) => chips[k]()));
 }
 
 function chip(ico, label, value, cls = "") {

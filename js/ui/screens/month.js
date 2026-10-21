@@ -2,6 +2,7 @@
 // Work happens at the Guild Hall and bills at the Vault, so the month is
 // shared across the kingdom and always comes back to the hub.
 // In practice mode the same screen runs on a throwaway copy.
+import { payMethods } from "../../progression.js";
 import { h, add, fill, money, ageLabel, toast } from "../dom.js";
 import { ownCards, upcomingPayments, utilization, amountOwed } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
@@ -73,7 +74,7 @@ export function render(root, { game, go, track, refreshWho }) {
     const m = a.month;
     const life = run.life;
     if (view == null || (view !== "end" && isDone(view) && !revisit)) view = nextOpen();
-    const info = chapterInfo(a.chapter);
+    const info = chapterInfo(a.chapter, run.play);
     const fresh = !m.shifts && items().every((i) => !isDone(i));
 
     fill(
@@ -86,7 +87,7 @@ export function render(root, { game, go, track, refreshWho }) {
         subtitle: `${game.save.creature.name} is ${ageLabel(life.ageMonths).replace(" old", "")} old. Make this month's decisions, then end the month here.`,
         practice: run.practice,
       }),
-      moneyChips(life, play.sparkle.total),
+      moneyChips(life, play),
       fresh && a.records.length ? monthSummary(a.records.at(-1), "Last month") : null,
       agenda(),
       h("div.month-main", view === "end" ? endView() : cardView(view))
@@ -151,6 +152,7 @@ export function render(root, { game, go, track, refreshWho }) {
     }
     revisit = false;
     return decisionCard({
+      payAllowed: payMethods(run.play, run.life),
       def,
       kind,
       life: run.life,

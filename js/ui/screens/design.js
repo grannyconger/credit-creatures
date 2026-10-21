@@ -10,7 +10,8 @@ import { cardArt, brandStyle } from "../card-art.js";
 const NICK_MAX = 16;
 const RISK_CLASS = { Low: "good", Medium: "warn", High: "bad", "Very high": "bad" };
 
-export function render(root, { game, advance, track }) {
+// Phase 10: opened from the Vault once credit cards unlock (route cardDesign).
+export function render(root, { game, go, track }) {
   const life = game.life;
   const app = { issuer: "capitalOne", product: "secured", requestedLimit: 300, design: "plasticBlue", nickname: "", ...(game.ob.design || {}) };
   const changes = { issuer: 0, product: 0, limit: 0, design: 0, nickname: 0 };
@@ -222,7 +223,8 @@ export function render(root, { game, advance, track }) {
       designChanges: changes.design,
       seconds: Math.round((Date.now() - started) / 1000),
     });
-    await advance("result");
+    await game.persist("cardApply");
+    go("cardResult");
   });
 
   root.append(
@@ -230,7 +232,7 @@ export function render(root, { game, advance, track }) {
       "section.design",
       h(
         "div.design-left.panel",
-        h("p.step-label", "Chapter 1: Design Your Card"),
+        h("p.step-label", "The Gilded Vault: Design Your Card"),
         h("h1", "Design your first card"),
         h("p", "Pick a lender and a card. Watch how each choice changes your chances and your costs."),
         h("h3", "1. Issuer (the lender)"),

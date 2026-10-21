@@ -5,6 +5,7 @@ import { ACHIEVEMENTS, ACHIEVEMENT_BY_ID, XP, RANKS } from "./data/achievements.
 import { SHOP_BY_ID } from "./data/shop.js";
 import { amountOwed } from "./engine/index.js";
 import { addNote, addXp } from "./play.js";
+import { VEHICLE_BY_ID, HOME_BY_ID } from "./data/garage.js";
 
 export { addXp };
 
@@ -120,7 +121,14 @@ export function jobPay(play, job, score) {
   else if (job === "cashier") base = j.pay.min + j.cashier.perRight * score.right;
   else base = j.pay.min + j.checks.perField * score.right;
   const clamped = Math.max(j.pay.min, Math.min(j.pay.max, Math.round(base)));
-  return clamped + experienceBonus(play, job) + (play.shiftBonus || 0);
+  // A ride and a home workshop (Phase 10 Garage and Cottage) pay off too.
+  return clamped + experienceBonus(play, job) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
+}
+
+export function rideAndHomeBonus(play) {
+  const ride = VEHICLE_BY_ID[play.garage?.vehicle]?.bonus || 0;
+  const home = (play.home || []).reduce((s, id) => s + (HOME_BY_ID[id]?.bonus || 0), 0);
+  return ride + home;
 }
 
 export function recordShift(play, job, { right, pay }) {

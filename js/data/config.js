@@ -43,6 +43,8 @@ export const CONFIG = {
     cardAgeMonths: 18 * 12,
     tutorialMonths: 2,
     tutorialShift: { base: 20, perCorrect: 15 },
+    // Phase 10 prologue: shifts before the bank opens (3 are needed, up to this many allowed).
+    prologueShifts: 5,
     // Monthly part-time pay during the time skip, and the share of it spent.
     teenIncome: [80, 160],
     teenSpendShare: [0.45, 0.8],
@@ -97,6 +99,8 @@ export const CONFIG = {
     ],
     autoAprNoScore: 0.15,
     autoMinScore: 500,
+    // The payment must be at most maxPaymentShare of monthly income (counting at least minIncome).
+    autoAfford: { maxPaymentShare: 0.5, minIncome: 300 },
     autoTerms: [36, 48, 60, 72],
     // Store and lender loans for a purchase (a couch, cottage repairs). Approved
     // when the payment is at most maxPaymentShare of monthly income (counting

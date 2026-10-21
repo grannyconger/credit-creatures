@@ -5,7 +5,8 @@
 import { CONFIG } from "./config.js";
 import { dollars } from "../engine/index.js";
 
-const hasCar = (life) => life.accounts.some((a) => a.type === "autoLoan" && a.status === "open");
+// A car on a loan, or one bought with cash (its gas and insurance bill).
+const hasCar = (life) => life.accounts.some((a) => a.type === "autoLoan" && a.status === "open") || life.bills.some((b) => b.name === "Gas and insurance");
 
 // A cost the student can pay with the "Pay with" picker or skip.
 function pay(item, amount, { methods = ["debit", "card", "bnpl"], label, outcome = "Paid and done." } = {}) {

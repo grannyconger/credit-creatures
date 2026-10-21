@@ -29,11 +29,13 @@ test("every icon name written in the code exists in the icon set", () => {
   for (const name of used) assert.ok(ICON_NAMES.includes(name), `missing icon: ${name}`);
 });
 
-test("the kingdom has seven places, each with a route, a spot on the map and plain text", () => {
-  assert.equal(PLACES.length, 7);
-  assert.equal(new Set(PLACES.map((p) => p.id)).size, 7);
+test("the kingdom has nine places, each with a route, a feature, a spot on the map and plain text", async () => {
+  const { FEATURES } = await import("../js/progression.js");
+  assert.equal(PLACES.length, 9);
+  assert.equal(new Set(PLACES.map((p) => p.id)).size, 9);
   for (const p of PLACES) {
     assert.ok(p.route && p.name && p.does, p.id);
+    assert.ok(FEATURES[p.feature], `${p.id} has a feature`);
     assert.ok(p.x > 0 && p.x < 100 && p.y > 0 && p.y < 100, p.id);
     assert.ok(!/[—;]/.test(p.does + p.name), p.id);
   }
@@ -104,22 +106,20 @@ test("onboarding starts with the story and asks for a dream after the creature",
   for (const p of PLACES) assert.ok(HUB_SCREENS.has(p.route), p.route);
 });
 
-test("the Kingdom Tour visits every place, follows the text rules and has fair quizzes", async () => {
-  const { TOUR_STEPS, GUIDE } = await import("../js/data/tour.js");
-  assert.ok(TOUR_STEPS.length >= 30);
+test("lessons cover every unlock, follow the text rules and have fair quizzes", async () => {
+  const { LESSONS, LESSON_ORDER, GUIDE } = await import("../js/data/lessons.js");
+  const { UNLOCKS, FEATURES } = await import("../js/progression.js");
   assert.ok(GUIDE.name && GUIDE.look.species);
-  const routes = new Set(TOUR_STEPS.map((s) => s.route).filter(Boolean));
-  for (const p of PLACES) assert.ok(routes.has(p.route), `the tour visits ${p.name}`);
-  let quizzes = 0;
-  for (const s of TOUR_STEPS) {
-    const words = [s.title, ...s.text, s.quiz?.q || "", ...(s.quiz?.choices || []), s.quiz?.why || ""];
-    for (const w of words) assert.ok(!w.includes("—") && !w.includes(";"), w);
-    if (s.quiz) {
-      quizzes++;
-      assert.ok(s.quiz.answer >= 0 && s.quiz.answer < s.quiz.choices.length, s.title);
+  for (const u of Object.values(UNLOCKS)) if (u.lesson) assert.ok(LESSONS[u.lesson], u.lesson);
+  assert.deepEqual([...LESSON_ORDER].sort(), Object.keys(LESSONS).sort());
+  for (const [id, lesson] of Object.entries(LESSONS)) {
+    assert.ok(FEATURES[lesson.feature], `${id} feature`);
+    for (const s of lesson.steps) {
+      const words = [s.title, ...s.text, s.quiz?.q || "", ...(s.quiz?.choices || []), s.quiz?.why || ""];
+      for (const w of words) assert.ok(!w.includes("—") && !w.includes(";"), w);
+      if (s.quiz) assert.ok(s.quiz.answer >= 0 && s.quiz.answer < s.quiz.choices.length, s.title);
+      // A lesson may only click tabs, never something that changes the game.
+      if (s.click) assert.match(s.click.sel, /acct-tabs/, s.title);
     }
-    // The tour may only click tabs, never something that changes the game.
-    if (s.click) assert.match(s.click.sel, /acct-tabs/, s.title);
   }
-  assert.ok(quizzes >= 4);
 });

@@ -3,21 +3,37 @@
 import { upcomingPayments } from "./engine/index.js";
 import { DREAMS, dreamProgress } from "./data/dreams.js";
 import * as P from "./play.js";
+import { hasFeature, opensText, prologueStep, stageOf } from "./progression.js";
+
+// The one next thing to do in the prologue (coach panel and chapter box).
+export const PROLOGUE_TEXT = {
+  welcome: "Say hi to Sage, then head to the Guild Hall.",
+  firstShift: "Work your first shift at the Guild Hall to earn coins.",
+  moreShifts: "Work 3 shifts in all. Your piggy bank is filling up!",
+  market: "Visit the Shimmer Market. Will you spend or save?",
+  cottage: "Check on your creature and its dream at your Cottage.",
+  bank: "Take your coins to the Gilded Vault and open a bank account.",
+};
 
 // route: the screen it opens. x, y: where it sits on the map (percent).
+// feature: what unlocks it (js/progression.js). Locked places show on the map
+// as construction sites.
 export const PLACES = [
-  { id: "townhall", name: "Town Hall", icon: "townhall", route: "month", does: "This month's news, decisions and End Month", x: 50, y: 30 },
-  { id: "vault", name: "The Gilded Vault", icon: "vault", route: "accounts", does: "Your bank: cards, bills, statements, score and letters", x: 18, y: 36 },
-  { id: "guild", name: "Guild Hall", icon: "guild", route: "guild", does: "Work a shift to earn money", x: 82, y: 36 },
-  { id: "market", name: "Shimmer Market", icon: "market", route: "shop", does: "Spend money on things for your creature", x: 14, y: 74 },
-  { id: "cottage", name: "Your Cottage", icon: "cottage", route: "cottage", does: "Your creature, its dream and your settings", x: 37, y: 66 },
-  { id: "plaza", name: "Friendship Plaza", icon: "plaza", route: "friends", does: "Friends, groups and gifts", x: 63, y: 74 },
-  { id: "academy", name: "The Academy", icon: "academy", route: "academy", does: "Practice to earn XP, see trophies and ranks", x: 86, y: 77 },
+  { id: "townhall", name: "Town Hall", icon: "townhall", route: "month", feature: "townhall", does: "This month's news, decisions and End Month", x: 50, y: 30 },
+  { id: "vault", name: "The Gilded Vault", icon: "vault", route: "accounts", feature: "vault", does: "Your bank: checking, savings, bills and letters", x: 17, y: 34 },
+  { id: "guild", name: "Guild Hall", icon: "guild", route: "guild", feature: "guild", does: "Work a shift to earn money", x: 83, y: 34 },
+  { id: "records", name: "Hall of Records", icon: "scroll", route: "records", feature: "records", does: "Your credit report and credit score", x: 67, y: 47 },
+  { id: "garage", name: "The Garage", icon: "car", route: "garage", feature: "garage", does: "Buy a ride with cash or a loan", x: 25, y: 55 },
+  { id: "market", name: "Shimmer Market", icon: "market", route: "shop", feature: "market", does: "Spend money on things for your creature", x: 12, y: 76 },
+  { id: "cottage", name: "Your Cottage", icon: "cottage", route: "cottage", feature: "cottage", does: "Your creature, its dream, its home and your settings", x: 40, y: 67 },
+  { id: "plaza", name: "Friendship Plaza", icon: "plaza", route: "friends", feature: "plaza", does: "Friends, groups and gifts", x: 64, y: 76 },
+  { id: "academy", name: "The Academy", icon: "academy", route: "academy", feature: "academy", does: "Lessons and practice to earn XP, trophies and ranks", x: 87, y: 77 },
 ];
 
 // { [placeId]: { text, tone: "action" | "warn" | "calm" | "off", count } }
 export function placeStatus({ life, play, creature, classInfo }) {
   const out = {};
+  const prologue = stageOf(play) === 0;
   const released = classInfo?.releasedChapter || 1;
   const paused = Boolean(classInfo?.paused);
   const a = play.active;
@@ -47,6 +63,23 @@ export function placeStatus({ life, play, creature, classInfo }) {
   out.academy = xpLeft ? { text: `${xpLeft} XP to earn`, tone: "action" } : { text: "All answer XP earned", tone: "calm" };
   out.plaza = classInfo?.social === false ? { text: "Closed by your teacher", tone: "off" } : { text: "Friends and gifts", tone: "calm" };
 
+  out.garage = { text: play.garage?.vehicle ? "Your ride is here" : "Rides for sale", tone: "calm" };
+  out.records = { text: life?.score == null ? "No score yet" : `Score ${life.score}`, tone: "calm" };
+
+  // The prologue: Sage's current step lights up its place.
+  if (prologue) {
+    const step = prologueStep(play);
+    out.guild = { text: play.prologue.shifts ? `${play.prologue.shifts} shift${play.prologue.shifts === 1 ? "" : "s"} worked` : "Earn your first coins", tone: step?.place === "guild" ? "action" : "calm" };
+    out.market = { text: "Spend or save?", tone: step?.place === "market" ? "action" : "calm" };
+    if (step?.place === "vault") out.vault = { text: "Open your first bank account", tone: "action" };
+  }
+
+  // Anything not unlocked yet says when it opens.
+  for (const pl of PLACES) {
+    const open = hasFeature(play, pl.feature, life) || (pl.id === "vault" && prologueStep(play)?.place === "vault");
+    if (!open) out[pl.id] = { text: opensText(pl.feature), tone: "locked" };
+  }
+
   const dream = creature?.dream ? dreamProgress(life, creature.dream, play) : null;
   if (!creature?.dream) out.cottage = { text: "Pick your creature's dream", tone: "action" };
   else if (play.dreamDone) out.cottage = { text: `${DREAMS[creature.dream].title}: done!`, tone: "calm" };
@@ -57,6 +90,7 @@ export function placeStatus({ life, play, creature, classInfo }) {
 
 // One plain sentence telling the student what to do next.
 export function nextStep({ play, classInfo, status }) {
+  if (stageOf(play) === 0) return PROLOGUE_TEXT[prologueStep(play)?.id] || "Explore the kingdom.";
   if (classInfo?.paused) return "Play is paused. You can still visit the Vault, the Market and the Academy.";
   if (!play.active) {
     if (play.summary) return "Visit Town Hall to wrap up the chapter.";

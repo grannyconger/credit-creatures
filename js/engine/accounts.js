@@ -369,8 +369,10 @@ export function quoteAutoLoan(life, { price, downPayment = 0, termMonths = 60, a
   const apr = Math.round((autoLoanApr(life.score) + aprBump) * 10000) / 10000;
   const payment = amortizedPayment(amount, apr, termMonths);
   const totalInterest = money(payment * termMonths - amount);
-  const approved = life.score == null || life.score >= CONFIG.loans.autoMinScore;
-  return { amount, apr, termMonths, payment, totalInterest, approved };
+  // Lenders also check that the payment fits your income (counting at least minIncome).
+  const fits = payment <= Math.max(CONFIG.loans.autoAfford.minIncome, monthlyIncome(life)) * CONFIG.loans.autoAfford.maxPaymentShare;
+  const approved = (life.score == null || life.score >= CONFIG.loans.autoMinScore) && fits;
+  return { amount, apr, termMonths, payment, totalInterest, approved, fits };
 }
 
 export function openAutoLoan(life, { price, downPayment = 0, termMonths = 60, lender = "creditUnion", aprBump = 0 }) {
@@ -381,7 +383,7 @@ export function openAutoLoan(life, { price, downPayment = 0, termMonths = 60, le
   addInquiry(next, "Auto loan");
   if (!q.approved) {
     logAction(next, "openAutoLoan", args, { approved: false });
-    return { life: next, ok: false, quote: q, message: "Denied. Your score is too low for this loan right now." };
+    return { life: next, ok: false, quote: q, message: q.fits ? "Denied. Your score is too low for this loan right now." : `Denied. A ${dollars(q.payment)} monthly payment is too big for your income right now. A cheaper ride or a bigger down payment would help.` };
   }
   next.checking = money(next.checking - downPayment);
   const a = openInstallment(next, {

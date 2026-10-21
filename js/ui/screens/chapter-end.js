@@ -1,5 +1,7 @@
 // Chapter summary and reflection (SPEC §9): score change, best and worst
 // decision, then one question plus fun and clarity ratings for the teacher.
+import { afterChapter } from "../../progression.js";
+import { celebrate } from "../celebrate.js";
 import { h, add, fill, money } from "../dom.js";
 import { creatureSvg } from "../creature-art.js";
 import { chapterInfo, RATING_LABELS, REFLECTION_MAX } from "../../data/chapters.js";
@@ -53,7 +55,7 @@ export function render(root, { game, go, track, refreshWho }) {
   if (run.practice) {
     add(panel, h("div.row", h("button.big", { type: "button", onclick: () => ((game.practice = null), go("hub")) }, "Back to my real game")));
   } else {
-    add(panel, reflectionForm(s, run, go, track));
+    add(panel, reflectionForm(s, run, go, track, game.save.creature.name));
   }
   root.append(panel);
 }
@@ -106,8 +108,8 @@ function ratingGroup(name, question) {
   } };
 }
 
-function reflectionForm(s, run, go, track) {
-  const question = chapterInfo(s.chapter).reflect;
+function reflectionForm(s, run, go, track, creatureName) {
+  const question = chapterInfo(s.chapter, run.play).reflect;
   const text = h("textarea", { id: "reflection", rows: 4, maxlength: REFLECTION_MAX, "aria-describedby": "reflection-help" });
   const count = h("span.muted", `0 / ${REFLECTION_MAX}`);
   text.addEventListener("input", () => (count.textContent = `${text.value.length} / ${REFLECTION_MAX}`));
@@ -141,6 +143,14 @@ function reflectionForm(s, run, go, track) {
     }
     btn.disabled = true;
     P.submitReflection(run.play, { text: words, fun: fun.value, clear: clear.value });
+    // Phase 10: between chapters (after Chapter 1, time jumps to age 18).
+    const between = run.practice ? { skipped: null } : afterChapter(run.play, run.life, s.chapter);
+    if (between.skipped) {
+      run.life = between.life;
+      const k = between.skipped;
+      track("timeSkip", { months: k.months, earned: k.earned, spent: k.spent });
+      celebrate({ kind: "timeSkip", id: String(s.chapter), icon: "⏳", kicker: "Time flies!", title: `${k.months} months later, ${creatureName} is 18`, text: `A part-time job paid ${money(k.earned)} along the way, and ${money(k.spent)} went to everyday things. Now you're old enough to borrow money.` });
+    }
     track("reflection", { chapter: s.chapter, chars: words.length, seconds: Math.round((Date.now() - started) / 1000) });
     track("chapterRating", { chapter: s.chapter, fun: fun.value, clear: clear.value });
     await run.persist("reflection");

@@ -10,14 +10,21 @@ const WHAT = {
   bnpl: "Splits it into 3 payments from checking. Not on your report unless you miss and it goes to collections.",
 };
 
-export function payWith({ life, cost, onPick, onBack }) {
-  const options = paymentOptions(life, cost);
+// allowed: the methods unlocked so far (js/progression.js payMethods). piggy:
+// the prologue, before the bank, when "debit" means coins from the piggy bank.
+export function payWith({ life, cost, onPick, onBack, allowed = null, piggy = false }) {
+  const methods = (cost.methods || ["debit", "card", "bnpl"]).filter((m) => !allowed || allowed.includes(m));
+  const options = paymentOptions(life, { ...cost, methods });
   const list = h("div.pay-options", { role: "list" });
   for (const o of options) {
     let icon = "🏦";
     let name = "Gilded Vault debit card";
     let numbers;
-    if (o.kind === "debit") {
+    if (o.kind === "debit" && piggy) {
+      icon = "🐷";
+      name = "Coins from your piggy bank";
+      numbers = h("span.pay-numbers", `Piggy bank ${money(o.before)} → ${money(o.after)}`);
+    } else if (o.kind === "debit") {
       numbers = h("span.pay-numbers", `Checking ${money(o.before)} → ${money(o.after)}`);
     } else if (o.kind === "card") {
       const a = findAccount(life, o.accountId);
@@ -40,7 +47,7 @@ export function payWith({ life, cost, onPick, onBack }) {
         "button.pay-option",
         { type: "button", role: "listitem", disabled: !o.ok, onclick: () => onPick(o.method, o) },
         h("span.pay-icon", { "aria-hidden": "true" }, icon),
-        h("span.pay-text", h("strong", name), h("small", WHAT[o.kind]), numbers, o.ok ? null : h("small.error-text", o.reason))
+        h("span.pay-text", h("strong", name), h("small", piggy && o.kind === "debit" ? "Cash you already have. Once it's spent, it's gone." : WHAT[o.kind]), numbers, o.ok ? null : h("small.error-text", o.reason))
       )
     );
   }
@@ -48,9 +55,9 @@ export function payWith({ life, cost, onPick, onBack }) {
   return h(
     "div.pay-with",
     h("h3", `Pay ${money(cost.amount)} with...`),
-    h("p.note.tight", "📱 Your digital wallet holds your debit card and any credit cards."),
+    piggy ? null : h("p.note.tight", "📱 Your digital wallet holds your debit card and any credit cards."),
     list,
-    none ? h("p.error-text", "Nothing in your wallet can cover this right now.") : null,
+    none ? h("p.error-text", piggy ? "Your piggy bank doesn't have enough yet. Work a shift at the Guild Hall." : "Nothing in your wallet can cover this right now.") : null,
     h("div.row", h("button.secondary", { type: "button", onclick: onBack }, "Back"))
   );
 }

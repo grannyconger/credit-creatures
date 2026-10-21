@@ -1,6 +1,6 @@
 // Your Cottage: the creature menu, open from anywhere by clicking the creature
 // in the top bar. Its dream, its look, its rank, and your settings.
-import { h, add, fill, ageLabel, toast } from "../dom.js";
+import { h, add, fill, money, ageLabel, toast } from "../dom.js";
 import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
 import { fullName } from "../../data/creatures.js";
@@ -9,7 +9,11 @@ import { rankFor } from "../../progress.js";
 import { placeHeader } from "../place-header.js";
 import { settingsControls } from "../settings-controls.js";
 import { celebrate } from "../celebrate.js";
-import { runTour } from "../tour.js";
+import { firstVisitLesson } from "../guide.js";
+import { hasFeature } from "../../progression.js";
+import { HOME_UPGRADES, homeQuote, homeSteps } from "../../data/garage.js";
+import { loanPicker } from "../loan-picker.js";
+import { resolveChoice } from "../../engine/index.js";
 import { xpBar } from "./trophies.js";
 import { meters } from "./hub.js";
 
@@ -19,6 +23,10 @@ export function render(root, { game, go, track, refreshWho, back }) {
   const panel = h("section.panel.place-screen.cottage");
   root.append(panel);
   track("cottageOpen", {});
+  if (play.prologue && !play.prologue.cottageVisited && !game.practice) {
+    play.prologue.cottageVisited = true;
+    game.persist("prologueCottage");
+  }
 
   function paint() {
     const life = game.life;
@@ -42,10 +50,9 @@ export function render(root, { game, go, track, refreshWho, back }) {
             h("button", { type: "button", onclick: () => go("creature") }, icon("palette", { size: 18 }), " Customize"),
             h("button.secondary", { type: "button", onclick: () => go("trophies") }, icon("trophy", { size: 18 }), " Trophies"),
             game.classInfo?.social === false ? null : h("button.secondary", { type: "button", onclick: () => go("friends") }, icon("people", { size: 18 }), " Friends")
-          ),
-          h("button.link", { type: "button", onclick: () => runTour({ game, track }) }, "🧭 Take the Kingdom Tour")
+          )
         ),
-        h("div.cottage-side", dreamCard(dream, prog), settingsCard())
+        h("div.cottage-side", dreamCard(dream, prog), hasFeature(play, "homeLoan") ? homeCard() : null, settingsCard())
       )
     );
   }
@@ -105,6 +112,50 @@ export function render(root, { game, go, track, refreshWho, back }) {
     return add(item, h("div.row", btn));
   }
 
+  // Chapter 2: fix up your Cottage with cash or a home improvement loan.
+  // Upgrades show on the kingdom map.
+  function homeCard() {
+    play.home ??= [];
+    const box = h(
+      "section.dream-card.home-card-box",
+      h("h3", icon("home", { size: 20 }), " Fix up your Cottage"),
+      h("p.note.tight", "Pay cash, or take a home improvement loan and pay it back monthly. Upgrades show on your kingdom map.")
+    );
+    for (const u of HOME_UPGRADES) {
+      const card = h("article.home-card", h("h3", `${u.icon} ${u.name}`), h("p.tight", h("strong", money(u.price)), ` · ${u.about}`));
+      if (play.home.includes(u.id)) {
+        add(card, h("p.good-text.tight", icon("check", { size: 14 }), " Done"));
+      } else if (!game.practice) {
+        add(
+          card,
+          loanPicker({
+            life: game.life,
+            item: u,
+            quote: (plan) => homeQuote(game.life, u, plan),
+            terms: u.loan?.terms,
+            onBuy: async (plan) => {
+              const r = resolveChoice(game.life, { steps: homeSteps(u, plan) });
+              if (!r.ok) return toast(r.message, "bad");
+              game.life = r.life;
+              track("homeUpgrade", { id: u.id, cash: Boolean(plan.cash), term: plan.term || 0, approved: !r.denied });
+              if (r.denied) {
+                toast(r.message, "bad");
+              } else {
+                play.home.push(u.id);
+                celebrate({ kind: "home", id: u.id, icon: u.icon, kicker: plan.cash ? "Paid in full!" : "Loan approved!", title: u.name, text: plan.cash ? "Your Cottage looks even better." : "Your first payment comes out at the next End Month." });
+              }
+              refreshWho();
+              await game.persist("homeUpgrade");
+              paint();
+            },
+          })
+        );
+      }
+      add(box, card);
+    }
+    return box;
+  }
+
   function settingsCard() {
     return h(
       "section.settings-card",
@@ -122,4 +173,5 @@ export function render(root, { game, go, track, refreshWho, back }) {
   }
 
   paint();
+  firstVisitLesson({ game, track, id: "cottage", route: "cottage" });
 }

@@ -1,8 +1,9 @@
 // Lesson moment: lenders vs payment networks (SPEC §7), 3 screens and a quick check.
+// Phase 10: the first step of applying for a card at the Vault (route cardIntro).
 import { h, add, clear } from "../dom.js";
 import { NETWORK_SLIDES, NETWORK_QUIZ } from "../../data/onboarding.js";
 
-export function render(root, { advance, track }) {
+export function render(root, { go, track }) {
   const panel = h("section.panel.narrow");
   root.append(panel);
   const started = Date.now();
@@ -10,7 +11,7 @@ export function render(root, { advance, track }) {
 
   function show() {
     clear(panel);
-    panel.append(h("p.step-label", "Chapter 1: who is behind a card"));
+    panel.append(h("p.step-label", "Before you apply: who is behind a card"));
     if (k === NETWORK_SLIDES.length) return quiz();
     const s = NETWORK_SLIDES[k];
     add(
@@ -49,7 +50,7 @@ export function render(root, { advance, track }) {
                     type: "button",
                     onclick: () => {
                       track("networkLesson", { seconds: Math.round((Date.now() - started) / 1000) });
-                      advance("design");
+                      go("cardDesign");
                     },
                   },
                   "Design your card"

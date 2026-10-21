@@ -16,7 +16,8 @@ const REACTIONS = [
 // choose(key, method) runs the choice and returns play.choose's result.
 // onContinue({ reaction, confusing }) moves on.
 // factorCheck(choice) returns an optional Factor Check (SPEC §11) or null.
-export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue, track, factorCheck }) {
+// payAllowed: the ways to pay unlocked so far (js/progression.js payMethods).
+export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue, track, factorCheck, payAllowed = null }) {
   const shownAt = Date.now();
   const body = h("div.dc-body");
   const card = h(
@@ -58,7 +59,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
 
   function pick(c) {
     if (!c.cost) return run(c, null);
-    fill(body, payWith({ life, cost: c.cost, onPick: (method) => run(c, method), onBack: () => showChoices() }));
+    fill(body, payWith({ life, cost: c.cost, allowed: payAllowed, onPick: (method) => run(c, method), onBack: () => showChoices() }));
     body.querySelector("button.pay-option:not([disabled])")?.focus();
   }
 

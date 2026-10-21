@@ -57,11 +57,16 @@ const BUILDINGS = {
         <path d="M${cx - 46} -14 L${cx - 38} -42 H${cx + 38} L${cx + 46} -14 Z" fill="${i ? "var(--k-awning2)" : "var(--k-awning)"}"/>
         ${[0, 1, 2, 3].map((k) => `<path d="M${cx - 38 + k * 23} -42 l-6 28 h12 l4 -28z" fill="var(--k-awning-stripe)"/>`).join("")}`).join("")}
     </g>`,
-  cottage: ({ x, y }) => `
+  // home: Cottage upgrades bought in Chapter 2 (js/data/garage.js) show here.
+  cottage: ({ x, y }, home = []) => `
     <g transform="translate(${x} ${y})">
+      ${home.includes("workshop") ? `<g transform="translate(-92 6)"><rect x="-26" y="-18" width="52" height="40" rx="3" fill="var(--k-wall)"/><path d="M-32 -16 L0 -38 L32 -16 Z" fill="var(--k-roof-red)"/><rect x="-9" y="2" width="18" height="20" rx="2" fill="var(--k-door)"/><path d="M-20 -6 l6 -6 m0 6 l-6 -6" stroke="var(--k-trim)" stroke-width="2.5"/></g>` : ""}
       <rect x="22" y="-74" width="14" height="30" fill="var(--k-stone)"/>
       <rect x="-50" y="-28" width="100" height="62" rx="5" fill="var(--k-wall)"/>
-      <path d="M-62 -26 Q-40 -76 0 -80 Q40 -76 62 -26 Z" fill="var(--k-roof-green)"/>
+      <path d="M-62 -26 Q-40 -76 0 -80 Q40 -76 62 -26 Z" fill="${home.includes("roof") ? "var(--k-gold)" : "var(--k-roof-green)"}"/>
+      ${home.includes("roof") ? `<path d="M-46 -40 Q0 -70 46 -40" stroke="var(--k-trim)" stroke-width="2" fill="none" opacity="0.5"/>` : ""}
+      ${home.includes("garden") ? `<g transform="translate(70 26)"><rect x="-22" y="-6" width="44" height="16" rx="4" fill="var(--k-beam)"/>${[-14, -4, 6, 16].map((cx, i) => `<circle cx="${cx}" cy="-8" r="5" fill="${["#ff8a3d", "#6fae5a", "#e05a7a", "#6fae5a"][i]}"/>`).join("")}</g>` : ""}
+      ${home.includes("rug") ? `<ellipse cx="0" cy="40" rx="22" ry="5" fill="#c06a9a"/>` : ""}
       ${win(-38, -12, 18, 18)}${win(20, -12, 18, 18)}
       <path d="M-12 34 v-26 a12 12 0 0 1 24 0 v26z" fill="var(--k-door)"/><circle cx="6" cy="20" r="2" fill="var(--k-gold)"/>
       ${[-44, -30, 30, 44].map((cx) => `<circle cx="${cx}" cy="38" r="6" fill="${cx < 0 ? "#f48fb1" : "#ffd54f"}"/>`).join("")}
@@ -77,6 +82,23 @@ const BUILDINGS = {
       ${[-70, -42, -14, 14, 42, 70].map((cx, i) => `<path d="M${cx - 8} ${-48 + Math.abs(cx) / 9} l8 14 8 -14z" fill="${["#e05a7a", "#f2c84b", "#4fc3f7", "#8fd6b4", "#ce93d8", "#ffb347"][i]}"/>`).join("")}
       <rect x="-86" y="10" width="24" height="7" rx="2" fill="var(--k-beam)"/><rect x="62" y="10" width="24" height="7" rx="2" fill="var(--k-beam)"/>
     </g>`,
+  garage: ({ x, y }) => `
+    <g transform="translate(${x} ${y})">
+      <rect x="-54" y="-30" width="108" height="60" rx="4" fill="var(--k-wall)"/>
+      <path d="M-62 -28 L0 -62 L62 -28 Z" fill="var(--k-roof-red)"/>
+      <rect x="-36" y="-14" width="72" height="44" rx="3" fill="var(--k-stone-light)" stroke="var(--k-trim)" stroke-width="3"/>
+      ${[-4, 6, 16].map((dy) => `<path d="M-34 ${dy} H34" stroke="var(--k-trim)" stroke-width="2" opacity="0.6"/>`).join("")}
+      <g transform="translate(0 -40)"><circle r="11" fill="var(--k-sign)"/><path d="M-6 3 h12 l-2 -5 h-8z M-4 4 a1.6 1.6 0 1 0 0.1 0 M4 4 a1.6 1.6 0 1 0 0.1 0" stroke="var(--k-trim)" stroke-width="1.8" fill="none"/></g>
+    </g>`,
+  records: ({ x, y }) => `
+    <g transform="translate(${x} ${y})">
+      <rect x="-46" y="-36" width="92" height="70" rx="3" fill="var(--k-stone)"/>
+      <path d="M-50 -36 Q0 -86 50 -36 Z" fill="var(--k-roof-blue)"/>
+      ${[-32, -12, 12, 32].map((cx) => `<rect x="${cx - 5}" y="-28" width="10" height="56" rx="3" fill="var(--k-stone-light)"/>`).join("")}
+      <path d="M-14 -56 q14 -8 14 0 q0 -8 14 0 v14 q-14 -8 -14 0 q0 -8 -14 0z" fill="var(--k-stone-light)" stroke="var(--k-trim)" stroke-width="2"/>
+      <rect x="-11" y="4" width="22" height="30" rx="3" fill="var(--k-door)"/>
+      <rect x="-52" y="32" width="104" height="7" rx="3" fill="var(--k-trim)"/>
+    </g>`,
   academy: ({ x, y }) => `
     <g transform="translate(${x} ${y})">
       <rect x="-56" y="-30" width="112" height="66" rx="4" fill="var(--k-stone)"/>
@@ -90,7 +112,16 @@ const BUILDINGS = {
     </g>`,
 };
 
-function scene(creature, ageMonths) {
+// A place that isn't open yet: the building faded behind scaffolding, with a
+// little fence and a sign. The button over it says when it opens.
+const construction = ({ x, y }) => `
+  <g class="k-construction" transform="translate(${x} ${y})">
+    <path d="M-50 36 V-46 M50 36 V-46 M-50 -46 H50 M-50 -6 H50 M-50 -46 L50 36 M50 -46 L-50 36" stroke="var(--k-beam)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M-60 40 H60" stroke="var(--k-sign)" stroke-width="7" stroke-dasharray="14 8"/>
+  </g>`;
+
+function scene(creature, ageMonths, status = {}, home = []) {
+  const locked = (id) => status[id]?.tone === "locked";
   const p = Object.fromEntries(PLACES.map((pl) => [pl.id, at(pl)]));
   const cot = p.cottage;
   const pathTo = (q) => `M${cot.x} ${cot.y + 40} Q${(cot.x + q.x) / 2} ${Math.max(cot.y, q.y) + 70} ${q.x} ${q.y + 44}`;
@@ -104,15 +135,15 @@ function scene(creature, ageMonths) {
     <path d="M0 210 Q180 120 360 190 T720 170 T1000 190 V600 H0 Z" fill="var(--k-hill-back)"/>
     <path d="M0 290 Q240 220 500 270 T1000 260 V600 H0 Z" fill="var(--k-hill)"/>
     <path d="M0 560 Q250 520 500 560 T1000 540 V600 H0 Z" fill="var(--k-water)" opacity="0.8"/>
-    ${PLACES.filter((pl) => pl.id !== "cottage").map((pl) => `<path d="${pathTo(p[pl.id])}" stroke="var(--k-path)" stroke-width="16" fill="none" stroke-linecap="round"/>`).join("")}
+    ${PLACES.filter((pl) => pl.id !== "cottage").map((pl) => `<path d="${pathTo(p[pl.id])}" stroke="var(--k-path)" stroke-width="16" fill="none" stroke-linecap="round" ${locked(pl.id) ? 'stroke-dasharray="2 22" opacity="0.7"' : ""}/>`).join("")}
     ${tree(70, 250, 0.9)}${tree(300, 250, 0.8)}${tree(660, 240, 0.85)}${tree(930, 250, 0.9)}${tree(240, 470, 1)}${tree(760, 520, 0.9)}${tree(980, 470, 0.8)}${tree(40, 530, 1)}
-    ${PLACES.map((pl) => BUILDINGS[pl.id](p[pl.id])).join("")}
+    ${PLACES.map((pl) => (locked(pl.id) ? `<g class="k-locked">${BUILDINGS[pl.id](p[pl.id])}</g>${construction(p[pl.id])}` : BUILDINGS[pl.id](p[pl.id], home))).join("")}
     ${critter}
   </svg>`;
 }
 
 // status: placeStatus() result. onOpen(place) runs when a place is chosen.
-export function kingdomMap({ creature, ageMonths, status, onOpen }) {
+export function kingdomMap({ creature, ageMonths, status, onOpen, home = [] }) {
   const placeButton = (pl, inList) => {
     const st = status[pl.id] || { text: "", tone: "calm" };
     return h(
@@ -126,14 +157,14 @@ export function kingdomMap({ creature, ageMonths, status, onOpen }) {
         onclick: () => onOpen(pl),
       },
       h("span.place-name", icon(pl.icon, { size: 18 }), ` ${pl.name}`),
-      st.text ? h("span.place-badge", st.tone === "warn" ? icon("alert", { size: 14 }) : st.tone === "action" ? icon("sparkle", { size: 14 }) : null, ` ${st.text}`) : null,
+      st.text ? h("span.place-badge", st.tone === "warn" ? icon("alert", { size: 14 }) : st.tone === "action" ? icon("sparkle", { size: 14 }) : st.tone === "locked" ? icon("lock", { size: 14 }) : null, ` ${st.text}`) : null,
       inList ? h("small.place-does", pl.does) : null
     );
   };
   return h(
     "section.kingdom",
     { "aria-label": "The Kingdom of Coinhaven" },
-    h("div.kingdom-stage", { html: scene(creature, ageMonths) }, PLACES.map((pl) => placeButton(pl, false))),
+    h("div.kingdom-stage", { html: scene(creature, ageMonths, status, home) }, PLACES.map((pl) => placeButton(pl, false))),
     h("div.kingdom-list", PLACES.map((pl) => placeButton(pl, true)))
   );
 }

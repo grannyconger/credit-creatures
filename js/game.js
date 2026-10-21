@@ -1,5 +1,6 @@
 // The signed-in student's game: profile, save and the onboarding step.
-import { LIFE_VERSION } from "./engine/index.js";
+import { LIFE_VERSION, createLife } from "./engine/index.js";
+import { CONFIG } from "./data/config.js";
 import { track, flush } from "./telemetry.js";
 import { toast } from "./ui/dom.js";
 import { newPlay, ensurePlay } from "./play.js";
@@ -10,10 +11,15 @@ import { fullName } from "./data/creatures.js";
 import { newlyUnlocked, publicLook } from "./data/looks.js";
 
 // Onboarding steps in order (SPEC §5). After "done", students live in the hub.
-export const STEPS = ["intro", "profile", "creature", "dream", "join", "teen", "tutorial", "skip", "networks", "design", "result", "done", "hub"];
+// Phase 10: after joining a class, the prologue plays in the kingdom itself
+// (js/progression.js). The old Chapter 1 steps (teen options, tutorial months,
+// time skip, Design Your Card) moved into the chapters.
+export const STEPS = ["intro", "profile", "creature", "dream", "join", "hub"];
+// Steps from before Phase 10. A save stopped in one of them starts the prologue.
+const OLD_STEPS = new Set(["teen", "tutorial", "skip", "networks", "design", "result", "done"]);
 
 // Screens open once the student reaches the hub. The router guards each one.
-export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts", "shop", "trophies", "friends", "guild", "academy", "cottage"]);
+export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts", "shop", "trophies", "friends", "guild", "academy", "cottage", "garage", "records", "cardIntro", "cardDesign", "cardResult"]);
 
 // Steps a student can go back to after moving past them.
 export const EDITABLE = new Set(["profile", "creature", "dream"]);
@@ -55,8 +61,17 @@ export function createGame(user, db) {
         };
         game.returning = true;
       }
+      if (OLD_STEPS.has(game.step)) game.beginPrologue();
       if (game.save.play?.settings) applySettings(game.save.play.settings);
       if (game.profile.classId) game.classInfo = await db.getClass(game.profile.classId).catch(() => null);
+    },
+
+    // A fresh 16-year-old life, a Phase 10 play state and the kingdom.
+    beginPrologue() {
+      const seed = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+      game.save.life = createLife({ seed, name: game.save.creature?.name || "", ageMonths: CONFIG.onboarding.startAgeMonths });
+      game.save.play = newPlay({ phased: true });
+      game.save.onboarding = { step: "hub" };
     },
 
     get play() {

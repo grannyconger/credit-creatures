@@ -4,6 +4,12 @@ import { h } from "../dom.js";
 const CODE_PATTERN = /^[A-Z0-9]{6}$/;
 
 export function render(root, { game, advance, track }) {
+  // Phase 10: joining a class starts the prologue in the kingdom.
+  const start = async () => {
+    game.beginPrologue();
+    track("prologueStart", {});
+    await advance("hub");
+  };
   const input = h("input.code-input", { type: "text", maxlength: 6, autocomplete: "off", id: "class-code", placeholder: "ABC234" });
   const error = h("p.error", { role: "alert" });
   const btn = h("button", { type: "submit" }, "Join class");
@@ -12,7 +18,7 @@ export function render(root, { game, advance, track }) {
     ? h(
         "div.callout.good",
         h("p", "You are in ", h("strong", game.classInfo.name), "."),
-        h("button", { type: "button", onclick: () => advance("teen") }, "Next: turn 16")
+        h("button", { type: "button", onclick: () => start() }, "Enter the kingdom")
       )
     : null;
 
@@ -52,7 +58,7 @@ export function render(root, { game, advance, track }) {
       game.profile.classId = found.classId;
       // The full class doc has teacherEmail, which every save carries for the teacher's roster.
       game.classInfo = (await game.db.getClass(found.classId).catch(() => null)) || { id: found.classId, name: found.name };
-      await advance("teen");
+      await start();
     } catch (err) {
       console.error(err);
       error.textContent = "Joining did not work. Please try again.";

@@ -1,7 +1,7 @@
 // The kingdom hub (teacher request 2026-10-20): home base for everything.
 // Who you're caring for and its dream, this chapter's next step, and the
 // illustrated village. Every place opens from here and comes back here.
-import { h, add, fill, money, ageLabel } from "../dom.js";
+import { h, add, fill, money, ageLabel, toast } from "../dom.js";
 import { creatureSvg } from "../creature-art.js";
 import { icon } from "../icons.js";
 import { fullName } from "../../data/creatures.js";
@@ -10,13 +10,13 @@ import { CONFIG } from "../../data/config.js";
 import { DREAMS, dreamProgress } from "../../data/dreams.js";
 import { HUB_HELP } from "../../data/story.js";
 import * as P from "../../play.js";
-import { placeStatus, nextStep } from "../../places.js";
+import { placeStatus, nextStep, PLACES, PROLOGUE_TEXT } from "../../places.js";
 import { moneyChips } from "../wallet.js";
 import { kingdomMap } from "../kingdom-map.js";
 import { rankFor } from "../../progress.js";
 import { celebrate } from "../celebrate.js";
-import { runTour } from "../tour.js";
-import { GUIDE } from "../../data/tour.js";
+import { runLesson } from "../guide.js";
+import { newUnlocks, prologueStep, PROLOGUE_STEPS, stageOf } from "../../progression.js";
 
 export function render(root, { game, go, track }) {
   const run = game.run;
@@ -50,39 +50,48 @@ export function render(root, { game, go, track }) {
             )
           )
         : null,
-      tourOffer(),
       h("div.hub-top", guardianCard(), chapterCard(status, checking)),
-      moneyChips(life, play.sparkle.total),
+      moneyChips(life, play),
       kingdomMap({
         creature: c,
         ageMonths: life.ageMonths,
         status,
+        home: play.home || [],
         onOpen: (pl) => {
           track("placeOpen", { place: pl.id, status: status[pl.id]?.text || "" });
+          if (status[pl.id]?.tone === "locked") return toast(`${pl.name}: ${status[pl.id].text.toLowerCase()}. Keep playing to unlock it!`, "info");
           if (pl.id === "townhall" && !play.active && !play.summary) return startChapter();
           go(pl.route);
         },
       }),
-      h("p.note.center.hub-help", HUB_HELP),
+      stageOf(play) === 0 ? null : h("p.note.center.hub-help", HUB_HELP),
       run.practice ? null : recapBox(play, track),
       run.practice ? null : practiceBox(play, game, go, track)
     );
   }
 
-  // Every student is offered the Kingdom Tour until they finish or skip it.
-  function tourOffer() {
+  // Lessons that play on arrival: Sage's welcome in the prologue, then one
+  // for each new unlock (js/progression.js). Never in practice.
+  function autoLessons() {
+    if (run.practice) return;
     const real = game.save.play;
-    if (run.practice || real.tourDone || real.tourSkipped || tourHidden) return null;
-    return h(
-      "section.callout.tour-offer",
-      h("span", { html: creatureSvg(GUIDE.look, { size: 72, label: "" }) }),
-      h("div", h("p.tight", h("strong", "New: the Kingdom Tour 🧭")), h("p.tight", `${GUIDE.name} the ${GUIDE.role} shows you every place and how the game works. About 5 minutes, with a few quick questions. Finish it for the Grand Tour achievement.`)),
-      h(
-        "div.row",
-        h("button", { type: "button", onclick: () => runTour({ game, track }) }, "Start the tour"),
-        h("button.secondary", { type: "button", onclick: () => ((tourHidden = true), track("tourLater", {}), paint()) }, "Not now")
-      )
-    );
+    if (real.prologue && !real.prologue.welcomed) {
+      return runLesson({ game, track, id: "welcome", returnTo: "hub", onFinish: () => finishWelcome() });
+    }
+    const fresh = newUnlocks(real);
+    if (!fresh.length) return;
+    const last = fresh.at(-1);
+    track("unlock", { stage: last.stage });
+    game.persist("unlock");
+    if (last.lesson) runLesson({ game, track, id: last.lesson, returnTo: "hub" });
+    else celebrate({ kind: "unlock", id: String(last.stage), icon: last.icon, kicker: "Something new!", title: last.title, text: last.text });
+  }
+
+  async function finishWelcome() {
+    game.save.play.prologue.welcomed = true;
+    await game.persist("prologueWelcome");
+    root.replaceChildren();
+    render(root, { game, go, track });
   }
 
   // Who you're caring for, and how close its dream is.
@@ -105,9 +114,30 @@ export function render(root, { game, go, track }) {
     );
   }
 
+  // The prologue: Sage's quest box instead of a chapter.
+  function prologueCard() {
+    const step = prologueStep(play);
+    const place = PLACES_BY_ID[step?.place];
+    const done = PROLOGUE_STEPS.indexOf(step);
+    return h(
+      "section.chapter-box.prologue-box",
+      { "aria-live": "polite" },
+      h("p.step-label", `Prologue: step ${done + 1} of ${PROLOGUE_STEPS.length}`),
+      h("h2", "Coins in a jar"),
+      h("p.next-step", icon("next", { size: 16 }), " ", PROLOGUE_TEXT[step?.id] || ""),
+      h(
+        "ol.prologue-steps",
+        PROLOGUE_STEPS.map((st, i) => h("li", { class: i < done ? "done" : i === done ? "current" : "" }, i < done ? icon("check", { size: 14 }) : null, ` ${PROLOGUE_LABELS[st.id]}`))
+      ),
+      place && step.id !== "welcome" ? h("div.row", h("button", { type: "button", onclick: () => go(place.route) }, icon(place.icon, { size: 18 }), ` Go to ${place.name}`)) : null,
+      step?.id === "welcome" ? h("div.row", h("button", { type: "button", onclick: () => runLesson({ game, track, id: "welcome", returnTo: "hub", onFinish: () => finishWelcome() }) }, "Meet Sage")) : null
+    );
+  }
+
   function chapterCard(status, checking) {
+    if (stageOf(play) === 0) return prologueCard();
     const n = play.chapter;
-    const info = chapterInfo(play.active?.chapter ?? n);
+    const info = chapterInfo(play.active?.chapter ?? n, play);
     const label = play.active ? `Chapter ${play.active.chapter}, month ${play.active.monthIndex + 1} of ${play.active.months || CONFIG.pacing.monthsPerChapter}` : `Chapter ${n}`;
     const box = h("section.chapter-box", { "aria-live": "polite" }, h("p.step-label", label), h("h2", info.title), h("p.next-step", icon("next", { size: 16 }), " ", nextStep({ play, classInfo: game.classInfo, status })));
     const released = game.classInfo?.releasedChapter || 1;
@@ -161,7 +191,7 @@ export function render(root, { game, go, track }) {
     const released = game.classInfo?.releasedChapter || 1;
     track("releaseCheck", { released, chapter: play.chapter, manual });
     if (P.announceChapter(play, released)) {
-      const info = chapterInfo(play.chapter);
+      const info = chapterInfo(play.chapter, play);
       celebrate({ kind: "chapter", id: String(play.chapter), icon: "📣", kicker: "New chapter unlocked!", title: `Chapter ${play.chapter}: ${info.title}`, text: info.intro });
       await game.persist("chapterOpen");
     }
@@ -170,7 +200,11 @@ export function render(root, { game, go, track }) {
 
   paint();
   refreshRelease();
+  autoLessons();
 }
+
+const PLACES_BY_ID = Object.fromEntries(PLACES.map((p) => [p.id, p]));
+const PROLOGUE_LABELS = { welcome: "Meet Sage", firstShift: "Work a shift", moreShifts: "Work 3 shifts", market: "Visit the Market", cottage: "Visit your Cottage", bank: "Open a bank account" };
 
 // The dream's 3 stages as a track, plus the current stage's goals. Never
 // color alone: the words say which stage and how many goals are met.
@@ -195,7 +229,6 @@ export function meters(prog) {
 }
 
 let recapTracked = false;
-let tourHidden = false;
 
 // "Previously on..." (decision #3): built from saved month records and the
 // last chapter summary, no extra storage.

@@ -5,6 +5,7 @@ import * as P from "../../play.js";
 import { jobBoard } from "../job-board.js";
 import { placeHeader } from "../place-header.js";
 import { moneyChips } from "../wallet.js";
+import { firstVisitLesson } from "../guide.js";
 
 export function render(root, { game, go, track, refreshWho }) {
   const run = game.run;
@@ -21,8 +22,13 @@ export function render(root, { game, go, track, refreshWho }) {
   function paint() {
     board?.stop();
     board = null;
-    fill(panel, placeHeader({ go, iconName: "guild", title: "Guild Hall", subtitle: "Pick a job and work a shift. Pay depends on how well you do, and goes up with experience.", practice: run.practice }), moneyChips(run.life, play.sparkle.total));
-    if (!play.active) {
+    fill(panel, placeHeader({ go, iconName: "guild", title: "Guild Hall", subtitle: "Pick a job and work a shift. Pay depends on how well you do, and goes up with experience.", practice: run.practice }), moneyChips(run.life, play));
+    const prologue = play.prologue && !play.prologue.done;
+    if (prologue && P.shiftsLeft(play) <= 0) {
+      add(panel, h("p.callout", "🐷 Your piggy bank is filling up nicely. That's all the shifts for now. Check what Sage says to do next."), h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back to the kingdom")));
+      return;
+    }
+    if (!play.active && !prologue) {
       add(panel, h("p.callout", "The Guild Hall is open while a chapter is going. Start the next chapter at Town Hall."), h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back to the kingdom")));
       return;
     }
@@ -37,13 +43,14 @@ export function render(root, { game, go, track, refreshWho }) {
       track,
       save,
       onCollected: (pay) => {
-        toast(`${money(pay)} went into checking.`, "good");
+        toast(`${money(pay)} went into ${prologue ? "your piggy bank" : "checking"}.`, "good");
         paint();
       },
     });
-    add(panel, h("p.muted", `${left} shift${left === 1 ? "" : "s"} left this month.`), board);
+    add(panel, h("p.muted", prologue ? `${left} shift${left === 1 ? "" : "s"} left before the bank opens.` : `${left} shift${left === 1 ? "" : "s"} left this month.`), board);
   }
 
   paint();
+  firstVisitLesson({ game, track, id: "guild", route: "guild" });
   return () => board?.stop();
 }

@@ -5,8 +5,9 @@ import { pay, setAutopay, moveToSavings, moveToChecking, amountOwed, dollars } f
 import { walletStrip } from "../wallet.js";
 import { billsPanel } from "../bills-panel.js";
 import { notePayment } from "../../progress.js";
+import { hasFeature } from "../../progression.js";
 
-export function walletTab({ game, run, track, save, repaint }) {
+export function walletTab({ game, run, track, save, repaint, go }) {
   const life = run.life;
   const act = async (r, reason, data) => {
     if (!r.ok) return toast(r.message, "bad");
@@ -18,8 +19,13 @@ export function walletTab({ game, run, track, save, repaint }) {
   };
   const loans = life.accounts.filter((a) => a.kind === "installment" && a.status === "open" && a.owner !== "authorized");
   const plans = life.accounts.filter((a) => a.kind === "bnpl" && a.status === "open");
+  // Phase 10: once cards unlock, a student without one can apply here.
+  const noCard = hasFeature(run.play, "card", life) && !life.accounts.some((a) => a.kind === "revolving" && a.owner === "self" && a.status === "open");
   return h(
     "div",
+    noCard && !run.practice
+      ? h("section.callout.apply-card", h("p.tight", h("strong", "💳 Ready for your first credit card?")), h("p.tight", "Learn who's behind a card, design yours and apply. The Vault tells you why it says yes or no."), h("div.row", h("button", { type: "button", onclick: () => go("cardIntro") }, "Apply for a credit card")))
+      : null,
     walletStrip(life, game.save.creature),
     loans.length
       ? h(

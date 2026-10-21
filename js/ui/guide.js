@@ -1,12 +1,13 @@
-// Runs the Kingdom Tour (js/data/tour.js) on the real screens: it opens each
-// place, spotlights one part and explains it in a speech bubble. A full-screen
-// layer catches every click, so the tour never changes the game. It only
-// clicks tabs itself to show them.
+// Runs a lesson (js/data/lessons.js) on the real screens: it opens each place,
+// spotlights one part and explains it in a speech bubble from Sage. A
+// full-screen layer catches every click, so a lesson never changes the game.
+// It only clicks tabs itself to show them.
 import { h, fill } from "./dom.js";
 import { icon } from "./icons.js";
 import { creatureSvg } from "./creature-art.js";
 import { sound } from "./sound.js";
-import { TOUR_STEPS, GUIDE } from "../data/tour.js";
+import { LESSONS, GUIDE } from "../data/lessons.js";
+import { isLegacy } from "../progression.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const visible = (el) => {
@@ -36,7 +37,7 @@ async function waitFor(target, ms = 1500) {
 }
 
 // onFinish(done): done is true when the student reached the end.
-export function startTour({ track, onFinish }) {
+export function startGuide({ steps: STEPS, id, track, onFinish, returnTo = null }) {
   if (document.querySelector(".tour")) return;
   const startHash = location.hash;
   const spot = h("div.tour-spot", { "aria-hidden": "true" });
@@ -52,7 +53,7 @@ export function startTour({ track, onFinish }) {
   let current = null;
   let token = 0;
   const started = Date.now();
-  track("tourStart", {});
+  track("lessonStart", { lesson: id });
 
   const place = () => {
     const el = current;
@@ -91,7 +92,7 @@ export function startTour({ track, onFinish }) {
   async function show(n) {
     const my = ++token;
     i = n;
-    const step = TOUR_STEPS[i];
+    const step = STEPS[i];
     bubble.classList.add("loading");
     let route = step.route;
     let target = step.target;
@@ -120,13 +121,13 @@ export function startTour({ track, onFinish }) {
     paint(step, usedFallback);
     bubble.classList.remove("loading");
     requestAnimationFrame(place);
-    track("tourStep", { step: i + 1, found: Boolean(current) || !target });
+    track("lessonStep", { lesson: id, step: i + 1, found: Boolean(current) || !target });
   }
 
   function paint(step, usedFallback = false) {
-    const last = i === TOUR_STEPS.length - 1;
+    const last = i === STEPS.length - 1;
     let answered = !step.quiz;
-    const next = h("button", { type: "button", disabled: !answered, onclick: () => (last ? finish(true) : show(i + 1)) }, last ? "Finish the tour" : "Next");
+    const next = h("button", { type: "button", disabled: !answered, onclick: () => (last ? finish(true) : show(i + 1)) }, last ? "Got it!" : "Next");
     const quiz = step.quiz ? quizBox(step.quiz, () => ((answered = true), (next.disabled = false), next.focus())) : null;
     fill(
       bubble,
@@ -137,17 +138,18 @@ export function startTour({ track, onFinish }) {
         h("span.tour-guide", { html: creatureSvg(GUIDE.look, { size: 64, label: "" }) }),
         h("div", h("p.tour-kicker", `${GUIDE.name}, ${GUIDE.role}`), h("h2", { id: "tour-title" }, step.title))
       ),
+      step.big ? h("div.guide-big", { "aria-hidden": "true" }, step.big) : null,
       step.text.map((t) => h("p", t)),
       usedFallback ? h("p.note.tight", "This place opens while a chapter is going, so here's where to find it on the map.") : null,
       quiz
       ),
       h(
         "div.tour-foot",
-        h("span.tour-count", `${i + 1} of ${TOUR_STEPS.length}`),
-        h("progress", { max: TOUR_STEPS.length, value: i + 1, "aria-hidden": "true" }),
+        h("span.tour-count", `${i + 1} of ${STEPS.length}`),
+        h("progress", { max: STEPS.length, value: i + 1, "aria-hidden": "true" }),
         h(
           "span.tour-buttons",
-          last ? null : h("button.link", { type: "button", onclick: () => finish(false) }, "Skip tour"),
+          last ? null : h("button.link", { type: "button", onclick: () => finish(false) }, "Skip"),
           i > 0 ? h("button.secondary", { type: "button", onclick: () => show(i - 1) }, icon("back", { size: 16 }), " Back") : null,
           next
         )
@@ -166,7 +168,7 @@ export function startTour({ track, onFinish }) {
           "data-sound": "none",
           onclick: (e) => {
             const right = k === qz.answer;
-            track("tourQuiz", { step: i + 1, right });
+            track("lessonQuiz", { lesson: id, step: i + 1, right });
             if (right) {
               sound("coin");
               buttons.forEach((b) => (b.disabled = true));
@@ -189,14 +191,14 @@ export function startTour({ track, onFinish }) {
 
   function finish(done) {
     token++;
-    track(done ? "tourDone" : "tourSkip", { step: i + 1, seconds: Math.round((Date.now() - started) / 1000) });
+    track(done ? "lessonDone" : "lessonSkip", { lesson: id, step: i + 1, seconds: Math.round((Date.now() - started) / 1000) });
     removeEventListener("resize", place);
     removeEventListener("scroll", place, true);
     removeEventListener("keydown", keys, true);
     layer.remove();
     document.body.classList.remove("touring");
-    if (done) sound("fanfare");
-    location.hash = done ? "#/hub" : startHash || "#/hub";
+    if (done) sound("coin");
+    location.hash = returnTo ? `#/${returnTo}` : startHash || "#/hub";
     onFinish?.(done);
   }
 
@@ -221,18 +223,29 @@ export function startTour({ track, onFinish }) {
   show(0);
 }
 
-// Starts the tour for this student and remembers how it went in the real save
-// (never the practice copy): tourDone earns the Grand Tour achievement, and a
-// skip stops the hub from offering it again.
-export function runTour({ game, track, onFinish }) {
-  startTour({
+// Runs one lesson and remembers it in the real save (never a practice copy).
+// Lessons can be replayed from the Academy.
+export function runLesson({ game, track, id, onFinish, returnTo }) {
+  const steps = LESSONS[id]?.steps;
+  if (!steps) return onFinish?.(false);
+  startGuide({
+    steps,
+    id,
     track,
+    returnTo,
     onFinish: async (done) => {
       const play = game.save.play;
-      if (done) play.tourDone = { month: game.save.life?.month ?? 0 };
-      else play.tourSkipped = true;
-      await game.persist(done ? "tourDone" : "tourSkip");
+      play.lessonsSeen ??= [];
+      if (!play.lessonsSeen.includes(id)) play.lessonsSeen.push(id);
+      await game.persist(`lesson:${id}`);
       onFinish?.(done);
     },
   });
+}
+
+// The first visit to a place plays its lesson (new games only, never in practice).
+export function firstVisitLesson({ game, track, id, route }) {
+  const play = game.save.play;
+  if (game.practice || isLegacy(play) || play.lessonsSeen?.includes(id) || document.querySelector(".tour")) return;
+  setTimeout(() => runLesson({ game, track, id, returnTo: route }), 250);
 }

@@ -1,5 +1,6 @@
 // The Shop (SPEC §18): wants for the creature. Stock rotates each chapter.
 // Checkout uses the "Pay with" picker: debit, a credit card, or BNPL.
+import { payMethods, hasFeature } from "../../progression.js";
 import { h, add, fill, money, toast } from "../dom.js";
 import { placeHeader } from "../place-header.js";
 import { resolveChoice } from "../../engine/index.js";
@@ -7,6 +8,7 @@ import { SHOP_BY_ID, stockFor, BNPL_MIN } from "../../data/shop.js";
 import { creatureSvg } from "../creature-art.js";
 import { payWith, methodLabel } from "../pay-with.js";
 import { moneyChips } from "../wallet.js";
+import { firstVisitLesson } from "../guide.js";
 
 const KIND = { head: "Head", neck: "Neck", face: "Face", held: "Held in paw", feet: "Feet", effect: "Magic effect", background: "Background" };
 
@@ -18,13 +20,17 @@ export function render(root, { game, go, track }) {
   const chapter = play.active?.chapter ?? play.chapter;
   const stock = stockFor(run.life.seed, chapter).map((id) => SHOP_BY_ID[id]);
   track("shopOpen", { chapter, items: stock.length });
+  if (play.prologue && !play.prologue.marketVisited && !run.practice) {
+    play.prologue.marketVisited = true;
+    game.persist("prologueMarket");
+  }
 
   function paint(buying = null) {
     const c = game.save.creature;
     fill(
       panel,
-      placeHeader({ go, iconName: "market", kicker: `Chapter ${chapter} stock`, title: "Shimmer Market", subtitle: "Spend money on things for your creature. Time is paused while you shop. New stock every chapter.", practice: run.practice }),
-      moneyChips(run.life, play.sparkle.total),
+      placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `Chapter ${chapter} stock`, title: "Shimmer Market", subtitle: "Spend money on things for your creature. Time is paused while you shop. New stock every chapter.", practice: run.practice }),
+      moneyChips(run.life, play),
       buying ? checkout(buying, c) : h("div.shop-grid", stock.map((item) => card(item, c))),
       h("p.note.center", "Wants are fun, but check your bills first. Things you buy show up in the creature editor and on your hub.")
     );
@@ -56,6 +62,8 @@ export function render(root, { game, go, track }) {
       payWith({
         life: run.life,
         cost: { amount: item.price, item: item.name, methods, merchant: "Shimmer Market" },
+        allowed: payMethods(play, run.life),
+        piggy: !hasFeature(play, "debit"),
         onBack: () => paint(),
         onPick: async (method) => {
           const r = resolveChoice(run.life, { cost: { amount: item.price, item: `shop: ${item.name}`, merchant: "Shimmer Market" } }, method);
@@ -89,4 +97,5 @@ export function render(root, { game, go, track }) {
   }
 
   paint();
+  firstVisitLesson({ game, track, id: "market", route: "shop" });
 }

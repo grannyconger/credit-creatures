@@ -45,6 +45,9 @@ export function ensurePlay(play) {
   // Dream stages finished (js/data/dreams.js). An old finished dream counts as all 3.
   play.dreamStage ??= play.dreamDone ? 3 : 0;
   // The Kingdom Tour (js/ui/tour.js): finished, or skipped so the hub stops offering it.
+  // Phase 10: the ride at the Garage and the Cottage upgrades.
+  play.garage ??= null;
+  play.home ??= [];
   play.tourDone ??= null;
   play.tourSkipped ??= false;
   play.settings ??= play.theme === "night" ? { appearance: "dark", reading: "standard" } : null;
@@ -170,6 +173,8 @@ export function choose(play, life, item, key, method = null) {
 }
 
 export function shiftsLeft(play) {
+  // The prologue has no months yet, just a few shifts to fill the piggy bank.
+  if (play.prologue && !play.prologue.done) return Math.max(0, CONFIG.onboarding.prologueShifts - play.prologue.shifts);
   const m = play.active.month;
   return Math.max(0, CONFIG.pacing.shiftsPerMonth - m.shiftsCut - m.shifts);
 }
@@ -178,7 +183,8 @@ export function shiftsLeft(play) {
 export function workShift(play, life, pay, source = "work shift") {
   if (shiftsLeft(play) <= 0) return { life, ok: false, message: "No shifts left this month." };
   const r = earn(life, pay, source);
-  play.active.month.shifts++;
+  if (play.prologue && !play.prologue.done) play.prologue.shifts++;
+  else play.active.month.shifts++;
   return { ...r, pay };
 }
 
@@ -201,7 +207,7 @@ export function finishMonth(play, life) {
   a.monthIndex++;
   const chapterDone = a.monthIndex >= (a.months || CONFIG.pacing.monthsPerChapter);
   if (chapterDone) {
-    play.summary = summarize(a, r.life);
+    play.summary = summarize(a, r.life, play);
     play.active = null;
   } else {
     startMonth(play, r.life);
@@ -211,7 +217,7 @@ export function finishMonth(play, life) {
 
 const RANK = { good: 2, ok: 1, bad: 0 };
 
-function summarize(a, life) {
+function summarize(a, life, play) {
   const graded = a.decisions.filter((d) => d.quality && d.kind === "decision");
   const best = graded.filter((d) => d.quality === "good")[0] || null;
   const worst = graded.slice().sort((x, y) => RANK[x.quality] - RANK[y.quality])[0];
@@ -219,7 +225,7 @@ function summarize(a, life) {
   return {
     chapter: a.chapter,
     months: a.months,
-    title: chapterInfo(a.chapter).title,
+    title: chapterInfo(a.chapter, play).title,
     startMonth: a.startMonth,
     endMonth: life.month,
     startScore: a.startScore,

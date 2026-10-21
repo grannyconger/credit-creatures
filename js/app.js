@@ -5,19 +5,17 @@ import { createGame, STEPS, EDITABLE, HUB_SCREENS } from "./game.js";
 import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge } from "./telemetry.js";
 import { mountBugButton } from "./ui/bug-button.js";
 import { sound, setClassMuted } from "./ui/sound.js";
+import { PLACES } from "./places.js";
+import { hasFeature, prologueStep } from "./progression.js";
 import { creatureSvg } from "./ui/creature-art.js";
 import { h, clear, ageLabel } from "./ui/dom.js";
 import { settingsControls } from "./ui/settings-controls.js";
 import * as profile from "./ui/screens/profile.js";
 import * as creature from "./ui/screens/creature.js";
 import * as join from "./ui/screens/join.js";
-import * as teen from "./ui/screens/teen.js";
-import * as tutorial from "./ui/screens/tutorial.js";
-import * as skip from "./ui/screens/skip.js";
 import * as networks from "./ui/screens/networks.js";
 import * as design from "./ui/screens/design.js";
 import * as result from "./ui/screens/result.js";
-import * as done from "./ui/screens/done.js";
 import * as hub from "./ui/screens/hub.js";
 import * as month from "./ui/screens/month.js";
 import * as chapterEnd from "./ui/screens/chapter-end.js";
@@ -30,8 +28,10 @@ import * as dream from "./ui/screens/dream.js";
 import * as guild from "./ui/screens/guild.js";
 import * as academy from "./ui/screens/academy.js";
 import * as cottage from "./ui/screens/cottage.js";
+import * as garage from "./ui/screens/garage.js";
+import * as records from "./ui/screens/records.js";
 
-const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage };
+const SCREENS = { profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 
@@ -204,8 +204,15 @@ function route() {
 
 // A finished chapter waits for its reflection. A month needs a chapter in
 // progress. Practice mode lasts until the student leaves it from the hub.
+// Places open as they unlock (js/progression.js). A typed-in link to a
+// locked place goes back to the kingdom.
+const ROUTE_FEATURE = { ...Object.fromEntries(PLACES.map((p) => [p.route, p.feature])), trophies: "academy", cardIntro: "card", cardDesign: "card", cardResult: "card" };
+
 function hubTarget(want) {
   const play = game.run.play;
+  const feature = ROUTE_FEATURE[want];
+  const bankStep = want === "accounts" && prologueStep(play)?.place === "vault";
+  if (feature && !hasFeature(play, feature, game.run.life) && !bankStep) return "hub";
   if (play.summary) return "chapterEnd";
   if (want === "chapterEnd") return play.active ? "month" : "hub";
   if (want === "month" && !play.active) return "hub";

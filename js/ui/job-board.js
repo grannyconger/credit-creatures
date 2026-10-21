@@ -4,7 +4,9 @@ import { h, fill, money } from "./dom.js";
 import { coinsFly } from "./fx.js";
 import { CONFIG } from "../data/config.js";
 import { JOBS } from "../data/minigames.js";
-import { jobPay, experienceBonus, recordShift } from "../progress.js";
+import { jobPay, experienceBonus, recordShift, rideAndHomeBonus } from "../progress.js";
+import { openJobs, opensText, unlockStage } from "../progression.js";
+import { icon } from "./icons.js";
 import * as P from "../play.js";
 import { ledgerSort } from "./minigames/ledger-sort.js";
 import { cashierRush } from "./minigames/cashier-rush.js";
@@ -20,8 +22,18 @@ const REACTIONS = [
 export function jobBoard({ game, run, track, save, onCollected }) {
   const play = run.play;
   const el = h("div.job-board");
-  let timed = true;
+  // New players start untimed (Phase 10 prologue).
+  let timed = !(play.prologue && !play.prologue.done);
   let running = null;
+
+  // Jobs that open later, so students know more is coming.
+  function lockedJobs() {
+    const later = Object.entries(JOBS)
+      .filter(([key]) => !openJobs(play).includes(key))
+      .sort(([a], [b]) => unlockStage(a) - unlockStage(b));
+    if (!later.length) return null;
+    return h("p.note.tight.center", icon("lock", { size: 14 }), " Coming later: ", later.map(([key, job]) => `${job.icon} ${job.title} (${opensText(key).replace("Opens", "opens")})`).join(", "));
+  }
 
   function board() {
     const j = CONFIG.play.jobs;
@@ -31,8 +43,10 @@ export function jobBoard({ game, run, track, save, onCollected }) {
       el,
       h(
         "div.job-cards",
-        Object.entries(JOBS).map(([key, job]) => {
-          const xp = experienceBonus(play, key) + (play.shiftBonus || 0);
+        Object.entries(JOBS)
+          .filter(([key]) => openJobs(play).includes(key))
+          .map(([key, job]) => {
+          const xp = experienceBonus(play, key) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
           const stats = play.jobs[key];
           return h(
             "button.job-card",
@@ -47,12 +61,14 @@ export function jobBoard({ game, run, track, save, onCollected }) {
           );
         })
       ),
+      lockedJobs(),
       h("label.untimed", timer, " No timer (fewer items, same pay for each right answer)")
     );
   }
 
   function start(key) {
-    const seed = `${run.life.seed}:job:${run.life.month}:${play.active.month.shifts}`;
+    const shifts = play.active ? play.active.month.shifts : `p${play.prologue?.shifts ?? 0}`;
+    const seed = `${run.life.seed}:job:${run.life.month}:${shifts}`;
     track("minigameStart", { game: key, timed });
     const done = (result) => finish(key, result);
     const opts = { seed, timed, onDone: done, track };
