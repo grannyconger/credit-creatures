@@ -209,11 +209,11 @@ function signedOut(error = "", user = null) {
         // Two stacked copies: an outline behind and the gold in front, so the
         // outline never draws over the letters.
         h("h1.signin-title", h("span.t-back", { "aria-hidden": "true" }, "Credit Creatures"), h("span.t-front", "Credit Creatures")),
-        h("p.signin-tagline", "Raise a creature. Build its credit. Watch every choice add up."),
+        h("p.signin-tagline", "Raise a creature. Build its credit."),
         h(
           "div.signin-parade",
           { role: "img", "aria-label": "Eight creatures: a lantern fox, a cloud bunny, a shell turtle, a star jellycorn, an ember phoenix, a crystal owl, a moss dragon and a puddle golem" },
-          parade.map((c, i) => h("span.signin-critter", { style: { "--i": i }, html: creatureSvg(c, { size: 160, label: "" }) }))
+          parade.map((c, i) => h("span.signin-critter", { style: `--i: ${i}`, html: creatureSvg(c, { size: 160, label: "" }) }))
         ),
         // Begin sits below the creatures, at the bottom center (teacher request 2026-10-21).
         begin,

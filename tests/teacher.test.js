@@ -59,8 +59,8 @@ test("CSV export quotes commas and quotes", () => {
   const row = T.rosterRow(saveDoc(life, P.newPlay(), { studentName: 'Stone, Avery "Ace"' }));
   const csv = T.rosterCsv([row]);
   const [head, line] = csv.split("\n");
-  assert.match(head, /^Student,Email,/);
-  assert.ok(line.startsWith('"Stone, Avery ""Ace""",'));
+  assert.match(head, /^Last name,First name,Google name,Email,/);
+  assert.ok(line.includes(',"Stone, Avery ""Ace""",'));
 });
 
 test("student detail lists reflections and earned achievements", () => {

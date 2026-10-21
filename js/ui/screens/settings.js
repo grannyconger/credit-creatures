@@ -25,6 +25,13 @@ export function render(root, { game, go, track, saveAndExit, saveAndSignOut }) {
         "section.settings-section",
         h("h2", icon("people", { size: 20 }), " Your account"),
         game.local ? h("p", "Local test mode. Your game saves in this browser only.") : h("p", "Signed in as ", h("strong", user.displayName || user.email || "you"), user.email && user.displayName ? ` (${user.email})` : "", "."),
+        h(
+          "p",
+          "Your name: ",
+          h("strong", [game.save.onboarding?.firstName, game.save.onboarding?.lastName].filter(Boolean).join(" ") || game.profile.displayName || "not set"),
+          " ",
+          h("button.link", { type: "button", onclick: () => go("profile") }, "Change my name")
+        ),
         h("p.note.tight", "Your game saves by itself as you play. Save and exit keeps you signed in on this computer. On a shared computer, sign out instead."),
         h(
           "div.row",

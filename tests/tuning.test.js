@@ -51,7 +51,7 @@ test("economy measures money saved per month after 18", () => {
 
 test("the tuning export has no names or emails", () => {
   const { life } = simulateLife("careful", "export", 12);
-  const save = { uid: "abc", studentName: "Avery Stone", studentEmail: "avery@greermiddlecollege.org", displayName: "Avery", creature: { name: "Pip" }, play: P.newPlay(), lifeJson: JSON.stringify({ ...life, start: { ...life.start, name: "Pip" } }) };
+  const save = { uid: "abc", studentName: "Avery Stone", studentEmail: "avery@greermiddlecollege.org", displayName: "Avery", onboarding: { step: "hub", firstName: "Avery", lastName: "Stone" }, creature: { name: "Pip" }, play: P.newPlay(), lifeJson: JSON.stringify({ ...life, start: { ...life.start, name: "Pip" } }) };
   const row = rosterRow(save);
   const out = JSON.stringify(tuningExport({ className: "P2", tuningData: {}, rows: [row], saves: [save] }));
   for (const secret of ["Avery", "avery@", "abc", "Pip"]) assert.ok(!out.includes(secret), secret);

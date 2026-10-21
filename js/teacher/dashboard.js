@@ -7,7 +7,7 @@ import { h, add, fill, money, ageLabel } from "../ui/dom.js";
 import { creatureSvg } from "../ui/creature-art.js";
 import { reportTab } from "../ui/accounts/report-tab.js";
 import { scoreTab } from "../ui/accounts/score-tab.js";
-import { rosterRow, studentDetail, rosterCsv, tuning, tuningExport, classAlley, FLAGS, LESSON_COUNT } from "./analyze.js";
+import { rosterRow, studentDetail, rosterCsv, tuning, tuningExport, classAlley, byName, FLAGS, LESSON_COUNT } from "./analyze.js";
 import { STALLS } from "../data/alley.js";
 import { STANDARD_LABELS } from "../data/practice-questions.js";
 import { CONFIG } from "../data/config.js";
@@ -15,7 +15,7 @@ import { chapterInfo } from "../data/chapters.js";
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 const root = document.getElementById("teacher");
-const state = { me: null, db: null, classes: [], classId: null, tab: "roster", saves: [], rows: [], sort: ["studentName", 1], tuning: null, feedback: null, social: null };
+const state = { me: null, db: null, classes: [], classId: null, tab: "roster", saves: [], rows: [], sort: ["lastName", 1], tuning: null, feedback: null, social: null };
 
 boot();
 
@@ -225,7 +225,8 @@ function tabBody() {
 }
 
 const COLUMNS = [
-  ["studentName", "Student"],
+  ["lastName", "Last name"],
+  ["firstName", "First name"],
   ["creatureName", "Creature"],
   ["chaptersDone", "Chapters"],
   ["reflections", "Reflections"],
@@ -249,7 +250,8 @@ function roster() {
     const y = key === "flags" ? b.flags.length : b[key];
     if (x == null) return 1;
     if (y == null) return -1;
-    return (typeof x === "string" ? x.localeCompare(y) : x - y) * dir;
+    const c = typeof x === "string" ? x.localeCompare(y) : x - y;
+    return (c || byName(a, b)) * dir;
   });
   const csv = () => {
     const blob = new Blob([rosterCsv(rows)], { type: "text/csv" });
@@ -283,7 +285,8 @@ function roster() {
           rows.map((r) =>
             h(
               "tr",
-              h("td", h("button.link", { type: "button", onclick: () => detail(r.uid) }, r.studentName || r.studentEmail || r.uid), h("small.muted", h("br"), r.displayName)),
+              h("td", h("button.link", { type: "button", onclick: () => detail(r.uid) }, r.lastName || r.studentName || r.studentEmail || r.uid)),
+              h("td", h("button.link", { type: "button", onclick: () => detail(r.uid) }, r.firstName), r.studentName && r.studentName !== `${r.firstName} ${r.lastName}` ? h("small.muted", h("br"), r.studentName) : null),
               h("td", r.creatureName),
               h("td", r.chaptersDone),
               h("td", r.reflections),
@@ -354,7 +357,7 @@ function detail(uid) {
       h(
         "div.hero",
         d.creature ? h("div.hero-art", { html: creatureSvg(d.creature, { size: 110 }) }) : null,
-        h("div", h("h2", r.studentName || r.uid), h("p.muted", [r.studentEmail, r.displayName, r.creatureName].filter(Boolean).join(" · ")), d.life ? h("p", `${ageLabel(d.life.ageMonths)}. Chapter ${r.chapter}. ${r.rank}, ${r.xp} XP.`) : null)
+        h("div", h("h2", [r.firstName, r.lastName].filter(Boolean).join(" ") || r.studentName || r.uid), h("p.muted", [r.studentEmail, r.displayName, r.creatureName].filter(Boolean).join(" · ")), d.life ? h("p", `${ageLabel(d.life.ageMonths)}. Chapter ${r.chapter}. ${r.rank}, ${r.xp} XP.`) : null)
       ),
       h("button.secondary", { type: "button", onclick: close }, "Close")
     ),

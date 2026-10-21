@@ -66,6 +66,19 @@ function pct(right, total) {
   return total ? Math.round((right / total) * 100) : null;
 }
 
+// First and last name the student typed, or the Google name split in two.
+function nameParts(raw) {
+  const ob = raw.onboarding || {};
+  if (ob.firstName || ob.lastName) return { firstName: ob.firstName || "", lastName: ob.lastName || "" };
+  const parts = (raw.studentName || "").trim().split(/\s+/).filter(Boolean);
+  return { firstName: parts[0] || "", lastName: parts.slice(1).join(" ") };
+}
+
+// Last name, then first name (the roster's default order).
+export function byName(a, b) {
+  return (a.lastName || "").localeCompare(b.lastName || "") || (a.firstName || "").localeCompare(b.firstName || "");
+}
+
 // One roster row per student (SPEC §20).
 export function rosterRow(raw) {
   const s = parseSave(raw);
@@ -74,6 +87,8 @@ export function rosterRow(raw) {
   const row = {
     uid: raw.uid,
     studentName: raw.studentName || "",
+    // The student's own first and last name (2026-10-21), or their Google name split.
+    ...nameParts(raw),
     studentEmail: raw.studentEmail || "",
     displayName: raw.displayName || "",
     creatureName: [s.creature?.name, s.creature?.lastName].filter(Boolean).join(" "),
@@ -189,7 +204,7 @@ export function tuningExport({ className, tuningData, rows, saves }) {
     class: className,
     anonymous: true,
     tuning: tuningData,
-    roster: rows.map(({ studentName, studentEmail, displayName, creatureName, uid, ...rest }) => ({ student: ids.get(uid), ...rest })),
+    roster: rows.map(({ studentName, studentEmail, displayName, creatureName, firstName, lastName, uid, ...rest }) => ({ student: ids.get(uid), ...rest })),
     lives: saves
       .map((s) => parseSave(s))
       .filter((s) => s.life?.start && Array.isArray(s.life.log))
@@ -200,7 +215,9 @@ export function tuningExport({ className, tuningData, rows, saves }) {
 // ---------- CSV export for the gradebook ----------
 
 const CSV_COLUMNS = [
-  ["Student", (r) => r.studentName],
+  ["Last name", (r) => r.lastName],
+  ["First name", (r) => r.firstName],
+  ["Google name", (r) => r.studentName],
   ["Email", (r) => r.studentEmail],
   ["Display name", (r) => r.displayName],
   ["Creature", (r) => r.creatureName],

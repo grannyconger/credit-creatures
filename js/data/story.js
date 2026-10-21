@@ -3,29 +3,35 @@
 
 export const KINGDOM = "Coinhaven";
 
+// Each panel is a few short beats, one idea per line with its own icon, so
+// there's less to read at once (teacher request 2026-10-21). chips: a short
+// list shown as tags instead of a long sentence.
 export const INTRO_PANELS = [
   {
     scene: "kingdom",
     title: "Welcome to the Kingdom of Coinhaven",
-    text: [
-      "Coinhaven is a kingdom of creatures, market stalls and one very old bank called the Gilded Vault.",
-      "Every creature here grows up and has to learn to handle money. Some do great. Some get stuck in debt.",
+    beats: [
+      { icon: "🏰", text: "Coinhaven is a kingdom of creatures, market stalls and one very old bank, the Gilded Vault." },
+      { icon: "🌱", text: "Every creature here grows up and has to learn to handle money." },
+      { icon: "⚖️", text: "Some do great. Some get stuck in debt." },
     ],
   },
   {
     scene: "guardian",
     title: "You are a Guardian of Coin",
-    text: [
-      "A young creature is about to be put in your care. It can't manage money on its own yet.",
-      "Your job: make its money choices. Where it works, what it buys, which loans and cards it takes, and when it pays its bills.",
+    beats: [
+      { icon: "🥚", text: "A young creature is about to be put in your care." },
+      { icon: "🤲", text: "It can't manage money on its own yet." },
+      { icon: "🧭", text: "Your job is to make its money choices:", chips: ["Where it works", "What it buys", "Which loans and cards it takes", "When it pays its bills"] },
     ],
   },
   {
     scene: "dream",
     title: "Every choice changes its life",
-    text: [
-      "Good choices build its savings and its credit score. Those unlock its dream: a home, a shop, an adventure or school.",
-      "Rough choices bring fees, debt and late marks. Those make the dream harder to reach. Let's meet your creature.",
+    beats: [
+      { icon: "📈", text: "Good choices build its savings and its credit score. They unlock its dream." },
+      { icon: "📉", text: "Rough choices bring fees, debt and late marks. They push the dream away." },
+      { icon: "👋", text: "Let's meet your creature!" },
     ],
   },
 ];

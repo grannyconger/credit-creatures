@@ -35,15 +35,29 @@ export function render(root, { advance, track }) {
     fill(
       panel,
       art(p.scene),
-      h("p.step-label", `${k + 1} of ${INTRO_PANELS.length}`),
-      h("h1", p.title),
-      p.text.map((t) => h("p.intro-text", t)),
-      h("div.dots", { "aria-hidden": "true" }, INTRO_PANELS.map((_, i) => h("span", { class: i === k ? "on" : "" }))),
       h(
-        "div.row",
-        // No skipping (teacher request 2026-10-21): every student reads the story.
-        k > 0 ? h("button.secondary", { type: "button", onclick: () => ((k -= 1), paint()) }, "Back") : null,
-        h("button.big", { type: "button", onclick: () => (last ? finish() : ((k += 1), paint())) }, last ? "Meet your creature" : "Next")
+        "div.intro-body",
+        h("p.step-label", `${k + 1} of ${INTRO_PANELS.length}`),
+        h("h1", p.title),
+        // One beat per line, appearing one after another.
+        h(
+          "ul.intro-beats",
+          p.beats.map((b, i) =>
+            h(
+              "li",
+              { style: `--i: ${i}` },
+              h("span.intro-beat-icon", { "aria-hidden": "true" }, b.icon),
+              h("div", h("p", b.text), b.chips ? h("ul.intro-chips", b.chips.map((c) => h("li", c))) : null)
+            )
+          )
+        ),
+        h("div.dots", { "aria-hidden": "true" }, INTRO_PANELS.map((_, i) => h("span", { class: i === k ? "on" : "" }))),
+        h(
+          "div.row",
+          // No skipping (teacher request 2026-10-21): every student reads the story.
+          k > 0 ? h("button.secondary", { type: "button", onclick: () => ((k -= 1), paint()) }, "Back") : null,
+          h("button.big", { type: "button", onclick: () => (last ? finish() : ((k += 1), paint())) }, last ? "Meet your creature" : "Next")
+        )
       )
     );
     panel.querySelector("button.big").focus();

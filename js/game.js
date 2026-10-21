@@ -71,7 +71,8 @@ export function createGame(user, db) {
       const seed = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
       game.save.life = createLife({ seed, name: game.save.creature?.name || "", ageMonths: CONFIG.onboarding.startAgeMonths });
       game.save.play = newPlay({ phased: true });
-      game.save.onboarding = { step: "hub" };
+      const { firstName, lastName } = game.save.onboarding || {};
+      game.save.onboarding = { step: "hub", firstName, lastName };
     },
 
     get play() {

@@ -173,3 +173,16 @@ test("the teacher sees Lantern Alley, lessons, dream stage and title loans", asy
   assert.deepEqual([payday.n, payday.rightPct, payday.readPct, payday.rightWhenReadPct], [1, 100, 100, 100]);
   assert.ok(table[0].trap, "traps are listed first");
 });
+
+test("the roster sorts by last name, then first name, with the Google name as a fallback", async () => {
+  const { rosterRow, byName, rosterCsv } = await import("../js/teacher/analyze.js");
+  const rows = [
+    rosterRow({ uid: "a", studentName: "Zed Adams", onboarding: { firstName: "Zoe", lastName: "Brown" } }),
+    rosterRow({ uid: "b", studentName: "Amy Brown", onboarding: {} }),
+    rosterRow({ uid: "c", studentName: "Cara Ash" }),
+  ];
+  assert.deepEqual([rows[0].firstName, rows[0].lastName], ["Zoe", "Brown"], "the typed name wins");
+  assert.deepEqual([rows[1].firstName, rows[1].lastName], ["Amy", "Brown"], "older students fall back to Google");
+  assert.deepEqual(rows.slice().sort(byName).map((r) => r.uid), ["c", "b", "a"]);
+  assert.ok(rosterCsv(rows).startsWith("Last name,First name,"));
+});
