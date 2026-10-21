@@ -2,7 +2,7 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-20 (Phase 4)
+Last updated: 2026-10-20 (redesign: kingdom hub and story)
 
 ## Status
 
@@ -14,8 +14,14 @@ Last updated: 2026-10-20 (Phase 4)
   - `docs/PILOT.md` is the teacher's run-book.
 - **Teacher action needed:** publish the newest `firestore.rules` (it covers Phases 7 and 8 and creature looks on the leaderboard), then follow `docs/PILOT.md`.
 - **Renamed 2026-10-20:** the repo is `grannyconger/credit-creatures` and the site is https://www.coachw.club/credit-creatures/. The Firebase project id stays `credit-life-38e4a`, because Firebase ids can't change. Browser test-storage keys keep the `credit-life:` prefix.
-- **Visual quality:** the teacher wants to plan improvements later. Options are in `docs/VISUAL-PLAN.md`. Don't start any of them without a plan they approve.
-- **Next step:** when the teacher says pilot data is in `pilot-data/`, run `npm run tuning-report` on it, test any engine changes with `npm run replay`, make the config changes, run the tests and push. Also replay any 🐞 bug report the teacher downloads.
+- **Redesign (plan approved 2026-10-20), awaiting the teacher's review.** 148 tests pass.
+  - Part 1, design system: tokens with light and dark modes, a color-blind-safe factor palette, dyslexia mode (OpenDyslexic), Fredoka headings, a custom icon set, shinier cards, the "Credit Creatures" name.
+  - Part 2, purpose and hub: a 3-panel story intro, a dream for each creature (4 dreams with savings, score and habit meters), and an illustrated kingdom map as home base. Places: Town Hall (decisions and End Month), Guild Hall (shifts), Gilded Vault (accounts), Shimmer Market (shop), Academy (Practice Desk and trophies), Friendship Plaza (friends) and Your Cottage (creature, dream, settings). Every place has "Back to the kingdom". The top-right creature opens the Cottage from anywhere.
+  - Equity in Ledger Sort now means investments (stocks, index funds, owning part of a business).
+  - No Firestore rules change.
+  - Students who already started get the dream picker from the hub and the Cottage.
+- **Visual quality:** more options are in `docs/VISUAL-PLAN.md`. Don't start any of them without a plan the teacher approves.
+- **Next step:** wait for the teacher's review of the redesign. Then,  when the teacher says pilot data is in `pilot-data/`, run `npm run tuning-report` on it, test any engine changes with `npm run replay`, make the config changes, run the tests and push. Also replay any 🐞 bug report the teacher downloads.
 
 ## Open decisions (ask once, then use the default)
 
@@ -146,7 +152,11 @@ Last updated: 2026-10-20 (Phase 4)
 | `js/ui/card-art.js` | Credit card preview with emoji brands |
 | `js/ui/bug-button.js` | 🐞 button and dialog, writes `feedback/{id}` |
 | `js/ui/month-summary.js` | "Month N is over" card from End Month events |
-| `js/ui/screens/*.js` | One module per step: profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved, plus hub, month and chapter-end |
+| `js/ui/screens/*.js` | One module per step: intro, profile, creature, dream, join, teen, tutorial, skip, networks, design, result, done, saved. Kingdom places: hub (the map), month (Town Hall), guild, accounts (Vault), shop (Market), academy, friends (Plaza), cottage, plus trophies and chapter-end |
+| `js/places.js` | The 7 places, map positions, `placeStatus` badges and `nextStep` sentence (pure, tested) |
+| `js/ui/kingdom-map.js`, `place-header.js` | Code-drawn SVG village with building buttons (a list on phones) / shared place header with "Back to the kingdom" |
+| `js/data/story.js` / `dreams.js` | Kingdom name, intro panels, hub help / the 4 dreams and `dreamProgress` |
+| `css/tokens.css`, `js/ui/icons.js`, `js/ui/settings.js`, `settings-controls.js` | Design tokens (light, dark, dyslexia) / icon set / appearance and reading settings |
 | `js/play.js` | Pure month and chapter logic on `save.play`: start chapter, draw cards, choose, shifts, End Month, summary, reflection, recap, practice |
 | `js/ui/decision-card.js`, `pay-with.js`, `bills-panel.js`, `wallet.js`, `shift.js` | Card with choices, outcome and reactions. "Pay with" picker. Bills panel. Wallet strip and money chips. Shared work shift |
 | `js/data/scenarios.js` / `life-events.js` / `chapters.js` | 37 Decision cards (34 one-time, 3 everyday) / 14 life cards / chapter titles, intros and reflection questions |
@@ -157,7 +167,7 @@ Last updated: 2026-10-20 (Phase 4)
 | `js/social.js`, `js/ui/screens/friends.js`, `js/data/social.js` | Friend, group and gift logic / Friends screen / preset group names and gift messages |
 | `js/teacher/dashboard.js` / `analyze.js` | Teacher dashboard UI / roster rows, flags, log check, CSV, tuning math |
 | `js/ui/celebrate.js` | Full-screen unlock pop-ups |
-| `fonts/` | Dancing Script (OFL) for typed signatures |
+| `fonts/` | Fredoka (headings), OpenDyslexic (dyslexia mode), Dancing Script (signatures), all OFL |
 | `js/progress.js` | XP, ranks, achievements (`evaluate`), job pay and experience, payment and desk stats, records |
 | `js/ui/job-board.js`, `js/ui/minigames/*.js`, `js/ui/signature-pad.js` | Job picker and results. Ledger Sort, Cashier Rush, Check Writer. Full-screen signature pad |
 | `js/ui/screens/shop.js`, `trophies.js` | Shop with checkout / achievements, rank and records, leaderboard |

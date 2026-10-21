@@ -180,7 +180,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
       await game.persist("creatureEdit");
       back();
     } else {
-      await advance("join");
+      await advance("dream");
     }
   });
 

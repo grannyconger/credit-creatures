@@ -25,8 +25,13 @@ import * as accounts from "./ui/screens/accounts.js";
 import * as shop from "./ui/screens/shop.js";
 import * as trophies from "./ui/screens/trophies.js";
 import * as friends from "./ui/screens/friends.js";
+import * as intro from "./ui/screens/intro.js";
+import * as dream from "./ui/screens/dream.js";
+import * as guild from "./ui/screens/guild.js";
+import * as academy from "./ui/screens/academy.js";
+import * as cottage from "./ui/screens/cottage.js";
 
-const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved, hub, month, chapterEnd, accounts, shop, trophies, friends };
+const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 
@@ -151,10 +156,9 @@ function route() {
   show(target);
 }
 
-// Leaving for the hub ends practice. A finished chapter waits for its
-// reflection. A month needs a chapter in progress.
+// A finished chapter waits for its reflection. A month needs a chapter in
+// progress. Practice mode lasts until the student leaves it from the hub.
 function hubTarget(want) {
-  if (want === "hub") game.practice = null;
   const play = game.run.play;
   if (play.summary) return "chapterEnd";
   if (want === "chapterEnd") return play.active ? "month" : "hub";
@@ -192,12 +196,21 @@ function updateWho() {
   if (!game) return;
   const c = game.save.creature;
   clear(who);
+  who.hidden = !c;
   if (!c) return;
   who.append(
     h("span.who-art", { html: creatureSvg(c, { size: 40, ageMonths: game.life?.ageMonths || 0 }) }),
     h("span.who-text", h("strong", c.name || "Your creature"), h("small", game.life ? ageLabel(game.life.ageMonths) : "Not hatched yet"))
   );
 }
+
+// The creature in the top bar opens its Cottage from anywhere (teacher request
+// 2026-10-20). Before the hub it opens the creature editor instead.
+who.addEventListener("click", () => {
+  if (!game?.save.creature) return;
+  track("whoClick", { from: location.hash.replace(/^#\/?/, "") || game.step });
+  location.hash = game.step === "hub" ? "#/cottage" : STEPS.indexOf(game.step) > STEPS.indexOf("creature") ? "#/creature" : `#/${game.step}`;
+});
 
 async function saveAndQuit() {
   track("saveAndQuit", { step: game.step });

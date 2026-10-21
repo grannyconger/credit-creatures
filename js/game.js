@@ -10,13 +10,13 @@ import { fullName } from "./data/creatures.js";
 import { newlyUnlocked, publicLook } from "./data/looks.js";
 
 // Onboarding steps in order (SPEC §5). After "done", students live in the hub.
-export const STEPS = ["profile", "creature", "join", "teen", "tutorial", "skip", "networks", "design", "result", "done", "hub"];
+export const STEPS = ["intro", "profile", "creature", "dream", "join", "teen", "tutorial", "skip", "networks", "design", "result", "done", "hub"];
 
 // Screens open once the student reaches the hub. The router guards each one.
-export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts", "shop", "trophies", "friends"]);
+export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts", "shop", "trophies", "friends", "guild", "academy", "cottage"]);
 
 // Steps a student can go back to after moving past them.
-export const EDITABLE = new Set(["profile", "creature"]);
+export const EDITABLE = new Set(["profile", "creature", "dream"]);
 
 export function createGame(user, db) {
   const game = {
@@ -24,7 +24,7 @@ export function createGame(user, db) {
     db,
     profile: { displayName: "", classId: "" },
     classInfo: null,
-    save: { creature: null, onboarding: { step: "profile" }, chapter: 1, life: null, play: null },
+    save: { creature: null, onboarding: { step: "intro" }, chapter: 1, life: null, play: null },
     returning: false,
     // Practice mode (SPEC §5): { practice: true, life, play } kept in memory only.
     practice: null,

@@ -1,4 +1,6 @@
-# Credit Life: Build Specification
+# Credit Creatures: Build Specification
+
+(The game was called Credit Life until 2026-10-20.)
 
 Version 1.0 · October 19, 2026 · Owner: Brian Weaver (bweaver@greermiddlecollege.org)
 
@@ -22,6 +24,8 @@ This file is the single source of truth for the build. It merges the original ga
 ## 1. Vision
 
 A replayable game where students raise a fantasy creature through its credit life across the semester. They earn money in minigames, buy things with debit, credit or buy-now-pay-later, choose between kinds of credit, and watch the creature's credit report and score respond to how they actually manage accounts.
+
+**The student's job (added 2026-10-20):** the student is the creature's **Guardian of Coin** in the Kingdom of Coinhaven. The creature can't manage money alone. Every money choice the student makes changes its life and decides whether its dream comes true.
 
 **Key goal (SWBAT = Students Will Be Able To):** see and explain the relationship between life choices and the movement of the 5 score factors.
 
@@ -67,7 +71,33 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 - **Aging (later, not a priority):** the creature looks a little older as it ages, with small details only (for example a few gray whisker tufts, reading glasses, a slightly softer posture). Same species, palette and accessories. Planned after the pilot unless there is spare time in Phase 8.
 - Accessories and backgrounds can be bought in the Shop (Section 15).
 - All art is original. No Nintendo, Webkinz or other existing characters.
+- **Story intro (2026-10-20):** 3 short panels after the first sign-in (the kingdom, you are the Guardian of Coin, every choice matters). Skippable, shown once. Text in `js/data/story.js`.
+- **Dreams (2026-10-20):** right after the creature creator, the student picks one dream for the creature: a home of its own, its own shop, a grand adventure, or Scholar of Coinhaven. Each dream has a savings goal, a score target and two habits (nothing in collections, no late payments in the last 6 months). The hub, the Cottage and each chapter summary show 3 meters (savings, score, habits). When all three are met, the Cottage offers "Make the dream come true": it spends the savings goal, celebrates, and earns the Dream Come True achievement. Data in `js/data/dreams.js`.
+- **The kingdom hub (2026-10-20):** an illustrated map of Coinhaven is home base. Every place opens from the map and has a "Back to the kingdom" button. Each building shows a badge with words (for example "2 decisions waiting"), never color alone.
+
+  | Place | What it's for |
+  |---|---|
+  | Town Hall | This month's news, decisions and End Month |
+  | Guild Hall | Work shifts to earn money |
+  | The Gilded Vault | Bank: wallet, bills, statements, score, report, letters |
+  | Shimmer Market | Spend money in the shop |
+  | The Academy | Practice Desk for XP, trophies and ranks |
+  | Friendship Plaza | Friends, groups and gifts |
+  | Your Cottage | The creature, its dream, customizing and settings |
+
+  The creature in the top-right corner opens the Cottage from any screen.
 - Kingdom flavor appears in names and art (the bank is "The Gilded Vault," the town is a market village), but **all credit terms stay real** (APR, utilization, hard inquiry, etc.).
+
+### Look and accessibility (2026-10-20)
+
+- **Design tokens** in `css/tokens.css`: every screen uses them, so light, dark and dyslexia modes work everywhere.
+- **Dark mode:** follows the computer, or the student picks Light or Dark. The kingdom map turns to night.
+- **Dyslexia mode:** OpenDyslexic, more line spacing, left-aligned text, no italics.
+- Settings live in the Cottage (and on the sign-in screen) and follow the student to any computer.
+- **Color-blind-safe** colors for the 5 score factors, checked with a palette validator in both modes. States always carry an icon and words.
+- **Custom icon set** (`js/ui/icons.js`) for buttons, tabs and places. Emoji stay in story text and shop items.
+- **Fonts** (self-hosted, OFL): Fredoka for headings, OpenDyslexic, Dancing Script for signatures.
+- **Shiny cards:** light sweep, holographic stripe on premium cards, embossed numbers and a gentle tilt. All motion stops under reduced-motion.
 
 ---
 
@@ -96,11 +126,12 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 ## 5. Player journey and semester timeline
 
 ```
-Google sign-in (school accounts only) -> create creature -> join class with a code
+Google sign-in (school accounts only) -> story intro -> create creature -> pick its dream -> join class with a code
 -> AGE 16: teen option (join a parent's card, or a teen debit card)
 -> tutorial months: first work shift, first purchase, read your report
 -> AGE 18: DESIGN YOUR CARD -> approved or denied, with reasons
--> HUB <-> SIMULATION (time passes) <-> ACCOUNT MANAGEMENT (time paused)
+-> KINGDOM HUB: Town Hall (time passes), Guild Hall (earn), Market (spend),
+   Vault (account management, time paused), Academy (XP), Plaza, Cottage
 -> chapter summary -> reflection -> saved
 Next class: sign in -> "Previously on your credit life..." -> next released chapter
 ```
@@ -167,7 +198,7 @@ As the requested limit slider moves up, show in real time how the other variable
 
 ## 8. Simulation: the month loop
 
-Time passes here. Target 3 to 4 real minutes per game month.
+Time passes here, at Town Hall. Target 3 to 4 real minutes per game month. Shifts happen at the Guild Hall and bills are paid at the Vault, then the student comes back to Town Hall to end the month.
 
 - **Life card (1 per month):** random event, for example a $400 car repair, broken phone, medical bill, raise, birthday money, lost hours, tax refund.
 - **Decision cards (up to 5 per month):** credit choices drawn from the scenario pool (Section 13), only ones that fit the creature's situation. Note: 5 per month is the teacher's setting. Tune in the pilot if months run long.
@@ -402,7 +433,7 @@ Quick (30 to 60 seconds), semi-related to the content. Pay depends on performanc
 
 | Minigame | Job | Skill | Phase |
 |---|---|---|---|
-| **Ledger Sort** (Asset / Liability / Equity) | Bookkeeper | Sort items into ASSET, LIABILITY or EQUITY | **Pilot, top priority** |
+| **Ledger Sort** (Asset / Liability / Equity) | Bookkeeper | Sort items into ASSET, LIABILITY or EQUITY. Here equity means investments: owning a share of a business, like stock or an index fund (teacher decision 2026-10-20) | **Pilot, top priority** |
 | Cashier Rush | Shopkeeper | Make correct change quickly | Pilot |
 | **Check Writer** (added 2026-10-20) | Scribe at The Gilded Vault | Fill in a paper check from an order or bill: date, payee, amount in numbers, amount in words, memo, signature. Part 2 endorses the back of a paycheck before depositing it. Signatures use a full-screen signature pad (touch, pen or mouse) with a "type my signature" option that writes the creature's full name in a cursive font | Phase 6 |
 | Check & Tip | Tavern server | Given a subtotal, add a 20% tip and give the total within 20 seconds | Later |

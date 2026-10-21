@@ -2,6 +2,7 @@
 // the class leaderboard list. No free text: group names and gift messages are
 // presets. Firestore rules enforce the class, friendship and the 40-hour gift limit.
 import { h, add, fill, money, toast } from "../dom.js";
+import { placeHeader } from "../place-header.js";
 import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
 import { fullName } from "../../data/creatures.js";
@@ -20,12 +21,7 @@ export function render(root, { game, go, track, refreshWho }) {
   root.append(panel);
   const data = { directory: [], requests: [], groups: [], gifts: { incoming: [], outgoing: [] }, lastGift: null, loaded: false };
 
-  const header = () =>
-    h(
-      "header.acct-head",
-      h("div", h("p.step-label", "Your class"), h("h1", "👥 Friends"), h("p.muted.tight", "Only classmates can see you here. Nobody sees your money, score or report.")),
-      h("button.secondary", { type: "button", onclick: () => go(play.active ? "month" : "hub") }, play.active ? "← Back to this month" : "← Back to hub")
-    );
+  const header = () => placeHeader({ go, iconName: "plaza", kicker: "Your class", title: "Friendship Plaza", subtitle: "Only classmates can see you here. Nobody sees your money, score or report." });
 
   if (game.classInfo?.social === false) {
     fill(panel, header(), h("p.callout", "Your teacher has friends and gifts turned off for your class right now."));

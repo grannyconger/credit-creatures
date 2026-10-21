@@ -1,6 +1,7 @@
 // The Shop (SPEC §18): wants for the creature. Stock rotates each chapter.
 // Checkout uses the "Pay with" picker: debit, a credit card, or BNPL.
 import { h, add, fill, money, toast } from "../dom.js";
+import { placeHeader } from "../place-header.js";
 import { resolveChoice } from "../../engine/index.js";
 import { SHOP_BY_ID, stockFor, BNPL_MIN } from "../../data/shop.js";
 import { creatureSvg } from "../creature-art.js";
@@ -22,12 +23,7 @@ export function render(root, { game, go, track }) {
     const c = game.save.creature;
     fill(
       panel,
-      run.practice ? h("p.callout.warn.practice", "🔁 Practice mode. Purchases here are not saved.") : null,
-      h(
-        "header.acct-head",
-        h("div", h("p.step-label", `Chapter ${chapter} stock`), h("h1", "🛍️ Shimmer Market"), h("p.muted.tight", "⏸️ Time is paused while you shop. New stock every chapter.")),
-        h("button.secondary", { type: "button", onclick: () => go(play.active ? "month" : "hub") }, play.active ? "← Back to this month" : "← Back to hub")
-      ),
+      placeHeader({ go, iconName: "market", kicker: `Chapter ${chapter} stock`, title: "Shimmer Market", subtitle: "Spend money on things for your creature. Time is paused while you shop. New stock every chapter.", practice: run.practice }),
       moneyChips(run.life, play.sparkle.total),
       buying ? checkout(buying, c) : h("div.shop-grid", stock.map((item) => card(item, c))),
       h("p.note.center", "Wants are fun, but check your bills first. Things you buy show up in the creature editor and on your hub.")

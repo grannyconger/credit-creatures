@@ -1,6 +1,7 @@
 // Trophies (SPEC §16): achievements, XP and rank, personal records, and the
 // class leaderboard (ranked by XP, so careful play wins, not cash).
 import { h, fill, add } from "../dom.js";
+import { placeHeader } from "../place-header.js";
 import { icon } from "../icons.js";
 import { ACHIEVEMENTS, CATEGORIES, RANKS } from "../../data/achievements.js";
 import { rankFor, bestXpChapter } from "../../progress.js";
@@ -24,11 +25,7 @@ export function render(root, { game, go, track }) {
     const body = h("div");
     fill(
       panel,
-      h(
-        "header.acct-head",
-        h("div", h("p.step-label", "Trophies"), h("h1", `${r.icon} ${r.title}`), h("p.muted.tight", `${play.xp} XP · ${Object.keys(play.achievements).length} of ${ACHIEVEMENTS.length} achievements`)),
-        h("button.secondary", { type: "button", onclick: () => go(play.active ? "month" : "hub") }, play.active ? "← Back to this month" : "← Back to hub")
-      ),
+      placeHeader({ go, iconName: "trophy", kicker: "The Academy", title: `Trophies: ${r.icon} ${r.title}`, subtitle: `${play.xp} XP · ${Object.keys(play.achievements).length} of ${ACHIEVEMENTS.length} achievements` }),
       xpBar(play.xp),
       h(
         "nav.acct-tabs",

@@ -1,13 +1,13 @@
-// Account Management (SPEC §14). Time is paused here: nothing on these tabs
-// ends a month. Opens from the hub or the month screen and goes back there.
+// The Gilded Vault: Account Management (SPEC §14). Time is paused here:
+// nothing on these tabs ends a month. It opens from the kingdom and goes back there.
 import { h, fill } from "../dom.js";
 import { icon } from "../icons.js";
+import { placeHeader } from "../place-header.js";
 import * as P from "../../play.js";
 import { walletTab } from "../accounts/wallet-tab.js";
 import { statementsTab } from "../accounts/statements-tab.js";
 import { scoreTab } from "../accounts/score-tab.js";
 import { reportTab } from "../accounts/report-tab.js";
-import { deskTab } from "../accounts/desk-tab.js";
 import { inboxTab } from "../accounts/inbox-tab.js";
 
 const TABS = [
@@ -15,7 +15,6 @@ const TABS = [
   ["statements", "statement", "Statements", statementsTab],
   ["score", "gauge", "My Score", scoreTab],
   ["report", "report", "My Report", reportTab],
-  ["desk", "academy", "Practice Desk", deskTab],
   ["inbox", "inbox", "Inbox", inboxTab],
 ];
 
@@ -43,12 +42,7 @@ export function render(root, { game, go, track, refreshWho }) {
     const unread = P.unreadCount(play);
     fill(
       shell,
-      run.practice ? h("p.callout.warn.practice", "🔁 Practice mode. Nothing here is saved.") : null,
-      h(
-        "header.acct-head",
-        h("div", h("p.step-label", "Account Management"), h("h1", "🏦 Your accounts"), h("p.muted.tight", "⏸️ Time is paused here. Look around as long as you like.")),
-        h("button.secondary", { type: "button", onclick: () => go(play.active ? "month" : "hub") }, play.active ? "← Back to this month" : "← Back to hub")
-      ),
+      placeHeader({ go, iconName: "vault", title: "The Gilded Vault", subtitle: "Your bank. Pay bills, check your score and read your letters. Time is paused here.", practice: run.practice }),
       h(
         "nav.acct-tabs",
         { "aria-label": "Account Management" },

@@ -5,6 +5,8 @@ import { creatureSvg } from "../creature-art.js";
 import { chapterInfo, RATING_LABELS, REFLECTION_MAX } from "../../data/chapters.js";
 import * as P from "../../play.js";
 import { monthSummary } from "../month-summary.js";
+import { DREAMS, dreamProgress } from "../../data/dreams.js";
+import { meters } from "./hub.js";
 
 const MIN_CHARS = 15;
 
@@ -40,6 +42,7 @@ export function render(root, { game, go, track, refreshWho }) {
       s.best ? moment("👍 Best move", s.best, "good") : null,
       s.worst ? moment("👎 Toughest moment", s.worst, "bad") : h("div.callout.good", h("p", h("strong", "👎 Toughest moment")), h("p", "No risky choices this chapter. Nice."))
     ),
+    c.dream && DREAMS[c.dream] ? dreamBlock(c, run.life) : null,
     h(
       "details.months",
       h("summary", "Month by month"),
@@ -48,11 +51,23 @@ export function render(root, { game, go, track, refreshWho }) {
   );
 
   if (run.practice) {
-    add(panel, h("div.row", h("button.big", { type: "button", onclick: () => go("hub") }, "Back to my real game")));
+    add(panel, h("div.row", h("button.big", { type: "button", onclick: () => ((game.practice = null), go("hub")) }, "Back to my real game")));
   } else {
     add(panel, reflectionForm(s, run, go, track));
   }
   root.append(panel);
+}
+
+// Where the dream stands after this chapter (teacher request: keep the purpose in view).
+function dreamBlock(c, life) {
+  const d = DREAMS[c.dream];
+  const prog = dreamProgress(life, c.dream);
+  return h(
+    "section.dream-card",
+    h("h3", `${d.icon} ${c.name}'s dream: ${d.title}`),
+    meters(prog),
+    h("p.note.tight", prog.ready ? "Everything's ready. Make it come true in your Cottage!" : `${Math.round(prog.overall * 100)}% of the way there. Saving and paying on time move it forward.`)
+  );
 }
 
 function stat(label, value, dir = "") {

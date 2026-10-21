@@ -1,6 +1,6 @@
-# Credit Life
+# Credit Creatures
 
-A classroom game where students raise a fantasy creature through its credit life. `SPEC.md` is the single source of truth. Read it before planning any phase.
+A classroom game (formerly Credit Life) where students are the Guardian of Coin for a fantasy creature in the Kingdom of Coinhaven. Their money choices shape its credit life and decide whether its dream comes true. The illustrated kingdom map is home base: every place opens from it and comes back to it. `SPEC.md` is the single source of truth. Read it before planning any phase.
 
 ## Resuming work ("keep going", "pick up where you left off")
 
@@ -20,6 +20,7 @@ A classroom game where students raise a fantasy creature through its credit life
 - No secrets in the repo. The Firebase web config is public by design. Security comes from Firestore rules.
 - Do not touch the separate Credit Quest project or repo.
 - Student-facing text: plain language for a 15-year-old with no credit knowledge. No em-dashes, no semicolons.
+- Style with the tokens in `css/tokens.css` (never raw colors) so light, dark and dyslexia modes keep working. Use `icon()` from `js/ui/icons.js` for UI icons. Never use color alone for a state.
 - Real brand names are fine. Real logos are never fine. Use the emoji map in SPEC §4.
 - Feedback is built in (`docs/FEEDBACK.md`). Every new screen, choice, minigame and question logs telemetry through `js/telemetry.js`. Never ask students for personal info.
 - Sign-in is school-only (`@greermiddlecollege.org`). Firestore rules are the real gate. Any rules change must be pasted into the Firebase console by the teacher (give click-by-click steps).
@@ -37,6 +38,7 @@ A classroom game where students raise a fantasy creature through its credit life
 | 7 | Teacher: dashboard, roster, controls, CSV export, Tuning tab, rules hardening (plus unlock pop-ups, local credit unions, signature font) | Done, approved |
 | 8 | Social and customization: friend requests, friend groups, gifts every 40 hours, bigger creature customizer | Done, approved |
 | 9 | Pilot: one class plays, tune numbers, add remaining content | Built, waiting for pilot data (docs/PILOT.md) |
+| Redesign | Design system (tokens, dark, dyslexia, icons, shiny cards), story intro, dreams, illustrated kingdom hub | Done, awaiting the teacher's review |
 
 ## Run locally
 

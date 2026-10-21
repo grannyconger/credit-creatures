@@ -27,7 +27,7 @@ export const JOBS = {
 export const LEDGER_BINS = {
   asset: { label: "Asset", hint: "Something you OWN", icon: "🏠", key: "1" },
   liability: { label: "Liability", hint: "Something you OWE", icon: "📝", key: "2" },
-  equity: { label: "Equity", hint: "What you OWN minus what you OWE", icon: "⚖️", key: "3" },
+  equity: { label: "Equity", hint: "An INVESTMENT: you own a share of a business", icon: "📈", key: "3" },
 };
 
 export const LEDGER_ITEMS = [
@@ -51,12 +51,12 @@ export const LEDGER_ITEMS = [
   { item: "Rent that's due next week", answer: "liability", why: "It's money you owe." },
   { item: "A late library fine", answer: "liability", why: "You owe the library." },
   { item: "A clinic payment plan", answer: "liability", why: "You still owe the rest of the bill." },
-  { item: "Your car is worth $5,000 and you owe $3,000. The $2,000 that's really yours", answer: "equity", why: "Equity is what you own minus what you owe: $5,000 − $3,000." },
-  { item: "Your net worth: everything you own minus everything you owe", answer: "equity", why: "That's the definition of equity." },
-  { item: "$200 you put in to start your own lemonade stand", answer: "equity", why: "Money an owner puts into their business is owner's equity." },
-  { item: "The part of your family's house that's paid off", answer: "equity", why: "Home value minus the mortgage left is home equity." },
-  { item: "Profit your business kept instead of spending", answer: "equity", why: "Kept profit adds to the owner's equity." },
-  { item: "Your bike is worth $300 and you owe $0 on it. Your equity in it", answer: "equity", why: "$300 − $0 = $300 of equity." },
+  { item: "10 shares of stock in the Coinhaven Shipping Company", answer: "equity", why: "Stock is equity: you own a small piece of that company." },
+  { item: "Money in an index fund that owns hundreds of companies", answer: "equity", why: "An index fund is an investment in many companies' stock. That's equity." },
+  { item: "A 10% share you bought in your friend's bakery", answer: "equity", why: "You invested in the business and own part of it. That's equity." },
+  { item: "A retirement account invested in stocks", answer: "equity", why: "It holds shares of companies, so it's an equity investment." },
+  { item: "Company stock your job gave you as a bonus", answer: "equity", why: "Owning shares of the company you work for is equity." },
+  { item: "Shares of the Gilded Vault that pay you part of its profits", answer: "equity", why: "Shares are ownership. Getting a part of the profits is one reward of equity." },
 ];
 
 // ---------- Cashier Rush ----------

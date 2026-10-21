@@ -1,15 +1,16 @@
-// One game month (SPEC §8): a life card, Decision cards, work shifts, bills,
-// then End Month. In practice mode the same screen runs on a throwaway copy.
+// Town Hall: one game month's news and decisions, then End Month (SPEC §8).
+// Work happens at the Guild Hall and bills at the Vault, so the month is
+// shared across the kingdom and always comes back to the hub.
+// In practice mode the same screen runs on a throwaway copy.
 import { h, add, fill, money, ageLabel, toast } from "../dom.js";
-import { pay, moveToSavings, moveToChecking, ownCards, upcomingPayments, utilization, amountOwed } from "../../engine/index.js";
+import { ownCards, upcomingPayments, utilization, amountOwed } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { chapterInfo } from "../../data/chapters.js";
 import * as P from "../../play.js";
 import { decisionCard } from "../decision-card.js";
-import { jobBoard } from "../job-board.js";
-import { notePayment } from "../../progress.js";
-import { billsPanel } from "../bills-panel.js";
-import { moneyChips, accountButtons } from "../wallet.js";
+import { moneyChips } from "../wallet.js";
+import { placeHeader } from "../place-header.js";
+import { icon } from "../icons.js";
 import { createRng } from "../../engine/index.js";
 import { factorOptions, factorChoice } from "../../data/practice-questions.js";
 import { monthSummary } from "../month-summary.js";
@@ -22,9 +23,8 @@ export function render(root, { game, go, track, refreshWho }) {
   const paused = () =>
     fill(
       panel,
-      h("h1", "⏸️ Play is paused"),
-      h("p", "Your teacher paused the game for now. Your progress is saved. You can still look at your accounts and use the Practice Desk."),
-      h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back to hub"))
+      placeHeader({ go, iconName: "pause", title: "Town Hall is closed", subtitle: "Your teacher paused the game for now. Your progress is saved." }),
+      h("p", "You can still visit the Vault, the Market and the Academy.")
     );
   if (!run.practice && game.classInfo?.paused) {
     paused();
@@ -36,17 +36,12 @@ export function render(root, { game, go, track, refreshWho }) {
       .then((cls) => {
         if (!cls) return;
         game.classInfo = cls;
-        if (cls.paused && panel.isConnected) {
-          board?.stop();
-          paused();
-        }
+        if (cls.paused && panel.isConnected) paused();
       })
       .catch(() => {});
   }
   let view = null;
   let monthStartedAt = Date.now();
-  // The job board, so a running minigame timer can stop when the screen repaints.
-  let board = null;
 
   const items = () => {
     const m = run.play.active.month;
@@ -71,82 +66,73 @@ export function render(root, { game, go, track, refreshWho }) {
   }
 
   function paint() {
-    board?.stop();
-    board = null;
     const play = run.play;
     if (!play.active) return go(play.summary ? "chapterEnd" : "hub");
     skipStale();
     const a = play.active;
     const m = a.month;
     const life = run.life;
-    if (view == null || (view !== "work" && view !== "bills" && view !== "end" && isDone(view) && !revisit)) view = nextOpen();
+    if (view == null || (view !== "end" && isDone(view) && !revisit)) view = nextOpen();
     const info = chapterInfo(a.chapter);
     const fresh = !m.shifts && items().every((i) => !isDone(i));
 
     fill(
       panel,
-      run.practice ? h("p.callout.warn.practice", "🔁 Practice mode. Nothing you do here is saved. Your real game is safe.") : null,
-      h("p.step-label", `Chapter ${a.chapter}: ${info.title}`),
-      h("h1", `Month ${a.monthIndex + 1} of ${a.months || CONFIG.pacing.monthsPerChapter}`),
-      h("p.muted", `${game.save.creature.name} is ${ageLabel(life.ageMonths).replace(" old", "")} old.`),
+      placeHeader({
+        go,
+        iconName: "townhall",
+        kicker: `Chapter ${a.chapter}: ${info.title}`,
+        title: `Town Hall: month ${a.monthIndex + 1} of ${a.months || CONFIG.pacing.monthsPerChapter}`,
+        subtitle: `${game.save.creature.name} is ${ageLabel(life.ageMonths).replace(" old", "")} old. Make this month's decisions, then end the month here.`,
+        practice: run.practice,
+      }),
       moneyChips(life, play.sparkle.total),
-      accountButtons(game, go, P.unreadCount(play)),
       fresh && a.records.length ? monthSummary(a.records.at(-1), "Last month") : null,
-      h("div.month-grid", taskList(), h("div.month-main", mainView()))
+      agenda(),
+      h("div.month-main", view === "end" ? endView() : cardView(view))
     );
   }
 
   let revisit = false;
 
-  function taskList() {
+  // This month at a glance. Done cards can be opened again to reread them.
+  function agenda() {
     const play = run.play;
     const m = play.active.month;
-    const up = upcomingPayments(run.life);
-    const billWarn = up.cardsDue.length > 0 || up.short > 0;
-    const entries = items().map((item, n) => {
+    const steps = items().map((item, n) => {
       const { def, state, kind } = P.itemDef(play, item);
-      const label = kind === "life" ? `Life card: ${def.title}` : state.done || view === item ? def.title : `Decision card ${n + (m.life ? 0 : 1)}`;
-      return { key: item, icon: kind === "life" ? def.icon : "📜", label, done: state.done, note: state.skipped ? "skipped" : "" };
+      return { key: item, label: kind === "life" ? "News" : `Decision ${n + (m.life ? 0 : 1)}`, title: def.title, done: state.done, skipped: state.skipped };
     });
-    const left = P.shiftsLeft(play);
-    entries.push({ key: "work", icon: "💼", label: `Work shifts (${m.shifts} of ${m.shifts + left})`, done: left === 0 });
-    entries.push({ key: "bills", icon: "🧾", label: "Pay bills and move money", done: false, warn: billWarn });
-    entries.push({ key: "end", icon: "🌙", label: "End Month", done: false });
+    steps.push({ key: "end", label: "End Month", title: "End the month", done: false });
     return h(
-      "nav.task-list",
+      "ol.agenda",
       { "aria-label": "This month" },
-      h(
-        "ol",
-        entries.map((e) =>
+      steps.map((st) =>
+        h(
+          "li",
+          { class: `${st.done ? "done" : ""} ${view === st.key ? "current" : ""}` },
           h(
-            "li",
-            { class: `${e.done ? "done" : ""} ${e.warn ? "warn" : ""}` },
-            h(
-              "button",
-              {
-                type: "button",
-                "aria-current": view === e.key ? "step" : null,
-                onclick: () => {
-                  revisit = typeof e.key === "number" || e.key === "life";
-                  view = e.key;
-                  track("monthTask", { task: typeof e.key === "number" ? "card" : e.key });
-                  paint();
-                },
+            "button",
+            {
+              type: "button",
+              "aria-current": view === st.key ? "step" : null,
+              title: st.title,
+              disabled: !st.done && st.key !== "end" && view !== st.key,
+              onclick: () => {
+                revisit = st.key !== "end";
+                view = st.key;
+                track("monthTask", { task: typeof st.key === "number" ? "card" : st.key });
+                paint();
               },
-              h("span.task-mark", { "aria-hidden": "true" }, e.done ? "✓" : e.warn ? "!" : e.icon),
-              h("span", e.label, e.done ? h("span.sr-only", " (done)") : null, e.note ? h("small", ` (${e.note})`) : null)
-            )
+            },
+            st.done ? icon("check", { size: 14 }) : st.key === "end" ? icon("moon", { size: 14 }) : null,
+            ` ${st.label}`,
+            st.done ? h("span.sr-only", " (done)") : null,
+            st.skipped ? h("small", " (skipped)") : null
           )
         )
       )
     );
-  }
-
-  function mainView() {
-    if (view === "work") return workView();
-    if (view === "bills") return billsView();
-    if (view === "end") return endView();
-    return cardView(view);
   }
 
   function cardView(item) {
@@ -201,58 +187,6 @@ export function render(root, { game, go, track, refreshWho }) {
     });
   }
 
-  function workView() {
-    const play = run.play;
-    const left = P.shiftsLeft(play);
-    const wrap = h("div", h("h2", "💼 Work a shift"), h("p", "Pick a job. Pay depends on how well you do, and it goes up as you get more experience at a job."));
-    if (left <= 0) {
-      add(wrap, h("p.callout", "No shifts left this month."), h("div.row", h("button", { type: "button", onclick: () => ((view = "end"), paint()) }, "Go to End Month")));
-      return wrap;
-    }
-    board = jobBoard({
-      game,
-      run,
-      track,
-      save,
-      onCollected: (pay) => {
-        toast(`${money(pay)} went into checking.`, "good");
-        paint();
-      },
-    });
-    add(wrap, h("p.muted", `${left} shift${left === 1 ? "" : "s"} left this month.`), board);
-    return wrap;
-  }
-
-  function billsView() {
-    return h(
-      "div",
-      h("h2", "🧾 Bills and money"),
-      billsPanel({
-        life: run.life,
-        onPay: async (accountId, amount, kind) => {
-          const before = run.life;
-          const r = pay(before, accountId, amount);
-          if (!r.ok) return toast(r.message, "bad");
-          notePayment(run.play, before, accountId, r.paid);
-          run.life = r.life;
-          track("billPay", { kind, amount: r.paid });
-          toast(r.message, "good");
-          await save("pay");
-          paint();
-        },
-        onMove: async (dir, amount) => {
-          const r = dir === "toSavings" ? moveToSavings(run.life, amount) : moveToChecking(run.life, amount);
-          if (!r.ok) return toast(r.message, "bad");
-          run.life = r.life;
-          track("moveMoney", { dir, amount });
-          toast(r.message, "good");
-          await save("move");
-          paint();
-        },
-      })
-    );
-  }
-
   function endView() {
     const play = run.play;
     const life = run.life;
@@ -262,7 +196,7 @@ export function render(root, { game, go, track, refreshWho }) {
     for (const c of up.cardsDue) warnings.push(`Your ${c.name} minimum of ${money(c.amount)} isn't paid. If you end the month now, it will be late.`);
     if (up.short > 0) warnings.push(`Checking is ${money(up.short)} short of the ${money(up.total)} that comes out automatically. Payments that bounce cost ${money(CONFIG.fees.overdraft)} each.`);
     const left = P.shiftsLeft(play);
-    const wrap = h("div", h("h2", "🌙 End Month"));
+    const wrap = h("div.end-month", h("h2", icon("moon", { size: 24 }), " End Month"));
     if (open.length) {
       add(
         wrap,
@@ -274,11 +208,26 @@ export function render(root, { game, go, track, refreshWho }) {
     add(
       wrap,
       h("p", "When the month ends, statements close, interest and fees are charged, automatic payments come out of checking, lenders report to the credit bureau, and your score updates."),
-      left > 0 ? h("p.note.tight", `You still have ${left} work shift${left === 1 ? "" : "s"} you could do first.`) : null,
-      warnings.length ? h("div.callout.warn", { role: "alert" }, warnings.map((w) => h("p", "⚠️ ", w))) : h("p.callout.good", "✓ Your bills are covered."),
+      left > 0
+        ? h("p.callout", icon("guild", { size: 18 }), ` You can still work ${left} shift${left === 1 ? "" : "s"} at the Guild Hall this month. `, h("button.small.secondary", { type: "button", onclick: () => go("guild") }, "Go to the Guild Hall"))
+        : null,
+      warnings.length ? h("div.callout.warn", { role: "alert" }, warnings.map((w) => h("p", icon("alert", { size: 16 }), " ", w))) : h("p.callout.good", icon("check", { size: 16 }), " Your bills are covered."),
       h(
         "div.row",
-        warnings.length ? h("button.secondary", { type: "button", onclick: () => ((view = "bills"), paint()) }, "Pay bills first") : null,
+        warnings.length
+          ? h(
+              "button.secondary",
+              {
+                type: "button",
+                onclick: () => {
+                  game.accountsTab = "wallet";
+                  go("accounts");
+                },
+              },
+              icon("vault", { size: 18 }),
+              " Pay bills at the Vault"
+            )
+          : null,
         endButton(warnings.length ? "End Month anyway" : "End Month")
       )
     );
@@ -328,5 +277,4 @@ export function render(root, { game, go, track, refreshWho }) {
   }
 
   paint();
-  return () => board?.stop();
 }

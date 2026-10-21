@@ -1,64 +1,114 @@
-// The hub (SPEC §5): home base after Chapter 1. The creature, the digital
-// wallet, the next chapter (if the teacher released it), a recap and practice.
+// The kingdom hub (teacher request 2026-10-20): home base for everything.
+// Who you're caring for and its dream, this chapter's next step, and the
+// illustrated village. Every place opens from here and comes back here.
 import { h, add, fill, money, ageLabel } from "../dom.js";
 import { creatureSvg } from "../creature-art.js";
+import { icon } from "../icons.js";
 import { fullName } from "../../data/creatures.js";
 import { chapterInfo } from "../../data/chapters.js";
 import { CONFIG } from "../../data/config.js";
+import { DREAMS, dreamProgress } from "../../data/dreams.js";
+import { HUB_HELP } from "../../data/story.js";
 import * as P from "../../play.js";
-import { moneyChips, walletStrip, accountButtons } from "../wallet.js";
+import { placeStatus, nextStep } from "../../places.js";
+import { moneyChips } from "../wallet.js";
+import { kingdomMap } from "../kingdom-map.js";
 import { rankFor } from "../../progress.js";
-import { xpBar } from "./trophies.js";
 import { celebrate } from "../celebrate.js";
 
-export function render(root, { game, go, track, saveAndQuit }) {
-  game.practice = null;
-  const play = game.play;
-  const life = game.life;
+export function render(root, { game, go, track }) {
+  const run = game.run;
+  const play = run.play;
+  const life = run.life;
   const c = game.save.creature;
-  const chapterBox = h("section.chapter-box", { "aria-live": "polite" });
+  const panel = h("section.panel.hub");
+  root.append(panel);
 
-  function paintChapter(checking = false) {
-    fill(chapterBox);
+  function paint(checking = false) {
+    const status = placeStatus({ life, play, creature: c, classInfo: game.classInfo });
+    fill(
+      panel,
+      run.practice
+        ? h(
+            "div.callout.warn.practice-bar",
+            h("strong", `Practice: Chapter ${play.active?.chapter ?? play.chapter}. `),
+            "Nothing here is saved. ",
+            h(
+              "button.small",
+              {
+                type: "button",
+                onclick: () => {
+                  game.practice = null;
+                  track("practiceLeave", {});
+                  root.replaceChildren();
+                  render(root, { game, go, track });
+                },
+              },
+              "Leave practice"
+            )
+          )
+        : null,
+      h("div.hub-top", guardianCard(), chapterCard(status, checking)),
+      moneyChips(life, play.sparkle.total),
+      kingdomMap({
+        creature: c,
+        ageMonths: life.ageMonths,
+        status,
+        onOpen: (pl) => {
+          track("placeOpen", { place: pl.id, status: status[pl.id]?.text || "" });
+          if (pl.id === "townhall" && !play.active && !play.summary) return startChapter();
+          go(pl.route);
+        },
+      }),
+      h("p.note.center.hub-help", HUB_HELP),
+      run.practice ? null : recapBox(play, track),
+      run.practice ? null : practiceBox(play, game, go, track)
+    );
+  }
+
+  // Who you're caring for, and how close its dream is.
+  function guardianCard() {
+    const r = rankFor(play.xp);
+    const dream = c.dream ? DREAMS[c.dream] : null;
+    const prog = c.dream ? dreamProgress(life, c.dream) : null;
+    return h(
+      "section.guardian",
+      h("button.guardian-art", { type: "button", "aria-label": `Open ${c.name}'s cottage`, onclick: () => go("cottage"), html: creatureSvg(c, { size: 96, ageMonths: life.ageMonths, label: "" }) }),
+      h(
+        "div.guardian-text",
+        h("p.step-label", "You are the Guardian of Coin for"),
+        h("h1", fullName(c)),
+        h("p.muted.tight", `${ageLabel(life.ageMonths)} · ${r.icon} ${r.title} · ${play.xp} XP`),
+        dream
+          ? h("div.dream-mini", h("span.dream-name", `${dream.icon} Dream: `, h("strong", dream.title)), play.dreamDone ? h("span.good-text", " Done!") : meters(prog))
+          : h("button.small", { type: "button", onclick: () => go("dream") }, "Pick your creature's dream")
+      )
+    );
+  }
+
+  function chapterCard(status, checking) {
     const n = play.chapter;
-    const info = chapterInfo(n);
-    if (game.classInfo?.paused) {
-      add(chapterBox, h("p.step-label", `Chapter ${n}`), h("h2", "⏸️ Play is paused"), h("p", "Your teacher paused the game for now. You can still visit your accounts, the Practice Desk, the shop and your trophies."));
-      return;
-    }
-    if (play.active) {
-      add(
-        chapterBox,
-        h("p.step-label", `Chapter ${n}`),
-        h("h2", info.title),
-        h("p", `Month ${play.active.monthIndex + 1} of ${play.active.months || CONFIG.pacing.monthsPerChapter} is waiting for you.`),
-        h("div.row", h("button.big", { type: "button", onclick: () => go("month") }, `Continue Chapter ${n}`))
-      );
-      return;
-    }
+    const info = chapterInfo(play.active?.chapter ?? n);
+    const label = play.active ? `Chapter ${play.active.chapter}, month ${play.active.monthIndex + 1} of ${play.active.months || CONFIG.pacing.monthsPerChapter}` : `Chapter ${n}`;
+    const box = h("section.chapter-box", { "aria-live": "polite" }, h("p.step-label", label), h("h2", info.title), h("p.next-step", icon("next", { size: 16 }), " ", nextStep({ play, classInfo: game.classInfo, status })));
     const released = game.classInfo?.releasedChapter || 1;
-    if (P.canPlay(play, released)) {
-      const btn = h("button.big", { type: "button" }, `Start Chapter ${n}`);
-      btn.addEventListener("click", async () => {
-        btn.disabled = true;
-        P.startChapter(play, game.life, game.classInfo?.monthsPerChapter || CONFIG.pacing.monthsPerChapter);
-        track("chapterStart", { chapter: n });
-        await game.persist("chapterStart");
-        go("month");
-      });
-      add(chapterBox, h("p.step-label", `Chapter ${n} is open`), h("h2", info.title), h("p", info.intro), h("div.row", btn));
-    } else {
-      const again = h("button.secondary", { type: "button", disabled: checking }, checking ? "Checking..." : "Check again");
-      again.addEventListener("click", () => refreshRelease(true));
-      add(
-        chapterBox,
-        h("p.step-label", `Chapter ${n}`),
-        h("h2", "⏳ Waiting for your teacher"),
-        h("p", `Chapter ${n} opens when your teacher releases it. Everyone in your class moves forward together.`),
-        h("div.row", again),
-        game.local ? localRelease(n) : null
-      );
+    if (play.active || play.summary) add(box, h("div.row", h("button", { type: "button", onclick: () => go("month") }, icon("townhall", { size: 18 }), " Go to Town Hall")));
+    else if (game.classInfo?.paused) add(box, h("p.muted", "Play is paused by your teacher."));
+    else if (P.canPlay(play, released)) add(box, h("div.row", h("button", { type: "button", onclick: startChapter }, `Start Chapter ${n}`)));
+    else {
+      add(box, h("div.row", h("button.secondary", { type: "button", disabled: checking, onclick: () => refreshRelease(true) }, checking ? "Checking..." : "Check again")));
+      if (game.local) add(box, localRelease(n));
     }
+    return box;
+  }
+
+  async function startChapter() {
+    const n = play.chapter;
+    if (run.practice || game.classInfo?.paused || !P.canPlay(play, game.classInfo?.releasedChapter || 1)) return go("month");
+    P.startChapter(play, life, game.classInfo?.monthsPerChapter || CONFIG.pacing.monthsPerChapter);
+    track("chapterStart", { chapter: n });
+    await game.persist("chapterStart");
+    go("month");
   }
 
   // ?local only: stands in for the teacher's release button.
@@ -81,8 +131,8 @@ export function render(root, { game, go, track, saveAndQuit }) {
   }
 
   async function refreshRelease(manual = false) {
-    if (play.active || !game.profile.classId) return paintChapter();
-    if (manual) paintChapter(true);
+    if (run.practice || play.active || !game.profile.classId) return paint();
+    if (manual) paint(true);
     try {
       const cls = await game.db.getClass(game.profile.classId);
       if (cls) game.classInfo = cls;
@@ -96,46 +146,33 @@ export function render(root, { game, go, track, saveAndQuit }) {
       celebrate({ kind: "chapter", id: String(play.chapter), icon: "📣", kicker: "New chapter unlocked!", title: `Chapter ${play.chapter}: ${info.title}`, text: info.intro });
       await game.persist("chapterOpen");
     }
-    paintChapter();
+    paint();
   }
 
-  root.append(
-    h(
-      "section.panel.hub",
-      h(
-        "div.hero",
-        h("div.hero-art.creature-stage", { class: c.background ? `bg-${c.background}` : "", html: creatureSvg(c, { size: 150, ageMonths: life.ageMonths }) }),
-        h(
-          "div",
-          h("p.step-label", "Your hub"),
-          h("h1", fullName(c)),
-          h("p.muted", `${ageLabel(life.ageMonths)}. Chapter ${play.chapter}.`),
-          h("p.rank-line", `${rankFor(play.xp).icon} ${rankFor(play.xp).title} · ${play.xp} XP`),
-          xpBar(play.xp)
-        )
-      ),
-      moneyChips(life, play.sparkle.total),
-      accountButtons(game, go, P.unreadCount(play)),
-      chapterBox,
-      recapBox(play, track),
-      walletStrip(life, c),
-      practiceBox(play, game, go, track),
-      h(
-        "div.row",
-        h("button.secondary", { type: "button", onclick: () => go("creature") }, "Edit my creature"),
-        h("button.secondary", { type: "button", onclick: () => go("profile") }, "Edit my name"),
-        h("button", { type: "button", onclick: saveAndQuit }, "Save and quit")
-      )
-    )
-  );
-  paintChapter();
+  paint();
   refreshRelease();
+}
+
+// Three small meters: savings, score and habits. Never color alone: each has words.
+export function meters(prog) {
+  const bar = (label, share, ok, text) =>
+    h(
+      "span.meter-mini",
+      h("small", ok ? "✓ " : "", label),
+      h("span.meter-track", { role: "img", "aria-label": `${label}: ${text}` }, h("span", { class: ok ? "ok" : "", style: { width: `${Math.round(share * 100)}%` } }))
+    );
+  return h(
+    "span.meters",
+    bar("Savings", prog.savings.share, prog.savings.ok, `${money(prog.savings.value)} of ${money(prog.savings.goal)}`),
+    bar("Score", prog.score.share, prog.score.ok, prog.score.value == null ? `no score yet, goal ${prog.score.goal}` : `${prog.score.value} of ${prog.score.goal}`),
+    bar("Habits", prog.habits.share, prog.habits.ok, prog.habits.list.map((x) => `${x.ok ? "yes" : "not yet"}: ${x.label}`).join(". "))
+  );
 }
 
 let recapTracked = false;
 
-// "Previously on your credit life..." (decision #3): built from saved month
-// records and the last chapter summary, no extra storage.
+// "Previously on..." (decision #3): built from saved month records and the
+// last chapter summary, no extra storage.
 function recapBox(play, track) {
   const r = P.recap(play);
   if (!r) return null;
@@ -164,15 +201,15 @@ function recapBox(play, track) {
   }
   const months = r.current ? r.current.records : r.last?.records || [];
   const last = months.at(-1);
-  if (last) lines.push(h("p", `🌙 Last End Month: ${last.change}`));
-  return h("section.callout.recap", h("h3", "📜 Previously on your credit life..."), lines);
+  if (last) lines.push(h("p", `Last End Month: ${last.change}`));
+  return h("details.callout.recap", h("summary", h("strong", "Previously on your creature's life...")), lines);
 }
 
 function practiceBox(play, game, go, track) {
   if (!play.history.length) return null;
   return h(
     "section.practice-box",
-    h("h3", "🔁 Practice an earlier chapter"),
+    h("h3", icon("scroll", { size: 18 }), " Practice an earlier chapter"),
     h("p.note.tight", "Replay a chapter from its start and try different choices. Practice never changes your real game."),
     h(
       "div.row",
