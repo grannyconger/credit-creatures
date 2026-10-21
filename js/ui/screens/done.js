@@ -6,7 +6,7 @@ import { CONFIG } from "../../data/config.js";
 import { creatureSvg } from "../creature-art.js";
 import { cardArt } from "../card-art.js";
 
-export function render(root, { game, go, advance, saveAndQuit }) {
+export function render(root, { game, go, advance, saveAndSignOut }) {
   const life = game.life;
   const c = game.save.creature;
   const card = game.ob.cardId ? findAccount(life, game.ob.cardId) : null;
@@ -48,7 +48,7 @@ export function render(root, { game, go, advance, saveAndQuit }) {
       h(
         "div.row",
         h("button.secondary", { type: "button", onclick: () => go("creature") }, "Edit my creature"),
-        h("button.secondary", { type: "button", onclick: saveAndQuit }, "Save and quit"),
+        h("button.secondary", { type: "button", onclick: saveAndSignOut }, "Save and sign out"),
         h("button.big", { type: "button", onclick: () => advance("hub") }, "Go to my hub")
       )
     )

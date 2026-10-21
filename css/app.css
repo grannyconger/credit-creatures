@@ -987,3 +987,76 @@ button.danger { color: var(--danger); border-color: var(--danger); }
   80% { transform: translateY(-5%) scale(0.98, 1.03); }
   92% { transform: translateY(0) scale(1.03, 0.97); }
 }
+
+/* ---------- Sign-in: the grand entrance (2026-10-20) ---------- */
+.signin-hero {
+  --s-sky-top: #a8d8f8; --s-sky-mid: #e7f3ff; --s-sky-bot: #fde8c4;
+  --s-hill-back: #b3dc98; --s-hill: #8cc96f; --s-title-ink: #2d1b63;
+  position: relative;
+  width: 100vw;
+  margin: -32px calc(50% - 50vw) -96px;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-appearance="light"]) .signin-hero { --s-sky-top: #0c1029; --s-sky-mid: #221f4a; --s-sky-bot: #3b2f6b; --s-hill-back: #23402f; --s-hill: #2c5236; --s-title-ink: #0c0820; }
+}
+:root[data-appearance="dark"] .signin-hero { --s-sky-top: #0c1029; --s-sky-mid: #221f4a; --s-sky-bot: #3b2f6b; --s-hill-back: #23402f; --s-hill: #2c5236; --s-title-ink: #0c0820; }
+.signin-sky {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 108%, var(--s-hill) 0 38%, transparent 38.3%),
+    radial-gradient(ellipse 70% 40% at 12% 100%, var(--s-hill-back) 0 50%, transparent 50.5%),
+    radial-gradient(ellipse 70% 40% at 88% 100%, var(--s-hill-back) 0 50%, transparent 50.5%),
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.9) 0 1.5px, transparent 2px) 0 0 / 140px 120px,
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.5px) 0 0 / 90px 110px,
+    linear-gradient(180deg, var(--s-sky-top), var(--s-sky-mid) 55%, var(--s-sky-bot));
+}
+.signin-inner { position: relative; width: 100%; max-width: 1240px; padding: 56px 24px 40px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.signin-kicker { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin: 0; font-size: 0.95rem; }
+.signin-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3.2rem, 10vw, 8rem);
+  line-height: 0.95;
+  margin: 10px 0 8px;
+  letter-spacing: -0.01em;
+  display: grid;
+}
+.signin-title > span { grid-area: 1 / 1; position: relative; }
+.signin-title .t-front { z-index: 1; }
+.signin-title .t-back {
+  color: var(--s-title-ink);
+  -webkit-text-stroke: 14px var(--s-title-ink);
+  filter: drop-shadow(0 7px 0 var(--s-title-ink)) drop-shadow(0 16px 18px rgba(20, 10, 60, 0.35));
+}
+.signin-title .t-front {
+  background: linear-gradient(180deg, #fff3b8 0%, #ffd45c 38%, #f0a92e 62%, #d77d16 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.signin-tagline { font-size: clamp(1.05rem, 2vw, 1.35rem); color: var(--ink); margin: 6px 0 8px; font-weight: 600; }
+.signin-parade { display: flex; justify-content: center; align-items: flex-end; gap: 0; margin: 8px 0 -6px; width: 100%; }
+.signin-critter { display: block; margin: 0 -10px; transform: translateY(calc(var(--lift, 0) * -1px)); }
+.signin-critter svg { width: clamp(84px, 13vw, 170px); height: auto; display: block; }
+.signin-critter:nth-child(1), .signin-critter:nth-child(8) { --lift: 0; }
+.signin-critter:nth-child(2), .signin-critter:nth-child(7) { --lift: 14; }
+.signin-critter:nth-child(3), .signin-critter:nth-child(6) { --lift: 26; }
+.signin-critter:nth-child(4), .signin-critter:nth-child(5) { --lift: 34; }
+.signin-critter:nth-child(4) svg, .signin-critter:nth-child(5) svg { width: clamp(100px, 16vw, 210px); }
+.signin-critter .cc-body { transform-box: fill-box; transform-origin: 50% 100%; animation: cc-float 3.6s ease-in-out infinite; animation-delay: calc(var(--i) * -0.45s); }
+.signin-card { background: var(--panel); border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow-lift); padding: 24px 28px; width: 100%; max-width: 520px; display: flex; flex-direction: column; align-items: center; gap: 12px; position: relative; }
+.signin-card .settings-row { margin-top: 4px; }
+@media (max-width: 700px) {
+  .signin-hero { margin: -16px calc(50% - 50vw) -96px; }
+  .signin-inner { padding: 32px 16px; }
+  .signin-parade { flex-wrap: wrap; row-gap: 4px; margin-bottom: 16px; }
+  .signin-critter { margin: 0 -4px; transform: none; flex: 0 0 25%; display: flex; justify-content: center; }
+  .signin-critter svg, .signin-critter:nth-child(4) svg, .signin-critter:nth-child(5) svg { width: 92px; }
+  .signin-title .t-back { -webkit-text-stroke-width: 8px; }
+}
+
+.signin-card .error:empty { display: none; }

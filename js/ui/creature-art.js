@@ -145,37 +145,52 @@ const SHAPES = {
     feet: [{ x: 88, y: 180 }, { x: 112, y: 180 }],
   }),
 
-  // A firebird: flame wings, a fiery crest and long tail plumes. The flame
-  // tips stay gold and orange in every palette so it always glows.
-  emberPhoenix: (p) => ({
-    body: `
-      <path d="M94 150 C76 160 62 176 50 190 C46 196 36 196 30 190 C44 190 48 182 54 172 C62 160 74 150 86 142 Z" fill="${p.accent}"/>
-      <path d="M106 150 C124 160 138 176 150 190 C154 196 164 196 170 190 C156 190 152 182 146 172 C138 160 126 150 114 142 Z" fill="${p.accent}"/>
-      <path d="M95 158 C92 176 97 188 100 198 C103 188 108 176 105 158 Z" fill="${p.accent}"/>
-      <circle cx="36" cy="190" r="5" fill="#f6c445"/><circle cx="36" cy="190" r="2" fill="#f08a24"/>
-      <circle cx="164" cy="190" r="5" fill="#f6c445"/><circle cx="164" cy="190" r="2" fill="#f08a24"/>
-      <circle cx="100" cy="192" r="3.5" fill="#f6c445"/>
-      <path d="M78 128 Q40 126 22 100 Q14 86 18 66 Q26 78 34 78 Q28 60 32 40 Q42 58 50 62 Q48 48 54 32 Q62 58 66 70 Q72 86 82 98 Z" fill="${p.accent}"/>
-      <path d="M122 128 Q160 126 178 100 Q186 86 182 66 Q174 78 166 78 Q172 60 168 40 Q158 58 150 62 Q152 48 146 32 Q138 58 134 70 Q128 86 118 98 Z" fill="${p.accent}"/>
-      <path d="M78 120 Q50 116 36 96 Q42 100 48 100 Q44 84 48 68 Q56 86 62 88 Q64 102 80 108 Z" fill="#f6c445" opacity="0.9"/>
-      <path d="M122 120 Q150 116 164 96 Q158 100 152 100 Q156 84 152 68 Q144 86 138 88 Q136 102 120 108 Z" fill="#f6c445" opacity="0.9"/>
-      <path d="M76 112 Q60 108 52 98 Q58 98 62 96 Q62 88 64 82 Q68 94 76 100 Z" fill="#f08a24" opacity="0.9"/>
-      <path d="M124 112 Q140 108 148 98 Q142 98 138 96 Q138 88 136 82 Q132 94 124 100 Z" fill="#f08a24" opacity="0.9"/>
-      <path d="M90 56 Q78 36 84 18 Q90 34 96 40 Q96 22 102 10 Q106 30 104 42 Q112 30 120 24 Q118 44 110 56 Z" fill="#f08a24"/>
-      <path d="M94 56 Q88 42 92 30 Q96 42 100 46 Q102 34 106 26 Q108 40 106 56 Z" fill="#f6c445"/>
-      <ellipse cx="100" cy="128" rx="34" ry="44" fill="${p.body}"/>
-      <circle cx="100" cy="80" r="28" fill="${p.body}"/>
-      <ellipse cx="100" cy="140" rx="21" ry="28" fill="${p.belly}"/>
-      <path d="M90 128 Q100 134 110 128 M90 142 Q100 148 110 142 M92 156 Q100 161 108 156" stroke="${p.accent}" stroke-width="1.6" fill="none" opacity="0.5" stroke-linecap="round"/>
-      <path d="M93 88 L107 88 L100 99 Z" fill="#f2b84b"/>
-      <path d="M82 172 l-6 10 M88 172 v12 M94 172 l6 10 M106 172 l-6 10 M112 172 v12 M118 172 l6 10" stroke="#f2b84b" stroke-width="3" stroke-linecap="round"/>`,
-    eyes: { lx: 89, rx: 111, y: 77, r: 5.5 },
-    head: { x: 100, y: 54 },
-    neck: { x: 100, y: 106, w: 44 },
-    area: { cx: 100, cy: 130, rx: 32, ry: 40 },
-    feet: [{ x: 88, y: 182 }, { x: 112, y: 182 }],
-    noMouth: true,
-  }),
+  // A fierce firebird, like a team mascot: layered wings spread high, a wide
+  // tail fan, a swept crest, a hooked beak and angry brows. Gold ember spots
+  // stay the same in every palette.
+  emberPhoenix: (p) => {
+    const fan = [25, 42, 59, 76, 90, 104, 121, 138, 155];
+    const tail = fan.map((a, i) => feather(100, 156, a, 54 + Math.abs(i - 4) * 3, 12, p.accent)).join("");
+    const eyesSpots = fan.map((a, i) => {
+      const len = 54 + Math.abs(i - 4) * 3 - 10;
+      const r = (a * Math.PI) / 180;
+      return `<circle cx="${(100 + Math.cos(r) * len).toFixed(1)}" cy="${(156 + Math.sin(r) * len).toFixed(1)}" r="3.2" fill="#f6c445"/>`;
+    }).join("");
+    const wing = (sx, side) => {
+      const m = (a) => (side < 0 ? a : 180 - a);
+      const back = [196, 211, 226, 241, 256, 270].map((a, i) => feather(sx, 102, m(a), [62, 72, 80, 82, 76, 64][i], 15, p.accent)).join("");
+      const mid = [202, 218, 234, 250].map((a, i) => feather(sx, 104, m(a), [46, 54, 56, 50][i], 13, p.body)).join("");
+      const cov = [210, 230, 250].map((a) => feather(sx, 106, m(a), 28, 10, p.belly)).join("");
+      return back + mid + cov;
+    };
+    const crest = [228, 248, 292, 312].map((a, i) => feather(100, 64, a, [36, 46, 46, 36][i], 8, p.accent)).join("") +
+      [240, 260, 280, 300].map((a, i) => feather(100, 64, a, [32, 42, 42, 32][i], 7, p.body)).join("") +
+      feather(100, 62, 270, 22, 5, "#f6c445");
+    return {
+      body: `
+      ${tail}${eyesSpots}
+      ${wing(74, -1)}${wing(126, 1)}
+      ${crest}
+      <ellipse cx="100" cy="128" rx="34" ry="42" fill="${p.body}"/>
+      <circle cx="100" cy="82" r="27" fill="${p.body}"/>
+      <ellipse cx="100" cy="140" rx="21" ry="27" fill="${p.belly}"/>
+      <path d="M88 126 Q94 131 100 126 Q106 131 112 126 M88 140 Q94 145 100 140 Q106 145 112 140 M90 154 Q95 158 100 154 Q105 158 110 154" stroke="${p.accent}" stroke-width="1.6" fill="none" opacity="0.55" stroke-linecap="round"/>
+      <path d="M82 170 l-6 12 M88 171 l-2 13 M94 170 l2 12 M106 170 l-2 12 M112 171 l2 13 M118 170 l6 12" stroke="#9aa1ad" stroke-width="3.2" stroke-linecap="round"/>`,
+      over: (e) => `
+      <path d="M${e.lx - e.r - 3} ${e.y - e.r - 3} L${e.lx + e.r + 3} ${e.y - e.r - 3} L${e.lx + e.r + 3} ${e.y - 0.5} Z" fill="${p.body}"/>
+      <path d="M${e.rx - e.r - 3} ${e.y - e.r - 3} L${e.rx + e.r + 3} ${e.y - e.r - 3} L${e.rx - e.r - 3} ${e.y - 0.5} Z" fill="${p.body}"/>
+      <path d="M${e.lx - e.r - 3} ${e.y - e.r - 2} L${e.lx + e.r + 3} ${e.y}" stroke="${p.accent}" stroke-width="3" stroke-linecap="round"/>
+      <path d="M${e.rx + e.r + 3} ${e.y - e.r - 2} L${e.rx - e.r - 3} ${e.y}" stroke="${p.accent}" stroke-width="3" stroke-linecap="round"/>
+      <path d="M92 88 Q100 84 108 88 Q108 98 100 108 Q101 99 96 96 Q92 94 92 88 Z" fill="#c9ced6"/>
+      <path d="M100 108 Q101 99 96 96 Q94 95 93 92" stroke="#8a919c" stroke-width="1.4" fill="none" stroke-linecap="round"/>`,
+      eyes: { lx: 89, rx: 111, y: 80, r: 5.5 },
+      head: { x: 100, y: 58 },
+      neck: { x: 100, y: 108, w: 44 },
+      area: { cx: 100, cy: 130, rx: 32, ry: 40 },
+      feet: [{ x: 88, y: 182 }, { x: 112, y: 182 }],
+      noMouth: true,
+    };
+  },
 
   // Facing you on all fours: a tall domed shell with hexagon plates and a
   // scalloped rim, the head poking out under the front edge, four stubby legs.
@@ -208,6 +223,18 @@ const SHAPES = {
     noMouth: true,
   }),
 };
+
+// One feather (a pointed leaf shape) from (x, y), pointing at angle degrees
+// (0 = right, 90 = down), len long and w wide on each side.
+function feather(x, y, angle, len, w, fill) {
+  const r = (angle * Math.PI) / 180;
+  const dx = Math.cos(r);
+  const dy = Math.sin(r);
+  const f = (n) => n.toFixed(1);
+  const mx = x + dx * len * 0.45;
+  const my = y + dy * len * 0.45;
+  return `<path d="M${f(x)} ${f(y)} Q${f(mx - dy * w)} ${f(my + dx * w)} ${f(x + dx * len)} ${f(y + dy * len)} Q${f(mx + dy * w)} ${f(my - dx * w)} ${f(x)} ${f(y)} Z" fill="${fill}"/>`;
+}
 
 // A 5-point star centered on (cx, cy), for starry eyes.
 function star(cx, cy, r, fill) {
@@ -517,6 +544,7 @@ export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {})
     ${FEET[acc.feet] ? s.feet.map((f) => FEET[acc.feet](f)).join("") : ""}
     ${(NECK[acc.neck] || NECK.none)(s.neck)}
     ${eyes(s.eyes, eyeP, creature.eyes, ageMonths && ageMonths < 216 ? 1.15 : 1)}
+    ${s.over ? s.over(s.eyes) : ""}
     ${markings(s.eyes, creature.markings)}
     ${ageDetails(s.eyes, ageMonths, p)}
     ${s.noMouth ? "" : mouth(s.eyes, p)}

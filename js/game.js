@@ -143,6 +143,9 @@ export function createGame(user, db) {
       }
       flush(reason);
       if (ok) game.syncLeaderboard();
+      // "Saved" in the top bar, so students can see they don't need to save by hand.
+      const state = document.getElementById("save-state");
+      if (state) state.textContent = ok ? `✓ Saved ${new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}` : "Not saved yet";
       return ok;
     },
 

@@ -17,7 +17,6 @@ import * as networks from "./ui/screens/networks.js";
 import * as design from "./ui/screens/design.js";
 import * as result from "./ui/screens/result.js";
 import * as done from "./ui/screens/done.js";
-import * as saved from "./ui/screens/saved.js";
 import * as hub from "./ui/screens/hub.js";
 import * as month from "./ui/screens/month.js";
 import * as chapterEnd from "./ui/screens/chapter-end.js";
@@ -31,7 +30,7 @@ import * as guild from "./ui/screens/guild.js";
 import * as academy from "./ui/screens/academy.js";
 import * as cottage from "./ui/screens/cottage.js";
 
-const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, saved, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage };
+const SCREENS = { profile, creature, join, teen, tutorial, skip, networks, design, result, done, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 
@@ -109,7 +108,7 @@ function signedOut(error = "") {
   topbar.hidden = true;
   bug.hide();
   const err = h("p.error", { role: "alert" }, error);
-  const btn = h("button", { type: "button", disabled: !auth }, "Sign in with your school Google account");
+  const btn = h("button.big", { type: "button", disabled: !auth }, "Sign in with your school Google account");
   btn.addEventListener("click", async () => {
     err.textContent = "";
     btn.disabled = true;
@@ -124,16 +123,48 @@ function signedOut(error = "") {
       btn.disabled = false;
     }
   });
+  let saved = "";
+  try {
+    saved = sessionStorage.getItem("credit-creatures:justSaved") || "";
+    sessionStorage.removeItem("credit-creatures:justSaved");
+  } catch {}
+  // The grand entrance (teacher request 2026-10-20): every creature on a hill
+  // under a big title. Each gets its own colors and one accessory.
+  const parade = [
+    { species: "lanternFox", palette: "ember", accessories: { neck: "scarf" } },
+    { species: "cloudBunny", palette: "cottonCandy", accessories: { head: "flower" } },
+    { species: "shellTurtle", palette: "seafoam", accessories: { face: "glasses" } },
+    { species: "starJellycorn", palette: "galaxy", eyes: "starry", accessories: {} },
+    { species: "emberPhoenix", palette: "fireAndTide", accessories: {} },
+    { species: "crystalOwl", palette: "frost", accessories: { head: "wizardHat" } },
+    { species: "mossDragon", palette: "moss", accessories: { head: "crown" } },
+    { species: "puddleGolem", palette: "lavender", accessories: { held: "balloon" } },
+  ];
   root.replaceChildren(
     h(
-      "section.panel.signin",
-      h("div.signin-art", { html: creatureSvg({ species: "lanternFox", palette: "royal", accessories: { head: "crown" } }, { size: 160, label: "A lantern fox in a crown" }) }),
-      h("h1", "Credit Creatures"),
-      h("p.tagline", "Raise a creature. Build its credit. Watch every choice add up."),
-      btn,
-      LOCAL ? h("p.note", "Local test mode. Your game saves in this browser only.") : null,
-      err,
-      settingsControls()
+      "section.signin-hero",
+      h("div.signin-sky", { "aria-hidden": "true" }),
+      h(
+        "div.signin-inner",
+        h("p.signin-kicker", "Welcome to the Kingdom of Coinhaven"),
+        // Two stacked copies: an outline behind and the gold in front, so the
+        // outline never draws over the letters.
+        h("h1.signin-title", h("span.t-back", { "aria-hidden": "true" }, "Credit Creatures"), h("span.t-front", "Credit Creatures")),
+        h("p.signin-tagline", "Raise a creature. Build its credit. Watch every choice add up."),
+        h(
+          "div.signin-parade",
+          { role: "img", "aria-label": "Eight creatures: a lantern fox, a cloud bunny, a shell turtle, a star jellycorn, an ember phoenix, a crystal owl, a moss dragon and a puddle golem" },
+          parade.map((c, i) => h("span.signin-critter", { style: { "--i": i }, html: creatureSvg(c, { size: 160, label: "" }) }))
+        ),
+        h(
+          "div.signin-card",
+          saved ? h("p.callout.good", "✓ Saved. ", saved !== "1" ? `${saved} will be right here next time.` : "Your game will be right here next time.") : null,
+          btn,
+          LOCAL ? h("p.note", "Local test mode. Your game saves in this browser only.") : null,
+          err,
+          settingsControls()
+        )
+      )
     )
   );
 }
@@ -144,8 +175,7 @@ function route() {
   const want = location.hash.replace(/^#\/?/, "");
   const current = STEPS.indexOf(game.step);
   let target = want;
-  if (want === "saved") target = "saved";
-  else if (game.step === "hub" && HUB_SCREENS.has(want)) target = want;
+  if (game.step === "hub" && HUB_SCREENS.has(want)) target = want;
   else if (!STEPS.includes(want)) target = game.step;
   else if (want !== game.step && !(EDITABLE.has(want) && STEPS.indexOf(want) < current)) target = game.step;
   if (target === "result" && !game.ob.lastResult) target = "design";
@@ -186,7 +216,7 @@ function show(name) {
       location.hash = `#/${step}`;
     },
     refreshWho: updateWho,
-    saveAndQuit,
+    saveAndSignOut,
   };
   cleanup = SCREENS[name].render(root, ctx) || null;
   window.scrollTo(0, 0);
@@ -212,26 +242,38 @@ who.addEventListener("click", () => {
   location.hash = game.step === "hub" ? "#/cottage" : STEPS.indexOf(game.step) > STEPS.indexOf("creature") ? "#/creature" : `#/${game.step}`;
 });
 
-async function saveAndQuit() {
-  track("saveAndQuit", { step: game.step });
-  await game.persist("quit");
-  location.hash = "#/saved";
+// One button for leaving (teacher request 2026-10-20: "Save and quit" next to
+// "Sign out" looked like the same thing twice). The game saves as students
+// play, so this saves once more and signs out, which is safest on shared laptops.
+async function saveAndSignOut() {
+  if (game) {
+    track("saveAndSignOut", { step: game.step });
+    await game.persist("signOut");
+    try {
+      sessionStorage.setItem("credit-creatures:justSaved", game.save.creature?.name || "1");
+    } catch {}
+  }
+  auth.signOut();
 }
 
 function showNudge() {
   const bar = document.getElementById("nudge");
   bar.replaceChildren(
     h("span", "⏳ You've played for a while. This is a good time to save."),
-    h("button", { type: "button", onclick: () => ((bar.hidden = true), saveAndQuit()) }, "Save and quit"),
+    h("button", { type: "button", onclick: () => ((bar.hidden = true), saveAndSignOut()) }, "Save and sign out"),
     h("button.secondary", { type: "button", onclick: () => ((bar.hidden = true), track("nudgeDismissed")) }, "Keep playing")
   );
   bar.hidden = false;
 }
 
-document.getElementById("save-quit").addEventListener("click", saveAndQuit);
-document.getElementById("sign-out").addEventListener("click", async () => {
-  if (game) await game.persist("signOut");
-  auth.signOut();
+document.getElementById("sign-out").addEventListener("click", saveAndSignOut);
+// The title always goes home: the kingdom once the student has one, otherwise
+// the onboarding step they're on.
+document.getElementById("brand").addEventListener("click", (e) => {
+  e.preventDefault();
+  if (!game) return;
+  track("brandClick", { from: location.hash.replace(/^#\/?/, "") || game.step });
+  location.hash = game.step === "hub" ? "#/hub" : `#/${game.step}`;
 });
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden" && game) flush("hidden");

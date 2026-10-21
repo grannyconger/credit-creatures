@@ -22,11 +22,11 @@
 </head>
 <body>
   <header id="topbar" class="topbar" hidden>
-    <span class="brand"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V9l3 2V7l4-3 4 3v4l3-2v12"/><path d="M10 21v-5a2 2 0 0 1 4 0v5"/></svg> Credit Creatures</span>
+    <a id="brand" class="brand" href="#/hub" aria-label="Credit Creatures: back to the kingdom"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V9l3 2V7l4-3 4 3v4l3-2v12"/><path d="M10 21v-5a2 2 0 0 1 4 0v5"/></svg> Credit Creatures</a>
     <button id="who" class="who" type="button" aria-label="Open your creature's cottage" hidden></button>
     <span class="topbar-actions">
-      <button id="save-quit" class="secondary small" type="button">Save and quit</button>
-      <button id="sign-out" class="link" type="button">Sign out</button>
+      <span id="save-state" class="save-state" aria-live="polite"></span>
+      <button id="sign-out" class="secondary small" type="button" title="Your game saves by itself as you play. This saves one last time and signs you out.">Save and sign out</button>
     </span>
   </header>
   <div id="nudge" class="nudge" role="status" hidden></div>
