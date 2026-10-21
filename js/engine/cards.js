@@ -144,7 +144,15 @@ export function drawDecisionCards(life, scenarios, ctx, count = CONFIG.pacing.de
       rest = rest.filter((x) => x !== s);
     }
   };
+  const before = picked.length;
   draw(pool.filter((s) => s.once !== false), CONFIG.pacing.newCardsPerMonth);
+  // Late chapters reshuffle: when the new cards run out, ones already played
+  // can come back (never milestones marked replay: false). Earlier chapters
+  // draw exactly as before.
+  if (ctx.chapter >= CONFIG.pacing.replayFromChapter) {
+    const again = scenarios.filter((s) => s.once !== false && s.replay !== false && ctx.seen.includes(s.id) && available(s, { ...ctx, seen: [] }) && s.fits(life, ctx));
+    draw(again, CONFIG.pacing.newCardsPerMonth - (picked.length - before));
+  }
   draw(pool.filter((s) => s.once === false), CONFIG.pacing.everydayCardsPerMonth);
   return picked.map((s) => s.id);
 }

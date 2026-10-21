@@ -3,7 +3,8 @@
 //
 // Shape:
 //   id, group ("types" | "costs" | "pitfalls" | "profile"), standards [1, 2, 3, 5]
-//   icon, title, minChapter (default 2), once (default true), weight, priority (shown first)
+//   icon, title, minChapter (default 2), once (default true), weight, priority (shown first),
+//   replay (default true: may come back when the deck reshuffles, CONFIG.pacing.replayFromChapter)
 //   fits(life, ctx) -> boolean. ctx = { chapter, seen, lastChange }
 //   text(life, ctx) -> string or [strings]
 //   choices(life, ctx) -> [{ key, label, detail, cost: { amount, item, methods }, steps,
@@ -25,6 +26,7 @@ import {
   FACTOR_LABELS,
 } from "../engine/index.js";
 import { EARLY_SCENARIOS } from "./scenarios-early.js";
+import { LATE_SCENARIOS } from "./scenarios-late.js";
 
 const pct = (x) => `${Math.round(x * 100)}%`;
 const apr = (x) => `${(x * 100).toFixed(1)}%`;
@@ -1224,10 +1226,14 @@ const NEEDS = {
 };
 for (const [feature, ids] of Object.entries(NEEDS)) for (const id of ids) (SCENARIOS.find((s) => s.id === id).needs ??= []).push(feature);
 
+// Milestones that never come back when late chapters reshuffle the deck.
+for (const id of ["graduation", "studentLoan", "carDecision", "carLease", "creditBuilder", "parentCard"]) SCENARIOS.find((s) => s.id === id).replay = false;
+
 // Everyday money cards that also fit Chapter 1.
 for (const id of ["weekendPlans", "payYourselfFirst"]) SCENARIOS.find((s) => s.id === id).minChapter = 1;
 
 SCENARIOS.unshift(...EARLY_SCENARIOS);
+SCENARIOS.push(...LATE_SCENARIOS);
 
 export const SCENARIO_BY_ID = Object.fromEntries(SCENARIOS.map((s) => [s.id, s]));
 

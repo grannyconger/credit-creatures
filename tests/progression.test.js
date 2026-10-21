@@ -133,3 +133,20 @@ test("Lantern Alley opens in Chapter 5 with a mix of traps and fair deals in pla
   assert.ok(got.xp > 0);
   assert.equal(play.desk.byStandard["5"].right, 1, "alley calls count toward Standard 5");
 });
+
+test("Chapters 6 to 8 have their own story and a full deck, and later chapters reshuffle", async () => {
+  const { chapterInfo } = await import("../js/data/chapters.js");
+  for (const n of [6, 7, 8]) {
+    assert.notEqual(chapterInfo(n).title, `Chapter ${n}`, `Chapter ${n} has a title`);
+    assert.equal(chapterInfo(n, P.newPlay()).title, chapterInfo(n).title, "old saves get the late chapters too");
+    const own = SCENARIOS.filter((s) => s.minChapter === n);
+    assert.ok(own.length >= 5, `${own.length} cards open in Chapter ${n}`);
+  }
+  const life = E.createLife({ seed: "late", ageMonths: 240 });
+  const seen = SCENARIOS.map((s) => s.id);
+  const at = (chapter) => E.drawDecisionCards(life, SCENARIOS, { chapter, seen, lastChange: null }).filter((id) => SCENARIOS.find((s) => s.id === id).once !== false);
+  assert.deepEqual(at(CONFIG.pacing.replayFromChapter - 1), [], "before the reshuffle, seen cards stay gone");
+  const again = at(CONFIG.pacing.replayFromChapter);
+  assert.ok(again.length >= 1, "the reshuffle brings cards back");
+  for (const id of again) assert.notEqual(SCENARIOS.find((s) => s.id === id).replay, false, `${id} is a milestone`);
+});

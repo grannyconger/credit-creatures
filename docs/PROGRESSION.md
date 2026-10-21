@@ -15,7 +15,11 @@ ask it.
 | Chapter 2: Borrow and pay back | 18 (time skip at the end of Ch 1) | Installment loans: vehicles (Garage), cottage upgrades (home improvement loan), credit-builder and student loans | The Garage | + Ledger Sort |
 | Chapter 3: Your first credit card | 18 | Credit card (Design Your Card at the end of Ch 2), statements, utilization, card AutoPay, credit and buy now, pay later at checkout | | |
 | Chapter 4: Your credit score | 19 | The score, My Score and My Report, score-based offers | The Hall of Records | |
-| Chapter 5 and on | 19+ | Pitfalls: payday and title loans, rent-to-own, settlement ads, cosigning, collections | Lantern Alley (Phase 12) | |
+| Chapter 5 | 19 | Pitfalls: payday and title loans, rent-to-own, settlement ads, cosigning, collections | Lantern Alley (Phase 12) | |
+| Chapter 6: Moving out | 19+ | Rent, utilities, renter's insurance, roommates (Phase 13 cards) | | |
+| Chapter 7: Setbacks and comebacks | | Emergencies, hardship plans, goodwill letters, fake collectors | | |
+| Chapter 8: Building your future | | Retirement match, emergency fund, credit freeze, mortgage readiness | | |
+| Chapter 9 and on | | The deck reshuffles: played cards can come back, milestones never | | |
 
 A feature unlocks when the student reaches its stage (`play.chapter`, or the prologue
 before that). Owning an account always unlocks its feature too (safety net).

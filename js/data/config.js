@@ -8,6 +8,8 @@ export const CONFIG = {
     // pilot's ~20 scenarios across the semester. Everyday cards fill the rest.
     newCardsPerMonth: 2,
     everydayCardsPerMonth: 1,
+    // From this chapter on, one-time cards already played can come back once the new ones run out.
+    replayFromChapter: 9,
     shiftsPerMonth: 3,
     payPerShift: [40, 120],
     sessionMinutes: 15,

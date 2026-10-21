@@ -64,12 +64,21 @@ function sampleLives() {
     if (a.due) sl = E.pay(sl, strong.id, a.due.statementBalance).life;
   }
   lives.strong = sl;
+  lives.strongCar = E.openAutoLoan(sl, { price: 4000, downPayment: 500, termMonths: 48 }).life;
   const big = withCard(lifeWith({ seed: "bigbal", checking: 900 }), { limit: 1000, annualFee: 39 });
   lives.bigBalance = E.cardPurchase(big.life, big.id, 450, "laptop").life;
   let payday = lifeWith({ seed: "payday", checking: 100 });
   payday = E.receiveCash(payday, 300, "Quick Cash payday loan").life;
   payday = E.addBill(payday, "Payday loan payback", 345, 1).life;
   lives.paydayDue = E.debitPurchase(payday, 250, "rent").life;
+  // Phase 13: out on their own, with a roommate and a car, or alone and insured.
+  let renter = lifeWith({ seed: "renter", checking: 900 });
+  for (const [name, amount] of [["Rent (shared)", 140], ["Phone", 45], ["Gas and insurance", 90]]) renter = E.addBill(renter, name, amount).life;
+  lives.renter = renter;
+  let solo = lifeWith({ seed: "solo", checking: 900 });
+  solo = E.moveToSavings(solo, 400).life;
+  for (const [name, amount] of [["Rent", 240], ["Renter's insurance", 10]]) solo = E.addBill(solo, name, amount).life;
+  lives.soloInsured = solo;
   return lives;
 }
 

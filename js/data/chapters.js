@@ -28,6 +28,22 @@ export const CHAPTERS = {
     intro: "Emergencies and quick-cash offers. Having savings, or a plan, decides whether a bad day becomes bad debt.",
     reflect: "What would you do differently if an emergency hit you next month?",
   },
+  // Phase 13: the late game.
+  6: {
+    title: "Moving out",
+    intro: "Your own place! Rent, power, roommates and furniture all cost money, and your credit shows up in places you didn't expect.",
+    reflect: "How did you decide where to live? What did moving out cost that surprised you?",
+  },
+  7: {
+    title: "Setbacks and comebacks",
+    intro: "Hours get cut, things break and old mistakes follow you. Every setback has a smart next step.",
+    reflect: "What was your biggest setback this chapter, and how did you bounce back?",
+  },
+  8: {
+    title: "Building your future",
+    intro: "Raises, retirement plans and big dreams like a home. The habits you've built start to pay off.",
+    reflect: "Where do you want your money to be in 10 years? What's one step toward it?",
+  },
 };
 
 // Saves from before Phase 10 keep the chapter names they started with.
@@ -58,7 +74,8 @@ export const LEGACY_CHAPTERS = {
 export function chapterInfo(n, play = null) {
   const book = play && play.progression !== 2 ? LEGACY_CHAPTERS : CHAPTERS;
   return (
-    book[n] || {
+    book[n] ||
+    CHAPTERS[n] || {
       title: `Chapter ${n}`,
       intro: "More months, more choices. Keep paying on time and keep your balances low.",
       reflect: "What is one money habit you want to keep, and one you want to change?",
