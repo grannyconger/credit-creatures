@@ -124,23 +124,34 @@ const SHAPES = {
     noMouth: true,
   }),
 
+  // Facing you on all fours: a tall domed shell with hexagon plates and a
+  // scalloped rim, the head poking out under the front edge, four stubby legs.
   shellTurtle: (p) => ({
     body: `
-      <ellipse cx="72" cy="178" rx="13" ry="8" fill="${p.body}"/>
-      <ellipse cx="128" cy="178" rx="13" ry="8" fill="${p.body}"/>
-      <ellipse cx="100" cy="140" rx="58" ry="44" fill="${p.accent}"/>
-      <path d="M100 104 L122 116 L122 140 L100 152 L78 140 L78 116 Z" fill="${p.body}" opacity="0.45"/>
-      <path d="M56 124 L74 116 L74 142 L58 150 Z" fill="${p.body}" opacity="0.35"/>
-      <path d="M144 124 L126 116 L126 142 L142 150 Z" fill="${p.body}" opacity="0.35"/>
-      <ellipse cx="100" cy="162" rx="34" ry="17" fill="${p.belly}"/>
-      <circle cx="100" cy="78" r="30" fill="${p.body}"/>
-      <ellipse cx="100" cy="92" rx="13" ry="8" fill="${p.belly}"/>
-      <path d="M94 92 Q100 97 106 92" stroke="${p.eye}" stroke-width="2" fill="none" stroke-linecap="round"/>`,
-    eyes: { lx: 89, rx: 111, y: 74, r: 5.5 },
-    head: { x: 100, y: 50 },
-    neck: { x: 100, y: 106, w: 44 },
-    area: { cx: 100, cy: 138, rx: 56, ry: 42 },
-    feet: [{ x: 72, y: 178 }, { x: 128, y: 178 }],
+      <ellipse cx="40" cy="160" rx="13" ry="10" fill="${p.body}"/>
+      <ellipse cx="160" cy="160" rx="13" ry="10" fill="${p.body}"/>
+      <path d="M26 144 Q24 56 100 50 Q176 56 174 144 Z" fill="${p.accent}"/>
+      <path d="M100 66 L122 78 L122 104 L100 116 L78 104 L78 78 Z" fill="${p.body}" opacity="0.5"/>
+      <path d="M70 72 L72 104 L48 118 Q40 96 50 78 Z" fill="${p.body}" opacity="0.4"/>
+      <path d="M130 72 L128 104 L152 118 Q160 96 150 78 Z" fill="${p.body}" opacity="0.4"/>
+      <path d="M78 104 L72 104 M122 104 L128 104 M100 116 L100 136 M78 104 L60 132 M122 104 L140 132" stroke="${p.body}" stroke-width="3" opacity="0.5" stroke-linecap="round"/>
+      <path d="M100 58 Q144 60 160 86" stroke="#ffffff" stroke-width="5" fill="none" opacity="0.25" stroke-linecap="round"/>
+      <rect x="20" y="132" width="160" height="18" rx="9" fill="${p.belly}"/>
+      <path d="M44 133 v16 M68 133 v16 M132 133 v16 M156 133 v16" stroke="${p.accent}" stroke-width="2" opacity="0.5"/>
+      <ellipse cx="74" cy="176" rx="15" ry="11" fill="${p.body}"/>
+      <ellipse cx="126" cy="176" rx="15" ry="11" fill="${p.body}"/>
+      <path d="M67 183 v-4 M74 184 v-4 M81 183 v-4 M119 183 v-4 M126 184 v-4 M133 183 v-4" stroke="${p.accent}" stroke-width="2" stroke-linecap="round"/>
+      <rect x="86" y="140" width="28" height="22" rx="10" fill="${p.body}"/>
+      <ellipse cx="100" cy="124" rx="32" ry="28" fill="${p.body}"/>
+      <ellipse cx="100" cy="138" rx="14" ry="8" fill="${p.belly}"/>
+      <circle cx="96" cy="134" r="1.3" fill="${p.eye}"/>
+      <circle cx="104" cy="134" r="1.3" fill="${p.eye}"/>
+      <path d="M93 140 Q100 145 107 140" stroke="${p.eye}" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+    eyes: { lx: 88, rx: 112, y: 120, r: 5.5 },
+    head: { x: 100, y: 98 },
+    neck: { x: 100, y: 152, w: 40 },
+    area: { cx: 100, cy: 96, rx: 64, ry: 36 },
+    feet: [{ x: 74, y: 178 }, { x: 126, y: 178 }],
     noMouth: true,
   }),
 };

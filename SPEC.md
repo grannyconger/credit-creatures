@@ -407,6 +407,7 @@ This is a core engagement mechanic. Build it out fully.
 - **Lots of achievements.** Aim for 40+ in the pilot across categories. Each awards XP. Some are hidden until earned.
 - **XP** accumulates on the student's account and never decreases.
 - **Class leaderboard ranks by XP**, so careful, consistent play wins, not having the most cash. Teacher can toggle the leaderboard on or off.
+- **Names (2026-10-20):** among classmates (leaderboard, friends, groups, gifts) every creature shows as "Creature name (Student's Google name)", so everyone knows who sent what. The Firestore rules check that the name matches the student's sign-in, so it can't be faked. Gift messages are picked from a preset list (38, including silly ones), never typed.
 - Show levels or ranks derived from XP (for example kingdom ranks: Squire, Knight, Treasurer, Grand Vizier).
 
 ### Achievement categories and examples

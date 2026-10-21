@@ -68,10 +68,19 @@ export function render(root, { game, go, track, refreshWho }) {
   };
 
   const who = (uid) => data.directory.find((d) => d.uid === uid);
-  const avatar = (d, size = 48) => h("span.fr-avatar", { html: d ? creatureSvg(d.look || { species: d.species, palette: d.palette, accessories: {} }, { size, label: "" }) : "" });
-  const person = (uid, name, extra) => {
+  // Me as classmates see me: creature name, then my Google name.
+  const myPerson = (game.user.displayName || "").slice(0, 100);
+  const myLabel = () => S.withPerson(fullName(game.save.creature), myPerson);
+  // Any classmate's label. The class list's name is checked by the rules, so it wins.
+  const labelOf = (uid, name = "", person = "") => {
+    if (uid === me) return myLabel();
     const d = who(uid);
-    return h("div.fr-person", avatar(d), h("span.fr-name", h("strong", d?.creatureName || name || "Classmate"), h("small", d ? `${d.displayName} · ${d.rank} · ${d.xp} XP` : "")), h("span.fr-actions", extra));
+    return S.withPerson(d?.creatureName || name || "Classmate", d?.person || person);
+  };
+  const avatar = (d, size = 48) => h("span.fr-avatar", { html: d ? creatureSvg(d.look || { species: d.species, palette: d.palette, accessories: {} }, { size, label: "" }) : "" });
+  const person = (uid, name, extra, personName = "") => {
+    const d = who(uid);
+    return h("div.fr-person", avatar(d), h("span.fr-name", h("strong", labelOf(uid, name, personName)), h("small", d ? `${d.rank} · ${d.xp} XP` : "")), h("span.fr-actions", extra));
   };
 
   function paint() {
@@ -122,7 +131,8 @@ export function render(root, { game, go, track, refreshWho }) {
                   "div.row.tight-row",
                   h("button.small", { type: "button", onclick: () => act(() => game.db.answerFriendRequest(classId, r.requestId, "accepted"), "friendAccept", {}, "You're friends now!") }, "Accept"),
                   h("button.small.secondary", { type: "button", onclick: () => act(() => game.db.answerFriendRequest(classId, r.requestId, "declined"), "friendDecline", {}) }, "No thanks")
-                )
+                ),
+                r.person
               )
             )
           )
@@ -133,7 +143,8 @@ export function render(root, { game, go, track, refreshWho }) {
             person(
               f.uid,
               f.name,
-              h("button.small.secondary", { type: "button", onclick: () => confirm("Unfriend this classmate?") && act(() => game.db.removeFriendRequest(classId, f.requestId), "unfriend", {}) }, "Unfriend")
+              h("button.small.secondary", { type: "button", onclick: () => confirm(`Unfriend ${labelOf(f.uid, f.name, f.person)}?`) && act(() => game.db.removeFriendRequest(classId, f.requestId), "unfriend", {}) }, "Unfriend"),
+              f.person
             )
           )
         : h("p.muted", "No friends yet. Add a classmate below."),
@@ -147,7 +158,8 @@ export function render(root, { game, go, track, refreshWho }) {
                 o.name,
                 o.status === "declined"
                   ? h("span", h("small.muted", "Declined "), h("button.small.secondary", { type: "button", onclick: () => act(() => game.db.removeFriendRequest(classId, o.requestId), "friendCancel", {}) }, "Remove"))
-                  : h("span", h("small.muted", "Waiting "), h("button.small.secondary", { type: "button", onclick: () => act(() => game.db.removeFriendRequest(classId, o.requestId), "friendCancel", {}) }, "Cancel"))
+                  : h("span", h("small.muted", "Waiting "), h("button.small.secondary", { type: "button", onclick: () => act(() => game.db.removeFriendRequest(classId, o.requestId), "friendCancel", {}) }, "Cancel")),
+                o.person
               )
             )
           )
@@ -158,7 +170,7 @@ export function render(root, { game, go, track, refreshWho }) {
             person(
               d.uid,
               d.creatureName,
-              h("button.small", { type: "button", onclick: () => act(() => game.db.sendFriendRequest(classId, me, d.uid, myName.slice(0, 41), d.creatureName.slice(0, 41)), "friendRequest", {}, "Request sent!") }, "Add friend")
+              h("button.small", { type: "button", onclick: () => act(() => game.db.sendFriendRequest(classId, me, d.uid, myName.slice(0, 41), d.creatureName.slice(0, 41), { fromPerson: myPerson, toPerson: (d.person || "").slice(0, 100) }), "friendRequest", {}, "Request sent!") }, "Add friend")
             )
           )
         : h("p.muted", "Classmates show up here once they've played a bit.")
@@ -180,7 +192,7 @@ export function render(root, { game, go, track, refreshWho }) {
           "section.fr-group.mine",
           h("h2", `${mine.icon} ${mine.name}`),
           h("p", `${mine.members.length} of ${max} members · Group XP: ${groupXp(mine)}`),
-          mine.members.map((uid) => person(uid, uid === me ? fullName(game.save.creature) : "Classmate", uid === me ? h("small.muted", "You") : null)),
+          mine.members.map((uid) => person(uid, "Classmate", uid === me ? h("small.muted", "You") : null)),
           h(
             "div.row",
             h("button.secondary", { type: "button", onclick: () => confirm(`Leave ${mine.name}?`) && act(() => game.db.leaveGroup(classId, mine.id, me, mine.members.length === 1), "groupLeave", {}) }, "Leave the group")
@@ -213,6 +225,7 @@ export function render(root, { game, go, track, refreshWho }) {
               "section.fr-group",
               h("div.bill-head", h("strong", `${g.icon} ${g.name}`), h("small.muted", `${g.members.length} of ${max} · ${groupXp(g)} XP`)),
               h("div.fr-avatars", g.members.map((uid) => avatar(who(uid), 36))),
+              h("p.tight.fr-members", g.members.map((uid) => labelOf(uid)).join(", ")),
               mine
                 ? null
                 : h(
@@ -230,7 +243,11 @@ export function render(root, { game, go, track, refreshWho }) {
 
   function giftsTab(st) {
     const wait = S.giftWaitMs(data.lastGift);
-    const nameOf = (uid) => who(uid)?.creatureName || st.friends.find((f) => f.uid === uid)?.name || "a friend";
+    const nameOf = (uid) => {
+      const f = st.friends.find((x) => x.uid === uid);
+      return who(uid) || f ? labelOf(uid, f?.name, f?.person) : "a friend";
+    };
+    const fromOf = (g) => labelOf(g.from, g.fromName, g.fromPerson);
     const unclaimed = data.gifts.incoming.filter((g) => !g.claimed);
     const box = h(
       "div",
@@ -240,7 +257,7 @@ export function render(root, { game, go, track, refreshWho }) {
             h(
               "div.fr-gift",
               h("span.fr-gift-icon", { "aria-hidden": "true" }, "🎁"),
-              h("div", h("strong", `From ${g.fromName}`), h("p.tight", GIFT_MESSAGES[g.message] || ""), h("small", g.kind === "money" ? money(g.amount) : `${SHOP_BY_ID[g.itemId]?.icon || ""} ${SHOP_BY_ID[g.itemId]?.name || "An item"}`)),
+              h("div", h("strong", `From ${fromOf(g)}`), h("p.tight", GIFT_MESSAGES[g.message] || ""), h("small", g.kind === "money" ? money(g.amount) : `${SHOP_BY_ID[g.itemId]?.icon || ""} ${SHOP_BY_ID[g.itemId]?.name || "An item"}`)),
               h(
                 "button",
                 {
@@ -288,7 +305,7 @@ export function render(root, { game, go, track, refreshWho }) {
         h(
           "ul.plain",
           sent.map((g) => h("li", `📤 To ${nameOf(g.to)}: ${g.kind === "money" ? money(g.amount) : SHOP_BY_ID[g.itemId]?.name || "an item"}${g.claimed ? " (opened)" : ""}`)),
-          got.map((g) => h("li", `📥 From ${g.fromName}: ${g.kind === "money" ? money(g.amount) : SHOP_BY_ID[g.itemId]?.name || "an item"}`))
+          got.map((g) => h("li", `📥 From ${fromOf(g)}: ${g.kind === "money" ? money(g.amount) : SHOP_BY_ID[g.itemId]?.name || "an item"}`))
         )
       );
     }
@@ -319,7 +336,7 @@ export function render(root, { game, go, track, refreshWho }) {
     send.addEventListener("click", async () => {
       err.textContent = "";
       const to = friend.value;
-      const gift = { from: me, to, fromName: fullName(game.save.creature).slice(0, 41), kind, message: Number(msg.value) };
+      const gift = { from: me, to, fromName: fullName(game.save.creature).slice(0, 41), fromPerson: myPerson, kind, message: Number(msg.value) };
       if (kind === "money") gift.amount = Math.round(Number(amount.value));
       else gift.itemId = item.value;
       const problem = S.checkGift({ life: game.life, play, kind, amount: gift.amount, itemId: gift.itemId });

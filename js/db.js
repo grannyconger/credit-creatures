@@ -119,8 +119,23 @@ export async function createClass(teacherEmail, name) {
 
 // ---------- leaderboard (SPEC §16): creature name, display name and XP only ----------
 
+// The student's real name fields (person, fromPerson, toPerson) need the
+// 2026-10-20 rules. Until the teacher publishes them, a refused write is tried
+// again without those fields so nothing breaks.
+const PERSON_KEYS = ["person", "fromPerson", "toPerson"];
+async function withoutPeopleIfRefused(data, write) {
+  try {
+    await write(data);
+  } catch (err) {
+    if (err.code !== "permission-denied" || !PERSON_KEYS.some((k) => k in data)) throw err;
+    const rest = { ...data };
+    for (const k of PERSON_KEYS) delete rest[k];
+    await write(rest);
+  }
+}
+
 export async function writeLeaderboard(classId, uid, entry) {
-  await setDoc(doc(db, "leaderboards", classId, "players", uid), { ...plain(entry), updatedAt: serverTimestamp() });
+  await withoutPeopleIfRefused(plain(entry), (d) => setDoc(doc(db, "leaderboards", classId, "players", uid), { ...d, updatedAt: serverTimestamp() }));
 }
 
 export async function readLeaderboard(classId) {
@@ -149,8 +164,8 @@ export async function listRequests(classId, uid) {
   return [...incoming.docs, ...outgoing.docs].map((d) => ({ id: d.id, ...d.data() }));
 }
 
-export async function sendFriendRequest(classId, from, to, fromName, toName) {
-  await setDoc(doc(db, "social", classId, "requests", `${from}_${to}`), { from, to, fromName, toName, status: "pending", createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+export async function sendFriendRequest(classId, from, to, fromName, toName, people = {}) {
+  await withoutPeopleIfRefused({ from, to, fromName, toName, ...people }, (d) => setDoc(doc(db, "social", classId, "requests", `${from}_${to}`), { ...d, status: "pending", createdAt: serverTimestamp(), updatedAt: serverTimestamp() }));
 }
 
 export async function answerFriendRequest(classId, id, status) {
@@ -200,10 +215,12 @@ export async function lastGiftAt(uid) {
 
 // The gift and the 40-hour limit go in one batch. Rules refuse both if it's too soon.
 export async function sendGift(classId, gift) {
-  const b = writeBatch(db);
-  b.set(doc(socialCol(classId, "gifts")), { ...plain(gift), sentAt: serverTimestamp(), claimed: false });
-  b.set(doc(db, "giftLimits", gift.from), { lastSentAt: serverTimestamp() });
-  await b.commit();
+  await withoutPeopleIfRefused(plain(gift), (d) => {
+    const b = writeBatch(db);
+    b.set(doc(socialCol(classId, "gifts")), { ...d, sentAt: serverTimestamp(), claimed: false });
+    b.set(doc(db, "giftLimits", gift.from), { lastSentAt: serverTimestamp() });
+    return b.commit();
+  });
 }
 
 export async function claimGift(classId, giftId) {

@@ -376,14 +376,15 @@ async function loadSocial(uid, box) {
     console.error(err);
     return fill(box, h("p.muted", "Couldn't load friends and gifts. Check that the newest Firestore rules are published."));
   }
-  const name = (id) => state.rows.find((r) => r.uid === id)?.studentName || "a classmate";
-  const friends = state.social.requests.filter((r) => r.status === "accepted" && (r.from === uid || r.to === uid)).map((r) => name(r.from === uid ? r.to : r.from));
+  // The roster name, else the student name saved on the request or gift.
+  const name = (id, saved) => state.rows.find((r) => r.uid === id)?.studentName || saved || "a classmate";
+  const friends = state.social.requests.filter((r) => r.status === "accepted" && (r.from === uid || r.to === uid)).map((r) => (r.from === uid ? name(r.to, r.toPerson) : name(r.from, r.fromPerson)));
   const gifts = state.social.gifts.filter((g) => g.from === uid || g.to === uid);
   fill(
     box,
     h("p", friends.length ? `Friends: ${friends.join(", ")}` : "No friends yet."),
     gifts.length
-      ? h("ul", gifts.map((g) => h("li", `${g.from === uid ? `Sent to ${name(g.to)}` : `From ${name(g.from)}`}: ${g.kind === "money" ? money(g.amount) : g.itemId}${g.sentAt ? `, ${new Date(g.sentAt).toLocaleDateString()}` : ""}${g.claimed ? "" : " (not opened)"}`)))
+      ? h("ul", gifts.map((g) => h("li", `${g.from === uid ? `Sent to ${name(g.to)}` : `From ${name(g.from, g.fromPerson)}`}: ${g.kind === "money" ? money(g.amount) : g.itemId}${g.sentAt ? `, ${new Date(g.sentAt).toLocaleDateString()}` : ""}${g.claimed ? "" : " (not opened)"}`)))
       : h("p.muted", "No gifts sent or received.")
   );
 }

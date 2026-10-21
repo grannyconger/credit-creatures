@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { E, lifeWith } from "./helpers.js";
 import * as S from "../js/social.js";
 import * as P from "../js/play.js";
+import { readFileSync } from "node:fs";
 import { GIFT_MESSAGES, GROUP_ADJECTIVES, GROUP_NOUNS } from "../js/data/social.js";
 import { CONFIG } from "../js/data/config.js";
 
@@ -74,7 +75,10 @@ test("group names come from presets and skip taken ones", () => {
 
 test("social text follows the student text rules and fits the rules' limits", () => {
   for (const m of GIFT_MESSAGES) assert.ok(!m.includes("—") && !m.includes(";"), m);
-  assert.ok(GIFT_MESSAGES.length < 20, "firestore.rules allows message indexes 0 to 19");
+  const cap = Number(readFileSync("firestore.rules", "utf8").match(/data\.message < (\d+)/)[1]);
+  assert.ok(GIFT_MESSAGES.length <= cap, `firestore.rules allows message indexes below ${cap}`);
+  assert.ok(GIFT_MESSAGES.length >= 38);
+  assert.equal(new Set(GIFT_MESSAGES).size, GIFT_MESSAGES.length);
   assert.equal(CONFIG.social.giftHours, 40);
   assert.equal(CONFIG.social.groupMax, 6);
 });
@@ -93,4 +97,15 @@ test("the creature looks a little older as it ages, and new face options draw", 
   for (const eyes of ["happy", "sleepy", "sparkle"]) assert.notEqual(creatureSvg({ ...c, eyes }), creatureSvg(c), eyes);
   for (const markings of ["blush", "freckles", "star", "heart"]) assert.notEqual(creatureSvg({ ...c, markings }), creatureSvg(c), markings);
   assert.notEqual(creatureSvg(c), creatureSvg({ ...c, accessories: {} }), "held item draws");
+});
+
+test("classmates show as creature name plus the student's name", () => {
+  assert.equal(S.withPerson("Pip Featherbottom", "Jordan Park"), "Pip Featherbottom (Jordan Park)");
+  assert.equal(S.withPerson("Pip", ""), "Pip");
+  assert.equal(S.withPerson("", ""), "Classmate");
+  const st = S.friendState([{ id: "me_x", from: "me", to: "x", toName: "Nova", toPerson: "Avery Lee", status: "accepted" }, { id: "y_me", from: "y", to: "me", fromName: "Ember", fromPerson: "Riley Brooks", status: "pending" }], "me");
+  assert.equal(st.friends[0].person, "Avery Lee");
+  assert.equal(st.incoming[0].person, "Riley Brooks");
+  const got = S.applyClaimedGift({ life: lifeWith({ seed: "r2", checking: 0 }), play: P.newPlay(), gift: { kind: "money", amount: 10, fromName: "Nova", fromPerson: "Avery Lee" } });
+  assert.ok(got.life.log.some((e) => JSON.stringify(e).includes("Nova (Avery Lee)")));
 });

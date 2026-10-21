@@ -81,11 +81,11 @@ export async function releaseChapter(classId, chapter) {
 
 // Pretend classmates, so the leaderboard has something to rank against.
 const CLASSMATES = [
-  { uid: "c1", creatureName: "Nova Glimmerstone", displayName: "Avery", xp: 420, rank: "Knight", species: "crystalOwl", palette: "frost", look: { species: "crystalOwl", palette: "frost", pattern: "stars", eyes: "sparkle", accessories: { head: "wizardHat", held: "book", effect: "sparkles" } } },
-  { uid: "c2", creatureName: "Biscuit McScales", displayName: "Jordan", xp: 260, rank: "Squire", species: "mossDragon", palette: "sunny", look: { species: "mossDragon", palette: "sunny", pattern: "spots", accessories: { head: "headphones", feet: "sneakers" } } },
-  { uid: "c3", creatureName: "Ember Lanternby", displayName: "Riley", xp: 610, rank: "Baron", species: "lanternFox", palette: "ember", look: { species: "lanternFox", palette: "ember", markings: "blush", accessories: { head: "vikingHelmet", neck: "lei", feet: "boots", effect: "hearts" } } },
-  { uid: "c4", creatureName: "Puddles", displayName: "Sam", xp: 90, rank: "Apprentice", species: "puddleGolem", palette: "midnight", look: { species: "puddleGolem", palette: "midnight", eyes: "sleepy", accessories: { held: "balloon" } } },
-  { uid: "c5", creatureName: "Clover Thistledown", displayName: "Taylor", xp: 330, rank: "Knight", species: "cloudBunny", palette: "rose", look: { species: "cloudBunny", palette: "rose", pattern: "hearts", eyeColor: "violet", accessories: { head: "bow", feet: "slippers" } } },
+  { uid: "c1", creatureName: "Nova Glimmerstone", displayName: "Avery", person: "Avery Lee", xp: 420, rank: "Knight", species: "crystalOwl", palette: "frost", look: { species: "crystalOwl", palette: "frost", pattern: "stars", eyes: "sparkle", accessories: { head: "wizardHat", held: "book", effect: "sparkles" } } },
+  { uid: "c2", creatureName: "Biscuit McScales", displayName: "Jordan", person: "Jordan Park", xp: 260, rank: "Squire", species: "mossDragon", palette: "sunny", look: { species: "mossDragon", palette: "sunny", pattern: "spots", accessories: { head: "headphones", feet: "sneakers" } } },
+  { uid: "c3", creatureName: "Ember Lanternby", displayName: "Riley", person: "Riley Brooks", xp: 610, rank: "Baron", species: "lanternFox", palette: "ember", look: { species: "lanternFox", palette: "ember", markings: "blush", accessories: { head: "vikingHelmet", neck: "lei", feet: "boots", effect: "hearts" } } },
+  { uid: "c4", creatureName: "Puddles", displayName: "Sam", person: "Sam Ortiz", xp: 90, rank: "Apprentice", species: "puddleGolem", palette: "midnight", look: { species: "puddleGolem", palette: "midnight", eyes: "sleepy", accessories: { held: "balloon" } } },
+  { uid: "c5", creatureName: "Clover Thistledown", displayName: "Taylor", person: "Taylor Nguyen", xp: 330, rank: "Knight", species: "cloudBunny", palette: "rose", look: { species: "cloudBunny", palette: "rose", pattern: "hearts", eyeColor: "violet", accessories: { head: "bow", feet: "slippers" } } },
 ];
 
 export async function writeLeaderboard(classId, uid, entry) {
@@ -138,9 +138,9 @@ const HOURS = 60 * 60 * 1000;
 function social() {
   return (
     read("social") || {
-      requests: [{ id: `c3_${LOCAL_USER.uid}`, from: "c3", to: LOCAL_USER.uid, fromName: "Ember Lanternby", toName: "", status: "pending" }],
+      requests: [{ id: `c3_${LOCAL_USER.uid}`, from: "c3", to: LOCAL_USER.uid, fromName: "Ember Lanternby", fromPerson: "Riley Brooks", toName: "", status: "pending" }],
       groups: [{ id: "g1", name: "The Golden Lanterns", icon: "🏮", members: ["c1", "c2"], createdBy: "c1" }],
-      gifts: [{ id: "gift1", from: "c1", to: LOCAL_USER.uid, fromName: "Nova Glimmerstone", kind: "money", amount: 20, message: 4, sentAt: Date.now() - 2 * HOURS, claimed: false }],
+      gifts: [{ id: "gift1", from: "c1", to: LOCAL_USER.uid, fromName: "Nova Glimmerstone", fromPerson: "Avery Lee", kind: "money", amount: 20, message: 4, sentAt: Date.now() - 2 * HOURS, claimed: false }],
       lastGiftAt: null,
     }
   );
@@ -155,10 +155,10 @@ export async function listRequests() {
   return s.requests;
 }
 
-export async function sendFriendRequest(classId, from, to, fromName, toName) {
+export async function sendFriendRequest(classId, from, to, fromName, toName, people = {}) {
   const s = social();
   if (s.requests.some((r) => r.id === `${to}_${from}`)) throw new Error("They already asked you.");
-  s.requests.push({ id: `${from}_${to}`, from, to, fromName, toName, status: "pending" });
+  s.requests.push({ id: `${from}_${to}`, from, to, fromName, toName, ...people, status: "pending" });
   saveSocial(s);
 }
 

@@ -5,6 +5,14 @@ import { GROUP_ADJECTIVES, GROUP_NOUNS, GROUP_ICONS } from "./data/social.js";
 import { SHOP_BY_ID } from "./data/shop.js";
 import { debitPurchase, receiveCash, createRng } from "./engine/index.js";
 
+// "Pip Featherbottom (Jordan Smith)": the creature, then the student it
+// belongs to, so classmates know who sent what. person is the verified Google
+// name (firestore.rules checks it). Old entries without one show the creature only.
+export function withPerson(creatureName, person) {
+  const name = creatureName || "Classmate";
+  return person ? `${name} (${person})` : name;
+}
+
 // requests -> who is a friend, who asked me, who I asked.
 export function friendState(requests, uid) {
   const friends = [];
@@ -13,7 +21,8 @@ export function friendState(requests, uid) {
   for (const r of requests) {
     const other = r.from === uid ? r.to : r.from;
     const otherName = r.from === uid ? r.toName : r.fromName;
-    const entry = { uid: other, name: otherName, requestId: r.id, status: r.status };
+    const otherPerson = r.from === uid ? r.toPerson : r.fromPerson;
+    const entry = { uid: other, name: otherName, person: otherPerson || "", requestId: r.id, status: r.status };
     if (r.status === "accepted") friends.push(entry);
     else if (r.status === "pending" && r.to === uid) incoming.push(entry);
     else if (r.from === uid) outgoing.push(entry);
@@ -73,7 +82,7 @@ export function applySentGift({ life, play, creature, gift, toName }) {
 // Receiver's side, when they claim it. Gifted money isn't income.
 export function applyClaimedGift({ life, play, gift }) {
   play.social.giftsReceived++;
-  if (gift.kind === "money") return { life: receiveCash(life, gift.amount, `gift from ${gift.fromName}`).life, note: `$${gift.amount} went into checking.` };
+  if (gift.kind === "money") return { life: receiveCash(life, gift.amount, `gift from ${withPerson(gift.fromName, gift.fromPerson)}`).life, note: `$${gift.amount} went into checking.` };
   if (play.owned.includes(gift.itemId)) return { life, note: "You already had this one, but it's the thought that counts." };
   play.owned.push(gift.itemId);
   return { life, note: `The ${SHOP_BY_ID[gift.itemId]?.name.toLowerCase() || "item"} is in your closet. Wear it from Edit my creature.` };

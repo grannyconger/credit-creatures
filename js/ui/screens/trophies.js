@@ -6,6 +6,7 @@ import { icon } from "../icons.js";
 import { ACHIEVEMENTS, CATEGORIES, RANKS } from "../../data/achievements.js";
 import { rankFor, bestXpChapter } from "../../progress.js";
 import { creatureSvg } from "../creature-art.js";
+import { withPerson } from "../../social.js";
 
 const TABS = [
   ["badges", "trophy", "Achievements"],
@@ -147,7 +148,7 @@ async function leaderboard(body, game) {
           { class: r.uid === me ? "me" : "" },
           h("span.lb-place", String(i + 1)),
           h("span.lb-art", { html: creatureSvg(r.look || { species: r.species, palette: r.palette, accessories: {} }, { size: 48, label: "" }) }),
-          h("span.lb-name", h("strong", r.creatureName), h("small", `${r.displayName}${r.uid === me ? " (you)" : ""}`)),
+          h("span.lb-name", h("strong", withPerson(r.creatureName, r.person)), r.uid === me ? h("small", "That's you") : null),
           h("span.lb-rank", r.rank),
           h("strong.lb-xp", `${r.xp} XP`)
         )

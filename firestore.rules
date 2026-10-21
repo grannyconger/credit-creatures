@@ -106,7 +106,8 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.code == code;
     }
 
-    // Class leaderboard (SPEC §16): creature name and look, display name and XP only.
+    // Class leaderboard (SPEC §16): creature name and look, display name, the
+    // student's Google name (person, must match their sign-in) and XP only.
     // Classmates and the class's teacher can read it. Each student writes only
     // their own entry, and XP can never go down.
     match /leaderboards/{classId}/players/{uid} {
@@ -120,7 +121,8 @@ service cloud.firestore {
       // Resetting a student also clears their leaderboard entry.
       allow delete: if ownsClass();
       allow create, update: if isMe(uid) && inClass()
-        && request.resource.data.keys().hasOnly(['creatureName', 'displayName', 'xp', 'rank', 'species', 'palette', 'look', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['creatureName', 'displayName', 'person', 'xp', 'rank', 'species', 'palette', 'look', 'updatedAt'])
+        && (!('person' in request.resource.data) || request.resource.data.person == request.auth.token.name)
         && (!('look' in request.resource.data) || (request.resource.data.look is map && request.resource.data.look.size() <= 12))
         && request.resource.data.xp is int
         && request.resource.data.xp >= 0
@@ -156,7 +158,9 @@ service cloud.firestore {
     match /social/{classId}/requests/{id} {
       allow read: if isSchool() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid || teachesClass(classId));
       allow create: if isSchool()
-        && request.resource.data.keys().hasOnly(['from', 'to', 'fromName', 'toName', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['from', 'to', 'fromName', 'toName', 'fromPerson', 'toPerson', 'status', 'createdAt', 'updatedAt'])
+        && (!('fromPerson' in request.resource.data) || request.resource.data.fromPerson == request.auth.token.name)
+        && (!('toPerson' in request.resource.data) || shortString('toPerson', 100))
         && request.resource.data.from == request.auth.uid
         && request.resource.data.to != request.auth.uid
         && id == request.resource.data.from + '_' + request.resource.data.to
@@ -211,12 +215,13 @@ service cloud.firestore {
     match /social/{classId}/gifts/{giftId} {
       allow read: if isSchool() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid || teachesClass(classId));
       allow create: if isSchool()
-        && request.resource.data.keys().hasOnly(['from', 'to', 'fromName', 'kind', 'amount', 'itemId', 'message', 'sentAt', 'claimed'])
+        && request.resource.data.keys().hasOnly(['from', 'to', 'fromName', 'fromPerson', 'kind', 'amount', 'itemId', 'message', 'sentAt', 'claimed'])
+        && (!('fromPerson' in request.resource.data) || request.resource.data.fromPerson == request.auth.token.name)
         && request.resource.data.from == request.auth.uid
         && request.resource.data.claimed == false
         && request.resource.data.sentAt == request.time
         && request.resource.data.message is int
-        && request.resource.data.message >= 0 && request.resource.data.message < 20
+        && request.resource.data.message >= 0 && request.resource.data.message < 60
         && ((request.resource.data.kind == 'money'
             && request.resource.data.amount is int
             && request.resource.data.amount >= 5 && request.resource.data.amount <= 50)

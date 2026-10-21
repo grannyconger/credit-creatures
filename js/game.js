@@ -156,6 +156,8 @@ export function createGame(user, db) {
       const entry = {
         creatureName: (fullName(c) || "Creature").slice(0, 41),
         displayName: (game.profile.displayName || "").slice(0, 30),
+        // The Google name, so classmates know whose creature it is (rules check it matches).
+        person: (user.displayName || "").slice(0, 100),
         xp: play.xp,
         rank: rankFor(play.xp).title,
         species: c.species,

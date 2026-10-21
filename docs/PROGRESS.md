@@ -12,7 +12,8 @@ Last updated: 2026-10-20 (redesign: kingdom hub and story)
   - `addCollection` and delayed bills in the engine.
   - Anonymous tuning export, `npm run tuning-report`, `npm run replay`, and the `pilot-data/` folder (gitignored).
   - `docs/PILOT.md` is the teacher's run-book.
-- **Teacher action needed:** publish the newest `firestore.rules` (it covers Phases 7 and 8 and creature looks on the leaderboard), then follow `docs/PILOT.md`.
+- **Teacher action needed:** publish the newest `firestore.rules` (2026-10-20 update: students' real names on the leaderboard, friend requests and gifts, checked against their Google sign-in, and gift messages up to 60). Until it's published, names don't show and the 30 new gift messages are refused, but nothing else breaks (`js/db.js` retries without the name fields). Then follow `docs/PILOT.md`.
+- **2026-10-20 (teacher):** turtle redrawn (domed shell, rim, four legs, head under the shell). Friends: "Creature (Student name)" everywhere among classmates, 30 more gift messages.
 - **Renamed 2026-10-20:** the repo is `grannyconger/credit-creatures` and the site is https://www.coachw.club/credit-creatures/. The Firebase project id stays `credit-life-38e4a`, because Firebase ids can't change. Browser test-storage keys keep the `credit-life:` prefix.
 - **Redesign (plan approved 2026-10-20), awaiting the teacher's review.** 148 tests pass.
   - Part 1, design system: tokens with light and dark modes, a color-blind-safe factor palette, dyslexia mode (OpenDyslexic), Fredoka headings, a custom icon set, shinier cards, the "Credit Creatures" name.
