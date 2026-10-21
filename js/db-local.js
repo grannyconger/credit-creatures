@@ -50,6 +50,7 @@ export async function getClass(classId) {
         paused: read("class/paused") ?? false,
         monthsPerChapter: read("class/months") || 3,
         social: read("class/social") ?? true,
+        sound: read("class/sound") ?? true,
       }
     : null;
 }
@@ -108,7 +109,7 @@ export async function listMyClasses() {
 }
 
 export async function updateClass(classId, fields) {
-  const keys = { releasedChapter: "class/released", leaderboard: "class/leaderboard", paused: "class/paused", monthsPerChapter: "class/months", social: "class/social" };
+  const keys = { releasedChapter: "class/released", leaderboard: "class/leaderboard", paused: "class/paused", monthsPerChapter: "class/months", social: "class/social", sound: "class/sound" };
   for (const [k, v] of Object.entries(fields)) if (keys[k]) write(keys[k], v);
 }
 

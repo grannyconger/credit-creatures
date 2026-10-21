@@ -2,6 +2,8 @@
 // the class leaderboard list. No free text: group names and gift messages are
 // presets. Firestore rules enforce the class, friendship and the 40-hour gift limit.
 import { h, add, fill, money, toast } from "../dom.js";
+import { coinsFly } from "../fx.js";
+import { sound } from "../sound.js";
 import { placeHeader } from "../place-header.js";
 import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
@@ -262,8 +264,10 @@ export function render(root, { game, go, track, refreshWho }) {
                 "button",
                 {
                   type: "button",
+                  "data-sound": "none",
                   onclick: async (e) => {
-                    e.currentTarget.disabled = true;
+                    const openBtn = e.currentTarget;
+                    openBtn.disabled = true;
                     try {
                       await game.db.claimGift(classId, g.id);
                     } catch (err) {
@@ -274,6 +278,8 @@ export function render(root, { game, go, track, refreshWho }) {
                     const r = S.applyClaimedGift({ life: game.life, play, gift: g });
                     game.life = r.life;
                     track("giftClaim", { kind: g.kind, amount: g.amount || 0 });
+                    if (g.kind === "money") coinsFly(openBtn);
+                    else sound("fanfare");
                     toast(r.note, "good");
                     refreshWho();
                     await game.persist("giftClaim");

@@ -82,12 +82,13 @@ service cloud.firestore {
       // Teachers change only these settings, within sensible ranges.
       allow update: if isTeacher()
         && resource.data.teacherEmail == myEmail()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'releasedChapter', 'leaderboard', 'paused', 'monthsPerChapter', 'social'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'releasedChapter', 'leaderboard', 'paused', 'monthsPerChapter', 'social', 'sound'])
         && request.resource.data.releasedChapter is int
         && request.resource.data.releasedChapter >= 1 && request.resource.data.releasedChapter <= 30
         && request.resource.data.get('leaderboard', true) is bool
         && request.resource.data.get('paused', false) is bool
         && request.resource.data.get('social', true) is bool
+        && request.resource.data.get('sound', true) is bool
         && request.resource.data.get('monthsPerChapter', 3) is int
         && request.resource.data.get('monthsPerChapter', 3) >= 1
         && request.resource.data.get('monthsPerChapter', 3) <= 6

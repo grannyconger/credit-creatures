@@ -1060,3 +1060,46 @@ button.danger { color: var(--danger); border-color: var(--danger); }
 }
 
 .signin-card .error:empty { display: none; }
+
+/* ---------- Micro-animations (visual plan item 8) ---------- */
+.fx-coin {
+  position: fixed; z-index: 1000; width: 22px; height: 22px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 35% 30%, #fff6c8 0 18%, #f6c445 20% 62%, #c98a12 64%);
+  box-shadow: 0 0 0 2px #b8781a inset, 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+.fx-bump { animation: fx-bump 0.45s ease-out; }
+@keyframes fx-bump { 40% { transform: scale(1.08); box-shadow: 0 0 0 4px var(--gold); } }
+
+.fx-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit; }
+.fx-confetti span {
+  position: absolute; top: -12px; width: 8px; height: 13px; border-radius: 2px; opacity: 0;
+  animation: fx-fall 2.2s cubic-bezier(.25,.6,.45,1) forwards;
+}
+@keyframes fx-fall {
+  0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  100% { transform: translate(var(--drift), 420px) rotate(var(--spin)); opacity: 0; }
+}
+
+.statement { position: relative; }
+.fx-stamp {
+  position: absolute; top: 14px; right: 16px; transform: rotate(-9deg);
+  font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.9rem;
+  padding: 4px 10px; border: 3px solid currentColor; border-radius: 8px; opacity: 0.85;
+}
+.fx-stamp.good { color: var(--good); }
+.fx-stamp.warn { color: var(--warn); }
+.fx-stamp.bad { color: var(--danger); }
+.fx-stamp.land { animation: fx-stamp 0.45s cubic-bezier(.3,1.6,.5,1) 0.15s both; }
+@keyframes fx-stamp {
+  0% { transform: rotate(-20deg) scale(2.4); opacity: 0; }
+  70% { transform: rotate(-8deg) scale(0.92); opacity: 0.95; }
+  100% { transform: rotate(-9deg) scale(1); opacity: 0.85; }
+}
+@media (max-width: 600px) { .fx-stamp { position: static; display: inline-block; margin-bottom: 6px; } }
+
+.gauge-needle { transform-origin: 150px 150px; transform: rotate(var(--turn)); animation: needle-sweep 1.3s cubic-bezier(.25,1.35,.45,1) both; }
+@keyframes needle-sweep { from { transform: rotate(0deg); } }
+.brand { text-decoration: none; color: inherit; }
+.brand:hover { text-decoration: none; opacity: 0.85; }
+.save-state { color: var(--muted); font-size: 0.8rem; margin-right: 8px; }
+@media (max-width: 700px) { .save-state { display: none; } }

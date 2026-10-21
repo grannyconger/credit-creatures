@@ -4,6 +4,7 @@ import { isConfigured } from "./firebase-config.js";
 import { createGame, STEPS, EDITABLE, HUB_SCREENS } from "./game.js";
 import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge } from "./telemetry.js";
 import { mountBugButton } from "./ui/bug-button.js";
+import { sound, setClassMuted } from "./ui/sound.js";
 import { creatureSvg } from "./ui/creature-art.js";
 import { h, clear, ageLabel } from "./ui/dom.js";
 import { settingsControls } from "./ui/settings-controls.js";
@@ -172,6 +173,7 @@ function signedOut(error = "") {
 // Students can't skip ahead. Earlier steps open only if they are editable.
 function route() {
   if (!game) return;
+  setClassMuted(game.classInfo?.sound === false);
   const want = location.hash.replace(/^#\/?/, "");
   const current = STEPS.indexOf(game.step);
   let target = want;
@@ -267,6 +269,12 @@ function showNudge() {
 }
 
 document.getElementById("sign-out").addEventListener("click", saveAndSignOut);
+// A soft click for buttons (only when sound is on). Buttons with their own
+// sound (card flips, rewards) set data-sound="none".
+document.addEventListener("click", (e) => {
+  const b = e.target.closest?.("button, a.brand");
+  if (b && !b.disabled && b.dataset.sound !== "none") sound("click");
+});
 // The title always goes home: the kingdom once the student has one, otherwise
 // the onboarding step they're on.
 document.getElementById("brand").addEventListener("click", (e) => {

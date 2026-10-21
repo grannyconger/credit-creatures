@@ -1,7 +1,8 @@
-// Appearance and reading switches. Used on the sign-in screen and in the Cottage.
+// Appearance, reading and sound switches. Used on the sign-in screen and in the Cottage.
 // onChange(settings) runs after a change (the Cottage saves it to the game).
 import { h, fill } from "./dom.js";
-import { applySettings, loadLocalSettings, APPEARANCE_LABELS, READING_LABELS } from "./settings.js";
+import { applySettings, loadLocalSettings, APPEARANCE_LABELS, READING_LABELS, SOUND_LABELS } from "./settings.js";
+import { sound, classIsMuted } from "./sound.js";
 
 export function settingsControls({ current = loadLocalSettings(), onChange = () => {} } = {}) {
   const box = h("div.settings-row");
@@ -21,13 +22,20 @@ export function settingsControls({ current = loadLocalSettings(), onChange = () 
               s = applySettings({ ...s, [key]: v });
               paint();
               onChange(s);
+              if (key === "sound" && v === "on") sound("coin");
             },
           },
           text
         )
       )
     );
-  const paint = () => fill(box, group("appearance", "Look", APPEARANCE_LABELS), group("reading", "Reading", READING_LABELS));
+  const paint = () =>
+    fill(
+      box,
+      group("appearance", "Look", APPEARANCE_LABELS),
+      group("reading", "Reading", READING_LABELS),
+      classIsMuted() ? h("p.note.tight", "🔇 Your teacher turned sound off for the class.") : group("sound", "Sound", SOUND_LABELS)
+    );
   paint();
   return box;
 }

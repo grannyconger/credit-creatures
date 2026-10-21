@@ -64,9 +64,15 @@ function gauge(score) {
   for (const b of SCORE_BANDS) {
     svg.append(s("path", { d: arc(b.min, Math.min(850, b.max + 1)), stroke: b.color, "stroke-width": 20, fill: "none", opacity: score == null || bandFor(score) === b ? 1 : 0.35 }));
   }
+  // A needle that sweeps up from 300 to the score (CSS animation, off under reduced motion).
   if (score != null) {
-    const [x, y] = pt(score, r);
-    svg.append(s("circle", { cx: x, cy: y, r: 13, fill: "var(--panel)", stroke: "var(--ink)", "stroke-width": 4 }));
+    const turn = ((score - 300) / 550) * 180;
+    const needle = s("g", { class: "gauge-needle", style: `--turn: ${turn}deg` });
+    needle.append(
+      s("line", { x1: cx, y1: cy, x2: cx - r + 6, y2: cy, stroke: "var(--ink)", "stroke-width": 5, "stroke-linecap": "round" }),
+      s("circle", { cx: cx - r + 6, cy, r: 11, fill: "var(--panel)", stroke: "var(--ink)", "stroke-width": 4 })
+    );
+    svg.append(needle, s("circle", { cx, cy, r: 9, fill: "var(--ink)" }));
   }
   svg.append(s("text", { x: 22, y: 166, class: "gauge-end" }, "300"), s("text", { x: 278, y: 166, class: "gauge-end", "text-anchor": "end" }, "850"));
   return h(

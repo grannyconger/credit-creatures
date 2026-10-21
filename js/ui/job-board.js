@@ -1,6 +1,7 @@
 // The job board: pick a job, play its minigame, see your pay and what you
 // missed, then collect (SPEC §17). Pay rises with experience at each job.
 import { h, fill, money } from "./dom.js";
+import { coinsFly } from "./fx.js";
 import { CONFIG } from "../data/config.js";
 import { JOBS } from "../data/minigames.js";
 import { jobPay, experienceBonus, recordShift } from "../progress.js";
@@ -69,11 +70,12 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     running = null;
     const pay = jobPay(play, key, result);
     let reaction = "";
-    const collect = h("button.big", { type: "button" }, `Collect ${money(pay)}`);
+    const collect = h("button.big", { type: "button", "data-sound": "none" }, `Collect ${money(pay)}`);
     collect.addEventListener("click", async () => {
       collect.disabled = true;
       const r = P.workShift(play, run.life, pay, `work shift: ${JOBS[key].title}`);
       if (!r.ok) return;
+      coinsFly(collect);
       run.life = r.life;
       recordShift(play, key, { right: result.right, pay });
       track("minigame", { game: key, right: result.right, wrong: result.wrong, total: result.total, pay, seconds: result.seconds, timed, reaction, depositOnly: result.depositOnly ?? null });

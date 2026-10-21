@@ -1,8 +1,9 @@
-// Appearance (light, dark or system) and reading (standard or dyslexia-friendly).
+// Appearance (light, dark or system), reading (standard or dyslexia-friendly)
+// and sound effects (off by default, js/ui/sound.js).
 // Kept in this browser so it applies before sign-in finishes, and in the save
 // (play.settings) so it follows the student to another computer.
 const KEY = "credit-creatures:settings";
-export const DEFAULT_SETTINGS = { appearance: "system", reading: "standard" };
+export const DEFAULT_SETTINGS = { appearance: "system", reading: "standard", sound: "off" };
 
 export function loadLocalSettings() {
   try {
@@ -29,3 +30,4 @@ export function applySettings(settings) {
 
 export const APPEARANCE_LABELS = { system: "Match my computer", light: "Light", dark: "Dark" };
 export const READING_LABELS = { standard: "Standard", dyslexia: "Dyslexia-friendly" };
+export const SOUND_LABELS = { off: "Off", on: "On" };

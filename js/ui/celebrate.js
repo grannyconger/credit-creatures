@@ -2,6 +2,8 @@
 // with Continue or Escape. Used for achievements, rank-ups and new chapters.
 import { h } from "./dom.js";
 import { track } from "../telemetry.js";
+import { sound } from "./sound.js";
+import { confetti } from "./fx.js";
 
 const queue = [];
 let open = false;
@@ -11,7 +13,9 @@ let open = false;
 const MAX_IN_A_ROW = 3;
 
 // item = { kind, icon, kicker, title, text, xp }
+
 export function celebrate(items) {
+  sound("fanfare");
   const list = [].concat(items);
   if (list.length > MAX_IN_A_ROW) {
     const rest = list.slice(MAX_IN_A_ROW - 1);
@@ -41,6 +45,7 @@ function next() {
     "dialog.celebrate",
     { "aria-labelledby": "celebrate-title", "aria-describedby": "celebrate-text" },
     h("div.celebrate-rays", { "aria-hidden": "true" }),
+    confetti(),
     h(
       "div.celebrate-body",
       h("div.celebrate-icon", { "aria-hidden": "true" }, item.icon),

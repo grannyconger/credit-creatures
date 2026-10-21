@@ -1,6 +1,7 @@
 // Statements: purchases, payments, interest, fees, new balance and minimum
 // due, month by month for each card (SPEC §14).
 import { h, money, ageLabel } from "../dom.js";
+import { stamp } from "../fx.js";
 
 let chosen = null;
 
@@ -28,9 +29,10 @@ export function statementsTab({ run, track, repaint }) {
       ? h("div.callout", h("p", h("strong", "Not on a statement yet")), h("ul.stmt-items", a.pending.map((p) => h("li", h("span", p.item), h("strong", money(p.amount))))), h("p.note.tight", "These post to your card at the next End Month."))
       : null,
     list.length
-      ? list.map((s) =>
+      ? list.map((s, i) =>
           h(
             "article.statement",
+            statementStamp(s, i === 0),
             h("h3", `Statement closed at ${ageAt(s.month + 1)}`),
             s.purchases.length ? h("ul.stmt-items", s.purchases.map((p) => h("li", h("span", p.item), h("strong", money(p.amount))))) : h("p.muted", "No purchases."),
             h(
@@ -46,6 +48,14 @@ export function statementsTab({ run, track, repaint }) {
         )
       : h("p.muted", "Your first statement comes at the next End Month.")
   );
+}
+
+// The stamp says in words what kind of month it was. Only the newest lands.
+function statementStamp(s, newest) {
+  if (s.fees > 0) return stamp("Late fee", "bad", newest);
+  if (s.balance <= 0) return stamp("All clear", "good", newest);
+  if (s.interest > 0) return stamp("Interest charged", "warn", newest);
+  return stamp("No interest", "good", newest);
 }
 
 function line(label, value, cls = "") {

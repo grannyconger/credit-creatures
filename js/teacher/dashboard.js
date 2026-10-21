@@ -182,6 +182,7 @@ function controls(c) {
         h("button.small", { type: "button", class: c.paused ? "" : "secondary", onclick: () => save({ paused: !c.paused }, "pause") }, c.paused ? "Resume play" : "Pause play")
       ),
       h("div", h("strong", "Friends and gifts"), h("p", c.social === false ? "Off" : "On"), h("button.small.secondary", { type: "button", onclick: () => save({ social: c.social === false }, "friends and gifts") }, c.social === false ? "Turn on" : "Turn off")),
+      h("div", h("strong", "Sound effects"), h("p", c.sound === false ? "🔇 Muted for everyone" : "🔈 Students choose"), h("button.small.secondary", { type: "button", onclick: () => save({ sound: c.sound === false }, "sound effects") }, c.sound === false ? "Let students choose" : "Mute for everyone")),
       h("div", h("strong", "Leaderboard"), h("p", c.leaderboard === false ? "Off" : "On"), h("button.small.secondary", { type: "button", onclick: () => save({ leaderboard: c.leaderboard === false }, "the leaderboard") }, c.leaderboard === false ? "Turn on" : "Turn off")),
       h("div", h("label", { for: "months" }, h("strong", "Months per chapter")), months, h("small.muted", "Applies to chapters students start from now on."))
     )
