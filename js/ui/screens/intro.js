@@ -7,10 +7,9 @@ import { INTRO_PANELS } from "../../data/story.js";
 import { DREAMS } from "../../data/dreams.js";
 
 const CRITTERS = [
-  { species: "mossDragon", palette: "moss", accessories: { head: "crown" } },
   { species: "lanternFox", palette: "ember", accessories: { neck: "scarf" } },
-  { species: "crystalOwl", palette: "frost", accessories: { face: "glasses" } },
-  { species: "puddleGolem", palette: "lavender", accessories: { held: "balloon" } },
+  { species: "cloudBunny", palette: "frost", accessories: { head: "crown" } },
+  { species: "shellTurtle", palette: "moss", accessories: { face: "glasses" } },
 ];
 
 function art(scene) {

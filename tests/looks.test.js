@@ -29,12 +29,12 @@ test("there are lots of looks, with every unlock type and a reachable requiremen
   for (const o of all.filter((x) => x.unlock?.achievement)) assert.ok(ACHIEVEMENT_BY_ID[o.unlock.achievement], o.id);
   for (const i of SHOP_ITEMS) assert.ok(LOOK_OPTIONS[i.kind].some((o) => o.id === i.id), `shop item ${i.id} appears in the editor`);
   for (const o of all) assert.ok(!o.name.includes("—") && !o.name.includes(";"), o.name);
-  for (const k of ["cloudBunny", "shellTurtle"]) assert.ok(LOOK_OPTIONS.species.find((o) => o.id === k).unlock.xp > 0, k);
+  for (const k of ["crystalOwl", "mossDragon", "puddleGolem"]) assert.ok(LOOK_OPTIONS.species.find((o) => o.id === k).unlock.xp > 0, k);
 });
 
 test("looks unlock with XP, achievements and shop purchases", () => {
   const play = P.newPlay();
-  const bunny = LOOK_OPTIONS.species.find((o) => o.id === "cloudBunny");
+  const bunny = LOOK_OPTIONS.species.find((o) => o.id === "crystalOwl");
   const cap = LOOK_OPTIONS.head.find((o) => o.id === "graduationCap");
   const hat = LOOK_OPTIONS.head.find((o) => o.id === "topHat");
   assert.ok(!isUnlocked(bunny, play) && !isUnlocked(cap, play) && !isUnlocked(hat, play));

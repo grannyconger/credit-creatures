@@ -29,7 +29,7 @@ const list = (obj, extra = {}) => Object.entries(obj).map(([id, v]) => ({ id, na
 const shop = (kind) => SHOP_ITEMS.filter((i) => i.kind === kind).map((i) => ({ id: i.id, name: `${i.icon} ${i.name}`, unlock: { shop: i.price } }));
 
 export const LOOK_OPTIONS = {
-  species: list(SPECIES, { cloudBunny: xp(100), shellTurtle: xp(300) }),
+  species: list(SPECIES, { crystalOwl: xp(100), mossDragon: xp(300), puddleGolem: xp(600) }),
   palette: list(PALETTES, { goldLeaf: xp(1000), galaxy: xp(2400) }),
   pattern: [
     { id: "none", name: "None" },

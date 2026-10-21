@@ -1,11 +1,12 @@
 // Creature creator options (SPEC §3). All designs are original.
 export const SPECIES = {
-  mossDragon: { label: "Moss dragon", blurb: "Small wings, big heart, mossy back." },
+  // Starters first, then the ones that unlock with XP (js/data/looks.js).
   lanternFox: { label: "Lantern fox", blurb: "Its tail glows when it is thinking." },
-  crystalOwl: { label: "Crystal owl", blurb: "Sees every number on the page." },
-  puddleGolem: { label: "Puddle golem", blurb: "Calm, squishy and very patient." },
   cloudBunny: { label: "Cloud bunny", blurb: "Soft as a cloud, hops when it's happy." },
   shellTurtle: { label: "Shell turtle", blurb: "Slow, steady and always prepared." },
+  crystalOwl: { label: "Crystal owl", blurb: "Sees every number on the page." },
+  mossDragon: { label: "Moss dragon", blurb: "Small wings, big heart, mossy back." },
+  puddleGolem: { label: "Puddle golem", blurb: "Calm, squishy and very patient." },
 };
 
 // body, belly, accent (wings, ears, spots), eye
@@ -73,5 +74,5 @@ export function fullName(creature) {
 }
 
 export function defaultCreature() {
-  return { name: "", lastName: "", species: "mossDragon", palette: "moss", markings: "none", eyes: "round", accessories: { head: "none", neck: "none", face: "none", held: "none", feet: "none", effect: "none" } };
+  return { name: "", lastName: "", species: "lanternFox", palette: "ember", markings: "none", eyes: "round", accessories: { head: "none", neck: "none", face: "none", held: "none", feet: "none", effect: "none" } };
 }
