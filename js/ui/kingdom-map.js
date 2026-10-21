@@ -120,6 +120,7 @@ export function kingdomMap({ creature, ageMonths, status, onOpen }) {
       {
         type: "button",
         class: `tone-${st.tone}`,
+        "data-place": pl.id,
         style: inList ? null : { left: `${pl.x}%`, top: `${pl.y}%` },
         "aria-label": `${pl.name}. ${pl.does}. ${st.text}`,
         onclick: () => onOpen(pl),

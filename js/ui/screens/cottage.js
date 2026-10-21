@@ -9,6 +9,7 @@ import { rankFor } from "../../progress.js";
 import { placeHeader } from "../place-header.js";
 import { settingsControls } from "../settings-controls.js";
 import { celebrate } from "../celebrate.js";
+import { runTour } from "../tour.js";
 import { xpBar } from "./trophies.js";
 import { meters } from "./hub.js";
 
@@ -41,7 +42,8 @@ export function render(root, { game, go, track, refreshWho, back }) {
             h("button", { type: "button", onclick: () => go("creature") }, icon("palette", { size: 18 }), " Customize"),
             h("button.secondary", { type: "button", onclick: () => go("trophies") }, icon("trophy", { size: 18 }), " Trophies"),
             game.classInfo?.social === false ? null : h("button.secondary", { type: "button", onclick: () => go("friends") }, icon("people", { size: 18 }), " Friends")
-          )
+          ),
+          h("button.link", { type: "button", onclick: () => runTour({ game, track }) }, "🧭 Take the Kingdom Tour")
         ),
         h("div.cottage-side", dreamCard(dream, prog), settingsCard())
       )

@@ -92,6 +92,7 @@ export const ACHIEVEMENTS = [
   { id: "generous", cat: "social", icon: "🎁", title: "Generous", how: "Send a gift to a friend.", xp: 30, check: (f) => f.play.social.giftsSent >= 1 },
   { id: "squad", cat: "social", icon: "🛡️", title: "Squad Goals", how: "Join or start a friend group.", xp: 20, check: (f) => f.play.social.groupJoined },
   { id: "dreamer", cat: "persistence", icon: "🌠", title: "Dreamer", how: "Pick a dream for your creature.", xp: 10, check: (f) => Boolean(f.creature?.dream) },
+  { id: "grandTour", cat: "persistence", icon: "🧭", title: "Grand Tour", how: "Finish the Kingdom Tour.", xp: 50, check: (f) => Boolean(f.play.tourDone) },
   { id: "dreamComeTrue", cat: "persistence", icon: "🏰", title: "Dream Come True", how: "Make your creature's dream come true.", xp: 200, check: (f) => Boolean(f.play.dreamDone) },
   { id: "deepThinker", cat: "persistence", icon: "💭", title: "Deep Thinker", how: "Write 3 chapter reflections.", xp: 50, check: (f) => f.play.history.filter((h) => h.reflection).length >= 3 },
 ];

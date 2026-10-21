@@ -1155,3 +1155,39 @@ button.danger { color: var(--danger); border-color: var(--danger); }
 .stage.done .stage-num { border-color: var(--good); background: var(--good); color: var(--panel); }
 .stage-cost { font-weight: 600; font-size: 0.9rem; }
 .dream-stage-list { margin: 4px 0 0; padding-left: 18px; font-size: 0.85rem; color: var(--muted); text-align: left; }
+
+/* ---------- The Kingdom Tour ---------- */
+.tour { position: fixed; inset: 0; z-index: 900; }
+.tour-spot {
+  position: fixed; border-radius: 16px; pointer-events: none;
+  box-shadow: 0 0 0 4px var(--gold), 0 0 0 9999px rgba(15, 10, 40, 0.62);
+  transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+.tour-spot[hidden] { display: block; left: 50% !important; top: 50% !important; width: 0 !important; height: 0 !important; box-shadow: 0 0 0 9999px rgba(15, 10, 40, 0.62); }
+.tour-bubble {
+  position: fixed; width: min(440px, calc(100vw - 24px)); max-height: calc(100vh - 24px);
+  display: flex; flex-direction: column;
+  background: var(--panel); color: var(--ink); border-radius: 18px; padding: 16px 18px 14px;
+  box-shadow: var(--shadow-lift), 0 0 0 2px var(--gold);
+  transition: left 0.3s ease, top 0.3s ease, opacity 0.2s;
+}
+.tour-bubble.loading { opacity: 0.4; }
+.tour-scroll { overflow: auto; min-height: 0; }
+.tour-bubble.centered { left: 50% !important; top: 50% !important; transform: translate(-50%, -50%); }
+.tour-bubble p { margin: 6px 0; }
+.tour-head { display: flex; gap: 10px; align-items: center; margin-bottom: 4px; }
+.tour-head h2 { margin: 0; font-size: 1.25rem; }
+.tour-guide svg { display: block; }
+.tour-kicker { margin: 0 !important; font-size: 0.75rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+.tour-quiz { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--soft); }
+.tour-result { min-height: 1.2em; font-size: 0.92rem; }
+.tour-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.tour-count { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+.tour-foot progress { flex: 1; min-width: 60px; height: 6px; accent-color: var(--gold); }
+.tour-buttons { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+@media (max-width: 700px) {
+  .tour-bubble, .tour-bubble.centered { left: 12px !important; right: 12px; top: auto !important; bottom: 12px; transform: none; width: auto; max-height: 55vh; }
+}
+.tour-offer { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.tour-offer > div { flex: 1; min-width: 220px; }
+.tour-offer svg { display: block; }

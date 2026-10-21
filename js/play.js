@@ -38,6 +38,9 @@ export function ensurePlay(play) {
   play.dreamDone ??= null;
   // Dream stages finished (js/data/dreams.js). An old finished dream counts as all 3.
   play.dreamStage ??= play.dreamDone ? 3 : 0;
+  // The Kingdom Tour (js/ui/tour.js): finished, or skipped so the hub stops offering it.
+  play.tourDone ??= null;
+  play.tourSkipped ??= false;
   play.settings ??= play.theme === "night" ? { appearance: "dark", reading: "standard" } : null;
   play.achievements ??= {};
   play.stats ??= { shifts: 0, paidInFull: 0, payoffSprints: 0, hadDebt: false };

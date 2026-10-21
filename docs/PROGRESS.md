@@ -12,10 +12,15 @@ Last updated: 2026-10-20 (redesign: kingdom hub and story)
   - `addCollection` and delayed bills in the engine.
   - Anonymous tuning export, `npm run tuning-report`, `npm run replay`, and the `pilot-data/` folder (gitignored).
   - `docs/PILOT.md` is the teacher's run-book.
-- **Teacher action needed:** publish the newest `firestore.rules` (2026-10-20 update: students' real names on the leaderboard, friend requests and gifts, checked against their Google sign-in, and gift messages up to 60). Until it's published, names don't show and the 30 new gift messages are refused, but nothing else breaks (`js/db.js` retries without the name fields). Then follow `docs/PILOT.md`.
+- **Teacher action needed:** publish the newest `firestore.rules` (2026-10-20 updates: students' real names on the leaderboard, friend requests and gifts, checked against their Google sign-in, gift messages up to 60, and the class `sound` switch for the master mute). Until it's published, names don't show and the 30 new gift messages are refused, but nothing else breaks (`js/db.js` retries without the name fields). Then follow `docs/PILOT.md`.
 - **2026-10-20 (teacher):** turtle redrawn (domed shell, rim, four legs, head under the shell). Friends: "Creature (Student name)" everywhere among classmates, 30 more gift messages.
 - **Renamed 2026-10-20:** the repo is `grannyconger/credit-creatures` and the site is https://www.coachw.club/credit-creatures/. The Firebase project id stays `credit-life-38e4a`, because Firebase ids can't change. Browser test-storage keys keep the `credit-life:` prefix.
-- **Redesign (plan approved 2026-10-20), awaiting the teacher's review.** 148 tests pass.
+- **Visual plan and tutorial batch (2026-10-20), awaiting the teacher's review.** 153 tests pass.
+  - Grand sign-in page, title goes home, one Save and sign out button, fiercer phoenix with a fanned tail.
+  - Sound (off by default, teacher master mute), micro-animations, Town Hall quest board with card flips.
+  - Dreams have 3 stages with goals from the whole game and stage costs.
+  - The Kingdom Tour (`js/data/tour.js`, `js/ui/tour.js`), offered to every student once, replayable from the Academy and Cottage.
+- **Redesign (plan approved 2026-10-20), reviewed.** Earlier batch:
   - Part 1, design system: tokens with light and dark modes, a color-blind-safe factor palette, dyslexia mode (OpenDyslexic), Fredoka headings, a custom icon set, shinier cards, the "Credit Creatures" name.
   - Part 2, purpose and hub: a 3-panel story intro, a dream for each creature (4 dreams with savings, score and habit meters), and an illustrated kingdom map as home base. Places: Town Hall (decisions and End Month), Guild Hall (shifts), Gilded Vault (accounts), Shimmer Market (shop), Academy (Practice Desk and trophies), Friendship Plaza (friends) and Your Cottage (creature, dream, settings). Every place has "Back to the kingdom". The top-right creature opens the Cottage from anywhere.
   - Equity in Ledger Sort now means investments (stocks, index funds, owning part of a business).
@@ -170,6 +175,8 @@ Last updated: 2026-10-20 (redesign: kingdom hub and story)
 | `js/social.js`, `js/ui/screens/friends.js`, `js/data/social.js` | Friend, group and gift logic / Friends screen / preset group names and gift messages |
 | `js/teacher/dashboard.js` / `analyze.js` | Teacher dashboard UI / roster rows, flags, log check, CSV, tuning math |
 | `js/ui/celebrate.js` | Full-screen unlock pop-ups |
+| `js/ui/sound.js`, `js/ui/fx.js` | Sound effects (Web Audio, off by default, teacher mute) / coins, confetti and stamps |
+| `js/data/tour.js`, `js/ui/tour.js` | The Kingdom Tour steps / the spotlight runner (`runTour`) |
 | `img/` | Favicon (SVG plus 32px PNG) and the 180px home-screen icon |
 | `fonts/` | Fredoka (headings), OpenDyslexic (dyslexia mode), Dancing Script (signatures), all OFL |
 | `js/progress.js` | XP, ranks, achievements (`evaluate`), job pay and experience, payment and desk stats, records |

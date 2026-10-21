@@ -103,3 +103,23 @@ test("onboarding starts with the story and asks for a dream after the creature",
   assert.ok(EDITABLE.has("dream"));
   for (const p of PLACES) assert.ok(HUB_SCREENS.has(p.route), p.route);
 });
+
+test("the Kingdom Tour visits every place, follows the text rules and has fair quizzes", async () => {
+  const { TOUR_STEPS, GUIDE } = await import("../js/data/tour.js");
+  assert.ok(TOUR_STEPS.length >= 30);
+  assert.ok(GUIDE.name && GUIDE.look.species);
+  const routes = new Set(TOUR_STEPS.map((s) => s.route).filter(Boolean));
+  for (const p of PLACES) assert.ok(routes.has(p.route), `the tour visits ${p.name}`);
+  let quizzes = 0;
+  for (const s of TOUR_STEPS) {
+    const words = [s.title, ...s.text, s.quiz?.q || "", ...(s.quiz?.choices || []), s.quiz?.why || ""];
+    for (const w of words) assert.ok(!w.includes("—") && !w.includes(";"), w);
+    if (s.quiz) {
+      quizzes++;
+      assert.ok(s.quiz.answer >= 0 && s.quiz.answer < s.quiz.choices.length, s.title);
+    }
+    // The tour may only click tabs, never something that changes the game.
+    if (s.click) assert.match(s.click.sel, /acct-tabs/, s.title);
+  }
+  assert.ok(quizzes >= 4);
+});

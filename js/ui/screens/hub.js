@@ -15,6 +15,8 @@ import { moneyChips } from "../wallet.js";
 import { kingdomMap } from "../kingdom-map.js";
 import { rankFor } from "../../progress.js";
 import { celebrate } from "../celebrate.js";
+import { runTour } from "../tour.js";
+import { GUIDE } from "../../data/tour.js";
 
 export function render(root, { game, go, track }) {
   const run = game.run;
@@ -48,6 +50,7 @@ export function render(root, { game, go, track }) {
             )
           )
         : null,
+      tourOffer(),
       h("div.hub-top", guardianCard(), chapterCard(status, checking)),
       moneyChips(life, play.sparkle.total),
       kingdomMap({
@@ -63,6 +66,22 @@ export function render(root, { game, go, track }) {
       h("p.note.center.hub-help", HUB_HELP),
       run.practice ? null : recapBox(play, track),
       run.practice ? null : practiceBox(play, game, go, track)
+    );
+  }
+
+  // Every student is offered the Kingdom Tour until they finish or skip it.
+  function tourOffer() {
+    const real = game.save.play;
+    if (run.practice || real.tourDone || real.tourSkipped || tourHidden) return null;
+    return h(
+      "section.callout.tour-offer",
+      h("span", { html: creatureSvg(GUIDE.look, { size: 72, label: "" }) }),
+      h("div", h("p.tight", h("strong", "New: the Kingdom Tour 🧭")), h("p.tight", `${GUIDE.name} the ${GUIDE.role} shows you every place and how the game works. About 5 minutes, with a few quick questions. Finish it for the Grand Tour achievement.`)),
+      h(
+        "div.row",
+        h("button", { type: "button", onclick: () => runTour({ game, track }) }, "Start the tour"),
+        h("button.secondary", { type: "button", onclick: () => ((tourHidden = true), track("tourLater", {}), paint()) }, "Not now")
+      )
     );
   }
 
@@ -176,6 +195,7 @@ export function meters(prog) {
 }
 
 let recapTracked = false;
+let tourHidden = false;
 
 // "Previously on..." (decision #3): built from saved month records and the
 // last chapter summary, no extra storage.
