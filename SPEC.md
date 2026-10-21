@@ -98,7 +98,7 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
 - Settings live in the Cottage (and on the sign-in screen) and follow the student to any computer.
 - **Color-blind-safe** colors for the 5 score factors, checked with a palette validator in both modes. States always carry an icon and words.
 - **Custom icon set** (`js/ui/icons.js`) for buttons, tabs and places. Emoji stay in story text and shop items.
-- **Fonts** (self-hosted, OFL): Fredoka for headings, OpenDyslexic, Dancing Script for signatures.
+- **Fonts** (self-hosted, OFL): Fraunces for headings (Brasika once licensed), OpenDyslexic, Dancing Script for signatures.
 - **Shiny cards:** light sweep, holographic stripe on premium cards, embossed numbers and a gentle tilt. All motion stops under reduced-motion.
 - **Town Hall quest board:** the month's cards are pinned parchment notes with Done stamps, and decision cards flip over to their outcome.
 - **Micro-animations:** coins fly into checking after a shift or a money gift, the score needle sweeps, statements get a stamp (Late fee, All clear, Interest charged, No interest), and achievements get confetti.

@@ -33,6 +33,8 @@ import * as garage from "./ui/screens/garage.js";
 import * as records from "./ui/screens/records.js";
 import * as alley from "./ui/screens/alley.js";
 import { watchSentences } from "./ui/sentences.js";
+import { publishSpringTokens, motionOn } from "./ui/motion/spring.js";
+import { installBoops } from "./ui/motion/boop.js";
 
 const SCREENS = { profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley, settings: settingsScreen };
 
@@ -51,6 +53,9 @@ const GOOGLE_G = '<svg viewBox="0 0 48 48" width="20" height="20"><path fill="#E
 captureErrors();
 // Each sentence on its own line, everywhere in the game (js/ui/sentences.js).
 watchSentences(document.body);
+// Spring easings as CSS tokens, and boops on every button (js/ui/motion/).
+publishSpringTokens();
+installBoops();
 
 const { auth, db } = await loadBackends();
 const bug = mountBugButton({
@@ -271,7 +276,19 @@ function hubTarget(want) {
   return want;
 }
 
+// Screens morph into each other with a spring (View Transitions API). Going
+// home zooms out, going to a place zooms in. Plain swap where unsupported.
+let shownName = null;
 function show(name) {
+  const swap = () => showNow(name);
+  const moving = shownName && shownName !== name;
+  shownName = name;
+  if (!moving || !document.startViewTransition || !motionOn()) return swap();
+  document.documentElement.dataset.nav = name === "hub" ? "back" : "forward";
+  document.startViewTransition(swap);
+}
+
+function showNow(name) {
   if (cleanup) cleanup();
   cleanup = null;
   clear(root);

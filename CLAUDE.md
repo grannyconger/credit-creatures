@@ -43,7 +43,8 @@ A classroom game (formerly Credit Life) where students are the Guardian of Coin 
 | 11 | Fill out the ladder: more Chapter 2 loan cards, Town Hall/Academy/Plaza/pitfalls lessons, locked dream goals say when they open | Done, approved |
 | 12 | Lantern Alley: a Chapter 5 place to read the fine print on 10 offers, trap or fair deal, with the real cost worked out | Done, approved |
 | 13 | The late game: Chapters 6 to 8 (moving out, setbacks, building your future) with 20 new cards, and the deck reshuffles from Chapter 9 | Done, approved |
-| 14 | Teacher view of the new game: Lantern Alley, lessons, dream stage and title-loan columns, and a class table of which traps fool students | Done, awaiting the teacher's review |
+| 14 | Teacher view of the new game: Lantern Alley, lessons, dream stage and title-loan columns, and a class table of which traps fool students | Done, approved |
+| 15 | Motion: spring physics, boops, page morphs, rolling numbers, a Motion setting, and Fraunces for headings | Done, awaiting the teacher's review |
 
 ## Run locally
 

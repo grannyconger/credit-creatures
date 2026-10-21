@@ -1369,3 +1369,33 @@ main.app:has(.panel.hub) { max-width: 1760px; padding-top: 16px; }
 .name-field label { display: block; }
 @media (max-width: 500px) { .name-row { grid-template-columns: 1fr; } }
 .who[hidden] + .topbar-actions { margin-left: auto; }
+
+/* ---------- Motion (Phase 15): font axes, page morphs, springy pop-ups ---------- */
+/* Fraunces' soft, wonky cut. Fonts without these axes ignore them. */
+body { font-variation-settings: "SOFT" 100, "WONK" 1; }
+/* Screens morph with a spring. The top bar holds still. */
+.topbar { view-transition-name: topbar; }
+::view-transition-old(root) { animation: vt-out 0.18s ease-in both; }
+::view-transition-new(root) { animation: vt-in var(--dur-gentle) var(--ease-gentle) both; }
+:root[data-nav="back"]::view-transition-new(root) { animation-name: vt-in-back; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: scale(0.96) translateY(10px); } }
+@keyframes vt-in-back { from { opacity: 0; transform: scale(1.04); } }
+/* Pop-ups spring open. */
+.settings-dialog[open], .bug-dialog[open], dialog.t-detail[open], .tour-bubble { animation: pop-in var(--dur-bouncy) var(--ease-bouncy) both; }
+@keyframes pop-in { from { opacity: 0; scale: 0.88; } }
+/* Rolling numbers flash the way they're going (the number moving says it too). */
+.money-chips strong { font-variant-numeric: tabular-nums; transition: color 0.3s; }
+.money-chips strong.tick-up { color: var(--good); }
+.money-chips strong.tick-down { color: var(--danger); }
+/* Calm mode (Account settings) and the computer's reduce-motion setting:
+   no springs, wobbles or loops, only quick fades. */
+:root[data-motion="calm"] *, :root[data-motion="calm"] *::before, :root[data-motion="calm"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+:root[data-motion="calm"]::view-transition-group(*), :root[data-motion="calm"]::view-transition-old(*), :root[data-motion="calm"]::view-transition-new(*) { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

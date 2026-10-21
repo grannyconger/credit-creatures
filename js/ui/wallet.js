@@ -3,6 +3,7 @@
 import { moneyChipKeys } from "../progression.js";
 import { h, money, percent } from "./dom.js";
 import { icon } from "./icons.js";
+import { countTo } from "./motion/ticker.js";
 import { cardArt } from "./card-art.js";
 import { ownCards, amountOwed, utilization } from "../engine/index.js";
 import { fullName } from "../data/creatures.js";
@@ -17,18 +18,21 @@ export function moneyChips(life, play) {
   const util = utilization(life);
   const debt = life.accounts.filter((a) => a.owner === "self" && ["open", "collections"].includes(a.status)).reduce((s, a) => s + amountOwed(a), 0);
   const chips = {
-    piggy: () => chip("piggy", "Piggy bank", money(life.checking)),
-    checking: () => chip("vault", "Checking", money(life.checking), life.checking < 0 ? "bad" : ""),
-    savings: () => chip("piggy", "Savings", money(life.savings)),
-    score: () => chip("gauge", "Score", life.score == null ? "None yet" : sparkle ? `${life.score} + ${sparkle}✨` : life.score),
+    piggy: () => chip("piggy", "Piggy bank", money(life.checking), "", [life.checking, money]),
+    checking: () => chip("vault", "Checking", money(life.checking), life.checking < 0 ? "bad" : "", [life.checking, money]),
+    savings: () => chip("piggy", "Savings", money(life.savings), "", [life.savings, money]),
+    score: () => chip("gauge", "Score", life.score == null ? "None yet" : sparkle ? `${life.score} + ${sparkle}✨` : life.score, "", life.score == null || sparkle ? null : [life.score, (n) => String(Math.round(n))]),
     util: () => (util != null ? chip("chart", "Card utilization", percent(util), util > 0.3 ? "warn" : "") : null),
-    owed: () => chip("receipt", "You owe", money(debt)),
+    owed: () => chip("receipt", "You owe", money(debt), "", [debt, money]),
   };
   return h("ul.money-chips", { "aria-label": "Your money right now", class: `chips-${keys.length}` }, keys.map((k) => chips[k]()));
 }
 
-function chip(ico, label, value, cls = "") {
-  return h("li", { class: cls }, icon(ico, { size: 22 }), h("small", label), h("strong", String(value)));
+// roll: [number, format] makes the value roll from its last shown number.
+function chip(ico, label, value, cls = "", roll = null) {
+  const strong = h("strong", String(value));
+  if (roll) countTo(strong, label, roll[0], roll[1]);
+  return h("li", { class: cls }, icon(ico, { size: 22 }), h("small", label), strong);
 }
 
 export function walletStrip(life, creature) {

@@ -17,6 +17,7 @@
       const s = JSON.parse(localStorage.getItem("credit-creatures:settings")) || {};
       if (s.appearance && s.appearance !== "system") document.documentElement.dataset.appearance = s.appearance;
       if (s.reading === "dyslexia") document.documentElement.dataset.reading = "dyslexia";
+      if (s.motion === "calm") document.documentElement.dataset.motion = "calm";
     } catch {}
   </script>
 </head>
