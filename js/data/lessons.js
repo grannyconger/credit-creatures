@@ -72,6 +72,30 @@ export const LESSONS = {
       },
     ],
   },
+  townhall: {
+    title: "Your first month at Town Hall",
+    feature: "townhall",
+    steps: [
+      { route: "month", target: [".quest-board", ".place-header"], title: "This month's quests", text: ["Each month has a news card about your creature's life and a few money decisions. Do them in order. Each one gets a Done stamp."] },
+      { route: "month", target: [".decision-card", ".month-main"], title: "Read, then choose", text: ["Read the card and pick what you'd really do. Some choices cost money, and then you pick how to pay.", "After you choose, the card flips to show what happened and which part of your money it changed."] },
+      { route: "month", target: [".quest-board li:last-child", ".quest-board"], title: "End Month", text: ["When every card is done, end the month. Bills come out of checking, and you see what changed.", "Before you do, work your shifts at the Guild Hall and check that checking can cover your bills."] },
+    ],
+  },
+  academy: {
+    title: "The Academy",
+    feature: "academy",
+    steps: [
+      { route: "academy", target: [".academy-rank", ".place-header"], title: "Learn and level up", text: ["Practice Desk questions earn XP and Sparkle Points. XP raises your rank, from Apprentice to Grand Vizier, and unlocks new looks."] },
+      { route: "academy", target: [".lesson-shelf", ".place-header"], title: "Your lesson shelf", text: ["Every lesson from me lands here. Replay any of them whenever you need a reminder."] },
+    ],
+  },
+  plaza: {
+    title: "Friendship Plaza",
+    feature: "plaza",
+    steps: [
+      { route: "friends", target: [".acct-tabs", ".place-header"], title: "Friends and gifts", text: ["Add classmates as friends, start or join a group, and send a gift of money or an item once every 40 hours.", "Everyone sees your creature with your name, so they know who sent what. Nobody sees your money or your score."] },
+    ],
+  },
   loans: {
     title: "Loans",
     feature: "loans",
@@ -119,6 +143,20 @@ export const LESSONS = {
       { route: "records", click: tab("My Report"), target: [".acct-body"], title: "Your credit report", text: ["Your report is what lenders see: every account, every late mark and every application. Check it for mistakes."] },
     ],
   },
+  pitfalls: {
+    title: "Watch out for traps",
+    feature: "pitfalls",
+    steps: [
+      {
+        route: "hub",
+        big: "⚠️",
+        title: "Watch out for traps",
+        text: ["Coinhaven gets trickier now. Some offers look like help but cost a fortune: payday loans, title loans, rent-to-own and debt settlement ads.", "The trick is to find the total cost before you say yes."],
+        quiz: { q: "A $300 payday loan costs $45 for two weeks. About what APR is that?", choices: ["15%", "45%", "Almost 400%"], answer: 2, why: "$45 on $300 is 15% for just two weeks. Over a whole year, that's about 390% APR. A credit card is closer to 25%." },
+      },
+      { route: "hub", target: ['.place[data-place="townhall"]', '.place-row[data-place="townhall"]'], title: "Offers show up at Town Hall", text: ["When money is tight, these offers appear on your cards. A small emergency fund in savings is the best protection.", "If something sounds too easy, it usually costs too much."] },
+    ],
+  },
 };
 
-export const LESSON_ORDER = ["welcome", "guild", "market", "cottage", "checking", "loans", "card", "score"];
+export const LESSON_ORDER = ["welcome", "guild", "market", "cottage", "checking", "townhall", "academy", "plaza", "loans", "card", "score", "pitfalls"];

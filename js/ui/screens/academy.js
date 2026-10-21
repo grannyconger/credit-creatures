@@ -5,7 +5,7 @@ import { icon } from "../icons.js";
 import { deskTab } from "../accounts/desk-tab.js";
 import { placeHeader } from "../place-header.js";
 import { xpBar } from "./trophies.js";
-import { runLesson } from "../guide.js";
+import { runLesson, firstVisitLesson } from "../guide.js";
 import { LESSONS, LESSON_ORDER } from "../../data/lessons.js";
 import { hasFeature } from "../../progression.js";
 
@@ -52,4 +52,5 @@ export function render(root, { game, go, track, refreshWho }) {
   }
 
   paint();
+  firstVisitLesson({ game, track, id: "academy", route: "academy" });
 }

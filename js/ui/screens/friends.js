@@ -4,6 +4,7 @@
 import { h, add, fill, money, toast } from "../dom.js";
 import { coinsFly } from "../fx.js";
 import { sound } from "../sound.js";
+import { firstVisitLesson } from "../guide.js";
 import { placeHeader } from "../place-header.js";
 import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
@@ -382,5 +383,6 @@ export function render(root, { game, go, track, refreshWho }) {
   }
 
   load();
+  firstVisitLesson({ game, track, id: "plaza", route: "friends" });
 }
 

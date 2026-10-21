@@ -3,6 +3,7 @@
 // shared across the kingdom and always comes back to the hub.
 // In practice mode the same screen runs on a throwaway copy.
 import { payMethods } from "../../progression.js";
+import { firstVisitLesson } from "../guide.js";
 import { h, add, fill, money, ageLabel, toast } from "../dom.js";
 import { ownCards, upcomingPayments, utilization, amountOwed } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
@@ -281,4 +282,5 @@ export function render(root, { game, go, track, refreshWho }) {
   }
 
   paint();
+  if (run.play.active) firstVisitLesson({ game, track, id: "townhall", route: "month" });
 }

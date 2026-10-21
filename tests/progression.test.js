@@ -87,3 +87,21 @@ test("after Chapter 1, time jumps to 18 and the bus pass starts", () => {
   assert.ok(r.life.bills.some((b) => b.name === "Bus pass"));
   assert.equal(G.afterChapter(play, r.life, 2).skipped, null);
 });
+
+test("dream goals about later chapters say when they open", async () => {
+  const { dreamProgress } = await import("../js/data/dreams.js");
+  const play = phased();
+  play.prologue.done = true;
+  play.dreamStage = 1;
+  const life = E.createLife({ seed: "dream", ageMonths: 192 });
+  const goals = dreamProgress(life, "home", play).stage.goals;
+  assert.equal(goals.find((g) => g.type === "score").locked, "Opens in Chapter 4");
+  assert.equal(goals.find((g) => g.type === "utilization").locked, "Opens in Chapter 3");
+  assert.equal(goals.find((g) => g.type === "onTime").locked, "Opens in Chapter 2");
+  assert.equal(dreamProgress(life, "home", Object.assign(P.newPlay(), { dreamStage: 1 })).stage.goals.find((g) => g.type === "score").locked, null, "old saves see no locks");
+});
+
+test("Chapter 2 has a full deck of loan cards", () => {
+  const ch2 = SCENARIOS.filter((s) => (s.minChapter || 2) === 2 && (s.needs || []).includes("loans"));
+  assert.ok(ch2.length >= 9, `${ch2.length} Chapter 2 loan cards`);
+});

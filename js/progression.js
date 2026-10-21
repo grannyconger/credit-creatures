@@ -120,7 +120,7 @@ export const UNLOCKS = {
     icon: "⚠️",
     title: "Bigger decisions",
     text: "Coinhaven gets trickier. Watch for quick-cash offers, deals that hide their cost, and friends who need a cosigner.",
-    lesson: null,
+    lesson: "pitfalls",
   },
 };
 

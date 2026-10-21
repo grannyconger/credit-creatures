@@ -21,6 +21,7 @@ function sampleLives() {
   const lives = {};
   lives.fresh = lifeWith({ seed: "fresh", checking: 600 });
   lives.subscribed = E.addBill(lifeWith({ seed: "sub", checking: 300 }), "MonsterTunes", 10).life;
+  lives.smallLoan = E.openPurchaseLoan(lifeWith({ seed: "sl", checking: 700 }), { item: "bike", price: 300, termMonths: 6 }).life;
   lives.broke = lifeWith({ seed: "broke", checking: 60 });
   lives.broke = E.moveToSavings(E.receiveCash(lives.broke, 300, "gift").life, 250).life;
   let { life, id } = withCard(lifeWith({ seed: "card", checking: 900 }), { limit: 500 });

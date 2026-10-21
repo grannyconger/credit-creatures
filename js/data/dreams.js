@@ -6,6 +6,7 @@
 // no semicolons.
 import { amountOwed, utilization, moveToChecking, debitPurchase } from "../engine/index.js";
 import { onTimeStreaks, addXp } from "../progress.js";
+import { hasFeature, opensText } from "../progression.js";
 
 // Goal types. Each reads the life and the play state and returns
 // { value, ok, share, text }. share (0 to 1) fills the progress bar.
@@ -115,6 +116,9 @@ const GOALS = {
   }),
 };
 
+// Goals that need a feature from a later chapter (js/progression.js).
+const GOAL_FEATURE = { score: "score", utilization: "card", mix: "card", onTime: "loans", fewInquiries: "loans" };
+
 // stage: { title, story, goals: [[type, arg]], cost, costFor, xp }
 export const DREAMS = {
   home: {
@@ -188,7 +192,10 @@ export function dreamProgress(life, dreamId, play = null) {
   const stages = d.stages.map((st, i) => {
     const goals = st.goals.map(([type, arg]) => {
       const g = GOALS[type](arg);
-      return { type, label: g.label, icon: g.icon, ...g.check(life, play) };
+      // A goal about something not unlocked yet says when it opens (Phase 10).
+      const feature = GOAL_FEATURE[type];
+      const locked = feature && play && !hasFeature(play, feature, life) ? opensText(feature) : null;
+      return { type, label: g.label, icon: g.icon, locked, ...g.check(life, play) };
     });
     const ready = goals.every((g) => g.ok) && (!st.cost || (life.savings || 0) + Math.max(0, life.checking) >= st.cost);
     return { ...st, index: i, goals, ready, done: i < done, current: i === done };

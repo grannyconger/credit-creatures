@@ -33,6 +33,8 @@ before that). Owning an account always unlocks its feature too (safety net).
 - **Locked places** show on the map as construction sites with "Opens in Chapter N".
 - **Chapter ends**: Ch 1 ends with a time skip to 18. Ch 2 ends at Design Your Card.
   Ch 3 ends with the score reveal.
+- **First visits** to Town Hall, the Academy and Friendship Plaza play a short lesson. Chapter 5
+  opens with "Watch out for traps". Dream goals that need a later feature say when it opens.
 
 ## Old saves
 

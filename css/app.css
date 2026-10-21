@@ -1259,3 +1259,4 @@ button.danger { color: var(--danger); border-color: var(--danger); }
 .loan-picker .chip-label { flex-basis: 100%; }
 .my-ride .row { justify-content: flex-start; }
 @media (max-width: 600px) { .my-ride { flex-direction: column; text-align: center; } .my-ride .row { justify-content: center; } }
+.dream-goals li.locked { color: var(--muted); }

@@ -79,7 +79,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
     if (st.done) return h("li.stage.done", head);
     const goals = h(
       "ul.dream-goals",
-      st.goals.map((g) => h("li", { class: g.ok ? "ok" : "" }, icon(g.ok ? "check" : g.icon, { size: 14 }), ` ${g.label}`, st.current ? h("small.muted", ` (${g.text})`) : null))
+      st.goals.map((g) => h("li", { class: g.ok ? "ok" : g.locked ? "locked" : "" }, icon(g.ok ? "check" : g.locked ? "lock" : g.icon, { size: 14 }), ` ${g.label}`, g.locked ? h("small.muted", ` (${g.locked.replace("Opens", "opens")})`) : st.current ? h("small.muted", ` (${g.text})`) : null))
     );
     if (!st.current) return h("li.stage.locked", head, goals);
     const item = h("li.stage.current", head, h("p.note.tight", st.story), goals, st.cost ? h("p.stage-cost", icon("coins", { size: 14 }), " ", stageCostText(st, life)) : null);
