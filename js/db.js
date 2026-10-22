@@ -207,18 +207,23 @@ export async function listGifts(classId, uid) {
   return { incoming: incoming.docs.map(map), outgoing: outgoing.docs.map(map) };
 }
 
-// Milliseconds since this student last sent a gift (null if never).
-export async function lastGiftAt(uid) {
+// This student's gift window: { windowStart, count } in milliseconds (null if never).
+export async function giftLimit(uid) {
   const snap = await getDoc(doc(db, "giftLimits", uid));
-  return snap.exists() ? snap.data().lastSentAt?.toMillis?.() ?? null : null;
+  if (!snap.exists()) return null;
+  const d = snap.data();
+  return { windowStart: d.windowStart?.toMillis?.() ?? null, count: d.count || 0 };
 }
 
-// The gift and the 40-hour limit go in one batch. Rules refuse both if it's too soon.
-export async function sendGift(classId, gift) {
+// The gift and the gift window go in one batch. A fresh window starts at 1,
+// otherwise the count goes up by one. Rules refuse both if the window is full.
+export async function sendGift(classId, gift, win) {
   await withoutPeopleIfRefused(plain(gift), (d) => {
     const b = writeBatch(db);
     b.set(doc(socialCol(classId, "gifts")), { ...d, sentAt: serverTimestamp(), claimed: false });
-    b.set(doc(db, "giftLimits", gift.from), { lastSentAt: serverTimestamp() });
+    const ref = doc(db, "giftLimits", gift.from);
+    if (win.fresh) b.set(ref, { lastSentAt: serverTimestamp(), windowStart: serverTimestamp(), count: 1 });
+    else b.update(ref, { lastSentAt: serverTimestamp(), count: win.count + 1 });
     return b.commit();
   });
 }
@@ -244,6 +249,18 @@ export async function listClassSaves(teacherEmail, classId) {
 
 export async function updateClass(classId, fields) {
   await updateDoc(doc(db, "classes", classId), fields);
+}
+
+// Delete a class (teacher request 2026-10-22): every student's save and
+// leaderboard entry, then the join code, then the class itself. The class goes
+// last because the leaderboard rule checks who owns it. Students start over at
+// their next sign-in and can join another class with a new code.
+export async function deleteClass(classId, code, saveUids) {
+  const players = await getDocs(collection(db, "leaderboards", classId, "players"));
+  for (const d of players.docs) await deleteDoc(d.ref);
+  for (const uid of saveUids) await deleteDoc(doc(db, "saves", uid));
+  if (code) await deleteDoc(doc(db, "classCodes", code));
+  await deleteDoc(doc(db, "classes", classId));
 }
 
 // Reset: the student starts over at the next sign-in. Their profile and class stay.

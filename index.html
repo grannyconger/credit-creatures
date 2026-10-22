@@ -24,15 +24,23 @@
 </head>
 <body>
   <header id="topbar" class="topbar bst-scope bst-topbar" hidden>
-    <a id="brand" class="brand" href="#/hub" aria-label="Credit Creatures: back to the kingdom"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V9l3 2V7l4-3 4 3v4l3-2v12"/><path d="M10 21v-5a2 2 0 0 1 4 0v5"/></svg> Credit Creatures</a>
+    <a id="brand" class="brand" href="#/hub" aria-label="Credit Creatures: back to the kingdom"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V9l3 2V7l4-3 4 3v4l3-2v12"/><path d="M10 21v-5a2 2 0 0 1 4 0v5"/></svg><span class="brand-text">Credit Creatures</span></a>
     <button id="who" class="who" type="button" aria-label="Open your creature's cottage" hidden></button>
+    <button id="chapter-chip" class="chapter-chip" type="button" hidden></button>
+    <nav id="topnav" class="topnav" aria-label="Main" hidden>
+      <button type="button" data-nav="hub"></button>
+      <button type="button" data-nav="map"></button>
+      <button type="button" data-nav="wallet" popovertarget="wallet-pop"></button>
+      <button type="button" data-nav="leaderboard"></button>
+    </nav>
     <span class="topbar-actions">
       <span id="save-state" class="save-state" aria-live="polite"></span>
       <button id="sound-btn" class="icon-btn" type="button" data-sound="none" aria-label="Sound effects" aria-pressed="false"></button>
-      <button id="settings-btn" class="icon-btn" type="button" aria-label="Account settings" title="Account settings"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span class="icon-btn-text">Settings</span></button>
+      <button id="settings-btn" class="icon-btn" type="button" aria-label="Account settings" title="Account settings"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
       <button id="sign-out" class="secondary small" type="button" title="Your game saves by itself as you play. This saves one last time and goes back to the title screen. You stay signed in.">Save and exit</button>
     </span>
   </header>
+  <div id="wallet-pop" class="wallet-pop bst-scope" popover aria-label="Your wallet"></div>
   <div id="nudge" class="nudge" role="status" hidden></div>
   <main id="app" class="app">
     <section class="panel center"><p>Loading...</p></section>

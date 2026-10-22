@@ -16,8 +16,9 @@ const TABS = [
 
 let tab = "badges";
 
-export function render(root, { game, go, track }) {
+export function render(root, { game, go, track, startTab }) {
   const play = game.play;
+  if (startTab) tab = startTab;
   const panel = h("section.panel.trophies");
   root.append(panel);
 

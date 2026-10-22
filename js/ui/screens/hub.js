@@ -1,7 +1,8 @@
-// The kingdom hub (teacher request 2026-10-20): home base for everything.
-// Who you're caring for and its dream, this chapter's next step, and the
-// illustrated village. Every place opens from here and comes back here.
-import { h, add, fill, money, ageLabel, toast } from "../dom.js";
+// Home (teacher request 2026-10-22, was the kingdom hub): a calm page with who
+// you're caring for, the one next thing to do, the places that need you and
+// your money. The map moved to its own page (js/ui/screens/map.js), opened
+// from the top bar, and the chapter's progress sits in the top bar too.
+import { h, add, fill, money, ageLabel } from "../dom.js";
 import { creatureSvg } from "../creature-art.js";
 import { icon } from "../icons.js";
 import { fullName } from "../../data/creatures.js";
@@ -12,14 +13,14 @@ import { HUB_HELP } from "../../data/story.js";
 import * as P from "../../play.js";
 import { placeStatus, nextStep, PLACES, PROLOGUE_TEXT } from "../../places.js";
 import { moneyChips } from "../wallet.js";
-import { kingdomMap } from "../bestiary-map.js";
+import { openPlace, startChapter as beginChapter } from "./map.js";
 import { sealSvg } from "../bestiary-art.js";
 import { rankFor } from "../../progress.js";
 import { celebrate } from "../celebrate.js";
 import { runLesson } from "../guide.js";
 import { newUnlocks, prologueStep, PROLOGUE_STEPS, stageOf } from "../../progression.js";
 
-export function render(root, { game, go, track }) {
+export function render(root, { game, go, track, openWallet, refreshWho }) {
   const run = game.run;
   const play = run.play;
   const life = run.life;
@@ -27,7 +28,7 @@ export function render(root, { game, go, track }) {
   const panel = h("section.panel.hub");
   // A page of the Mossy Bestiary (2026-10-22): the field map with notes
   // pinned to its edges.
-  root.append(h("div.bestiary.bst-hub", panel));
+  root.append(h("div.bestiary.bst-hub.bst-home", panel));
   const seal = (label, onclick, extra = {}) =>
     h("button.bst-seal-btn", { type: "button", onclick, ...extra }, h("span.bst-seal-wax", { html: sealSvg({ seed: 23, size: 72, letter: (c.name || "C").charAt(0).toUpperCase() }) }), h("span.bst-seal-text", label));
 
@@ -55,32 +56,56 @@ export function render(root, { game, go, track }) {
             )
           )
         : null,
-      // The map is the focal point (teacher request 2026-10-21): on wide screens
-      // the creature and money sit on its left and this chapter on its right.
       h(
-        "div.hub-layout",
-        h("aside.hub-side.hub-left", guardianCard(), moneyChips(life, play)),
-        h("aside.hub-side.hub-right", chapterCard(status, checking)),
-        h("div.hub-center", hubMap(status), stageOf(play) === 0 ? null : h("p.note.center.hub-help", HUB_HELP))
+        "div.home-layout",
+        h("div.home-creature", guardianCard()),
+        h(
+          "div.home-main",
+          chapterCard(status, checking),
+          needsYou(status),
+          h(
+            "section.home-money",
+            h("h2", "Your money right now"),
+            moneyChips(life, play),
+            h(
+              "div.row",
+              h("button.secondary", { type: "button", onclick: () => openWallet?.() }, icon("wallet", { size: 18 }), " Open my wallet"),
+              h("button.secondary", { type: "button", onclick: () => go("map") }, icon("compass", { size: 18 }), " Open the map")
+            )
+          ),
+          stageOf(play) === 0 ? null : h("p.bst-hub-note.home-help", HUB_HELP)
+        )
       ),
       run.practice ? null : recapBox(play, track),
       run.practice ? null : practiceBox(play, game, go, track)
     );
   }
 
-  function hubMap(status) {
-    return kingdomMap({
-      creature: c,
-      ageMonths: life.ageMonths,
-      status,
-      home: play.home || [],
-      onOpen: (pl) => {
-        track("placeOpen", { place: pl.id, status: status[pl.id]?.text || "" });
-        if (status[pl.id]?.tone === "locked") return toast(`${pl.name}: ${status[pl.id].text.toLowerCase()}. Keep playing to unlock it!`, "info");
-        if (pl.id === "townhall" && !play.active && !play.summary) return startChapter();
-        go(pl.route);
-      },
-    });
+  // The places asking for something right now, as plain buttons. Town Hall
+  // and the prologue's place already have the big button in the card above.
+  function needsYou(status) {
+    if (stageOf(play) === 0) return null;
+    const list = PLACES.filter((pl) => pl.id !== "townhall" && ["action", "warn"].includes(status[pl.id]?.tone));
+    if (!list.length) return null;
+    return h(
+      "section.home-needs",
+      h("h2", "Places that need you"),
+      h(
+        "ul",
+        list.map((pl) =>
+          h(
+            "li",
+            h(
+              "button.home-need",
+              { type: "button", class: `tone-${status[pl.id].tone}`, "data-place": pl.id, onclick: () => openPlace(pl, status, { game, go, track }) },
+              icon(pl.icon, { size: 22 }),
+              h("span", h("strong", pl.name), h("small", pl.kind)),
+              h("span.home-need-note", icon(status[pl.id].tone === "warn" ? "alert" : "next", { size: 14 }), ` ${status[pl.id].text}`)
+            )
+          )
+        )
+      )
+    );
   }
 
   // Lessons that play on arrival: Sage's welcome in the prologue, then one
@@ -114,7 +139,7 @@ export function render(root, { game, go, track }) {
     const prog = c.dream ? dreamProgress(life, c.dream, play) : null;
     return h(
       "section.guardian",
-      h("button.guardian-art", { type: "button", "aria-label": `Open ${c.name}'s cottage`, onclick: () => go("cottage"), html: creatureSvg(c, { size: 96, ageMonths: life.ageMonths, label: "" }) }),
+      h("button.guardian-art", { type: "button", "aria-label": `Open ${c.name}'s cottage`, onclick: () => go("cottage"), html: creatureSvg(c, { size: 150, ageMonths: life.ageMonths, label: "" }) }),
       h(
         "div.guardian-text",
         h("h1", fullName(c)),
@@ -122,7 +147,8 @@ export function render(root, { game, go, track }) {
         h("p.muted.tight", `${ageLabel(life.ageMonths)} · ${r.icon} ${r.title} · ${play.xp} XP`),
         dream
           ? h("div.dream-mini", h("span.dream-name", icon(dream.mark || "dream", { size: 16 }), " Dream: ", h("strong", dream.title)), play.dreamDone ? h("span.good-text", " Done!") : meters(prog))
-          : h("button.small", { type: "button", onclick: () => go("dream") }, "Pick your creature's dream")
+          : h("button.small", { type: "button", onclick: () => go("dream") }, "Pick your creature's dream"),
+        h("button.secondary.small", { type: "button", onclick: () => go("cottage") }, icon("cottage", { size: 16 }), ` Visit ${c.name}'s Cottage`)
       )
     );
   }
@@ -164,14 +190,7 @@ export function render(root, { game, go, track }) {
     return box;
   }
 
-  async function startChapter() {
-    const n = play.chapter;
-    if (run.practice || game.classInfo?.paused || !P.canPlay(play, game.classInfo?.releasedChapter || 1)) return go("month");
-    P.startChapter(play, life, game.classInfo?.monthsPerChapter || CONFIG.pacing.monthsPerChapter);
-    track("chapterStart", { chapter: n });
-    await game.persist("chapterStart");
-    go("month");
-  }
+  const startChapter = () => beginChapter({ game, go, track });
 
   // ?local only: stands in for the teacher's release button.
   function localRelease(n) {
@@ -208,6 +227,7 @@ export function render(root, { game, go, track }) {
       celebrate({ kind: "chapter", id: String(play.chapter), icon: "📣", kicker: "New chapter unlocked!", title: `Chapter ${play.chapter}: ${info.title}`, text: info.intro });
       await game.persist("chapterOpen");
     }
+    refreshWho?.();
     paint();
   }
 

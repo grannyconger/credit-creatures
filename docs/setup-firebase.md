@@ -146,7 +146,7 @@ Phase 8 adds friends, friend groups and gifts. Same steps as before:
 What the rules enforce, so students can't get around them:
 - Only classmates can friend each other, see groups or send gifts, and only while **Friends and gifts** is on for the class (dashboard controls).
 - Gifts go only to accepted friends: $5 to $50, or a shop item, with a preset message. There's no free text anywhere.
-- One gift per student every 40 hours, timed by Google's servers, so changing the computer clock doesn't help.
+- Up to 4 gifts per student in a 20-hour window, timed by Google's servers, so changing the computer clock doesn't help.
 - Groups hold up to 6 students, and students can only add or remove themselves.
 - You can see each student's friends and gifts in their details on the dashboard.
 

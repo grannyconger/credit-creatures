@@ -93,6 +93,8 @@ service cloud.firestore {
         && request.resource.data.get('monthsPerChapter', 3) >= 1
         && request.resource.data.get('monthsPerChapter', 3) <= 6
         && shortString('name', 40);
+      // Teachers can delete their own classes (teacher request 2026-10-22).
+      allow delete: if isTeacher() && resource.data.teacherEmail == myEmail();
     }
 
     // Join codes. A code can be read only by typing it exactly (no listing).
@@ -105,6 +107,7 @@ service cloud.firestore {
         && request.resource.data.teacherEmail == myEmail()
         && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.teacherEmail == myEmail()
         && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.code == code;
+      allow delete: if isTeacher() && resource.data.teacherEmail == myEmail();
     }
 
     // Class leaderboard (SPEC §16): creature name and look, display name, the
@@ -211,8 +214,8 @@ service cloud.firestore {
     }
 
     // Gifts between friends: $5 to $50 or a shop item, with a preset message.
-    // Sending writes the gift and giftLimits/{uid} in one batch, and the limit
-    // allows one gift every 40 hours, timed by the server.
+    // Sending writes the gift and giftLimits/{uid} in one batch. The limit
+    // allows 4 gifts in a 20-hour window, timed by the server.
     match /social/{classId}/gifts/{giftId} {
       allow read: if isSchool() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid || teachesClass(classId));
       allow create: if isSchool()
@@ -242,10 +245,24 @@ service cloud.firestore {
 
     match /giftLimits/{uid} {
       allow read: if isMe(uid);
+      // A window opens with the first gift and lasts 20 hours. The count starts
+      // at 1 and goes up by one per gift, to 4. After the window, it starts over.
       allow create, update: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['lastSentAt'])
+        && request.resource.data.keys().hasOnly(['lastSentAt', 'windowStart', 'count'])
         && request.resource.data.lastSentAt == request.time
-        && (resource == null || request.time > resource.data.lastSentAt + duration.value(40, 'h'));
+        && request.resource.data.count is int
+        && ((
+            (resource == null || !('windowStart' in resource.data)
+              || request.time > resource.data.windowStart + duration.value(20, 'h'))
+            && request.resource.data.windowStart == request.time
+            && request.resource.data.count == 1
+          ) || (
+            resource != null && ('windowStart' in resource.data)
+            && request.time <= resource.data.windowStart + duration.value(20, 'h')
+            && request.resource.data.windowStart == resource.data.windowStart
+            && request.resource.data.count == resource.data.count + 1
+            && request.resource.data.count <= 4
+          ));
     }
 
     // Play telemetry (docs/FEEDBACK.md). Students write their own and never read.

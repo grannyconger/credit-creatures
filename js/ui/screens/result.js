@@ -47,7 +47,7 @@ export function render(root, { game, go, track }) {
         h("h3", "Why the issuer said yes"),
         h("ul.reasons", r.reasons.map((x) => h("li", x))),
         inquiryNote,
-        h("div.row", h("button.big", { type: "button", onclick: () => finish(true) }, "Back to the kingdom"))
+        h("div.row", h("button.big", { type: "button", onclick: () => finish(true) }, "Back home"))
       )
     );
     return;

@@ -1,5 +1,7 @@
 // Same functions as db.js, kept in this browser's localStorage.
 // Used only with ?local on localhost, so the game can be tested without signing in.
+import { giftWindow } from "./social.js";
+
 export const LOCAL_CLASS = { code: "TEST01", classId: "local-class", name: "Local Test Class", teacherEmail: "local.teacher@greermiddlecollege.org" };
 
 export const LOCAL_USER = {
@@ -142,7 +144,7 @@ function social() {
       requests: [{ id: `c3_${LOCAL_USER.uid}`, from: "c3", to: LOCAL_USER.uid, fromName: "Ember Lanternby", fromPerson: "Riley Brooks", toName: "", status: "pending" }],
       groups: [{ id: "g1", name: "The Golden Lanterns", icon: "🏮", members: ["c1", "c2"], createdBy: "c1" }],
       gifts: [{ id: "gift1", from: "c1", to: LOCAL_USER.uid, fromName: "Nova Glimmerstone", fromPerson: "Avery Lee", kind: "money", amount: 20, message: 4, sentAt: Date.now() - 2 * HOURS, claimed: false }],
-      lastGiftAt: null,
+      giftLimit: null,
     }
   );
 }
@@ -207,16 +209,17 @@ export async function listGifts(classId, uid) {
   return { incoming: s.gifts.filter((g) => g.to === uid), outgoing: s.gifts.filter((g) => g.from === uid) };
 }
 
-export async function lastGiftAt() {
-  return social().lastGiftAt;
+export async function giftLimit() {
+  return social().giftLimit || null;
 }
 
-// Same 40-hour limit as the Firestore rules.
+// The same gift window as the Firestore rules.
 export async function sendGift(classId, gift) {
   const s = social();
-  if (s.lastGiftAt && Date.now() - s.lastGiftAt < 40 * HOURS) throw Object.assign(new Error("Too soon"), { code: "permission-denied" });
+  const win = giftWindow(s.giftLimit);
+  if (!win.left) throw Object.assign(new Error("Too soon"), { code: "permission-denied" });
   s.gifts.push({ id: `gift${Date.now()}`, ...gift, sentAt: Date.now(), claimed: false });
-  s.lastGiftAt = Date.now();
+  s.giftLimit = win.fresh ? { windowStart: Date.now(), count: 1 } : { ...s.giftLimit, count: win.count + 1 };
   saveSocial(s);
 }
 

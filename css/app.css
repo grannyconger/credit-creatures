@@ -1401,3 +1401,9 @@ body { font-variation-settings: "SOFT" 100, "WONK" 1; }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
+
+/* Delete a class (teacher request 2026-10-22): tucked away, and the button
+   stays off until the class name is typed. */
+.t-delete { margin-top: 14px; border-top: 1.5px dashed var(--border); padding-top: 10px; }
+.t-delete summary { cursor: pointer; color: var(--danger); font-weight: 600; }
+.t-delete input { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1.5px solid var(--border); min-width: 16rem; }

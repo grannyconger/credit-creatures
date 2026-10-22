@@ -37,4 +37,4 @@ export const INTRO_PANELS = [
 ];
 
 // The loop students repeat, shown on the hub.
-export const HUB_HELP = "Your creature lives here. Work at the Guild Hall to earn, spend at the Market, learn at the Academy, manage money at the Vault, and make this month's decisions at Town Hall. Then come back home.";
+export const HUB_HELP = "This is Home. Map at the top takes you to every place in Coinhaven. Your Wallet and the Leaderboard are up there too.";

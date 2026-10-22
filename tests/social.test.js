@@ -22,12 +22,23 @@ test("friend requests split into friends, incoming and outgoing", () => {
   assert.ok(st.friendIds.has("e"));
 });
 
-test("gifts wait 40 hours between sends", () => {
+test("gifts: 4 in a 20-hour window, then the count starts over", () => {
   const h = 3600000;
   const now = 1_000_000_000_000;
-  assert.equal(S.giftWaitMs(null, now), 0);
-  assert.equal(S.giftWaitMs(now - 10 * h, now), (CONFIG.social.giftHours - 10) * h);
-  assert.equal(S.giftWaitMs(now - 41 * h, now), 0);
+  const { giftsPerWindow: n, giftHours: hrs } = CONFIG.social;
+  assert.equal(n, 4);
+  assert.equal(hrs, 20);
+  assert.deepEqual(S.giftWindow(null, now), { left: n, waitMs: 0, fresh: true, count: 0 });
+  // An old limit with only lastSentAt starts a fresh window.
+  assert.equal(S.giftWindow({ windowStart: null, count: 0 }, now).fresh, true);
+  const mid = S.giftWindow({ windowStart: now - 5 * h, count: 2 }, now);
+  assert.equal(mid.left, 2);
+  assert.equal(mid.fresh, false);
+  assert.equal(mid.waitMs, 0);
+  const full = S.giftWindow({ windowStart: now - 5 * h, count: n }, now);
+  assert.equal(full.left, 0);
+  assert.equal(full.waitMs, (hrs - 5) * h);
+  assert.equal(S.giftWindow({ windowStart: now - hrs * h, count: n }, now).fresh, true);
   assert.equal(S.waitText(29.5 * h), "29 hours and 30 minutes");
   assert.equal(S.waitText(40 * h - 1000), "40 hours and 0 minutes");
   assert.equal(S.waitText(30 * 60000), "30 minutes");
@@ -79,7 +90,10 @@ test("social text follows the student text rules and fits the rules' limits", ()
   assert.ok(GIFT_MESSAGES.length <= cap, `firestore.rules allows message indexes below ${cap}`);
   assert.ok(GIFT_MESSAGES.length >= 38);
   assert.equal(new Set(GIFT_MESSAGES).size, GIFT_MESSAGES.length);
-  assert.equal(CONFIG.social.giftHours, 40);
+  // The rules repeat the gift window, so the two must match.
+  const rules = readFileSync("firestore.rules", "utf8");
+  assert.ok(rules.includes(`duration.value(${CONFIG.social.giftHours}, 'h')`));
+  assert.ok(rules.includes(`data.count <= ${CONFIG.social.giftsPerWindow}`));
   assert.equal(CONFIG.social.groupMax, 6);
 });
 

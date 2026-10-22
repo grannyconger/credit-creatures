@@ -30,9 +30,17 @@ export function friendState(requests, uid) {
   return { friends, incoming, outgoing, friendIds: new Set(friends.map((f) => f.uid)) };
 }
 
-export function giftWaitMs(lastSentAt, now = Date.now()) {
-  if (!lastSentAt) return 0;
-  return Math.max(0, lastSentAt + CONFIG.social.giftHours * 60 * 60 * 1000 - now);
+// limit: { windowStart, count } from giftLimits (null if never sent). A window
+// opens with the first gift and lasts giftHours. Up to giftsPerWindow gifts fit
+// in it, and the count resets when it closes. Old limits with only lastSentAt
+// start a fresh window.
+export function giftWindow(limit, now = Date.now()) {
+  const s = CONFIG.social;
+  const span = s.giftHours * 60 * 60 * 1000;
+  if (!limit?.windowStart || now >= limit.windowStart + span) return { left: s.giftsPerWindow, waitMs: 0, fresh: true, count: 0 };
+  const count = limit.count || 0;
+  const left = Math.max(0, s.giftsPerWindow - count);
+  return { left, waitMs: left ? 0 : limit.windowStart + span - now, fresh: false, count };
 }
 
 export function waitText(ms) {

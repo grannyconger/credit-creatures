@@ -19,7 +19,7 @@ export const STEPS = ["intro", "profile", "creature", "dream", "join", "hub"];
 const OLD_STEPS = new Set(["teen", "tutorial", "skip", "networks", "design", "result", "done"]);
 
 // Screens open once the student reaches the hub. The router guards each one.
-export const HUB_SCREENS = new Set(["hub", "month", "chapterEnd", "accounts", "shop", "trophies", "friends", "guild", "academy", "cottage", "garage", "records", "alley", "settings", "cardIntro", "cardDesign", "cardResult"]);
+export const HUB_SCREENS = new Set(["hub", "map", "leaderboard", "month", "chapterEnd", "accounts", "shop", "trophies", "friends", "guild", "academy", "cottage", "garage", "records", "alley", "settings", "cardIntro", "cardDesign", "cardResult"]);
 
 // Steps a student can go back to after moving past them.
 export const EDITABLE = new Set(["profile", "creature", "dream"]);
@@ -161,7 +161,12 @@ export function createGame(user, db) {
       if (ok) game.syncLeaderboard();
       // "Saved" in the top bar, so students can see they don't need to save by hand.
       const state = document.getElementById("save-state");
-      if (state) state.textContent = ok ? `✓ Saved ${new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}` : "Not saved yet";
+      if (state) {
+        state.textContent = ok ? "✓ Saved" : "Not saved yet";
+        state.title = ok ? `Saved at ${new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}` : "";
+      }
+      // The top bar's chapter progress repaints after every save.
+      if (typeof dispatchEvent === "function") dispatchEvent(new Event("cc:saved"));
       return ok;
     },
 

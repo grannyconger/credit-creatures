@@ -3287,3 +3287,274 @@ main#app.app:has(.bestiary) {
 .bst-hub .place.tone-warn .place-badge { color: var(--m-note-rust); border-color: var(--m-note-rust); }
 .bst-hub .place.tone-locked .place-name { color: var(--m-tag-ink-soft); }
 .bst-hub .place.tone-locked .place-badge { color: var(--m-tag-ink-soft); background: var(--m-tag-locked); }
+
+/* ===========================================================================
+   Top bar navigation (teacher request 2026-10-22): the chapter's progress,
+   then Home, Map, Wallet and Leaderboard, always in reach. The settings gear
+   stands alone with no word.
+   =========================================================================== */
+.bst-topbar { gap: var(--b-s3); flex-wrap: nowrap; }
+.bst-topbar .who { margin-left: 0; }
+.bst-topbar .chapter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--b-s2);
+  min-width: 0;
+  max-width: 300px;
+  padding: 4px var(--b-s3);
+  font-family: var(--b-body);
+  color: var(--b-ink);
+  text-align: left;
+  background: var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(-1deg);
+  cursor: pointer;
+  transition: transform var(--b-quick) var(--ease-bouncy);
+}
+.bst-topbar .chapter-chip:hover { transform: rotate(0.5deg) translateY(-1px); }
+.bst-topbar .chapter-chip > .ico-wrap { color: var(--b-rust-ink); }
+.bst-topbar .chip-text { display: grid; min-width: 0; line-height: 1.15; }
+.bst-topbar .chip-text strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bst-topbar .chip-text small { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); white-space: nowrap; }
+/* Months as little pips: filled = done, ringed = this one. The words above say it too. */
+.bst-topbar .chip-pips { display: inline-flex; gap: 3px; flex: none; }
+.bst-topbar .chip-pips span { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--b-ink-soft); }
+.bst-topbar .chip-pips span.done { background: var(--b-plum); border-color: var(--b-plum); }
+.bst-topbar .chip-pips span.current { border: 2.5px solid var(--b-rust); }
+.bst-topbar .topnav { display: flex; gap: 2px; margin-left: auto; }
+.bst-topbar .topnav[hidden] { display: none; }
+.bst-topbar .topnav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-on-ground);
+  background: none;
+  border: 1.5px solid transparent;
+  border-radius: var(--b-r-tag);
+}
+.bst-topbar .topnav button:hover { border-color: color-mix(in srgb, var(--b-on-ground) 45%, transparent); }
+.bst-topbar .topnav button .ico-wrap { color: var(--b-gold); }
+/* Where you are: underlined with a stitch and the word is foxfire, not color alone. */
+.bst-topbar .topnav button[aria-current="page"] { color: var(--b-foxfire); border-bottom: 2.5px dashed var(--b-foxfire); border-radius: 0; }
+.bst-topbar .topnav button[aria-current="page"] .ico-wrap { color: var(--b-foxfire); }
+.bst-topbar .topnav + .topbar-actions,
+.bst-topbar .topnav:not([hidden]) ~ .topbar-actions { margin-left: 0; }
+.bst-topbar #settings-btn { padding: 6px; }
+@media (max-width: 1280px) {
+  .bst-topbar .brand { font-size: var(--b-fs-title); }
+  .bst-topbar .who-text small { display: none; }
+  .bst-topbar .chapter-chip { max-width: 220px; }
+}
+@media (max-width: 1100px) {
+  .bst-topbar .brand-text, .bst-topbar .save-state { display: none; }
+  .bst-topbar .topnav button span:not(.ico-wrap) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}
+
+/* The wallet pops open under the top bar, a slip of paper over the page. */
+.wallet-pop {
+  inset: auto;
+  top: 72px;
+  right: var(--b-s4);
+  left: auto;
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100dvh - 96px);
+  overflow: auto;
+  margin: 0;
+  padding: var(--b-s4);
+  font-family: var(--b-body);
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border: 1px solid var(--b-paper-edge);
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-lift);
+}
+.wallet-pop::backdrop { background: color-mix(in srgb, var(--b-shadow-ink) 25%, transparent); }
+.wallet-pop-head { display: flex; align-items: center; justify-content: space-between; gap: var(--b-s2); }
+.wallet-pop h2 { margin: 0; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.wallet-pop h2 .ico-wrap { color: var(--b-gold-ink); }
+.wallet-pop h3 { font-family: var(--b-display); font-weight: 400; }
+.wallet-pop-close { padding: 4px 10px; color: var(--b-ink); background: none; border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
+.wallet-pop .money-chips { list-style: none; margin: var(--b-s3) 0; padding: 0; display: grid; gap: var(--b-s1); }
+.wallet-pop .money-chips li { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: var(--b-s2); padding-bottom: var(--b-s1); border-bottom: 1px dashed var(--b-rule); background: none; }
+.wallet-pop .money-chips li > .ico-wrap { color: var(--b-gold-ink); align-self: center; }
+.wallet-pop .money-chips small { font-size: var(--b-small); color: var(--b-ink-soft); }
+.wallet-pop .money-chips strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); font-variant-numeric: lining-nums tabular-nums; }
+.wallet-pop .money-chips li:is(.warn, .bad) strong { color: var(--b-rust-ink); }
+.wallet-pop .wallet { margin: 0; }
+.wallet-pop .row { margin-top: var(--b-s3); }
+
+/* ===========================================================================
+   Home (teacher request 2026-10-22): the creature on the left, the one next
+   thing to do and the places that need you on the right. No map here.
+   =========================================================================== */
+.bst-home .home-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 640px);
+  justify-content: center;
+  align-items: start;
+  gap: var(--b-s6);
+  padding: var(--b-s4) var(--b-s4) var(--b-s5);
+}
+.bst-home .home-main { display: grid; gap: var(--b-s5); }
+.bst-home .guardian-art { width: 176px; height: 176px; }
+.bst-home .guardian-text { gap: var(--b-s1); }
+.bst-home .guardian .row, .bst-home .guardian-text > button { margin-top: var(--b-s2); }
+.bst-home .home-main h2 { margin: 0 0 var(--b-s2); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-on-ground); }
+.bst-home .home-main .chapter-box h2 { color: var(--b-ink); font-size: clamp(var(--b-fs-lead), 2.2vw, 2.1rem); }
+.bst-home .home-needs ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--b-s2); }
+.bst-home .home-need {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--b-s3);
+  padding: var(--b-s2) var(--b-s3);
+  text-align: left;
+  font-family: var(--b-body);
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border: 0;
+  border-left: 5px solid var(--b-plum);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transition: transform var(--b-quick) var(--ease-bouncy);
+}
+.bst-home .home-need:hover { transform: translateX(4px) rotate(-0.4deg); }
+.bst-home .home-need > .ico-wrap { color: var(--b-ink-soft); }
+.bst-home .home-need strong { display: block; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); line-height: 1.1; }
+.bst-home .home-need small { color: var(--b-ink-soft); font-size: var(--b-small); }
+.bst-home .home-need-note { font-family: var(--b-hand); color: var(--b-plum); white-space: nowrap; }
+.bst-home .home-need.tone-warn { border-left-color: var(--b-rust); }
+.bst-home .home-need.tone-warn .home-need-note { color: var(--b-rust-ink); }
+.bst-home .home-money .money-chips { transform: rotate(-0.8deg); grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); column-gap: var(--b-s5); }
+.bst-home .home-money .money-chips li:last-child { border-bottom: 1px dashed var(--b-rule); padding-bottom: var(--b-s1); }
+.bst-home .home-money .row { margin-top: var(--b-s4); gap: var(--b-s2); }
+.bst-home .home-help { color: var(--b-on-ground-soft); font-size: var(--b-fs-hand); }
+@media (max-width: 900px) {
+  .bst-home .home-layout { grid-template-columns: minmax(0, 1fr); gap: var(--b-s5); }
+}
+
+/* ===========================================================================
+   The map page (teacher request 2026-10-22): nearly the whole screen, calm,
+   and every tag says what the place is in plain words.
+   =========================================================================== */
+.bst-mapscreen { padding: var(--b-s3) var(--b-s3) var(--b-s2); }
+.bst-mapscreen .map-page { max-width: none; margin: 0 auto; padding: 0; background: none; border: 0; box-shadow: none; }
+.bst-mapscreen .bst-map-stage { width: min(100%, calc((100dvh - 128px) * 5 / 3)); margin: 0 auto; }
+.bst-mapscreen .bst-map-stage::after { display: none; }
+.bst-mapscreen .place-label { display: grid; justify-items: start; line-height: 1.05; }
+.bst-mapscreen .place-name { align-items: center; gap: 0.5em; padding: clamp(3px, 0.55cqw, 7px) clamp(8px, 1.1cqw, 14px); font-size: clamp(var(--b-fs-tiny), 1.7cqw, 1.35rem); }
+.bst-mapscreen .place-kind { font-family: var(--b-body); font-style: italic; font-size: 0.72em; color: var(--m-tag-ink-soft); }
+.bst-mapscreen .place-badge { font-size: clamp(var(--b-fs-tiny), 1.35cqw, var(--b-fs-ui)); }
+.bst-mapscreen .map-help { margin: var(--b-s2) auto 0; text-align: center; font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-on-ground-soft); }
+/* The list version of the map (phones and narrow windows) gets the plain words too. */
+.bst-mapscreen .place-row .place-label { display: inline-grid; }
+
+/* ===========================================================================
+   The Cottage (overhauled 2026-10-22): the creature's portrait beside a list
+   of every room, each saying what it does and how it's going.
+   =========================================================================== */
+.bst-cottage { padding-top: var(--b-s4); }
+.bst-cottage .panel.cottage {
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--b-s6);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-cottage .cottage-room-body .stage { background: var(--b-paper-2); border-color: var(--b-rule); color: var(--b-ink); }
+.bst-cottage .cottage-room-body .stage.current { background: var(--b-grain), var(--b-paper); border: 2px solid var(--b-plum); }
+.bst-cottage .cottage-room-body .stage-num { background: var(--b-plum); color: var(--b-paper); }
+.bst-cottage .cottage-room-body :is(.muted, .note) { color: var(--b-ink-soft); }
+.bst-cottage .cottage-room-body .good-text, .bst-cottage .cottage-room-body .dream-goals li.ok { color: var(--b-ink); opacity: 1; }
+.bst-cottage .cottage-top { display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); gap: var(--b-s5); align-items: start; margin-top: var(--b-s3); }
+.bst-cottage .cottage-rooms ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-s3); }
+.bst-cottage .cottage-room {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--b-s3);
+  padding: var(--b-s3) var(--b-s4);
+  text-align: left;
+  font-family: var(--b-body);
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border: 1.5px solid var(--b-paper-edge);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transition: transform var(--b-quick) var(--ease-bouncy);
+}
+.bst-cottage li:nth-child(odd) .cottage-room { transform: rotate(-0.6deg); }
+.bst-cottage li:nth-child(even) .cottage-room { transform: rotate(0.5deg); }
+.bst-cottage .cottage-room:not(:disabled):hover { transform: translateY(-3px) rotate(-1deg); border-color: var(--b-plum); }
+.bst-cottage .room-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: var(--b-r-blob); background: var(--b-paper-2); color: var(--b-rust-ink); }
+.bst-cottage .room-text { display: grid; gap: 2px; }
+.bst-cottage .room-text strong { display: inline-flex; align-items: center; gap: 6px; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); line-height: 1.1; }
+.bst-cottage .room-text strong .ico-wrap { color: var(--b-ink-soft); }
+.bst-cottage .room-does { font-size: var(--b-small); line-height: 1.35; }
+.bst-cottage .room-note { font-family: var(--b-hand); font-size: var(--b-small); color: var(--b-plum); }
+.bst-cottage .cottage-room.tone-action .room-note { color: var(--b-rust-ink); font-weight: 700; }
+.bst-cottage .cottage-room.tone-locked { opacity: 0.75; border-style: dashed; box-shadow: none; cursor: not-allowed; }
+.bst-cottage .cottage-room.tone-locked .room-icon { color: var(--b-ink-soft); }
+.bst-cottage .cottage-room.tone-locked .room-note { color: var(--b-ink-soft); }
+/* The open room: plum edge plus the words "Open below", never color alone. */
+.bst-cottage .cottage-room.open { border: 2.5px solid var(--b-plum); }
+.bst-cottage .room-open { position: absolute; right: var(--b-s3); bottom: -11px; padding: 0 8px; font-family: var(--b-hand); font-size: var(--b-fs-tiny); color: var(--b-paper); background: var(--b-plum); border-radius: var(--b-r-insert); }
+.bst-cottage .cottage-stage { color: var(--b-ink); background: var(--b-grain), var(--b-paper-2); border-radius: var(--b-r-paper); box-shadow: var(--b-shadow-lift); transform: rotate(-1.5deg); }
+.bst-cottage .cottage-stage h2 { font-family: var(--b-display); font-weight: 400; }
+.bst-cottage .cottage-room-body { margin-top: var(--b-s6); scroll-margin-top: 96px; }
+.bst-cottage .cottage-room-body > section { color: var(--b-ink); background: var(--b-grain), var(--b-paper-2); border: 0; border-radius: var(--b-r-paper); box-shadow: var(--b-shadow-card); padding: var(--b-s5); }
+.bst-cottage .cottage-room-body h3 { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); margin-top: 0; }
+:root[data-reading="dyslexia"] .bst-cottage :is(.cottage-room, .cottage-stage) { transform: none; }
+@media (max-width: 1000px) {
+  .bst-cottage .cottage-top { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .bst-cottage .cottage-rooms ul { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bst-cottage .cottage-room, .bst-home .home-need, .bst-topbar .chapter-chip { transition: none; }
+}
+.bst-topbar :is(.brand, .who-text, .save-state, .topnav button, #sign-out) { white-space: nowrap; }
+.bst-topbar #sound-btn { padding: 6px; }
+/* Home's plain buttons sit on the moss, so they're paper tags. */
+.bst-home .home-money .row button {
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-home .home-money .row button .ico-wrap { color: var(--b-rust-ink); }
+.bst-home .home-money .row button:hover { transform: translateY(-2px) rotate(-1deg); }
+.bst-mapscreen .bst-map-stage { width: min(100%, calc((100dvh - 150px) * 5 / 3)); }
+.wallet-pop .money-chips { grid-template-columns: minmax(0, 1fr); }
+.wallet-pop .money-chips li { grid-template-columns: auto minmax(0, 1fr) auto; }
+.wallet-pop .row button {
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 1.5px solid var(--b-rule);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.wallet-pop .row button:first-child { color: var(--b-on-rust); background: var(--b-grain), var(--b-rust); border-color: transparent; }
+.wallet-pop .row button .ico-wrap { color: inherit; }
+.wallet-pop .wallet h3 { font-size: var(--b-fs-title); }
+.bst-topbar .chapter-chip { max-width: 380px; }

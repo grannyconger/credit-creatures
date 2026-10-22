@@ -187,7 +187,49 @@ function controls(c) {
       h("div", h("strong", "Sound effects"), h("p", c.sound === false ? "🔇 Muted for everyone" : "🔈 Students choose"), h("button.small.secondary", { type: "button", onclick: () => save({ sound: c.sound === false }, "sound effects") }, c.sound === false ? "Let students choose" : "Mute for everyone")),
       h("div", h("strong", "Leaderboard"), h("p", c.leaderboard === false ? "Off" : "On"), h("button.small.secondary", { type: "button", onclick: () => save({ leaderboard: c.leaderboard === false }, "the leaderboard") }, c.leaderboard === false ? "Turn on" : "Turn off")),
       h("div", h("label", { for: "months" }, h("strong", "Months per chapter")), months, h("small.muted", "Applies to chapters students start from now on."))
-    )
+    ),
+    LOCAL ? null : deleteBox(c)
+  );
+}
+
+// Delete a class (teacher request 2026-10-22). The teacher types the class
+// name to confirm, because every student's game in it is deleted too.
+function deleteBox(c) {
+  const err = h("p.error", { role: "alert" });
+  const typed = h("input", { id: "delete-name", type: "text", autocomplete: "off", placeholder: c.name });
+  const btn = h("button.small.danger", { type: "button", disabled: true }, "Delete this class");
+  typed.addEventListener("input", () => (btn.disabled = typed.value.trim() !== c.name));
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    err.textContent = "";
+    try {
+      // Read the roster fresh, so no student's save is left behind.
+      const saves = await state.db.listClassSaves(state.me.email, c.id);
+      const n = saves.length;
+      if (!confirm(`Delete ${c.name} for good? ${n ? `${n} student game${n === 1 ? "" : "s"} will be deleted too. ` : ""}This can't be undone.`)) {
+        btn.disabled = false;
+        return;
+      }
+      await state.db.deleteClass(c.id, c.code, saves.map((s) => s.uid));
+    } catch (e) {
+      console.error(e);
+      btn.disabled = false;
+      err.textContent = "Could not delete the class. Check that the newest Firestore rules are published (docs/setup-firebase.md).";
+      return;
+    }
+    state.classes = state.classes.filter((x) => x.id !== c.id);
+    state.classId = state.classes[0]?.id || null;
+    Object.assign(state, { saves: [], rows: [], tuning: null, feedback: null, social: null });
+    paint();
+    if (state.classId) loadRoster();
+  });
+  return h(
+    "details.t-delete",
+    h("summary", "Delete this class"),
+    h("p", `This deletes the class, its join code, its leaderboard and every student's game in it. Students start over the next time they sign in and can join another class. It can't be undone.`),
+    h("label", { for: "delete-name" }, `Type the class name (${c.name}) to confirm`),
+    h("div.row", typed, btn),
+    err
   );
 }
 

@@ -6,7 +6,11 @@ import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge 
 import { mountBugButton } from "./ui/bug-button.js";
 import { sfx, setClassMuted, soundOn, classIsMuted } from "./ui/sound.js";
 import { PLACES } from "./places.js";
-import { hasFeature, prologueStep } from "./progression.js";
+import { hasFeature, prologueStep, PROLOGUE_STEPS, stageOf } from "./progression.js";
+import { chapterInfo } from "./data/chapters.js";
+import { CONFIG } from "./data/config.js";
+import { canPlay } from "./play.js";
+import { moneyChips, walletStrip } from "./ui/wallet.js";
 import { creatureSvg } from "./ui/creature-art.js";
 import { h, clear, ageLabel } from "./ui/dom.js";
 import { firstSettings, openSettings, saveSettings } from "./ui/settings-dialog.js";
@@ -35,11 +39,14 @@ import * as cottage from "./ui/screens/cottage.js";
 import * as garage from "./ui/screens/garage.js";
 import * as records from "./ui/screens/records.js";
 import * as alley from "./ui/screens/alley.js";
+import * as map from "./ui/screens/map.js";
 import { watchSentences } from "./ui/sentences.js";
 import { publishSpringTokens, motionOn } from "./ui/motion/spring.js";
 import { installBoops } from "./ui/motion/boop.js";
 
-const SCREENS = { profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley, settings: settingsScreen };
+// The leaderboard opens straight from the top bar (teacher request 2026-10-22).
+const leaderboard = { render: (root, ctx) => trophies.render(root, { ...ctx, startTab: "board" }) };
+const SCREENS = { map, leaderboard, profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley, settings: settingsScreen };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 
@@ -281,6 +288,7 @@ function route() {
 // locked place goes back to the kingdom.
 const ROUTE_FEATURE = { ...Object.fromEntries(PLACES.map((p) => [p.route, p.feature])), trophies: "academy", cardIntro: "card", cardDesign: "card", cardResult: "card" };
 
+
 function hubTarget(want) {
   const play = game.run.play;
   const feature = ROUTE_FEATURE[want];
@@ -324,6 +332,7 @@ function showNow(name) {
       location.hash = `#/${step}`;
     },
     refreshWho: updateWho,
+    openWallet,
     saveAndExit,
     saveAndSignOut,
   };
@@ -333,6 +342,8 @@ function showNow(name) {
 
 function updateWho() {
   if (!game) return;
+  paintChapter();
+  paintNav();
   const c = game.save.creature;
   clear(who);
   who.hidden = !c;
@@ -342,6 +353,103 @@ function updateWho() {
     h("span.who-text", h("strong", c.name || "Your creature"), h("small", game.life ? ageLabel(game.life.ageMonths) : "Not hatched yet"))
   );
 }
+
+// The chapter's progress, always in the top bar (teacher request 2026-10-22).
+// The pips are backed by words, so progress is never shown by color alone.
+const chapterChip = document.getElementById("chapter-chip");
+function paintChapter() {
+  const inKingdom = game?.step === "hub";
+  chapterChip.hidden = !inKingdom;
+  if (!inKingdom) return;
+  const play = game.run.play;
+  let title;
+  let sub;
+  let total = 0;
+  let done = 0;
+  if (stageOf(play) === 0) {
+    done = Math.max(0, PROLOGUE_STEPS.indexOf(prologueStep(play)));
+    total = PROLOGUE_STEPS.length;
+    title = "Prologue";
+    sub = `Step ${done + 1} of ${total}`;
+  } else if (play.active) {
+    const a = play.active;
+    total = a.months || CONFIG.pacing.monthsPerChapter;
+    done = a.monthIndex;
+    title = `Chapter ${a.chapter}: ${chapterInfo(a.chapter, play).title}`;
+    sub = `Month ${a.monthIndex + 1} of ${total}`;
+  } else {
+    title = `Chapter ${play.chapter}: ${chapterInfo(play.chapter, play).title}`;
+    sub = play.summary ? "Done. Wrap it up at Town Hall" : game.classInfo?.paused ? "Paused by your teacher" : canPlay(play, game.classInfo?.releasedChapter || 1) ? "Ready to start" : "Waiting for your teacher";
+  }
+  chapterChip.replaceChildren(
+    icon("scroll", { size: 20 }),
+    h("span.chip-text", h("strong", title), h("small", sub)),
+    total ? h("span.chip-pips", { "aria-hidden": "true" }, Array.from({ length: total }, (_, k) => h("span", { class: k < done ? "done" : k === done ? "current" : "" }))) : null
+  );
+  chapterChip.setAttribute("aria-label", `${title}. ${sub}.`);
+  chapterChip.title = play.active || play.summary ? "Go to Town Hall" : "Go Home";
+}
+chapterChip.addEventListener("click", () => {
+  if (!game) return;
+  const play = game.run.play;
+  track("chapterChipClick", { from: location.hash.replace(/^#\/?/, "") || game.step });
+  location.hash = play.active || play.summary ? "#/month" : "#/hub";
+});
+addEventListener("cc:saved", () => paintChapter());
+
+// Home, Map, Wallet and Leaderboard in the top bar (teacher request
+// 2026-10-22: the map, the wallet and the leaderboard were hard to find).
+const topnav = document.getElementById("topnav");
+const NAV = { hub: ["home", "Home"], map: ["compass", "Map"], wallet: ["wallet", "Wallet"], leaderboard: ["trophy", "Leaderboard"] };
+function paintNav() {
+  const inKingdom = game?.step === "hub";
+  topnav.hidden = !inKingdom;
+  if (!inKingdom) return;
+  const here = location.hash.replace(/^#\/?/, "") || "hub";
+  for (const b of topnav.querySelectorAll("button")) {
+    const key = b.dataset.nav;
+    const [ico, label] = NAV[key];
+    b.replaceChildren(icon(ico, { size: 20 }), h("span", label));
+    if (key === "leaderboard") b.hidden = game.classInfo?.leaderboard === false;
+    if (key !== "wallet") b.setAttribute("aria-current", key === here ? "page" : "false");
+  }
+}
+topnav.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b || !game) return;
+  track("topnavClick", { to: b.dataset.nav, from: location.hash.replace(/^#\/?/, "") || game.step });
+  if (b.dataset.nav !== "wallet") location.hash = `#/${b.dataset.nav}`;
+});
+
+// The wallet pops open over any screen: money right now, the cards in it, and
+// the way to the bank. In the prologue it's just the piggy bank.
+const walletPop = document.getElementById("wallet-pop");
+function openWallet() {
+  if (!walletPop.matches(":popover-open")) walletPop.showPopover();
+}
+walletPop.addEventListener("beforetoggle", (e) => {
+  if (e.newState !== "open" || !game?.run) return;
+  const { play, life } = game.run;
+  const bank = hasFeature(play, "vault", life) || prologueStep(play)?.place === "vault";
+  const goBank = (tab) => () => {
+    walletPop.hidePopover();
+    game.accountsTab = tab;
+    location.hash = "#/accounts";
+  };
+  walletPop.replaceChildren(...[
+    h("div.wallet-pop-head", h("h2", icon("wallet", { size: 22 }), " Your wallet"), h("button.wallet-pop-close", { type: "button", "aria-label": "Close the wallet", onclick: () => walletPop.hidePopover() }, "✕")),
+    moneyChips(life, play),
+    stageOf(play) === 0
+      ? h("p.note.tight", bank ? "Your coins are in a piggy bank. Take them to the Gilded Vault to open a bank account." : "Your coins are in a piggy bank for now. Work shifts at the Guild Hall to fill it.")
+      : walletStrip(life, game.save.creature),
+    bank && stageOf(play) > 0
+      ? h("div.row", h("button", { type: "button", onclick: goBank("wallet") }, icon("vault", { size: 18 }), " Pay bills and move money"), h("button.secondary", { type: "button", onclick: goBank("inbox") }, icon("inbox", { size: 18 }), " Letters"))
+      : bank
+        ? h("div.row", h("button", { type: "button", onclick: goBank("wallet") }, icon("vault", { size: 18 }), " Go to the Gilded Vault"))
+        : null
+  ].filter(Boolean));
+  track("walletOpen", { from: location.hash.replace(/^#\/?/, "") || game.step });
+});
 
 // The creature in the top bar opens its Cottage from anywhere (teacher request
 // 2026-10-20). Before the hub it opens the creature editor instead.
@@ -412,7 +520,7 @@ function paintSoundBtn() {
   soundBtn.disabled = classIsMuted();
   soundBtn.setAttribute("aria-pressed", String(on));
   soundBtn.title = classIsMuted() ? "Your teacher turned sound off for the class" : on ? "Sound is on. Tap to mute it." : "Sound is off. Tap to turn it on.";
-  soundBtn.replaceChildren(icon(on ? "volume" : "mute", { size: 22 }), h("span.icon-btn-text", on ? "Sound on" : "Sound off"));
+  soundBtn.replaceChildren(icon(on ? "volume" : "mute", { size: 22 }), h("span.sr-only", on ? "Sound on" : "Sound off"));
 }
 soundBtn.addEventListener("click", () => {
   const s = applySettings({ ...loadLocalSettings(), sound: soundOn() ? "off" : "on" });

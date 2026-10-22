@@ -202,7 +202,9 @@ function terrain(paths, places) {
   return hills.join("") + trees.join("");
 }
 
-function scene(creature, ageMonths, status = {}, home = [], guardian = "") {
+// calm: the full-page map (teacher request 2026-10-22: "the map is too busy")
+// leaves out the trees and hill marks so only the places and paths remain.
+function scene(creature, ageMonths, status = {}, home = [], guardian = "", calm = false) {
   const locked = (id) => status[id]?.tone === "locked";
   const p = Object.fromEntries(PLACES.map((pl) => [pl.id, at(pl)]));
   const cot = p.cottage;
@@ -227,10 +229,9 @@ function scene(creature, ageMonths, status = {}, home = [], guardian = "") {
     <!-- The sea along the south edge, with inked banks and little wave marks. -->
     ${wash("M0 540 Q250 498 500 546 T1000 520 V600 H0 Z", "var(--m-water)")}
     ${ink("M0 540 Q250 498 500 546 T1000 520", 2)}
-    ${ink([60, 180, 330, 470, 620, 760, 900].map((x, i) => `M${x} ${570 + (i % 2) * 12} q8 -6 16 0 q8 6 16 0`).join(" "), 1.2)}
     <!-- Paths: dotted ink trails from the Cottage. Unopened ones are fainter. -->
     ${others.map((pl) => `<path d="${pathTo(p[pl.id])}" fill="none" stroke="var(--m-path)" stroke-width="3" stroke-linecap="round" stroke-dasharray="0.1 11" opacity="${locked(pl.id) ? 0.3 : 0.6}"/>`).join("")}
-    ${terrain(others.map((pl) => samples(p[pl.id])), Object.values(p))}
+    ${calm ? "" : terrain(others.map((pl) => samples(p[pl.id])), Object.values(p))}
     <!-- The title cartouche and the compass rose. -->
     <g transform="translate(40 24)">
       ${both("M0 6 Q0 0 8 0 H262 Q270 0 270 6 V60 Q270 66 262 66 H8 Q0 66 0 60 Z", "var(--m-paper)", 1.6)}
@@ -251,7 +252,7 @@ function scene(creature, ageMonths, status = {}, home = [], guardian = "") {
 }
 
 // status: placeStatus() result. onOpen(place) runs when a place is chosen.
-export function kingdomMap({ creature, ageMonths, status, onOpen, home = [] }) {
+export function kingdomMap({ creature, ageMonths, status, onOpen, home = [], calm = false }) {
   const placeButton = (pl, inList) => {
     const st = status[pl.id] || { text: "", tone: "calm" };
     return h(
@@ -261,10 +262,10 @@ export function kingdomMap({ creature, ageMonths, status, onOpen, home = [] }) {
         class: `tone-${st.tone}`,
         "data-place": pl.id,
         style: inList ? null : { left: `${pl.x}%`, top: `${pl.y}%` },
-        "aria-label": `${pl.name}. ${pl.does}. ${st.text}`,
+        "aria-label": `${pl.name}, ${pl.kind}. ${pl.does}. ${st.text}`,
         onclick: () => onOpen(pl),
       },
-      h("span.place-name", icon(pl.icon, { size: 18 }), ` ${pl.name}`),
+      h("span.place-name", icon(pl.icon, { size: 18 }), h("span.place-label", h("span", pl.name), h("small.place-kind", pl.kind))),
       st.text ? h("span.place-badge", st.tone === "warn" ? icon("alert", { size: 14 }) : st.tone === "action" ? icon("sparkle", { size: 14 }) : st.tone === "locked" ? icon("lock", { size: 14 }) : null, ` ${st.text}`) : null,
       inList ? h("small.place-does", pl.does) : null
     );
@@ -272,7 +273,7 @@ export function kingdomMap({ creature, ageMonths, status, onOpen, home = [] }) {
   return h(
     "section.kingdom.bst-map",
     { "aria-label": "The Kingdom of Coinhaven" },
-    h("div.kingdom-stage.bst-map-stage", { html: scene(creature, ageMonths, status, home, creature?.name || "") }, PLACES.map((pl) => placeButton(pl, false))),
+    h("div.kingdom-stage.bst-map-stage", { html: scene(creature, ageMonths, status, home, creature?.name || "", calm) }, PLACES.map((pl) => placeButton(pl, false))),
     h("div.kingdom-list", PLACES.map((pl) => placeButton(pl, true)))
   );
 }

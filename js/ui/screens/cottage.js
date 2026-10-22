@@ -1,5 +1,8 @@
 // Your Cottage: the creature menu, open from anywhere by clicking the creature
-// in the top bar. Its dream, its look, its rank, and your settings.
+// in the top bar. Overhauled 2026-10-22 (teacher request: students didn't know
+// what was in here). Every room is listed up front with what it does and how
+// it's going, so nothing is hidden. The dream and the house open below the
+// list, and the other rooms open their own pages.
 import { h, add, fill, money, ageLabel, toast } from "../dom.js";
 import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
@@ -9,18 +12,21 @@ import { rankFor } from "../../progress.js";
 import { placeHeader } from "../place-header.js";
 import { celebrate } from "../celebrate.js";
 import { firstVisitLesson } from "../guide.js";
-import { hasFeature } from "../../progression.js";
+import { hasFeature, opensText } from "../../progression.js";
+import { ACHIEVEMENTS } from "../../data/achievements.js";
 import { HOME_UPGRADES, homeQuote, homeSteps } from "../../data/garage.js";
 import { loanPicker } from "../loan-picker.js";
 import { resolveChoice } from "../../engine/index.js";
 import { xpBar } from "./trophies.js";
 import { meters } from "./hub.js";
 
+let room = "dream";
+
 export function render(root, { game, go, track, refreshWho, back }) {
   const play = game.play;
   const c = game.save.creature;
   const panel = h("section.panel.place-screen.cottage");
-  root.append(panel);
+  root.append(h("div.bestiary.bst-cottage", panel));
   track("cottageOpen", {});
   if (play.prologue && !play.prologue.cottageVisited && !game.practice) {
     play.prologue.cottageVisited = true;
@@ -32,27 +38,68 @@ export function render(root, { game, go, track, refreshWho, back }) {
     const r = rankFor(play.xp);
     const dream = c.dream ? DREAMS[c.dream] : null;
     const prog = dream ? dreamProgress(life, c.dream, play) : null;
+    const homeOpen = hasFeature(play, "homeLoan");
+    if (room === "home" && !homeOpen) room = "dream";
     fill(
       panel,
-      placeHeader({ go, iconName: "cottage", title: `${c.name}'s Cottage`, subtitle: "Your creature, its dream and its home." }),
+      placeHeader({ go, iconName: "cottage", kicker: "Your creature's home", title: `${c.name}'s Cottage`, subtitle: `Everything about ${c.name} is in here. Pick a room.` }),
       h(
-        "div.cottage-grid",
+        "div.cottage-top",
         h(
           "div.cottage-stage",
           { class: c.background && c.background !== "none" ? `creature-stage bg-${c.background}` : "" },
-          h("div", { html: creatureSvg(c, { size: 220, ageMonths: life?.ageMonths || 0 }) }),
+          h("div", { html: creatureSvg(c, { size: 200, ageMonths: life?.ageMonths || 0 }) }),
           h("h2", fullName(c)),
           h("p.muted.tight", `${life ? ageLabel(life.ageMonths) : ""} · ${r.icon} ${r.title}`),
-          xpBar(play.xp),
-          h(
-            "div.row",
-            h("button", { type: "button", onclick: () => go("creature") }, icon("palette", { size: 18 }), " Customize"),
-            h("button.secondary", { type: "button", onclick: () => go("trophies") }, icon("trophy", { size: 18 }), " Trophies"),
-            game.classInfo?.social === false ? null : h("button.secondary", { type: "button", onclick: () => go("friends") }, icon("people", { size: 18 }), " Friends")
-          )
+          xpBar(play.xp)
         ),
-        h("div.cottage-side", dreamCard(dream, prog), hasFeature(play, "homeLoan") ? homeCard() : null, settingsCard())
-      )
+        h("nav.cottage-rooms", { "aria-label": "Rooms in the Cottage" }, h("ul", rooms(dream, prog, homeOpen).map((rm) => h("li", roomButton(rm)))))
+      ),
+      h("div.cottage-room-body", { id: "cottage-room" }, room === "home" ? homeCard() : dreamCard(dream, prog))
+    );
+  }
+
+  // Every room, with what it does and how it's going right now.
+  function rooms(dream, prog, homeOpen) {
+    const owned = (play.owned || []).length;
+    const earned = Object.keys(play.achievements || {}).length;
+    const done = (play.home || []).length;
+    let dreamNote = "No dream picked yet";
+    let dreamTone = "action";
+    if (dream && play.dreamDone) [dreamNote, dreamTone] = ["Dream come true!", "calm"];
+    else if (prog?.ready) dreamNote = `Stage ${prog.stageIndex + 1} is ready to finish!`;
+    else if (prog?.stage) [dreamNote, dreamTone] = [`Stage ${prog.stageIndex + 1} of ${prog.stages.length}: ${prog.stage.goals.filter((g) => g.ok).length} of ${prog.stage.goals.length} goals met`, "calm"];
+    return [
+      { id: "dream", ico: "dream", title: "The dream", does: `What ${c.name} is working toward, and the button to finish each stage.`, note: dreamNote, tone: dreamTone, here: true },
+      { id: "wardrobe", ico: "palette", title: "Wardrobe", does: `Change ${c.name}'s look and wear what you bought at the Market.`, note: owned ? `${owned} item${owned === 1 ? "" : "s"} in the closet` : "Buy clothes and items at the Market", tone: "calm", route: "creature" },
+      { id: "home", ico: "home", title: "Fix up the house", does: "Add a garden, a workshop and more, paid with cash or a loan.", note: homeOpen ? `${done} of ${HOME_UPGRADES.length} upgrades done` : opensText("homeLoan"), tone: homeOpen ? "calm" : "locked", here: true },
+      { id: "trophies", ico: "trophy", title: "Trophies", does: "Achievements, your rank and the class leaderboard.", note: hasFeature(play, "academy") ? `${earned} of ${ACHIEVEMENTS.length} earned` : opensText("academy"), tone: hasFeature(play, "academy") ? "calm" : "locked", route: "trophies" },
+      game.classInfo?.social === false ? null : { id: "friends", ico: "people", title: "Friends", does: "Add classmates as friends and send gifts.", note: hasFeature(play, "plaza") ? "At Friendship Plaza" : opensText("plaza"), tone: hasFeature(play, "plaza") ? "calm" : "locked", route: "friends" },
+      { id: "settings", ico: "gear", title: "Settings", does: "Light or dark, reading size, motion and sound.", note: "Also the gear at the top", tone: "calm", route: "settings" },
+    ].filter(Boolean);
+  }
+
+  function roomButton(rm) {
+    const open = rm.here && room === rm.id;
+    return h(
+      "button.cottage-room",
+      {
+        type: "button",
+        class: `tone-${rm.tone}${open ? " open" : ""}`,
+        "data-room": rm.id,
+        "aria-pressed": rm.here ? String(open) : null,
+        disabled: rm.tone === "locked",
+        onclick: () => {
+          track("cottageRoom", { room: rm.id });
+          if (rm.route) return go(rm.route);
+          room = rm.id;
+          paint();
+          document.getElementById("cottage-room")?.scrollIntoView({ block: "start", behavior: "smooth" });
+        },
+      },
+      h("span.room-icon", icon(rm.tone === "locked" ? "lock" : rm.ico, { size: 26 })),
+      h("span.room-text", h("strong", rm.title, rm.route ? icon("next", { size: 14 }) : null), h("span.room-does", rm.does), h("small.room-note", rm.note)),
+      open ? h("span.room-open", "Open below") : null
     );
   }
 
@@ -62,7 +109,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
     if (!dream) {
       return h("section.dream-card", h("h3", icon("dream", { size: 20 }), " No dream picked yet"), h("p", "Every creature in Coinhaven has a dream. Pick one to work toward."), h("div.row", h("button", { type: "button", onclick: () => go("dream") }, "Pick a dream")));
     }
-    const box = h("section.dream-card", h("h3", `${dream.icon} ${dream.title}`), h("p", dream.story), h("p.note.tight", dream.why), meters(prog));
+    const box = h("section.dream-card", h("h3", icon(dream.mark || "dream", { size: 20 }), ` ${dream.title}`), h("p", dream.story), h("p.note.tight", dream.why), meters(prog));
     if (prog.complete) {
       add(box, h("p.callout.good", icon("check", { size: 16 }), " ", dream.finish), h("div.row", h("button.secondary", { type: "button", onclick: () => go("dream") }, "Pick a new dream")));
       return box;
@@ -153,16 +200,6 @@ export function render(root, { game, go, track, refreshWho, back }) {
       add(box, card);
     }
     return box;
-  }
-
-  // Settings moved to their own page (teacher request 2026-10-21).
-  function settingsCard() {
-    return h(
-      "section.settings-card",
-      h("h3", icon("gear", { size: 20 }), " Settings"),
-      h("p.note.tight", "Look, reading and sound are on the Account settings page. Tap the gear at the top any time."),
-      h("div.row", h("button.secondary.small", { type: "button", onclick: () => go("settings") }, "Open settings"))
-    );
   }
 
   paint();

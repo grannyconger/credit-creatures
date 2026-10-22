@@ -22,7 +22,7 @@ export function render(root, { game, go, track, refreshWho }) {
   const classId = game.profile.classId;
   const panel = h("section.panel.friends");
   root.append(panel);
-  const data = { directory: [], requests: [], groups: [], gifts: { incoming: [], outgoing: [] }, lastGift: null, loaded: false };
+  const data = { directory: [], requests: [], groups: [], gifts: { incoming: [], outgoing: [] }, giftLimit: null, loaded: false };
 
   const header = () => placeHeader({ go, iconName: "plaza", kicker: "Your class", title: "Friendship Plaza", subtitle: "Only classmates can see you here. Nobody sees your money, score or report." });
 
@@ -40,8 +40,8 @@ export function render(root, { game, go, track, refreshWho }) {
     try {
       await game.syncLeaderboard();
       const db = game.db;
-      const [directory, requests, groups, gifts, lastGift] = await Promise.all([db.readLeaderboard(classId), db.listRequests(classId, me), db.listGroups(classId), db.listGifts(classId, me), db.lastGiftAt(me)]);
-      Object.assign(data, { directory, requests, groups, gifts, lastGift, loaded: true });
+      const [directory, requests, groups, gifts, giftLimit] = await Promise.all([db.readLeaderboard(classId), db.listRequests(classId, me), db.listGroups(classId), db.listGifts(classId, me), db.giftLimit(me)]);
+      Object.assign(data, { directory, requests, groups, gifts, giftLimit, loaded: true });
     } catch (err) {
       console.error(err);
       return fill(panel, header(), h("p.error", "Couldn't load friends right now. Try again in a minute."));
@@ -245,7 +245,7 @@ export function render(root, { game, go, track, refreshWho }) {
   // ---------- gifts ----------
 
   function giftsTab(st) {
-    const wait = S.giftWaitMs(data.lastGift);
+    const win = S.giftWindow(data.giftLimit);
     const nameOf = (uid) => {
       const f = st.friends.find((x) => x.uid === uid);
       return who(uid) || f ? labelOf(uid, f?.name, f?.person) : "a friend";
@@ -298,10 +298,10 @@ export function render(root, { game, go, track, refreshWho }) {
     add(box, h("h3", "Send a gift"));
     if (!st.friends.length) {
       add(box, h("p.muted", "Make a friend first. Gifts go only to friends."));
-    } else if (wait > 0) {
-      add(box, h("p.callout", `⏳ You can send your next gift in ${S.waitText(wait)}. Everyone gets one gift every ${CONFIG.social.giftHours} hours.`));
+    } else if (!win.left) {
+      add(box, h("p.callout", icon("calendar", { size: 16 }), ` You sent all ${CONFIG.social.giftsPerWindow} gifts. You can send more in ${S.waitText(win.waitMs)}.`));
     } else {
-      add(box, giftForm(st, nameOf));
+      add(box, h("p.note.tight", giftsLeftText(win)), giftForm(st, nameOf, win));
     }
 
     const sent = data.gifts.outgoing.slice().sort((a, b) => (b.sentAt || 0) - (a.sentAt || 0));
@@ -320,7 +320,7 @@ export function render(root, { game, go, track, refreshWho }) {
     return box;
   }
 
-  function giftForm(st, nameOf) {
+  function giftForm(st, nameOf, win) {
     const s = CONFIG.social;
     const friend = h("select", { id: "gift-to" }, st.friends.map((f) => h("option", { value: f.uid }, nameOf(f.uid))));
     let kind = "money";
@@ -352,10 +352,11 @@ export function render(root, { game, go, track, refreshWho }) {
         err.textContent = problem;
         return;
       }
-      if (!confirm(`Send ${kind === "money" ? money(gift.amount) : SHOP_BY_ID[gift.itemId].name} to ${nameOf(to)}? You can send another gift in ${CONFIG.social.giftHours} hours.`)) return;
+      const after = win.left - 1;
+      if (!confirm(`Send ${kind === "money" ? money(gift.amount) : SHOP_BY_ID[gift.itemId].name} to ${nameOf(to)}? ${after ? `You'll have ${after} gift${after === 1 ? "" : "s"} left.` : `That's your last gift for now. More open up ${CONFIG.social.giftHours} hours after your first one.`}`)) return;
       send.disabled = true;
       try {
-        await game.db.sendGift(classId, gift);
+        await game.db.sendGift(classId, gift, win);
       } catch (e) {
         console.error(e);
         err.textContent = e.code === "permission-denied" ? "That gift isn't allowed right now. You may need to wait, or you're not friends yet." : "The gift didn't send. Try again.";
@@ -387,3 +388,9 @@ export function render(root, { game, go, track, refreshWho }) {
   firstVisitLesson({ game, track, id: "plaza", route: "friends" });
 }
 
+// How many gifts are left in this window, in plain words.
+function giftsLeftText(win) {
+  const { giftsPerWindow: n, giftHours: hrs } = CONFIG.social;
+  if (win.fresh) return `You can send ${n} gifts. The count starts over ${hrs} hours after your first one.`;
+  return `${win.left} of ${n} gifts left. The count starts over ${hrs} hours after your first gift.`;
+}

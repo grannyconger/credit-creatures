@@ -24,8 +24,9 @@ export const LESSONS = {
     steps: [
       { route: "hub", big: "🏰", title: "Welcome to Coinhaven, Guardian!", text: ["I'm Sage, the Royal Treasurer. Your creature is 16 and has no money of its own yet. Let's change that.", "I'll show you one thing at a time. The kingdom grows as you learn."] },
       { route: "hub", target: ".money-chips", title: "Your piggy bank", text: ["Right now your only account is a piggy bank. Coins you earn go in here.", "It's simple, but it can't do much. It can't pay bills, and lost coins are gone for good."] },
-      { route: "hub", target: ".kingdom", title: "A kingdom under construction", text: ["The buildings with scaffolding open later, as you learn. Three are open now: your Cottage, the Guild Hall and the Shimmer Market."] },
-      { route: "hub", target: ['.place[data-place="guild"]', '.place-row[data-place="guild"]'], title: "Start at the Guild Hall", text: ["Jobs pay coins. Your first job is Cashier Rush: count back the right change. Tap the Guild Hall when you're ready."] },
+      { route: "hub", target: "#topnav", title: "Find your way", text: ["Home, the Map, your Wallet and the Leaderboard are always up here. Your chapter's progress sits next to them."] },
+      { route: "map", target: ".kingdom", title: "A kingdom under construction", text: ["The buildings with scaffolding open later, as you learn. Three are open now: your Cottage, the Guild Hall and the Shimmer Market."] },
+      { route: "map", target: ['.place[data-place="guild"]', '.place-row[data-place="guild"]'], title: "Start at the Guild Hall", text: ["Jobs pay coins. Your first job is Cashier Rush: count back the right change. Tap the Guild Hall when you're ready."] },
     ],
   },
   guild: {
@@ -64,7 +65,7 @@ export const LESSONS = {
       { route: "hub", target: ".money-chips", title: "Checking and savings", text: ["Checking is for spending. Your debit card takes money straight from it.", "Savings is for later. Move money there so it's not so easy to spend."] },
       { route: "accounts", click: tab("Wallet"), target: [".bills", ".acct-body"], title: "Bills come out of checking", text: ["Your phone bill comes out of checking on its own at End Month. If checking is short, the bank charges a $35 overdraft fee.", "You can move money between checking and savings here any time."] },
       {
-        route: "hub",
+        route: "map",
         target: ['.place[data-place="townhall"]', '.place-row[data-place="townhall"]'],
         title: "Town Hall is open",
         text: ["Each month, Town Hall brings a news card and a few money decisions. Then you end the month and your bills come out.", "Chapter 1 starts there. You can still work shifts at the Guild Hall, and there's a new job: Check Writer."],
@@ -93,7 +94,7 @@ export const LESSONS = {
     title: "Friendship Plaza",
     feature: "plaza",
     steps: [
-      { route: "friends", target: [".acct-tabs", ".place-header"], title: "Friends and gifts", text: ["Add classmates as friends, start or join a group, and send a gift of money or an item once every 40 hours.", "Everyone sees your creature with your name, so they know who sent what. Nobody sees your money or your score."] },
+      { route: "friends", target: [".acct-tabs", ".place-header"], title: "Friends and gifts", text: ["Add classmates as friends, start or join a group, and send up to 4 gifts of money or items every 20 hours.", "Everyone sees your creature with your name, so they know who sent what. Nobody sees your money or your score."] },
     ],
   },
   loans: {
@@ -101,7 +102,7 @@ export const LESSONS = {
     feature: "loans",
     steps: [
       { route: "hub", big: "🚗", title: "You're 18! Loans are here.", text: ["Time flew by. Now you can borrow money with an installment loan: you get it all now and pay it back in equal monthly payments, plus interest.", "Lenders report every payment to the Hall of Records. On-time payments start your credit history."] },
-      { route: "hub", target: ['.place[data-place="garage"]', '.place-row[data-place="garage"]'], title: "The Garage is open", text: ["Buy a ride with cash or an auto loan. A ride gets you to better jobs, so every shift pays more."] },
+      { route: "map", target: ['.place[data-place="garage"]', '.place-row[data-place="garage"]'], title: "The Garage is open", text: ["Buy a ride with cash or an auto loan. A ride gets you to better jobs, so every shift pays more."] },
       {
         route: "garage",
         target: [".lesson-box", ".place-header"],
@@ -154,8 +155,8 @@ export const LESSONS = {
         text: ["Coinhaven gets trickier now. Some offers look like help but cost a fortune: payday loans, title loans, rent-to-own and debt settlement ads.", "The trick is to find the total cost before you say yes."],
         quiz: { q: "A $300 payday loan costs $45 for two weeks. About what APR is that?", choices: ["15%", "45%", "Almost 400%"], answer: 2, why: "$45 on $300 is 15% for just two weeks. Over a whole year, that's about 390% APR. A credit card is closer to 25%." },
       },
-      { route: "hub", target: ['.place[data-place="townhall"]', '.place-row[data-place="townhall"]'], title: "Offers show up at Town Hall", text: ["When money is tight, these offers appear on your cards. A small emergency fund in savings is the best protection.", "If something sounds too easy, it usually costs too much."] },
-      { route: "hub", target: ['.place[data-place="alley"]', '.place-row[data-place="alley"]'], title: "Lantern Alley is open", text: ["A side street full of bright signs. Practice spotting traps there before one shows up for real."] },
+      { route: "map", target: ['.place[data-place="townhall"]', '.place-row[data-place="townhall"]'], title: "Offers show up at Town Hall", text: ["When money is tight, these offers appear on your cards. A small emergency fund in savings is the best protection.", "If something sounds too easy, it usually costs too much."] },
+      { route: "map", target: ['.place[data-place="alley"]', '.place-row[data-place="alley"]'], title: "Lantern Alley is open", text: ["A side street full of bright signs. Practice spotting traps there before one shows up for real."] },
     ],
   },
   alley: {
