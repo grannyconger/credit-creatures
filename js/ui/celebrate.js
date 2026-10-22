@@ -4,6 +4,7 @@ import { h } from "./dom.js";
 import { track } from "../telemetry.js";
 import { sfx } from "./sound.js";
 import { confetti } from "./fx.js";
+import { burstFrom } from "./motion/particles.js";
 import { sealSvg, pinSvg } from "./bestiary-art.js";
 
 const queue = [];
@@ -55,7 +56,7 @@ function next() {
     h(
       "div.celebrate-body",
       h("span.bst-attach", { "aria-hidden": "true", html: pinSvg() }),
-      h("div.celebrate-icon", { "aria-hidden": "true" }, item.icon),
+      h("div.celebrate-icon", { "aria-hidden": "true", "data-sparkle": "" }, item.icon),
       h("p.celebrate-kicker.bst-stamp-word", item.kicker),
       h("h2", { id: "celebrate-title" }, item.title),
       item.text ? h("p", { id: "celebrate-text" }, item.text) : null,
@@ -76,6 +77,8 @@ function next() {
   });
   document.body.append(dialog);
   dialog.showModal();
+  // Phase 16: leaves and seeds burst from the icon once the pop-up has sprung open.
+  setTimeout(() => dialog.open && burstFrom(dialog.querySelector(".celebrate-icon"), "leaves"), 220);
   sfx[SOUND_FOR[item.kind] || "questComplete"]();
   cont.focus();
   track("celebrateShown", { kind: item.kind, id: item.id || "" });

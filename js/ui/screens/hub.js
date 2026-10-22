@@ -100,7 +100,7 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
               { type: "button", class: `tone-${status[pl.id].tone}`, "data-place": pl.id, onclick: () => openPlace(pl, status, { game, go, track }) },
               icon(pl.icon, { size: 22 }),
               h("span", h("strong", pl.name), h("small", pl.kind)),
-              h("span.home-need-note", icon(status[pl.id].tone === "warn" ? "alert" : "next", { size: 14 }), ` ${status[pl.id].text}`)
+              h("span.home-need-note", { "data-sparkle": status[pl.id].tone === "action" ? "" : null }, icon(status[pl.id].tone === "warn" ? "alert" : "next", { size: 14 }), ` ${status[pl.id].text}`)
             )
           )
         )

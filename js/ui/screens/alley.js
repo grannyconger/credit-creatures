@@ -3,6 +3,7 @@
 // Each stall pays bonus XP once, for a right call. Accuracy counts toward
 // Standard 5 at the Academy, like a Practice Desk answer.
 import { h, fill } from "../dom.js";
+import { burstFrom } from "../motion/particles.js";
 import { icon } from "../icons.js";
 import { placeHeader } from "../place-header.js";
 import { firstVisitLesson } from "../guide.js";
@@ -108,8 +109,10 @@ export function render(root, { game, go, track, refreshWho }) {
     const got = run.practice ? { xp: 0 } : P.recordAnswer(play, { type: "alley", standard: 5, correct: right });
     const bonus = right && !run.practice ? P.addXp(play, CONFIG.pacing.xp.alleyStall) : 0;
     play.alley.checked[s.id] = { right, xp: got.xp + bonus, readFine };
-    if (right) sfx.correct();
-    else sfx.error();
+    if (right) {
+      sfx.correct();
+      burstFrom(document.activeElement, "motes", { n: 22 });
+    } else sfx.error();
     track("alleyCall", { stall: s.id, trap: s.trap, saidTrap, correct: right, readFine, seconds: Math.round((Date.now() - shownAt) / 1000), xp: got.xp + bonus });
     refreshWho();
     paint();

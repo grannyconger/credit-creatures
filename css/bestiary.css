@@ -3745,3 +3745,21 @@ main#app.app:has(.bestiary) {
 .bst-guild .drawer-row .cash-piece.bill { width: 100%; }
 .bst-guild .calc-key.calc-op { font-family: system-ui, sans-serif; font-size: 1.6rem; line-height: 1; }
 .bst-guild .cashier .cash-actions button.secondary { color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
+/* Pet the creature in the Cottage (Phase 16). */
+.bst-cottage .cottage-pet { padding: 0; background: none; border: 0; border-radius: var(--b-r-blob); cursor: var(--b-cursor-lens), pointer; }
+.bst-cottage .cottage-pet:focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 6px; }
+.bst-cottage .cottage-pet svg { display: block; overflow: visible; }
+
+/* The living map (Phase 16): flags wave, pennants sway, the fountain splashes,
+   and at night the windows glow. All of it stops under Calm. */
+.bst-map .m-flag { animation: bst-flag 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 0 50%; }
+@keyframes bst-flag { 0%, 100% { transform: skewY(0deg) scaleX(1); } 30% { transform: skewY(-6deg) scaleX(0.92); } 65% { transform: skewY(4deg) scaleX(1.04); } }
+.bst-map .m-pennant { animation: bst-pennant 2.8s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 0; }
+@keyframes bst-pennant { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+.bst-map .m-splash circle { animation: bst-splash 1.2s ease-in infinite; transform-box: fill-box; transform-origin: 50% 50%; opacity: 0; }
+@keyframes bst-splash { 0% { transform: translateY(6px) scale(0.6); opacity: 0; } 25% { opacity: 1; } 55% { transform: translateY(-9px) scale(1); opacity: 1; } 100% { transform: translateY(8px) scale(0.7); opacity: 0; } }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-appearance="light"]) .bst-map .m-win { filter: drop-shadow(0 0 3px var(--m-window)); animation: bst-window 5s ease-in-out infinite; }
+}
+:root[data-appearance="dark"] .bst-map .m-win { filter: drop-shadow(0 0 3px var(--m-window)); animation: bst-window 5s ease-in-out infinite; }
+@keyframes bst-window { 0%, 100% { opacity: 1; } 47% { opacity: 0.82; } 50% { opacity: 1; } 53% { opacity: 0.9; } }

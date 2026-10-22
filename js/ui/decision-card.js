@@ -1,6 +1,7 @@
 // One life card or Decision card: the situation, the choices, the "Pay with"
 // picker when a choice costs money, then the outcome with a 👍/😐/👎 reaction.
 import { h, add, fill } from "./dom.js";
+import { burstFrom } from "./motion/particles.js";
 import { payWith } from "./pay-with.js";
 import { sfx } from "./sound.js";
 import { FACTOR_LABELS } from "../engine/index.js";
@@ -193,8 +194,9 @@ function quickCheck(fc) {
       "button.chip",
       {
         type: "button",
-        onclick: async () => {
+        onclick: async (e) => {
           const correct = i === fc.answer;
+          if (correct) burstFrom(e.currentTarget, "motes");
           buttons.forEach((b, j) => {
             b.disabled = true;
             if (j === fc.answer) b.classList.add("right");

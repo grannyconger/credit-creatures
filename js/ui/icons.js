@@ -56,17 +56,29 @@ const P = {
 
 export const ICON_NAMES = Object.keys(P);
 
-export function iconSvg(name, { size = 20, label = "" } = {}) {
+// Every shape gets pathLength="1", so an icon can draw itself in with one
+// stroke-dash animation (Phase 16), and data-ico names it for its own hover
+// move in css/app.css (the gear spins, the lock shakes, and so on).
+const drawable = (body) => body.replace(/<(path|circle|rect|line|polyline|polygon|ellipse)\b/g, '<$1 pathLength="1"');
+
+export function iconSvg(name, { size = 20, label = "", draw = false } = {}) {
   const body = P[name];
   if (!body) throw new Error(`No icon named "${name}".`);
   const a11y = label ? `role="img" aria-label="${label.replace(/"/g, "&quot;")}"` : 'aria-hidden="true"';
-  return `<svg class="ico" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" ${a11y}>${body}</svg>`;
+  return `<svg class="ico${draw ? " ico-draw" : ""}" data-ico="${name}" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" ${a11y}>${drawable(body)}</svg>`;
+}
+
+// Icons made in the moment after a screen opens draw themselves in
+// (Phase 16). Repaints after that show them still, so nothing keeps flickering.
+let drawUntil = 0;
+export function drawIconsFor(ms = 700) {
+  drawUntil = Date.now() + ms;
 }
 
 // For h(): icon("vault") gives a span holding the SVG.
 export function icon(name, opts = {}) {
   const span = document.createElement("span");
   span.className = `ico-wrap${opts.className ? ` ${opts.className}` : ""}`;
-  span.innerHTML = iconSvg(name, opts);
+  span.innerHTML = iconSvg(name, { draw: Date.now() < drawUntil, ...opts });
   return span;
 }

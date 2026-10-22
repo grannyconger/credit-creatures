@@ -59,7 +59,7 @@ The app is the naturalist's field guide to Coinhaven's creatures. Screens are pa
 | 13 | The late game: Chapters 6 to 8 (moving out, setbacks, building your future) with 20 new cards, and the deck reshuffles from Chapter 9 | Done, approved |
 | 14 | Teacher view of the new game: Lantern Alley, lessons, dream stage and title-loan columns, and a class table of which traps fool students | Done, approved |
 | 15 | Motion: spring physics, boops, page morphs, rolling numbers, a Motion setting, and Fraunces for headings (`docs/MOTION.md`) | Done, awaiting the teacher's review |
-| 16 | Particles, sparkles, animated icons, a living map (`docs/MOTION.md`) | Next |
+| 16 | Particles, sparkles, animated icons, a living map (`docs/MOTION.md`) | Done, awaiting the teacher's review |
 | 17 | Detailed storybook creatures, eyes that follow the mouse, blinks and reactions (`docs/MOTION.md`) | Planned |
 
 ## Run locally

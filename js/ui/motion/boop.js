@@ -14,6 +14,8 @@ const STYLES = {
   wiggle: { rotate: -10 },
 };
 const BOOP_MS = 160;
+// Icons with their own hover move in css/app.css (Phase 16) skip the boop.
+const OWN_MOVE = new Set(["gear", "compass", "coins", "piggy", "wallet", "inbox", "trophy", "star", "sparkle", "lock", "check", "home", "next", "back", "lantern", "volume"]);
 const booping = new WeakSet();
 
 function boopTarget(el) {
@@ -25,7 +27,7 @@ function boop(el) {
   const kind = el.dataset.boop || (el.matches(".place, .place-row") ? "scale" : "rotate");
   if (kind === "none") return;
   const target = boopTarget(el);
-  if (!target || booping.has(target)) return;
+  if (!target || booping.has(target) || OWN_MOVE.has(target.dataset?.ico)) return;
   booping.add(target);
   springStyle(target, STYLES[kind] || STYLES.rotate, SPRINGS.bouncy);
   setTimeout(() => {

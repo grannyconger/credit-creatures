@@ -88,7 +88,7 @@ export function tabbedPlace(root, { game, go, track, refreshWho }, { tabs, state
                 },
                 icon(ico),
                 ` ${label}`,
-                key === "inbox" && unread ? h("span.count-badge", { "aria-label": `${unread} unread` }, String(unread)) : null
+                key === "inbox" && unread ? h("span.count-badge", { "aria-label": `${unread} unread`, "data-sparkle": "" }, String(unread)) : null
               )
             )
           )

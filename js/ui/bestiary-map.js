@@ -50,7 +50,7 @@ const BUILDINGS = {
       ${ink(hatch(-70, -46, 70, -46, 14, 6, -10), 1)}
       ${both("M0 -76 a14 14 0 1 0 0.1 0", "var(--m-paper)")}
       ${ink("M0 -62 v-9 M0 -62 l7 4", 2)}
-      ${ink("M0 -96 v-30", 2.2)}${both("M0 -126 l26 7 -26 7z", "var(--m-roof-rust)", 1.6)}
+      ${ink("M0 -96 v-30", 2.2)}<g class="m-flag">${both("M0 -126 l26 7 -26 7z", "var(--m-roof-rust)", 1.6)}</g>
       ${ink([-58, -30, 30, 58].map((c) => `M${c - 4} -32 v62 M${c + 4} -32 v62`).join(" "), 1.4)}
       ${door(-14, 6, 28, 30)}
       ${ink("M-86 36 H86 M-80 42 H80", 2)}
@@ -118,7 +118,8 @@ const BUILDINGS = {
       ${both(R(-6, -30, 12, 38), "var(--m-stone)")}
       ${ink("M0 -30 q-18 -10 -26 10 M0 -30 q18 -10 26 10 M0 -32 v-12", 2.4)}
       ${ink("M-92 -54 Q0 -30 92 -54", 1.4)}
-      ${[-70, -42, -14, 14, 42, 70].map((cx, i) => both(`M${cx - 8} ${f(-48 + Math.abs(cx) / 9)} l8 14 8 -14z`, ["var(--m-roof-rust)", "var(--m-gold)", "var(--m-roof-slate)", "var(--m-roof-moss)", "var(--m-roof-plum)", "var(--m-gold)"][i], 1.2)).join("")}
+      ${[-70, -42, -14, 14, 42, 70].map((cx, i) => `<g class="m-pennant" style="animation-delay: ${-i * 0.35}s">${both(`M${cx - 8} ${f(-48 + Math.abs(cx) / 9)} l8 14 8 -14z`, ["var(--m-roof-rust)", "var(--m-gold)", "var(--m-roof-slate)", "var(--m-roof-moss)", "var(--m-roof-plum)", "var(--m-gold)"][i], 1.2)}</g>`).join("")}
+      <g class="m-splash">${[-7, 0, 7].map((dx, i) => `<circle cx="${dx}" cy="-36" r="2.2" fill="var(--m-water)" stroke="var(--m-ink)" stroke-width="0.6" style="animation-delay: ${i * 0.4}s"/>`).join("")}</g>
       ${ink("M-86 12 h24 M62 12 h24", 3)}
     </g>`,
   garage: ({ x, y }) => `
@@ -161,7 +162,7 @@ const BUILDINGS = {
       ${both("M-64 -28 L-30 -52 H30 L64 -28 Z", "var(--m-roof-slate)")}
       ${win(-46, -12)}${win(32, -12)}
       ${door(-12, 6, 24, 30)}
-      ${ink("M0 -138 v-14", 1.6)}${both("M0 -152 l16 5 -16 5z", "var(--m-roof-rust)", 1.2)}
+      ${ink("M0 -138 v-14", 1.6)}<g class="m-flag">${both("M0 -152 l16 5 -16 5z", "var(--m-roof-rust)", 1.2)}</g>
       ${ink("M-66 36 H66", 2)}
     </g>`,
 };
@@ -255,7 +256,7 @@ export function kingdomMap({ creature, ageMonths, status, onOpen, home = [], cal
         onclick: () => onOpen(pl),
       },
       h("span.place-name", icon(pl.icon, { size: 18 }), h("span.place-label", h("span", pl.name), h("small.place-kind", pl.kind))),
-      st.text ? h("span.place-badge", st.tone === "warn" ? icon("alert", { size: 14 }) : st.tone === "action" ? icon("sparkle", { size: 14 }) : st.tone === "locked" ? icon("lock", { size: 14 }) : null, ` ${st.text}`) : null,
+      st.text ? h("span.place-badge", { "data-sparkle": st.tone === "action" && !inList ? "" : null }, st.tone === "warn" ? icon("alert", { size: 14 }) : st.tone === "action" ? icon("sparkle", { size: 14 }) : st.tone === "locked" ? icon("lock", { size: 14 }) : null, ` ${st.text}`) : null,
       inList ? h("small.place-does", pl.does) : null
     );
   };

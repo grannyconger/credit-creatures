@@ -19,6 +19,7 @@ import { loanPicker } from "../loan-picker.js";
 import { resolveChoice } from "../../engine/index.js";
 import { xpBar } from "./trophies.js";
 import { meters } from "./hub.js";
+import { burstFrom, centerOf } from "../motion/particles.js";
 
 let room = "dream";
 
@@ -48,7 +49,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
         h(
           "div.cottage-stage",
           { class: c.background && c.background !== "none" ? `creature-stage bg-${c.background}` : "" },
-          h("div", { html: creatureSvg(c, { size: 200, ageMonths: life?.ageMonths || 0 }) }),
+          h("button.cottage-pet", { type: "button", "data-sound": "none", "data-boop": "none", "aria-label": `Pet ${c.name}`, title: `Pet ${c.name}`, onclick: pet, html: creatureSvg(c, { size: 200, ageMonths: life?.ageMonths || 0 }) }),
           h("h2", fullName(c)),
           h("p.muted.tight", `${life ? ageLabel(life.ageMonths) : ""} · ${r.icon} ${r.title}`),
           xpBar(play.xp)
@@ -57,6 +58,18 @@ export function render(root, { game, go, track, refreshWho, back }) {
       ),
       h("div.cottage-room-body", { id: "cottage-room" }, room === "home" ? homeCard() : dreamCard(dream, prog))
     );
+  }
+
+  // Petting (Phase 16): hearts float up and the creature squishes.
+  let pets = 0;
+  function pet(e) {
+    const btn = e.currentTarget;
+    burstFrom(btn, "hearts", { y: centerOf(btn, -40).y });
+    const art = btn.firstElementChild;
+    art?.classList.remove("bst-poked");
+    void art?.getBoundingClientRect();
+    art?.classList.add("bst-poked");
+    if (++pets === 1) track("creaturePet", { where: "cottage" });
   }
 
   // Every room, with what it does and how it's going right now.
@@ -99,6 +112,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
         type: "button",
         class: `tone-${rm.tone}${open ? " open" : ""} room-${rm.id}`,
         "data-room": rm.id,
+        "data-sparkle": rm.tone === "action" && rm.id === "dream" && /ready/.test(rm.note) ? "" : null,
         "aria-pressed": rm.here ? String(open) : null,
         disabled: rm.tone === "locked",
         onclick: () => {

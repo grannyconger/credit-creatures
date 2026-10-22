@@ -4,6 +4,7 @@
 // is a specimen board with all eight creatures, the right page is the chosen
 // creature's entry with its label, an index of tabs and a wax seal to adopt.
 import { h, clear } from "../dom.js";
+import { burstFrom } from "../motion/particles.js";
 import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
 import { pinSvg, tapeSvg, stringSvg, fernSvg, mossSvg, sealSvg, inkStampSvg, inkRingSvg, watercolorDefs, watercolorSvg } from "../bestiary-art.js";
@@ -358,6 +359,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
   function poke() {
     pokes++;
     const art = plateArt.firstElementChild;
+    burstFrom(art, "hearts");
     if (art && !reduced()) {
       art.classList.remove("bst-poked");
       void art.getBoundingClientRect();

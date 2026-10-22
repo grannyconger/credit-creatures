@@ -1,6 +1,7 @@
 // The Shop (SPEC §18): wants for the creature. Stock rotates each chapter.
 // Checkout uses the "Pay with" picker: debit, a credit card, or BNPL.
 import { payMethods, hasFeature } from "../../progression.js";
+import { burstFrom } from "../motion/particles.js";
 import { h, add, fill, money, toast } from "../dom.js";
 import { placeHeader } from "../place-header.js";
 import { resolveChoice } from "../../engine/index.js";
@@ -76,6 +77,7 @@ export function render(root, { game, go, track }) {
             return paint(item);
           }
           run.life = r.life;
+          burstFrom(document.querySelector(".checkout") , "dust", { n: 18 });
           play.owned.push(item.id);
           track("shopBuy", { id: item.id, price: item.price, method: method.startsWith("card:") ? "card" : method, big: Boolean(item.big) });
           sfx.purchase();

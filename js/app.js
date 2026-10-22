@@ -15,7 +15,7 @@ import { creatureSvg } from "./ui/creature-art.js";
 import { h, clear, ageLabel } from "./ui/dom.js";
 import { firstSettings, openSettings, saveSettings } from "./ui/settings-dialog.js";
 import { applySettings, loadLocalSettings } from "./ui/settings.js";
-import { icon } from "./ui/icons.js";
+import { icon, drawIconsFor } from "./ui/icons.js";
 import { sealSvg, mossSvg, fernSvg } from "./ui/bestiary-art.js";
 import * as settingsScreen from "./ui/screens/settings.js";
 import * as profile from "./ui/screens/profile.js";
@@ -43,6 +43,7 @@ import * as map from "./ui/screens/map.js";
 import { watchSentences } from "./ui/sentences.js";
 import { publishSpringTokens, motionOn } from "./ui/motion/spring.js";
 import { installBoops } from "./ui/motion/boop.js";
+import { installSparkles } from "./ui/motion/sparkles.js";
 
 // The leaderboard opens straight from the top bar (teacher request 2026-10-22).
 const leaderboard = { render: (root, ctx) => trophies.render(root, { ...ctx, startTab: "board" }) };
@@ -66,6 +67,8 @@ watchSentences(document.body);
 // Spring easings as CSS tokens, and boops on every button (js/ui/motion/).
 publishSpringTokens();
 installBoops();
+// Phase 16: sparkles on anything marked data-sparkle (js/ui/motion/sparkles.js).
+installSparkles();
 
 const { auth, db } = await loadBackends();
 const bug = mountBugButton({
@@ -336,6 +339,8 @@ function showNow(name) {
     saveAndExit,
     saveAndSignOut,
   };
+  // Icons made as the screen opens draw themselves in (Phase 16).
+  drawIconsFor(700);
   cleanup = SCREENS[name].render(root, ctx) || null;
   window.scrollTo(0, 0);
 }

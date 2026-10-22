@@ -2,6 +2,7 @@
 // instant feedback with the worked math, accuracy by standard, and Unicorn
 // Sparkle Points for right answers (SPEC §15).
 import { icon } from "../icons.js";
+import { burstFrom } from "../motion/particles.js";
 import { h } from "../dom.js";
 import { createRng } from "../../engine/index.js";
 import { QUESTION_TYPES, DESK_QUESTIONS, STANDARD_LABELS } from "../../data/practice-questions.js";
@@ -84,9 +85,10 @@ function questionView(play, { track, save, repaint }) {
             type: "button",
             disabled: answered,
             class: answered && i === q.answer ? "right" : answered && i === session.chosen ? "wrong" : "",
-            onclick: async () => {
+            onclick: async (e) => {
               session.chosen = i;
               const ok = i === q.answer;
+              if (ok) burstFrom(e.currentTarget, "motes");
               if (ok) session.right++;
               const got = P.recordAnswer(play, { type: q.type, standard: meta.standard, correct: ok });
               session.sparkle += got.sparkle;

@@ -1,8 +1,9 @@
-// Small celebrations (visual plan item 8): coins flying into checking,
+// Small celebrations (visual plan item 8, canvas coins since Phase 16): coins flying into checking,
 // confetti and a statement stamp. Every effect is skipped under reduced motion,
 // and none of them carries meaning on its own (the words always say it too).
 import { h } from "./dom.js";
 import { sfx } from "./sound.js";
+import { burstFrom } from "./motion/particles.js";
 
 const reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -12,31 +13,14 @@ const reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)"
 export function coinsFly(from, { chime = 0 } = {}) {
   if (chime) setTimeout(sfx.coinGain, chime);
   else sfx.coinGain();
-  if (reduced() || !from?.getBoundingClientRect) return;
+  if (!from?.getBoundingClientRect) return;
   const target = document.querySelector(".money-chips li") || document.getElementById("who");
   if (!target) return;
-  const a = from.getBoundingClientRect();
   const b = target.getBoundingClientRect();
-  const sx = a.left + a.width / 2;
-  const sy = a.top + a.height / 2;
-  const tx = b.left + Math.min(40, b.width / 2);
-  const ty = b.top + b.height / 2;
-  for (let i = 0; i < 9; i++) {
-    const coin = h("span.fx-coin", { "aria-hidden": "true" });
-    coin.style.left = `${sx}px`;
-    coin.style.top = `${sy}px`;
-    document.body.append(coin);
-    const spread = (i - 4) * 14;
-    const anim = coin.animate(
-      [
-        { transform: "translate(-50%, -50%) scale(0.6)", opacity: 0 },
-        { transform: `translate(calc(-50% + ${spread}px), calc(-50% - ${50 + Math.abs(spread)}px)) scale(1)`, opacity: 1, offset: 0.35 },
-        { transform: `translate(calc(-50% + ${tx - sx}px), calc(-50% + ${ty - sy}px)) scale(0.5)`, opacity: 0.9 },
-      ],
-      { duration: 750 + i * 40, delay: i * 45, easing: "cubic-bezier(.3,.7,.4,1)", fill: "backwards" }
-    );
-    anim.onfinish = () => coin.remove();
-  }
+  // Phase 16: the coins are canvas particles now (js/ui/motion/particles.js).
+  // They hop up, then tumble into the Checking line. Off under Calm.
+  burstFrom(from, "coins", { to: { x: b.left + Math.min(40, b.width / 2), y: b.top + b.height / 2 } });
+  if (reduced()) return;
   setTimeout(() => {
     target.classList.add("fx-bump");
     setTimeout(() => target.classList.remove("fx-bump"), 450);

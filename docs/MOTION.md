@@ -28,7 +28,15 @@ Teacher request 2026-10-21: make the game captivating for Gen Z and Gen Alpha st
   - springy pop-ups
   - Motion setting (`js/ui/settings.js`)
 
-## Phase 16: particles, sparkles, animated icons (next)
+## Phase 16: done (2026-10-22), built for the Mossy Bestiary
+
+- `js/ui/motion/particles.js`: one pooled canvas system (MAX 80, pure `stepParticle` and `addTo`, tested in `tests/particles.test.js`). Presets: `coins` (hop up, then home into the Checking line, used by `coinsFly`), `leaves` (unlock and achievement pop-ups, drawn inside the open dialog), `dust` (shop purchase), `motes` (foxfire, right answers at the Practice Desk, Factor Checks and Lantern Alley), `hearts` (petting in the Cottage and the creator). Colors come from the bestiary tokens.
+- `js/ui/motion/sparkles.js`: one timer twinkles gold stars around anything with `data-sparkle` (map notes that ask for something, Home's "Places that need you", unread letters, a dream stage that's ready, pop-up icons).
+- Icons: every shape has `pathLength="1"`. Icons made in the 700ms after a screen opens draw themselves in (`drawIconsFor` in `js/ui/icons.js`). Each icon has its own hover move by `data-ico` in `css/app.css` (the gear spins, coins jingle, the lock shakes, the check redraws, and so on), and those skip the generic boop.
+- Map (`js/ui/bestiary-map.js`): flags wave, pennants sway, the fountain splashes, windows glow at night (dark mode), plus the earlier smoke and lanterns.
+- Calm and reduce-motion stop all of it. Telemetry: `creaturePet`.
+
+### Original plan
 
 1. **`js/ui/motion/particles.js`:** one full-screen `<canvas>` with a pooled particle system (gravity, drag, spin, fade), capped at about 80 live particles. Presets:
    - coin burst when earning

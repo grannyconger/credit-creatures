@@ -1416,3 +1416,55 @@ body { font-variation-settings: "SOFT" 100, "WONK" 1; }
 .dc-chosen::before { content: "✓ "; }
 .dc-choice[aria-pressed="true"] { outline: 2.5px solid var(--accent); outline-offset: -2.5px; }
 .dc-submit-row { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 12px; }
+
+/* ---------- Phase 16: particles, sparkles and animated icons ---------- */
+/* One canvas over the page (or inside an open pop-up) for every burst. */
+.fx-particles { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1000; }
+
+/* Josh Comeau-style sparkles: grow, turn and fade. Gold-green foxfire. */
+.fx-sparkle { position: absolute; z-index: 3; pointer-events: none; translate: -50% -50%; animation: fx-sparkle 0.9s ease-in-out forwards; }
+.fx-sparkle svg { display: block; width: 100%; height: 100%; fill: var(--b-gold, #d9a441); stroke: color-mix(in srgb, var(--b-gold-ink, #8a6416) 60%, transparent); stroke-width: 3; filter: drop-shadow(0 0 3px var(--b-foxfire, #c8e04b)); animation: fx-sparkle-spin 0.9s linear forwards; }
+@keyframes fx-sparkle { 0% { scale: 0; } 50% { scale: 1; } 100% { scale: 0; } }
+@keyframes fx-sparkle-spin { from { rotate: 0deg; } to { rotate: 180deg; } }
+
+/* Icons draw themselves in when a screen opens. With motion off there's no
+   animation, so the icon is simply there. */
+.ico-draw :is(path, circle, rect, line, polyline, polygon, ellipse) { stroke-dasharray: 1 1; animation: ico-draw 0.7s var(--ease-gentle, ease-out) both; }
+@keyframes ico-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+/* Each icon has its own little move on hover or focus. */
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="gear"] { animation: ico-spin 0.8s var(--ease-bouncy, ease-out); }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="compass"] { animation: ico-spin 1s var(--ease-wobbly, ease-out); }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="coins"] { animation: ico-jingle 0.5s ease-in-out; }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="piggy"] { animation: ico-jingle 0.5s ease-in-out; }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="wallet"] { animation: ico-open 0.5s var(--ease-bouncy, ease-out); }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="inbox"] { animation: ico-open 0.5s var(--ease-bouncy, ease-out); }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="trophy"] { animation: ico-shine 0.7s ease-out; }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="star"] { animation: ico-spin 0.7s var(--ease-bouncy, ease-out); }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="sparkle"] { animation: ico-twinkle 0.6s ease-in-out; }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="lock"] { animation: ico-shake 0.45s ease-in-out; }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="check"] :is(path, polyline) { stroke-dasharray: 1 1; animation: ico-draw 0.45s ease-out; }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="home"] { animation: ico-hop 0.5s var(--ease-bouncy, ease-out); }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="next"] { animation: ico-nudge 0.5s ease-in-out; }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="back"] { animation: ico-nudge-back 0.5s ease-in-out; }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="lantern"] { animation: ico-swing 0.9s ease-in-out; transform-origin: 50% 0; }
+:is(button, a, .chip, [data-boop]):is(:hover, :focus-visible) .ico[data-ico="volume"] { animation: ico-pulse 0.5s ease-in-out; }
+@keyframes ico-spin { to { transform: rotate(180deg); } }
+@keyframes ico-jingle { 20% { transform: translateY(-2px) rotate(-8deg); } 45% { transform: translateY(1px) rotate(6deg); } 70% { transform: translateY(-1px) rotate(-4deg); } }
+@keyframes ico-open { 40% { transform: rotate(-10deg) scale(1.1); } }
+@keyframes ico-shine { 40% { transform: translateY(-2px) scale(1.12); filter: drop-shadow(0 0 4px var(--b-gold, #d9a441)); } }
+@keyframes ico-twinkle { 50% { transform: scale(1.3) rotate(45deg); } }
+@keyframes ico-shake { 20%, 60% { transform: translateX(-2px) rotate(-6deg); } 40%, 80% { transform: translateX(2px) rotate(6deg); } }
+@keyframes ico-hop { 40% { transform: translateY(-4px); } 70% { transform: translateY(1px); } }
+@keyframes ico-nudge { 50% { transform: translateX(4px); } }
+@keyframes ico-nudge-back { 50% { transform: translateX(-4px); } }
+@keyframes ico-swing { 25% { transform: rotate(14deg); } 60% { transform: rotate(-9deg); } 85% { transform: rotate(4deg); } }
+@keyframes ico-pulse { 50% { transform: scale(1.18); } }
+
+/* Calm and the computer's reduce-motion setting stop all of it. */
+:root[data-motion="calm"] :is(.ico, .ico *, .fx-sparkle, .fx-sparkle *) { animation: none !important; }
+:root[data-motion="calm"] .fx-sparkle, :root[data-motion="calm"] .fx-particles { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  :is(.ico, .ico *, .fx-sparkle, .fx-sparkle *) { animation: none !important; }
+  .fx-sparkle, .fx-particles { display: none; }
+}
