@@ -12,6 +12,7 @@ import { h, clear, ageLabel } from "./ui/dom.js";
 import { firstSettings, openSettings, saveSettings } from "./ui/settings-dialog.js";
 import { applySettings, loadLocalSettings } from "./ui/settings.js";
 import { icon } from "./ui/icons.js";
+import { sealSvg, mossSvg, fernSvg } from "./ui/bestiary-art.js";
 import * as settingsScreen from "./ui/screens/settings.js";
 import * as profile from "./ui/screens/profile.js";
 import * as creature from "./ui/screens/creature.js";
@@ -192,11 +193,16 @@ function signedOut(error = "", user = null) {
   // Two parts (teacher request 2026-10-20): the title and a Begin button, then
   // the sign-in card. Coming back from signing out or an error skips the title.
   const skipTitle = !user && Boolean(saved || error);
-  const begin = h("button.big.signin-begin", { type: "button", hidden: skipTitle }, "Begin");
+  const begin = h(
+    "button.big.signin-begin.bst-seal-btn",
+    { type: "button", hidden: skipTitle },
+    h("span.bst-seal-wax", { html: sealSvg({ seed: 41, size: 92, letter: "C" }) }),
+    h("span.bst-seal-text", "Begin")
+  );
   begin.addEventListener("click", () => {
     if (user) {
       begin.disabled = true;
-      begin.textContent = "Loading...";
+      begin.querySelector(".bst-seal-text").textContent = "Loading...";
       return enterGame(user);
     }
     const card = root.querySelector(".signin-card");
@@ -207,20 +213,28 @@ function signedOut(error = "", user = null) {
     btn.focus({ preventScroll: true });
   });
   root.replaceChildren(
+    // The cover of the Mossy Bestiary (2026-10-22): a leather-bound field guide
+    // with the title stamped in gold and the eight creatures on its plate.
     h(
-      "section.signin-hero",
+      "section.signin-hero.bestiary.bst-title",
       h("div.signin-sky", { "aria-hidden": "true" }, h("span.shooting-star"), h("span.shooting-star.second")),
+      h("div.bst-decor", { "aria-hidden": "true" },
+        h("span.bst-fern-left", { html: fernSvg({ seed: 51, curl: 0.4, width: 170, height: 310 }) }),
+        h("span.bst-fern-right", { html: fernSvg({ seed: 57, curl: -0.34, leaves: 12, width: 150, height: 280 }) })
+      ),
       h(
         "div.signin-inner",
-        h("p.signin-kicker", "Welcome to the Kingdom of Coinhaven"),
+        h("span.bst-cover-spine", { "aria-hidden": "true" }),
         // Two stacked copies: an outline behind and the gold in front, so the
         // outline never draws over the letters.
         h("h1.signin-title", h("span.t-back", { "aria-hidden": "true" }, "Credit Creatures"), h("span.t-front", "Credit Creatures")),
+        h("p.signin-kicker", "A field guide to the creatures of the Kingdom of Coinhaven"),
         h("p.signin-tagline", "Raise a creature. Build its credit."),
         h(
           "div.signin-parade",
           { role: "img", "aria-label": "Eight creatures: a lantern fox, a cloud bunny, a shell turtle, a star jellycorn, an ember phoenix, a crystal owl, a moss dragon and a puddle golem" },
-          parade.map((c, i) => h("span.signin-critter", { style: `--i: ${i}`, html: creatureSvg(c, { size: 160, label: "" }) }))
+          parade.map((c, i) => h("span.signin-critter", { style: `--i: ${i}`, html: creatureSvg(c, { size: 160, label: "" }) })),
+          h("span.bst-plate-moss", { "aria-hidden": "true", html: mossSvg({ seed: 61, width: 900, height: 54 }) })
         ),
         // Begin sits below the creatures, at the bottom center (teacher request 2026-10-21).
         begin,

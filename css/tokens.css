@@ -287,6 +287,7 @@
   --b-fs-hand: 1.15rem;   /* margin notes in the hand */
   --b-fs-title: 1.3rem;   /* specimen names, tabs, small headings */
   --b-fs-lead: 1.5rem;    /* the seal's label, names written on the label */
+  --b-fs-cover: clamp(3.4rem, 8vw, 6rem); /* the title on the cover, only */
 
   /* Space: one rhythm, a little uneven on purpose in the layout */
   --b-s1: 4px;
@@ -306,6 +307,8 @@
   --b-r-tab-alt: 14px 9px 0 0 / 10px 13px 0 0;
   --b-r-insert: 2px 9px 5px 11px / 9px 4px 12px 5px;
   --b-r-round: 999px;
+  --b-r-cover: 8px 18px 18px 8px;
+  --b-r-spine: 8px 0 0 8px;
 
   /* Depth: an offset, soft shadow, like paper lifted off the ground */
   --b-shadow-page: 0 18px 40px -18px rgba(12, 21, 16, 0.75), 0 2px 4px rgba(12, 21, 16, 0.3);

@@ -45,6 +45,11 @@ colors:
   sp-starJellycorn: "#8e3f7d"
   sp-emberPhoenix: "#9e3420"
 typography:
+  cover:
+    fontFamily: "IM Fell English, Alegreya, Georgia, serif"
+    fontSize: "clamp(3.4rem, 8vw, 6rem)"
+    fontWeight: 400
+    lineHeight: 0.95
   display:
     fontFamily: "IM Fell English, Alegreya, Georgia, serif"
     fontSize: "clamp(2.5rem, 3.6vw, 3.8rem)"
@@ -102,6 +107,8 @@ rounded:
   tab-alt: "14px 9px 0 0 / 10px 13px 0 0"
   insert: "2px 9px 5px 11px / 9px 4px 12px 5px"
   round: "999px"
+  cover: "8px 18px 18px 8px"
+  spine: "8px 0 0 8px"
 spacing:
   s1: "4px"
   s2: "8px"
@@ -318,6 +325,9 @@ The Kingdom of Coinhaven is a naturalist's survey map (`js/ui/bestiary-map.js`),
 
 ### Top Bar
 The book's leather strap: `--b-ground-deep` with a dashed gold stitch line near its lower edge, the brand in the display face, a framed mini portrait, the save time in the hand and "Save and exit" as a paper tag. It uses `.bst-scope` (the tokens without a page ground).
+
+### Cover (title page)
+The title page is the bestiary's cover: a leather board in `ground-deep` with a darker spine and raised bands, a double gold tooling rule, the title stamped in flat gold (`cover` size, with a pressed edge from text shadows, never gradient text), the subtitle in italic, the tagline in the hand in foxfire, the eight creatures on a paper frontispiece plate edged with moss, Begin as a wax seal, and sign-in on a paper slip. The Google sign-in button keeps Google's standard look.
 
 ### Pop-ups
 A record pinned on the moss ground. The kicker lands as a plum ink stamp, the icon sits in a framed plate, falling leaves replace confetti, and Continue is a wax seal.

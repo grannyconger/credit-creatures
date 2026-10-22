@@ -2302,3 +2302,142 @@ main#app.app:has(.bestiary) {
 @media (max-width: 1180px) {
   .bst-month .panel.month { grid-template-columns: 210px minmax(0, 1fr); padding: var(--b-s5); column-gap: var(--b-s5); }
 }
+
+/* ===========================================================================
+   The title page: the bestiary's cover. A leather-bound field guide on the
+   moss, the title stamped in gold, the eight creatures on a paper plate set
+   into the cover, Begin as a wax seal, and sign-in on a paper slip.
+   =========================================================================== */
+.bst-title.signin-hero {
+  width: 100vw;
+  margin: 0 calc(50% - 50vw);
+  min-height: 100vh;
+  padding: var(--b-s6) clamp(16px, 4vw, 64px) var(--b-s6);
+  align-items: flex-start;
+}
+.bst-title .signin-sky { display: none; }
+.bst-title .signin-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1080px;
+  padding: var(--b-s6) var(--b-s6) var(--b-s5) calc(var(--b-s6) + 34px);
+  background:
+    radial-gradient(120% 90% at 30% 10%, color-mix(in srgb, var(--b-moss-2) 22%, transparent), transparent 60%),
+    var(--b-grain), var(--b-ground-deep);
+  border-radius: var(--b-r-cover);
+  box-shadow:
+    var(--b-shadow-page),
+    inset 0 0 0 1px color-mix(in srgb, var(--b-on-ground) 10%, transparent),
+    inset 0 -14px 30px -18px color-mix(in srgb, var(--b-shadow-ink) 80%, transparent);
+  transform: rotate(-0.6deg);
+  animation: bst-page-in 0.7s var(--ease-gentle) both;
+}
+/* The gold tooling: a double rule set in from the cover's edge. */
+.bst-title .signin-inner::before {
+  content: "";
+  position: absolute;
+  inset: 18px 18px 18px 52px;
+  border: 1.5px solid color-mix(in srgb, var(--b-gold) 75%, transparent);
+  outline: 0.75px solid color-mix(in srgb, var(--b-gold) 55%, transparent);
+  outline-offset: 5px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+/* The spine, with its raised bands. */
+.bst-cover-spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 34px;
+  border-radius: var(--b-r-spine);
+  background:
+    linear-gradient(180deg, transparent 18%, color-mix(in srgb, var(--b-gold) 55%, transparent) 18% calc(18% + 2px), transparent calc(18% + 2px) 82%, color-mix(in srgb, var(--b-gold) 55%, transparent) 82% calc(82% + 2px), transparent calc(82% + 2px)),
+    linear-gradient(90deg, color-mix(in srgb, var(--b-shadow-ink) 55%, transparent), color-mix(in srgb, var(--b-on-ground) 8%, transparent) 60%, color-mix(in srgb, var(--b-shadow-ink) 40%, transparent));
+}
+/* The title, stamped in gold leaf: a flat gold with a pressed edge. */
+.bst-title .signin-title {
+  margin: 0;
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-cover);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+.bst-title .signin-title .t-back { display: none; }
+.bst-title .signin-title .t-front {
+  color: var(--b-gold);
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  text-shadow:
+    0 -1px 0 color-mix(in srgb, var(--b-shadow-ink) 70%, transparent),
+    0 1px 0 color-mix(in srgb, var(--b-pin-shine) 35%, transparent);
+}
+.bst-title .signin-kicker {
+  margin: var(--b-s3) 0 0;
+  font-family: var(--b-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--b-fs-lead);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--b-on-ground);
+}
+.bst-title .signin-tagline {
+  margin: var(--b-s2) 0 var(--b-s5);
+  font-family: var(--b-hand);
+  font-weight: 400;
+  font-size: var(--b-fs-lead);
+  color: var(--b-foxfire);
+}
+/* The frontispiece plate: paper set into the leather, creatures on moss. */
+.bst-title .signin-parade {
+  position: relative;
+  width: min(100%, 900px);
+  margin: 0 0 var(--b-s5);
+  padding: var(--b-s5) var(--b-s4) 0;
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 4px double var(--b-rule);
+  border-radius: var(--b-r-sheet);
+  box-shadow: inset 0 0 26px color-mix(in srgb, var(--b-shadow-ink) 18%, transparent), 0 2px 0 color-mix(in srgb, var(--b-on-ground) 12%, transparent);
+  overflow: hidden;
+}
+.bst-title .signin-critter { position: relative; z-index: 1; }
+.bst-title .signin-critter svg { width: clamp(84px, 10vw, 128px); }
+.bst-title .signin-critter:nth-child(4) svg,
+.bst-title .signin-critter:nth-child(5) svg { width: clamp(100px, 12vw, 152px); }
+.bst-plate-moss {
+  position: absolute;
+  z-index: 2;
+  left: -10px;
+  right: -10px;
+  bottom: -14px;
+  line-height: 0;
+}
+.bst-plate-moss svg { width: 100%; height: 54px; }
+.bst-title .signin-begin { margin-top: var(--b-s2); }
+.bst-title .signin-begin .bst-seal-text { font-size: var(--b-fs-lead); padding: 14px 40px 14px 58px; margin-left: -46px; }
+/* The sign-in slip: paper tucked under the cover. */
+.bst-title .signin-card {
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-lift);
+  transform: rotate(1.2deg);
+}
+.bst-title .signin-card .note { color: var(--b-ink-soft); }
+.bst-title .signin-card .callout { background: var(--b-plum-wash); }
+.bst-title .signin-who { color: var(--b-ink); }
+.bst-title .signin-who button.link { color: var(--b-plum); }
+.bst-title .bst-fern-left { bottom: 6vh; }
+:root[data-reading="dyslexia"] .bst-title .signin-inner,
+:root[data-reading="dyslexia"] .bst-title .signin-card { transform: none; }
+:root[data-reading="dyslexia"] .bst-title .signin-title { font-size: clamp(2.5rem, 6vw, 3.8rem); }
+.bst-title .signin-begin,
+.bst-title .signin-begin:active { min-width: 0; box-shadow: none; animation: none; border-radius: var(--b-r-round); font-size: inherit; }
+.bst-title .signin-inner { align-self: flex-start; }
+.bst-title .signin-inner { min-height: 0; }
+.bst-title .signin-parade { margin-top: 0; }
+.bst-title.signin-hero { align-items: center; }
