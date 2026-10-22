@@ -1302,3 +1302,126 @@ main.app:has(> .bestiary) {
 .bst-packet-stages li::marker { color: var(--dr); font-weight: 700; }
 .bst-packet-stages { font-size: var(--b-small); }
 .bst-packet-stages li { line-height: 1.3; }
+
+/* ===========================================================================
+   The join page: the creature waits by the gate on its own patch of moss,
+   and the visitor's pass hangs beside it, tilted, with a punched string hole.
+   =========================================================================== */
+.bst-gate {
+  position: relative;
+  z-index: 2;
+  max-width: 1120px;
+  margin: var(--b-s5) auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--b-s6);
+  align-items: center;
+}
+.bst-gate-creature {
+  position: relative;
+  margin: 0;
+  display: grid;
+  justify-items: center;
+}
+.bst-gate-art {
+  position: relative;
+  z-index: 1;
+  line-height: 0;
+  filter: drop-shadow(0 14px 10px color-mix(in srgb, var(--b-shadow-ink) 45%, transparent));
+}
+.bst-gate-art svg { overflow: visible; display: block; }
+.bst-gate-moss { margin-top: -34px; line-height: 0; }
+.bst-gate-creature .bst-margin {
+  margin-top: var(--b-s4);
+  max-width: 24ch;
+  text-align: center;
+  color: var(--b-on-ground);
+  transform: rotate(-2deg);
+}
+.bst-gate .bst-margin { font-size: var(--b-fs-lead); }
+
+.bst-pass {
+  position: relative;
+  padding: var(--b-s6) var(--b-s6) var(--b-s5);
+  background:
+    radial-gradient(30px 24px at 86% 82%, var(--b-foxing), transparent 70%),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border-radius: var(--b-r-tag);
+  outline: 1px solid var(--b-rule);
+  outline-offset: -12px;
+  box-shadow: var(--b-shadow-page);
+  transform: rotate(2.2deg);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-pass-string {
+  position: absolute;
+  top: -30px;
+  left: 34px;
+  line-height: 0;
+}
+.bst-pass h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 3.6vw, 3.8rem);
+  line-height: 0.98;
+}
+.bst-pass-sub {
+  margin: var(--b-s2) 0 0;
+  font-style: italic;
+  color: var(--b-ink-soft);
+}
+.bst-pass-label {
+  display: block;
+  margin-top: var(--b-s5);
+  font-weight: 700;
+  color: var(--b-ink-soft);
+}
+.bestiary input.bst-code {
+  display: block;
+  width: 100%;
+  max-width: 11ch;
+  margin-top: var(--b-s2);
+  padding: var(--b-s1) 0 var(--b-s2);
+  /* Alegreya, not Fell: Fell's old-style 1 looks like a capital I, and a
+     code has to be read exactly. */
+  font-family: var(--b-body);
+  font-weight: 700;
+  font-variant-numeric: lining-nums;
+  font-size: clamp(2.3rem, 3vw, 3.2rem);
+  letter-spacing: 0.24em;
+  color: var(--b-ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px dashed var(--b-rule);
+  border-radius: 0;
+  box-shadow: none;
+  text-transform: uppercase;
+}
+.bestiary input.bst-code::placeholder { color: var(--b-ink-soft); opacity: 0.55; }
+.bestiary input.bst-code:focus {
+  outline: 2.5px dashed var(--b-plum);
+  outline-offset: 6px;
+  border-bottom-style: solid;
+}
+.bst-pass .bst-error { margin-top: var(--b-s3); }
+.bst-pass .bst-actions { margin-top: var(--b-s3); }
+
+.bst-joined {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--b-s3);
+  margin-top: var(--b-s4);
+  padding: var(--b-s3) var(--b-s4);
+  background: var(--b-plum-wash);
+  border-radius: var(--b-r-insert);
+}
+.bst-joined p { display: flex; align-items: center; gap: var(--b-s2); margin: 0; }
+.bst-joined .ico-wrap { color: var(--b-plum); }
+
+:root[data-reading="dyslexia"] .bst-pass { transform: none; }
+:root[data-reading="dyslexia"] .bestiary input.bst-code { letter-spacing: 0.1em; font-size: 2.5rem; }
+
+@media (max-width: 900px) {
+  .bst-gate { grid-template-columns: minmax(0, 1fr); gap: var(--b-s5); }
+}
