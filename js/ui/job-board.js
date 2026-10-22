@@ -12,6 +12,14 @@ import * as P from "../play.js";
 import { ledgerSort } from "./minigames/ledger-sort.js";
 import { cashierRush } from "./minigames/cashier-rush.js";
 import { checkWriter } from "./minigames/check-writer.js";
+import { spotOverdraft } from "./minigames/spot-overdraft.js";
+import { registerBalancer } from "./minigames/register-balancer.js";
+import { checkHunt } from "./minigames/check-hunt.js";
+import { countDrawer } from "./minigames/count-drawer.js";
+import { unitPriceShowdown } from "./minigames/unit-price.js";
+
+// The games that only need the shared options (seed, timed, onDone, track).
+const GAMES = { ledger: ledgerSort, cashier: cashierRush, overdraft: spotOverdraft, register: registerBalancer, checkhunt: checkHunt, drawer: countDrawer, unitprice: unitPriceShowdown };
 
 const REACTIONS = [
   ["up", "👍", "I liked this job"],
@@ -86,12 +94,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
       finish(key, result);
     };
     const opts = { seed, timed, onDone: done, track };
-    running =
-      key === "ledger"
-        ? ledgerSort(opts)
-        : key === "cashier"
-          ? cashierRush(opts)
-          : checkWriter({ ...opts, life: run.life, creature: game.save.creature, payFor: (right) => jobPay(play, "checks", { right }) });
+    running = key === "checks" ? checkWriter({ ...opts, life: run.life, creature: game.save.creature, payFor: (right) => jobPay(play, "checks", { right }) }) : GAMES[key](opts);
     fill(el, h("h3", icon(JOBS[key].mark || "guild", { size: 24 }), ` ${JOBS[key].title}`), running);
     // A minigame can say where the keyboard starts (Cashier Rush: Give change).
     (el.querySelector("[data-autofocus]") || el.querySelector("button"))?.focus();

@@ -23,6 +23,12 @@ export const FEATURES = {
   academy: { at: 1 },
   inbox: { at: 1 },
   checks: { at: 1 },
+  // Five more Guild Hall jobs, all in Chapter 1 (teacher request 2026-10-22).
+  overdraft: { at: 1 },
+  register: { at: 1 },
+  checkhunt: { at: 1 },
+  drawer: { at: 1 },
+  unitprice: { at: 1 },
   loans: { at: 2 },
   garage: { at: 2 },
   homeLoan: { at: 2 },
@@ -87,7 +93,7 @@ export function payMethods(play, life) {
 
 // The jobs at the Guild Hall so far.
 export function openJobs(play) {
-  return ["cashier", "checks", "ledger"].filter((j) => hasFeature(play, j));
+  return ["cashier", "checks", "overdraft", "register", "checkhunt", "drawer", "unitprice", "ledger"].filter((j) => hasFeature(play, j));
 }
 
 // One celebration per stage, shown when the stage starts.

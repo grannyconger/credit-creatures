@@ -1487,3 +1487,19 @@ body { font-variation-settings: "SOFT" 100, "WONK" 1; }
   .cc .cc-eye { transform: none !important; scale: none !important; }
 }
 .t-start-over textarea { display: block; width: min(100%, 36rem); font: inherit; padding: 8px 10px; border-radius: 8px; border: 1.5px solid var(--border); margin: 6px 0 10px; }
+
+/* Check Anatomy Hunt and Count the Drawer marks on the always-light check
+   paper and money (2026-10-22). Right and wrong also get a ✓ or ✗. */
+.bst-guild button.ch-spot:hover, .bst-guild button.ch-spot:focus-visible { border-color: #5f7f62; background: rgba(255, 255, 255, 0.45); }
+.bst-guild .ch-payee, .bst-guild .ch-words { flex: 1; font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive; border-bottom: 2px solid #5f7f62; border-radius: 0; }
+.bst-guild .ch-amount { min-width: 110px; font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive; border: 2px solid #5f7f62; }
+.bst-guild .ch-memo { min-width: 140px; border-bottom: 2px solid #5f7f62; border-radius: 0; }
+.bst-guild .ch-empty { display: inline-block; min-width: 90px; color: #9aa59b; }
+.bst-guild .ch-micr { display: flex; gap: var(--b-s4); padding-top: 6px; font-family: "Courier New", ui-monospace, monospace; font-size: 1.15rem; letter-spacing: 0.12em; border-top: 1px dashed #9dbb9f; }
+.bst-guild .ch-spot.ch-answer { border-style: solid; border-color: #2f7d4a; }
+.bst-guild .ch-spot.ch-right { background: rgba(47, 125, 74, 0.18); }
+.bst-guild .ch-spot.ch-right::after { content: " ✓"; font-family: var(--b-body); font-weight: 700; color: #2f7d4a; }
+.bst-guild .ch-spot.ch-wrong { border-style: solid; border-color: #a33b1c; background: rgba(163, 59, 28, 0.12); }
+.bst-guild .ch-spot.ch-wrong::after { content: " ✗"; font-family: var(--b-body); font-weight: 700; color: #a33b1c; }
+.bst-guild .dr-pile.bills .dr-piece { width: 54px; min-height: 30px; padding: 0; font-size: 0.75rem; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); transform: rotate(calc((var(--i) - 3) * 2deg)); }
+.bst-guild .dr-pile.coins .dr-piece { font-size: calc(var(--coin) * 0.3); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); }

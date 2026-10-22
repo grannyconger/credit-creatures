@@ -119,7 +119,8 @@ export function jobPay(play, job, score) {
   let base;
   if (job === "ledger") base = j.pay.min + j.ledger.perRight * score.right - j.ledger.perWrong * score.wrong;
   else if (job === "cashier") base = j.pay.min + j.cashier.perRight * score.right;
-  else base = j.pay.min + j.checks.perField * score.right;
+  else if (job === "checks") base = j.pay.min + j.checks.perField * score.right;
+  else base = j.pay.min + (j[job]?.perRight || 0) * score.right;
   const clamped = Math.max(j.pay.min, Math.min(j.pay.max, Math.round(base)));
   // A ride and a home workshop (Phase 10 Garage and Cottage) pay off too.
   return clamped + experienceBonus(play, job) + (play.shiftBonus || 0) + rideAndHomeBonus(play);

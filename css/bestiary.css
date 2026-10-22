@@ -3822,3 +3822,111 @@ main#app.app:has(.bestiary) {
 .bst-guild .cash-piece.coin:is(.coin-dime, .coin-quarter) { border-style: dotted; border-width: 3px; }
 .bst-guild .cash-piece.coin:is(.coin-nickel, .coin-penny) { border-style: solid; border-width: 2.5px; }
 .bst-guild .tray-piece.coin { border-radius: 999px; }
+
+/* ===========================================================================
+   The five Chapter 1 jobs (teacher request 2026-10-22). They're played on the
+   Guild Hall's dark workbench like the first three, with paper for anything
+   to read. Big touch targets, and right or wrong always has a word or a mark.
+   =========================================================================== */
+.bst-guild :is(.overdraft, .register, .checkhunt, .drawer, .unitprice) { touch-action: manipulation; }
+.bst-guild :is(.overdraft, .register, .checkhunt, .drawer, .unitprice) button { min-height: 48px; }
+.bst-guild :is(.overdraft, .register, .checkhunt, .drawer, .unitprice) .row button:not(.big):not(.kp-key):not(.kp-check) {
+  font-family: var(--b-body); font-weight: 700; color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card);
+}
+
+/* Keypad (Register Balancer, Count the Drawer) */
+.bst-guild .keypad { display: grid; gap: var(--b-s2); width: 260px; padding: var(--b-s3); color: var(--b-ink); background: var(--b-grain), var(--b-paper); border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-lift); }
+.bst-guild .kp-top { display: grid; gap: 2px; }
+.bst-guild .kp-label { font-family: var(--b-hand); font-size: var(--b-small); color: var(--b-ink-soft); }
+.bst-guild .kp-screen { display: block; padding: 8px 12px; text-align: right; font-family: var(--b-body); font-size: var(--b-fs-lead); font-variant-numeric: tabular-nums; background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; }
+.bst-guild .kp-keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--b-s2); }
+.bst-guild .kp-key { min-height: 52px; font-family: var(--b-body); font-weight: 700; font-size: var(--b-fs-title); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; user-select: none; }
+.bst-guild .kp-key:active { transform: translateY(2px); }
+.bst-guild .kp-check { min-height: 52px; font-family: var(--b-body); font-weight: 700; color: var(--b-on-rust); background: var(--b-grain), var(--b-rust); border: 0; border-radius: var(--b-r-tag); }
+
+/* Spot the Overdraft */
+.bst-guild .od-balance-line { margin: var(--b-s2) 0; color: var(--b-on-ground); font-size: var(--b-fs-title); }
+.bst-guild .od-balance { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-cover); color: var(--b-gold); font-variant-numeric: lining-nums tabular-nums; }
+.bst-guild .od-card { display: grid; justify-items: start; gap: 4px; max-width: 520px; padding: var(--b-s4) var(--b-s5); color: var(--b-ink); background: var(--b-grain), var(--b-paper); border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-lift); animation: od-in 0.28s var(--ease-bouncy, ease-out); }
+@keyframes od-in { from { opacity: 0; transform: translateX(28px) rotate(1deg); } }
+.bst-guild .od-kind { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink-soft); }
+.bst-guild .od-label { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.bst-guild .od-amount { font-family: var(--b-display); font-size: var(--b-fs-lead); font-variant-numeric: tabular-nums; }
+.bst-guild .od-amount.in { color: var(--b-moss-3); }
+.bst-guild .od-amount.out { color: var(--b-rust-ink); }
+.bst-guild .od-bar { max-width: 520px; height: 8px; margin-top: var(--b-s2); background: color-mix(in srgb, var(--b-on-ground) 18%, transparent); border-radius: 99px; overflow: hidden; }
+.bst-guild .od-bar span { display: block; height: 100%; background: var(--b-gold); }
+.bst-guild .od-actions { justify-content: flex-start; gap: var(--b-s3); margin-top: var(--b-s4); }
+.bst-guild .od-let { min-width: 160px; }
+
+/* Register Balancer */
+.bst-guild .rg-layout { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--b-s4); align-items: start; }
+.bst-guild .rg-book { max-height: 420px; overflow: auto; color: var(--b-ink); background: var(--b-grain), var(--b-paper); border-radius: var(--b-r-sheet); box-shadow: var(--b-shadow-card); }
+.bst-guild .rg-table { width: 100%; border-collapse: collapse; font-size: var(--b-small); }
+.bst-guild .rg-table th { position: sticky; top: 0; padding: 8px 10px; text-align: left; font-family: var(--b-display); font-weight: 400; background: var(--b-paper-2); border-bottom: 2px solid var(--b-rule); }
+.bst-guild .rg-table td { padding: 8px 10px; border-bottom: 1px dashed var(--b-rule); vertical-align: top; }
+.bst-guild .rg-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bst-guild .rg-table tr.current td { background: var(--b-plum-wash); font-weight: 700; }
+.bst-guild .rg-table tr.current td:first-child { box-shadow: inset 4px 0 0 var(--b-plum); }
+.bst-guild .rg-blank { display: inline-block; min-width: 4ch; border-bottom: 2px solid var(--b-plum); text-align: center; }
+.bst-guild .rg-receipt { display: block; font-family: var(--b-hand); color: var(--b-rust-ink); }
+.bst-guild .rg-side { display: grid; gap: var(--b-s3); justify-items: stretch; }
+.bst-guild .rg-dispute { font-family: var(--b-body); font-weight: 700; color: var(--b-ink); background: var(--b-grain), var(--b-paper-2); border: 2px dashed var(--b-rust-ink); border-radius: var(--b-r-tag); }
+
+/* Check Anatomy Hunt */
+.bst-guild .ch-prompt { display: grid; gap: 2px; margin: 0 0 var(--b-s3); color: var(--b-on-ground); }
+.bst-guild .ch-prompt strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.bst-guild .ch-prompt small { font-family: var(--b-hand); font-size: var(--b-small); color: var(--b-on-ground-soft); }
+.bst-guild .ch-check { position: relative; }
+.bst-guild .ch-spot { min-height: 44px; padding: 4px 10px; font: inherit; color: inherit; text-align: left; background: transparent; border: 2px dashed transparent; border-radius: 6px; cursor: pointer; }
+.bst-guild .ch-sig { min-width: 200px; min-height: 52px; text-align: center; }
+.bst-guild .ch-judge { justify-content: center; gap: var(--b-s3); margin-top: var(--b-s4); }
+
+/* Count the Drawer */
+.bst-guild .dr-title { color: var(--b-on-ground); font-family: var(--b-display); font-size: var(--b-fs-title); margin: 0 0 var(--b-s3); }
+.bst-guild .dr-title strong { font-weight: 400; }
+.bst-guild .dr-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--b-s3); }
+.bst-guild .dr-slot { display: grid; justify-items: center; align-content: start; gap: var(--b-s2); padding: var(--b-s3); background: var(--b-grain), var(--b-ground-deep); border-radius: var(--b-r-tag); box-shadow: inset 0 3px 8px color-mix(in srgb, var(--b-shadow-ink) 45%, transparent); }
+.bst-guild .dr-name { font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-on-ground); }
+.bst-guild .dr-pile { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; min-height: 64px; max-width: 100%; }
+.bst-guild .dr-piece .coin-name, .bst-guild .dr-piece .cash-key { display: none; }
+.bst-guild .dr-none { font-family: var(--b-hand); color: var(--b-on-ground-soft); }
+.bst-guild .dr-stepper { display: flex; align-items: center; gap: var(--b-s2); }
+.bst-guild .dr-stepper button { width: 48px; height: 48px; font-size: 1.5rem; font-weight: 700; color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: 50%; box-shadow: var(--b-shadow-card); }
+.bst-guild .dr-count { min-width: 2.5ch; text-align: center; font-family: var(--b-display); font-size: var(--b-fs-lead); color: var(--b-on-ground); font-variant-numeric: tabular-nums; }
+.bst-guild .dr-check { min-height: 1.2em; font-weight: 700; color: var(--b-on-ground); }
+.bst-guild .dr-slot.dr-right { box-shadow: inset 0 0 0 3px var(--b-foxfire); }
+.bst-guild .dr-slot.dr-wrong { box-shadow: inset 0 0 0 3px var(--b-seal-shine); }
+.bst-guild .dr-foot { justify-content: space-between; align-items: center; margin-top: var(--b-s4); }
+.bst-guild .dr-total { color: var(--b-on-ground); font-size: var(--b-fs-title); }
+.bst-guild .dr-running { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-gold); }
+.bst-guild .dr-tape-row { display: flex; flex-wrap: wrap; gap: var(--b-s4); align-items: start; }
+.bst-guild .dr-tape { min-width: 280px; padding: var(--b-s3) var(--b-s4); color: var(--b-ink); background: var(--b-grain), var(--b-paper); border-radius: 4px 4px 0 0; box-shadow: var(--b-shadow-card); font-family: "Courier New", ui-monospace, monospace; }
+.bst-guild .dr-tape p { display: flex; justify-content: space-between; gap: var(--b-s4); margin: 6px 0; }
+.bst-guild .dr-tape .note { font-family: var(--b-hand); color: var(--b-ink-soft); }
+.bst-guild .dr-choices { flex-wrap: wrap; align-items: center; gap: var(--b-s3); margin-top: var(--b-s4); }
+.bst-guild .dr-ask { flex-basis: 100%; margin: 0; color: var(--b-on-ground); font-size: var(--b-fs-title); }
+
+/* Unit Price Showdown */
+.bst-guild .up-prompt { display: grid; gap: 2px; margin: 0 0 var(--b-s3); color: var(--b-on-ground); }
+.bst-guild .up-prompt strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.bst-guild .up-prompt small { font-family: var(--b-hand); color: var(--b-on-ground-soft); }
+.bst-guild .up-shelf { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--b-s4); }
+.bst-guild .up-card { position: relative; display: grid; justify-items: start; gap: 4px; min-height: 180px; padding: var(--b-s4); text-align: left; font-family: var(--b-body); color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-top: 6px solid var(--b-gold); border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-lift); transition: transform var(--b-quick) var(--ease-bouncy); }
+.bst-guild .up-card:not(:disabled):hover { transform: translateY(-4px) rotate(-0.6deg); }
+.bst-guild .up-card .cash-key { top: 8px; left: auto; right: 10px; }
+.bst-guild .up-name { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-guild .up-size { font-size: var(--b-fs-title); }
+.bst-guild .up-price { font-family: var(--b-display); font-size: var(--b-fs-lead); color: var(--b-gold-ink); }
+.bst-guild .up-coupon { padding: 2px 8px; font-weight: 700; font-size: var(--b-small); color: var(--b-ink); background: var(--b-paper-2); border: 2px dashed var(--b-rust-ink); border-radius: 4px; }
+.bst-guild .up-unit { min-height: 1.4em; font-weight: 700; }
+.bst-guild .up-card:disabled { opacity: 1; cursor: default; }
+.bst-guild .up-card.up-best { box-shadow: inset 0 0 0 3px var(--b-moss-3), var(--b-shadow-lift); }
+.bst-guild .up-card.up-chosen:not(.up-best) { box-shadow: inset 0 0 0 3px var(--b-rust-ink), var(--b-shadow-lift); }
+.bst-guild .up-tag { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-moss-3); }
+.bst-guild .up-tag.chosen { color: var(--b-plum); }
+.bst-guild .up-foot { justify-content: flex-end; margin-top: var(--b-s3); }
+@media (max-width: 1100px) {
+  .bst-guild .rg-layout { grid-template-columns: minmax(0, 1fr); }
+  .bst-guild .dr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

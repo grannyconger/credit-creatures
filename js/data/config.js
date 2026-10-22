@@ -42,6 +42,15 @@ export const CONFIG = {
       ledger: { seconds: 45, untimedItems: 12, perRight: 8, perWrong: 4, lockMs: 300 },
       cashier: { seconds: 60, untimedCustomers: 6, perRight: 14, nextCustomerMs: 900 },
       checks: { perField: 13 },
+      // The five Chapter 1 jobs (teacher request 2026-10-22). perRight is
+      // dollars per right answer on top of the base pay. A perfect shift
+      // reaches about the top of the pay range, like the first three jobs.
+      // seconds is the timed shift. The No timer toggle drops the clock.
+      overdraft: { rounds: 6, feedLength: 7, startMs: 2800, endMs: 1500, betweenMs: 1600, perRight: 13 },
+      register: { lines: 10, seconds: 180, perRight: 8 },
+      checkhunt: { seconds: 120, rightMs: 1300, wrongMs: 2600, perRight: 8 },
+      drawer: { drawers: 2, seconds: 240, perRight: 4 },
+      unitprice: { rounds: 10, seconds: 120, perRight: 8 },
     },
     monthRecordsKept: 6,
   },

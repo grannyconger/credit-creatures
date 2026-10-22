@@ -23,7 +23,103 @@ export const JOBS = {
     job: "Scribe at the Vault",
     skill: "Write a check to pay a bill, then endorse your paycheck.",
   },
+  // Five more jobs that open in Chapter 1 (teacher request 2026-10-22).
+  overdraft: {
+    mark: "alert",
+    icon: "🛑",
+    title: "Spot the Overdraft",
+    job: "Teller at the Vault",
+    skill: "Stop the one purchase that would drop checking below $0.",
+  },
+  register: {
+    mark: "receipt",
+    icon: "🧾",
+    title: "Register Balancer",
+    job: "Bookkeeper's helper",
+    skill: "Keep a running balance, and dispute charges that look wrong.",
+  },
+  checkhunt: {
+    mark: "statement",
+    icon: "🔎",
+    title: "Check Anatomy Hunt",
+    job: "Vault clerk",
+    skill: "Find each part of a check and spot one that's no good.",
+  },
+  drawer: {
+    mark: "piggy",
+    icon: "💵",
+    title: "Count the Drawer",
+    job: "Closing shift at Shimmer Market",
+    skill: "Count the cash drawer and find out if it's over or short.",
+  },
+  unitprice: {
+    mark: "market",
+    icon: "⚖️",
+    title: "Unit Price Showdown",
+    job: "Market price checker",
+    skill: "Pick the better buy by its price per unit, not its size.",
+  },
 };
+
+// ---------- Spot the Overdraft and Register Balancer ----------
+
+// Fictional places to spend and ways to get paid.
+export const SPENDS = [
+  "Glimmer Grocers", "Moonbeam Cafe", "Pixel Pines Games", "Toadstool Taxi", "Featherfoot Shoes", "Copperkettle Diner",
+  "Lanternlight Books", "Thistle Phone Co.", "Bramble Bus Pass", "Sprocket Bike Shop", "Puddle Pet Supply", "Sunnyside Laundry",
+];
+export const EARNINGS = ["Paycheck from the Guild Hall", "Birthday money from Grandma", "Refund from Featherfoot Shoes", "Tutoring pay", "Sold an old game"];
+export const CHECK_PAYEES = ["Maple Lane Rentals", "Coinhaven Water Works", "Dr. Fernsby's Office", "Willowbrook Music School", "Hilltop Soccer Club"];
+
+// ---------- Check Anatomy Hunt ----------
+
+// Each part of a check, what to tap, and what it does.
+export const CHECK_PARTS = {
+  routing: { ask: "the routing number", why: "The routing number tells which bank the check is from. It's the first group on the bottom line." },
+  account: { ask: "the account number", why: "The account number is the writer's account at that bank. It comes after the routing number." },
+  checkno: { ask: "the check number", why: "The check number helps you track each check. It's in the top corner and at the end of the bottom line." },
+  payee: { ask: "who gets paid (the payee)", why: "The payee is the person or business the money goes to." },
+  amount: { ask: "the amount in numbers", why: "The amount in numbers goes in the box by the dollar sign." },
+  words: { ask: "the amount in words", why: "The amount in words is the official amount. It has to match the numbers." },
+  date: { ask: "the date", why: "The date shows when the check was written." },
+  memo: { ask: "the memo line", why: "The memo is a note about what the check is for. It's optional, but it helps you remember." },
+  signature: { ask: "the signature", why: "A check isn't valid until the person who owns the account signs it." },
+};
+// The planted problems for "Is this check good to cash?"
+export const CHECK_FLAWS = {
+  ok: "Everything matches and it's signed, so it's good to cash.",
+  unsigned: "There's no signature, so the bank won't cash it.",
+  mismatch: "The numbers and the words don't match. The bank goes by the words, or sends it back.",
+  nodate: "It has no date. Most banks won't take a check without one.",
+};
+
+// ---------- Count the Drawer ----------
+
+// Starting cash in the drawer (the float), in cents. Round amounts, like a real till.
+export const DRAWER_FLOATS = [2500, 5000, 7500, 10000];
+
+// ---------- Unit Price Showdown ----------
+
+// Fictional products. price in cents, qty in the unit shown. kind groups the
+// ones that compare fairly (same thing, different packs or brands).
+export const PRODUCTS = [
+  { kind: "cereal", name: "Moonberry Crunch", unit: "oz", sizes: [[12, 349], [18, 459], [32, 849]] },
+  { kind: "cereal", name: "Honey Hoot O's", unit: "oz", sizes: [[10, 299], [20, 529]] },
+  { kind: "juice", name: "Sunpeak Apple Juice", unit: "fl oz", sizes: [[32, 299], [64, 549], [96, 899]] },
+  { kind: "juice", name: "Glimmer Grape Juice", unit: "fl oz", sizes: [[48, 429], [128, 1099]] },
+  { kind: "soap", name: "Bubblefern Dish Soap", unit: "fl oz", sizes: [[16, 249], [28, 399], [40, 649]] },
+  { kind: "pencils", name: "Sprout Pencils", unit: "pencils", sizes: [[12, 299], [24, 499], [48, 1099]] },
+  { kind: "pencils", name: "Inkwell Pencils", unit: "pencils", sizes: [[10, 199], [30, 649]] },
+  { kind: "kibble", name: "Puddle Pup Kibble", unit: "lb", sizes: [[4, 899], [15, 2799], [30, 5999]] },
+  { kind: "chips", name: "Toadstool Chips", unit: "oz", sizes: [[8, 329], [16, 529], [32, 1149]] },
+  { kind: "water", name: "Crystalspring Water", unit: "bottles", sizes: [[12, 449], [24, 799], [35, 1299]] },
+];
+export const UNIT_TIPS = [
+  "Bigger is not always cheaper. Check the price per unit.",
+  "Unit price means the price for one ounce, one pencil or one bottle. It makes different sizes fair to compare.",
+  "A low unit price isn't a deal if the food goes bad before you use it.",
+  "Store shelf tags often show the unit price in small print. Look for it.",
+];
 
 // ---------- Ledger Sort ----------
 
