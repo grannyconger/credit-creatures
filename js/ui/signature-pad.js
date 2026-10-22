@@ -26,7 +26,7 @@ export function askSignature({ name, title = "Sign here" }) {
       canvas.height = Math.round(r.height * scale);
       ctx = canvas.getContext("2d");
       ctx.scale(scale, scale);
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 3.5;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.strokeStyle = "#1d2b44";

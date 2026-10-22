@@ -675,11 +675,13 @@ ul.plain li { padding: 4px 0; }
 .sig-body { padding: 16px 24px; display: flex; flex-direction: column; height: calc(100vh - 80px); }
 .sig-draw { display: flex; flex-direction: column; flex: 1; }
 .sig-help { text-align: center; margin: 0 0 10px; }
-.sig-box { position: relative; flex: 1; min-height: 240px; background: var(--panel); border: 2px solid var(--border); border-radius: 14px; }
+/* The signing strip is always light check paper, in every appearance, so the
+   navy ink (js/ui/signature-pad.js) always stands out (teacher request 2026-10-22). */
+.sig-box { position: relative; flex: 1; min-height: 240px; background: #f7f6ee; border: 2px solid #9aa3b5; border-radius: 14px; }
 .sig-canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; z-index: 1; }
 .sig-line { position: absolute; left: 8%; right: 8%; bottom: 28%; border-bottom: 2px solid #9aa3b5; }
 .sig-x { position: absolute; left: 4%; bottom: 29%; color: #9aa3b5; font-size: 1.4rem; }
-.sig-typed { text-align: center; font-size: 3.2rem; padding: 40px 10px; background: var(--panel); border: 2px solid var(--border); border-radius: 14px; }
+.sig-typed { text-align: center; font-size: 3.2rem; padding: 40px 10px; background: #f7f6ee; color: #1d2b44; border: 2px solid #9aa3b5; border-radius: 14px; }
 
 .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 12px; }
 .shop-item { position: relative; border: 2px solid var(--border); border-radius: 14px; padding: 14px; text-align: center; background: var(--panel); display: flex; flex-direction: column; align-items: center; gap: 4px; }

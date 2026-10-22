@@ -249,8 +249,10 @@
   --sp-puddleGolem: #255a72;
   --sp-starJellycorn: #8e3f7d;
   --sp-emberPhoenix: #9e3420;
-  /* The field map (js/ui/bestiary-map.js): ink, pencil and watercolor washes */
-  --m-paper: #e2e5d2;
+  /* The field map (js/ui/bestiary-map.js): ink, pencil and watercolor washes.
+     The map is paper in every appearance, so these don't change in dark mode
+     (teacher request 2026-10-22: lighter, calmer map). */
+  --m-paper: #eef0e4;
   --m-ink: #24302a;
   --m-pencil: #6d7764;
   --m-path: #6e5a40;
@@ -267,6 +269,14 @@
   --m-tree-2: #93ab6a;
   --m-window: #eef0e0;
   --m-smoke: #b3b9aa;
+  /* Tags and notes on the map: light in every appearance (contrast checked:
+     ink 12.8:1, plum note 10.4:1, rust 6.6:1, locked 6.4:1). */
+  --m-tag: #f7f8ef;
+  --m-tag-locked: #e6e9dc;
+  --m-tag-ink-soft: #4a5547;
+  --m-note-plum: #5b2a4e;
+  --m-note-rust: #93401f;
+  --m-note-glow: #c8e04b;
   /* Each dream's ink on the dream page */
   --dr-home: #93401f;
   --dr-shop: #7a5410;
@@ -373,40 +383,8 @@
     --sp-puddleGolem: #7fbad6;
     --sp-starJellycorn: #dc8fc9;
     --sp-emberPhoenix: #ee8a6c;
-    --m-paper: #26342c;
-    --m-ink: #d9dfc9;
-    --m-pencil: #8d9a86;
-    --m-path: #b39566;
-    --m-water: #2f5552;
-    --m-stone: #4e5546;
-    --m-wall: #5d543c;
-    --m-door: #2a2018;
-    --m-roof-rust: #8a4a30;
-    --m-roof-moss: #3e5a34;
-    --m-roof-plum: #5a3a52;
-    --m-roof-slate: #3d5468;
-    --m-gold: #b8892f;
-    --m-tree: #3f5a35;
-    --m-tree-2: #4d6a3c;
     --m-window: #f0c35a;
-    --m-smoke: #6f7768;
-    --m-paper: #26342c;
-  --m-ink: #d9dfc9;
-  --m-pencil: #8d9a86;
-  --m-path: #b39566;
-  --m-water: #2f5552;
-  --m-stone: #4e5546;
-  --m-wall: #5d543c;
-  --m-door: #2a2018;
-  --m-roof-rust: #8a4a30;
-  --m-roof-moss: #3e5a34;
-  --m-roof-plum: #5a3a52;
-  --m-roof-slate: #3d5468;
-  --m-gold: #b8892f;
-  --m-tree: #3f5a35;
-  --m-tree-2: #4d6a3c;
   --m-window: #f0c35a;
-  --m-smoke: #6f7768;
   --dr-home: #ec9a74;
     --dr-shop: #e2b65a;
     --dr-adventure: #7fbad6;

@@ -180,8 +180,9 @@ function terrain(paths, places) {
   const busy = [...places.map((p) => [p.x, p.y, 105]), [175, 57, 140], [940, 300, 60], ...paths.flatMap((pts) => pts.map(([x, y]) => [x, y, 26]))];
   const free = (x, y, pad = 0) => busy.every(([bx, by, br]) => (x - bx) ** 2 + (y - by) ** 2 > (br + pad) ** 2);
   const trees = [];
-  for (let i = 0; i < 400 && trees.length < 64; i++) {
-    const x = 20 + r() * 960;
+  for (let i = 0; i < 400 && trees.length < 18; i++) {
+    // Keep the middle of the map clear: trees grow near the edges only.
+    const x = r() < 0.5 ? 20 + r() * 150 : 830 + r() * 150;
     const y = 120 + r() * 380;
     if (!free(x, y)) continue;
     busy.push([x, y, 14]);
@@ -192,11 +193,11 @@ function terrain(paths, places) {
   }
   // Hill marks along the top, the old cartographer's little humps.
   const hills = [];
-  for (let x = 30; x < 980; x += 58 + r() * 20) {
+  for (let x = 60; x < 980; x += 150 + r() * 40) {
     const y = 96 + r() * 26;
     if (!free(x + 20, y, -40)) continue;
     const w = 34 + r() * 18;
-    hills.push(ink(`M${f(x)} ${f(y)} q${f(w / 2)} ${f(-w * 0.7)} ${f(w)} 0`, 1.6) + ink(hatch(x + w * 0.55, y - w * 0.3, x + w * 0.9, y - 2, 3, 4, 7), 1));
+    hills.push(ink(`M${f(x)} ${f(y)} q${f(w / 2)} ${f(-w * 0.7)} ${f(w)} 0`, 1.3));
   }
   return hills.join("") + trees.join("");
 }
@@ -228,7 +229,7 @@ function scene(creature, ageMonths, status = {}, home = [], guardian = "") {
     ${ink("M0 540 Q250 498 500 546 T1000 520", 2)}
     ${ink([60, 180, 330, 470, 620, 760, 900].map((x, i) => `M${x} ${570 + (i % 2) * 12} q8 -6 16 0 q8 6 16 0`).join(" "), 1.2)}
     <!-- Paths: dotted ink trails from the Cottage. Unopened ones are fainter. -->
-    ${others.map((pl) => `<path d="${pathTo(p[pl.id])}" fill="none" stroke="var(--m-path)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0.1 10" ${locked(pl.id) ? 'opacity="0.45"' : ""}/>`).join("")}
+    ${others.map((pl) => `<path d="${pathTo(p[pl.id])}" fill="none" stroke="var(--m-path)" stroke-width="3" stroke-linecap="round" stroke-dasharray="0.1 11" opacity="${locked(pl.id) ? 0.3 : 0.6}"/>`).join("")}
     ${terrain(others.map((pl) => samples(p[pl.id])), Object.values(p))}
     <!-- The title cartouche and the compass rose. -->
     <g transform="translate(40 24)">
