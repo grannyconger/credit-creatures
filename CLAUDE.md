@@ -61,6 +61,7 @@ The app is the naturalist's field guide to Coinhaven's creatures. Screens are pa
 | 15 | Motion: spring physics, boops, page morphs, rolling numbers, a Motion setting, and Fraunces for headings (`docs/MOTION.md`) | Done, awaiting the teacher's review |
 | 16 | Particles, sparkles, animated icons, a living map (`docs/MOTION.md`) | Done, awaiting the teacher's review |
 | 17 | Detailed storybook creatures, eyes that follow the mouse, blinks and reactions (`docs/MOTION.md`) | Done, awaiting the teacher's review |
+| Jobs | Five more Chapter 1 Guild Hall jobs: Spot the Overdraft, Register Balancer, Check Anatomy Hunt, Count the Drawer, Unit Price Showdown (`js/ui/minigames/`) | Done, awaiting the teacher's review |
 
 ## Run locally
 

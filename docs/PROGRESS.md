@@ -2,9 +2,15 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-21 (Phase 15: motion)
+Last updated: 2026-10-22 (way-finding, readability, Phases 16 and 17, five new jobs, Trophies)
 
 ## Next step
+
+**Where things stand (end of 2026-10-22):** everything below is pushed and live. Awaiting the teacher's review: Phases 15, 16 and 17 (motion, effects, living creatures), the five new Chapter 1 jobs, and the Trophies redesign. Firestore rules were last changed for gifts, class delete and reset notes, and the teacher has published them.
+
+**Up next, in order:** (1) the remaining old-look screens, one at a time with approval: Friendship Plaza, the Garage, Lantern Alley, chapter end, Account settings, the story intro and name step. (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) Fee Detective, the next job idea. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
+
+**Trophies and the Leaderboard (2026-10-22, pushed, awaiting review):** now in the bestiary look (`js/ui/screens/trophies.js`, `.bst-trophies` in `css/bestiary.css`). The rank is a wax seal with a Roman numeral and an XP vine. Achievements are medals pinned in cases, with a drawn icon per category (`CATEGORY_MARK`) instead of emoji. Earned, locked and hidden are said in words. Records are ledger lines, plus a rank ladder ("You are here", "Reached", "Ahead"). The leaderboard is the guild's ledger with 1st, 2nd and 3rd ribbons and "That's you". The XP vine is shared with the Cottage. Rank emoji still show on Home and in the Cottage.
 
 **Five new Guild Hall jobs, all open in Chapter 1 (teacher request 2026-10-22, pushed, awaiting review):** picked from the teacher's list of 27 ideas, and built as regular jobs (job board, No timer toggle, Shift over screen, `jobPay`) instead of that list's separate game shell. Spot the Overdraft (`js/ui/minigames/spot-overdraft.js`), Register Balancer (`register-balancer.js`), Check Anatomy Hunt (`check-hunt.js`), Count the Drawer (`count-drawer.js`), Unit Price Showdown (`unit-price.js`). Pure seeded round makers in `js/ui/minigames/gen.js`, the money keypad in `keypad.js`, bills and coins shared with Cashier Rush in `money-art.js`, content in `js/data/minigames.js`, numbers in `CONFIG.play.jobs`. Tests: `tests/jobs.test.js`. Next from the list: Fee Detective (idea 6).
 
