@@ -3930,3 +3930,149 @@ main#app.app:has(.bestiary) {
   .bst-guild .rg-layout { grid-template-columns: minmax(0, 1fr); }
   .bst-guild .dr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ===========================================================================
+   Trophies and the Leaderboard (2026-10-22): the Academy's hall of honors.
+   A rank seal with an XP vine, medals pinned in a case, a rank ladder, and
+   the guild's ledger with ribbons for the top three.
+   =========================================================================== */
+.bst-trophies { padding-top: var(--b-s4); }
+.bst-trophies .panel.trophies {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--b-s6);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-trophies h3 { display: flex; align-items: center; gap: var(--b-s2); margin: 0 0 var(--b-s3); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-ink); }
+.bst-trophies h3 .ico-wrap { color: var(--b-rust-ink); }
+.bst-trophies h3 small { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink-soft); }
+.bst-trophies .note { color: var(--b-ink-soft); }
+
+/* The rank plate */
+.bst-trophies .tr-rank {
+  display: grid;
+  grid-template-columns: auto auto minmax(220px, 360px);
+  align-items: center;
+  justify-content: start;
+  gap: var(--b-s4);
+  margin: 0 0 var(--b-s5);
+  padding: var(--b-s3) var(--b-s5) var(--b-s3) var(--b-s3);
+  background: var(--b-grain), var(--b-paper-2);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(-0.6deg);
+}
+.bst-trophies .tr-rank-text { display: grid; line-height: 1.1; }
+.bst-trophies .tr-rank-text small { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-plum); }
+.bst-trophies .tr-rank-text strong { font-family: var(--b-display); font-weight: 400; font-size: clamp(1.8rem, 3vw, 2.4rem); }
+.bst-trophies .tr-rank-text span { color: var(--b-gold-ink); font-weight: 700; }
+.bst-trophies .xp-bar-wrap { margin: 0; max-width: none; }
+/* The XP bar as a vine: a stem that leafs out as XP grows. */
+.bst-trophies .xp-bar, .bst-cottage .xp-bar { height: 12px; background: none; border-bottom: 2px dotted var(--b-rule); border-radius: 0; overflow: visible; }
+.bst-trophies .xp-bar span, .bst-cottage .xp-bar span {
+  height: 12px;
+  background:
+    radial-gradient(6px 4px at 7px 4px, var(--b-moss-2) 98%, transparent) 0 0 / 14px 12px repeat-x,
+    linear-gradient(var(--b-moss-3), var(--b-moss-3)) 0 100% / 100% 2.5px no-repeat;
+  border-radius: 0;
+}
+.bst-trophies .xp-bar-wrap small { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink-soft); }
+
+/* Paper index tabs */
+.bst-trophies .tr-tabs { display: flex; flex-wrap: wrap; gap: var(--b-s2); margin: 0 0 var(--b-s4); border-bottom: 2px solid var(--b-rule); }
+.bst-trophies .tr-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: -2px;
+  padding: 10px 18px;
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-ink-soft);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 2px solid var(--b-rule);
+  border-bottom: 0;
+  border-radius: var(--b-r-tab);
+}
+.bst-trophies .tr-tab .ico-wrap { color: var(--b-rust-ink); }
+/* The open tab joins the page and says so with weight and a stitched line. */
+.bst-trophies .tr-tab[aria-current="page"] { color: var(--b-ink); background: var(--b-grain), var(--b-paper); padding-bottom: 12px; border-bottom: 2px solid var(--b-paper); box-shadow: inset 0 -3px 0 var(--b-plum); }
+
+/* Achievements: medals pinned in cases */
+.bst-trophies .tr-case { margin: 0 0 var(--b-s5); }
+.bst-trophies .tr-medals { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--b-s3); }
+.bst-trophies .tr-medal { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--b-s3); align-items: start; padding: var(--b-s3); background: var(--b-grain), var(--b-paper-2); border-radius: var(--b-r-tag); }
+.bst-trophies .tr-medal-face { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; }
+.bst-trophies .tr-medal.earned { box-shadow: var(--b-shadow-card); }
+.bst-trophies .tr-medal.earned .tr-medal-face {
+  color: var(--b-money-ink);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--b-paper) 45%, var(--b-gold)), var(--b-gold) 65%);
+  border: 3px dotted var(--b-gold-ink);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--b-shadow-ink) 30%, transparent);
+}
+.bst-trophies .tr-medal.locked { background: none; border: 2px dashed var(--b-rule); }
+.bst-trophies .tr-medal.locked .tr-medal-face { color: var(--b-ink-soft); border: 2px dashed var(--b-rule); }
+.bst-trophies .tr-q { font-family: var(--b-display); font-size: 1.8rem; }
+.bst-trophies .tr-medal-text { display: grid; gap: 2px; }
+.bst-trophies .tr-medal-text strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); line-height: 1.15; }
+.bst-trophies .tr-medal-text small { font-size: var(--b-small); color: var(--b-ink-soft); line-height: 1.35; }
+.bst-trophies .tr-medal.earned .tr-medal-xp { font-family: var(--b-hand); font-size: var(--b-small); color: var(--b-moss-3); font-weight: 700; }
+.bst-trophies .tr-medal.locked .tr-medal-xp { font-family: var(--b-hand); color: var(--b-ink-soft); }
+
+/* Records and the rank ladder */
+.bst-trophies .tr-records { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--b-s6); align-items: start; }
+.bst-trophies .tr-ledger ul { list-style: none; margin: 0; padding: 0; }
+.bst-trophies .tr-ledger li { display: flex; justify-content: space-between; gap: var(--b-s3); padding: var(--b-s2) 0; border-bottom: 1px dashed var(--b-rule); }
+.bst-trophies .tr-ledger strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-trophies .tr-ladder ol { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--b-s1); }
+.bst-trophies .tr-ladder li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: var(--b-s3); padding: 4px var(--b-s3) 4px 4px; border-radius: var(--b-r-tag); }
+.bst-trophies .tr-ladder-title { font-family: var(--b-display); font-size: var(--b-fs-title); }
+.bst-trophies .tr-ladder small { color: var(--b-ink-soft); }
+.bst-trophies .tr-ladder-state { font-family: var(--b-hand); font-size: var(--b-small); }
+.bst-trophies .tr-ladder li.ahead .tr-seal { filter: grayscale(1); opacity: 0.45; }
+.bst-trophies .tr-ladder li.ahead .tr-ladder-title { color: var(--b-ink-soft); }
+.bst-trophies .tr-ladder li.current { background: var(--b-plum-wash); box-shadow: inset 4px 0 0 var(--b-plum); }
+.bst-trophies .tr-ladder li.current .tr-ladder-state { color: var(--b-plum); font-weight: 700; }
+.bst-trophies .tr-seal svg { display: block; }
+
+/* The guild's ledger */
+.bst-trophies .tr-rows { list-style: none; margin: 0; padding: 0; }
+.bst-trophies .tr-rows li { display: grid; grid-template-columns: 60px 60px minmax(0, 1fr) auto auto; gap: var(--b-s3); align-items: center; padding: var(--b-s2) var(--b-s3); border-bottom: 1px dashed var(--b-rule); background: none; box-shadow: none; }
+.bst-trophies .tr-rows .lb-place { font-family: var(--b-display); font-size: var(--b-fs-lead); text-align: center; color: var(--b-ink-soft); }
+.bst-trophies .tr-rows .lb-art { width: 56px; height: 56px; display: grid; place-items: center; background: var(--b-paper-2); border: 3px double var(--b-rule); border-radius: var(--b-r-sheet); }
+.bst-trophies .tr-rows .lb-name strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-trophies .tr-rows .lb-rank { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink-soft); }
+.bst-trophies .tr-rows .lb-xp { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-gold-ink); white-space: nowrap; }
+/* Ribbons for the top three, with the place written on them. */
+.bst-trophies .tr-ribbon {
+  position: relative;
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  font-family: var(--b-body);
+  font-size: var(--b-small);
+  font-weight: 700;
+  color: var(--b-money-ink);
+  border-radius: 50%;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--b-shadow-ink) 30%, transparent);
+}
+.bst-trophies .tr-ribbon::after { content: ""; position: absolute; bottom: -12px; left: 50%; width: 22px; height: 16px; translate: -50% 0; background: inherit; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 70%, 0 100%); filter: brightness(0.85); z-index: -1; }
+.bst-trophies .top-1 .tr-ribbon { background: var(--b-gold); }
+.bst-trophies .top-2 .tr-ribbon { background: var(--b-coin-silver); }
+.bst-trophies .top-3 .tr-ribbon { background: var(--b-coin-copper); }
+.bst-trophies .tr-rows li.me { background: var(--b-plum-wash); box-shadow: inset 5px 0 0 var(--b-plum); border-radius: var(--b-r-tag); }
+.bst-trophies .tr-you { font-family: var(--b-hand); font-size: var(--b-small); color: var(--b-plum); }
+:root[data-reading="dyslexia"] .bst-trophies .tr-rank { transform: none; }
+@media (max-width: 900px) {
+  .bst-trophies .tr-rank { grid-template-columns: auto minmax(0, 1fr); }
+  .bst-trophies .tr-rank .xp-bar-wrap { grid-column: 1 / -1; }
+  .bst-trophies .tr-records { grid-template-columns: minmax(0, 1fr); }
+}
