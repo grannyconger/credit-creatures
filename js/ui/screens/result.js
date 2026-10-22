@@ -34,7 +34,7 @@ export function render(root, { game, go, track }) {
     root.append(
       h(
         "section.panel.result",
-        h("p.step-label", "The Gilded Vault: your application"),
+        h("p.step-label", "The Vault: your application"),
         h("h1", "🎉 Approved!"),
         h("div.result-card", card),
         h(
@@ -56,7 +56,7 @@ export function render(root, { game, go, track }) {
   root.append(
     h(
       "section.panel.result",
-      h("p.step-label", "The Gilded Vault: your application"),
+      h("p.step-label", "The Vault: your application"),
       h("h1", "😬 Denied"),
       h("p", `${r.name} said no this time.`),
       h("h3", "Why the issuer said no"),

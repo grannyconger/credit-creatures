@@ -50,7 +50,7 @@ export const CHAPTERS = {
 export const LEGACY_CHAPTERS = {
   2: {
     title: "First card, first job",
-    intro: "You're 18 and working shifts at The Gilded Vault. Bills come out of checking every month. Time to see how you handle money that's really yours.",
+    intro: "You're 18 and working shifts at the Vault. Bills come out of checking every month. Time to see how you handle money that's really yours.",
     reflect: "What helped or hurt your score this chapter?",
   },
   3: {

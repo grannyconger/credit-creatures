@@ -81,14 +81,14 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
   |---|---|
   | Town Hall | This month's news, decisions and End Month |
   | Guild Hall | Work shifts to earn money |
-  | The Gilded Vault | Bank: wallet, bills, statements, score, report, letters |
+  | The Vault | Bank: wallet, bills, statements, score, report, letters |
   | Shimmer Market | Spend money in the shop |
   | The Academy | Practice Desk for XP, trophies and ranks |
   | Friendship Plaza | Friends, groups and gifts |
   | Your Cottage | The creature, its dream, customizing and settings |
 
   The creature in the top-right corner opens the Cottage from any screen.
-- Kingdom flavor appears in names and art (the bank is "The Gilded Vault," the town is a market village), but **all credit terms stay real** (APR, utilization, hard inquiry, etc.).
+- Kingdom flavor appears in names and art (the bank is "The Vault," the town is a market village), but **all credit terms stay real** (APR, utilization, hard inquiry, etc.).
 
 ### Look and accessibility (2026-10-20)
 
@@ -358,7 +358,7 @@ Scenario data lives in its own data file(s), one object per scenario, so new one
 Students can visit any time without losing game time.
 
 - **Wallet:** checking balance and every account's balance, limit, APR, minimum due, due date and a utilization bar.
-- **Debit card and digital wallet (added 2026-10-20):** at 18 the checking account comes with a Gilded Vault debit card (the teen debit card upgrades to it). A phone digital wallet 📱 holds the debit card and every open credit card. Whenever something costs money (decision cards in Phase 4, the shop and BNPL checkout in Phase 6), a "Pay with" picker shows each option with its live numbers: checking balance for debit, available credit and the new utilization for each card. Debit is declined when checking is too low. The picker shows what each choice does ("spends your money now", "borrows, due next month, adds to utilization"). The Wallet screen shows the cards as card art with the creature's full name.
+- **Debit card and digital wallet (added 2026-10-20):** at 18 the checking account comes with a Vault debit card (the teen debit card upgrades to it). A phone digital wallet 📱 holds the debit card and every open credit card. Whenever something costs money (decision cards in Phase 4, the shop and BNPL checkout in Phase 6), a "Pay with" picker shows each option with its live numbers: checking balance for debit, available credit and the new utilization for each card. Debit is declined when checking is too low. The picker shows what each choice does ("spends your money now", "borrows, due next month, adds to utilization"). The Wallet screen shows the cards as card art with the creature's full name.
 - **Statements:** purchases, payments, interest, fees, new balance and minimum due, month by month.
 - **Pay bills:** pay in full, the minimum, or a custom amount. Payoff preview, for example "Minimum only -> 14 months, $86 interest. Pay $60/month -> 4 months, $19 interest."
 - **AutoPay:** optional. If checking runs short, the payment bounces with a fee.
@@ -443,7 +443,7 @@ Quick (30 to 60 seconds), semi-related to the content. Pay depends on performanc
 |---|---|---|---|
 | **Ledger Sort** (Asset / Liability / Equity) | Bookkeeper | Sort items into ASSET, LIABILITY or EQUITY. Here equity means investments: owning a share of a business, like stock or an index fund (teacher decision 2026-10-20) | **Pilot, top priority** |
 | Cashier Rush | Shopkeeper | Make correct change quickly | Pilot |
-| **Check Writer** (added 2026-10-20) | Scribe at The Gilded Vault | Fill in a paper check from an order or bill: date, payee, amount in numbers, amount in words, memo, signature. Part 2 endorses the back of a paycheck before depositing it. Signatures use a full-screen signature pad (touch, pen or mouse) with a "type my signature" option that writes the creature's full name in a cursive font | Phase 6 |
+| **Check Writer** (added 2026-10-20) | Scribe at the Vault | Fill in a paper check from an order or bill: date, payee, amount in numbers, amount in words, memo, signature. Part 2 endorses the back of a paycheck before depositing it. Signatures use a full-screen signature pad (touch, pen or mouse) with a "type my signature" option that writes the creature's full name in a cursive font | Phase 6 |
 | Check & Tip | Tavern server | Given a subtotal, add a 20% tip and give the total within 20 seconds | Later |
 | Delivery Dash | Courier | Timing and dodging (Frogger-style) | Later |
 | Lawn Pattern | Groundskeeper | Path-tracing puzzle | Later |

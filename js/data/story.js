@@ -11,7 +11,7 @@ export const INTRO_PANELS = [
     scene: "kingdom",
     title: "Welcome to the Kingdom of Coinhaven",
     beats: [
-      { icon: "🏰", text: "Coinhaven is a kingdom of creatures, market stalls and one very old bank, the Gilded Vault." },
+      { icon: "🏰", text: "Coinhaven is a kingdom of creatures, market stalls and one very old bank, the Vault." },
       { icon: "🌱", text: "Every creature here grows up and has to learn to handle money." },
       { icon: "⚖️", text: "Some do great. Some get stuck in debt." },
     ],

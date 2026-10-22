@@ -232,7 +232,7 @@ export function render(root, { game, go, track }) {
       "section.design",
       h(
         "div.design-left.panel",
-        h("p.step-label", "The Gilded Vault: Design Your Card"),
+        h("p.step-label", "The Vault: Design Your Card"),
         h("h1", "Design your first card"),
         h("p", "Pick a lender and a card. Watch how each choice changes your chances and your costs."),
         h("h3", "1. Issuer (the lender)"),

@@ -1,4 +1,4 @@
-// The Gilded Vault: Account Management (SPEC §14). Time is paused here:
+// The Vault: Account Management (SPEC §14). Time is paused here:
 // nothing on these tabs ends a month. It opens from the kingdom and goes back there.
 import { h, fill } from "../dom.js";
 import { icon } from "../icons.js";
@@ -34,7 +34,7 @@ export function render(root, ctx) {
     tabs: VAULT_TABS,
     stateKey: "accountsTab",
     iconName: "vault",
-    title: "The Gilded Vault",
+    title: "The Vault",
     subtitle: "Your bank. Move money, pay bills and read your letters. Time is paused here.",
   });
 }
@@ -128,7 +128,7 @@ function bankOpening(root, { game, go, track, refreshWho }) {
     });
     fill(
       panel,
-      placeHeader({ go, iconName: "vault", title: "The Gilded Vault", subtitle: "Coinhaven's oldest bank. Your piggy bank is about to get an upgrade." }),
+      placeHeader({ go, iconName: "vault", title: "The Vault", subtitle: "Coinhaven's oldest bank. Your piggy bank is about to get an upgrade." }),
       h("div.bank-sage", h("span", { html: creatureSvg(GUIDE.look, { size: 80, label: "" }) }), h("p", `"A piggy bank can't pay bills, can't keep your coins safe, and can't help you save. The Vault can. Let's open your first accounts." `, h("strong", `${GUIDE.name}`))),
       h(
         "div.bank-accounts",

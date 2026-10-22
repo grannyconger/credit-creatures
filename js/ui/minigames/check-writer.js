@@ -54,7 +54,7 @@ export function checkWriter({ seed, life, creature, payFor, onDone, track }) {
         h("div.check-top", h("span.check-owner", name, h("br"), "Market Village"), h("label.check-date", "Date ", f.date), h("span.check-no", "No. 101")),
         h("div.check-line", h("label", { for: "ck-payee" }, "Pay to the order of"), f.payee, h("span.check-dollar", "$"), f.amount),
         h("div.check-line", f.words, h("span", "Dollars")),
-        h("div.check-bank", "🏦 The Gilded Vault"),
+        h("div.check-bank", "🏦 The Vault"),
         h("div.check-bottom", h("label", { for: "ck-memo" }, "Memo"), f.memo, h("div.check-sign", sigSlot, h("small", "Signature")))
       ),
       h("p.note.tight", "Tip: write the cents as a fraction, like ", h("strong", "Forty-seven and 25/100"), "."),
@@ -109,7 +109,7 @@ export function checkWriter({ seed, life, creature, payFor, onDone, track }) {
     });
     const front = h(
       "div.check.paycheck",
-      h("div.check-top", h("span.check-owner", "The Gilded Vault", h("br"), "Payroll"), h("span.check-date", dateText), h("span.check-no", "No. 5520")),
+      h("div.check-top", h("span.check-owner", "The Vault", h("br"), "Payroll"), h("span.check-date", dateText), h("span.check-no", "No. 5520")),
       h("div.check-line", h("span", "Pay to the order of"), h("strong.check-fill", name), h("span.check-dollar", "$"), h("strong.check-fill", pay.toFixed(2))),
       h("div.check-line", h("strong.check-fill", amountInWords(Math.round(pay * 100))), h("span", "Dollars")),
       h("div.check-bottom", h("span", "Memo: work shift"), h("div.check-sign", h("span.sig-script", "Bookkeeper Bramblewood"), h("small", "Signature")))

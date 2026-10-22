@@ -18,7 +18,7 @@ export function payWith({ life, cost, onPick, onBack, allowed = null, piggy = fa
   const list = h("div.pay-options", { role: "list" });
   for (const o of options) {
     let icon = "🏦";
-    let name = "Gilded Vault debit card";
+    let name = "Vault debit card";
     let numbers;
     if (o.kind === "debit" && piggy) {
       icon = "🐷";

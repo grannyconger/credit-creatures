@@ -66,7 +66,7 @@ export const EARLY_SCENARIOS = [
     fits: (life) => life.checking >= 25,
     text: () => [
       "You need $20 in cash for the fair. The ATM right here belongs to another bank. It charges $3, and your bank adds $2 for using it.",
-      "A Gilded Vault ATM is a 10-minute walk away, and it's free.",
+      "A Vault ATM is a 10-minute walk away, and it's free.",
     ],
     choices: () => [
       { key: "walk", label: "Walk to my bank's ATM", outcome: "A short walk saved $5. That's a quarter of what you took out.", quality: "good" },

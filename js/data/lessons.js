@@ -54,14 +54,14 @@ export const LESSONS = {
     feature: "cottage",
     steps: [
       { route: "cottage", target: ".cottage-stage", title: "Home sweet home", text: ["This is your creature's Cottage. Customize it here with looks you unlock."] },
-      { route: "cottage", target: ".dream-card", title: "The dream's first steps", text: ["Your dream's first stage needs savings and some work. A piggy bank holds coins, but a bank can do a lot more.", "When you're ready, take your coins to the Gilded Vault."] },
+      { route: "cottage", target: ".dream-card", title: "The dream's first steps", text: ["Your dream's first stage needs savings and some work. A piggy bank holds coins, but a bank can do a lot more.", "When you're ready, take your coins to the Vault."] },
     ],
   },
   checking: {
     title: "Your first bank account",
     feature: "checking",
     steps: [
-      { route: "hub", big: "🏦", title: "You opened a bank account!", text: ["Chapter 1 begins. Your coins are safe at the Gilded Vault now, and you have a debit card.", "Four new places opened: the Gilded Vault, Town Hall, Friendship Plaza and the Academy."] },
+      { route: "hub", big: "🏦", title: "You opened a bank account!", text: ["Chapter 1 begins. Your coins are safe at the Vault now, and you have a debit card.", "Four new places opened: the Vault, Town Hall, Friendship Plaza and the Academy."] },
       { route: "hub", target: ".money-chips", title: "Checking and savings", text: ["Checking is for spending. Your debit card takes money straight from it.", "Savings is for later. Move money there so it's not so easy to spend."] },
       { route: "accounts", click: tab("Wallet"), target: [".bills", ".acct-body"], title: "Bills come out of checking", text: ["Your phone bill comes out of checking on its own at End Month. If checking is short, the bank charges a $35 overdraft fee.", "You can move money between checking and savings here any time."] },
       {

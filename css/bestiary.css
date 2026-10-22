@@ -2446,7 +2446,7 @@ main#app.app:has(.bestiary) {
 .bst-title.signin-hero { align-items: center; }
 
 /* ===========================================================================
-   The Gilded Vault and the Hall of Records (tabbedPlace in
+   The Vault and the Hall of Records (tabbedPlace in
    js/ui/screens/accounts.js): a bank passbook. One page with brass corners,
    and its tabs stand out from the right edge as index tabs.
    =========================================================================== */

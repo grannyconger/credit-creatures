@@ -27,7 +27,7 @@ function tilt(card) {
   });
 }
 
-// issuerText replaces the issuer's name (the Gilded Vault debit card has no issuer entry).
+// issuerText replaces the issuer's name (the Vault debit card has no issuer entry).
 export function cardArt({ issuer, network, name, design = "plasticBlue", nickname = "", holder = "", size = "", issuerText = "", premium = false }) {
   const iss = ISSUERS[issuer];
   const net = NETWORKS[network];

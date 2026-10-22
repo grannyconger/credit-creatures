@@ -20,7 +20,7 @@ export const JOBS = {
     mark: "scroll",
     icon: "✍️",
     title: "Check Writer",
-    job: "Scribe at The Gilded Vault",
+    job: "Scribe at the Vault",
     skill: "Write a check to pay a bill, then endorse your paycheck.",
   },
 };
@@ -59,7 +59,7 @@ export const LEDGER_ITEMS = [
   { item: "A 10% share you bought in your friend's bakery", answer: "equity", why: "You invested in the business and own part of it. That's equity." },
   { item: "A retirement account invested in stocks", answer: "equity", why: "It holds shares of companies, so it's an equity investment." },
   { item: "Company stock your job gave you as a bonus", answer: "equity", why: "Owning shares of the company you work for is equity." },
-  { item: "Shares of the Gilded Vault that pay you part of its profits", answer: "equity", why: "Shares are ownership. Getting a part of the profits is one reward of equity." },
+  { item: "Shares of the Vault that pay you part of its profits", answer: "equity", why: "Shares are ownership. Getting a part of the profits is one reward of equity." },
 ];
 
 // ---------- Cashier Rush ----------

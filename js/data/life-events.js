@@ -131,7 +131,7 @@ export const LIFE_EVENTS = [
     title: "You got a raise",
     kind: "income",
     fits: () => true,
-    text: () => [`Your boss at The Gilded Vault is impressed. Every work shift now pays ${dollars(CONFIG.play.raiseBonus)} more.`],
+    text: () => [`Your boss at the Vault is impressed. Every work shift now pays ${dollars(CONFIG.play.raiseBonus)} more.`],
     choices: () => [{ key: "ok", label: "Thank you!", effect: { shiftBonus: CONFIG.play.raiseBonus }, outcome: "More income makes bills easier and helps when lenders check what you earn.", quality: "good" }],
   },
   {

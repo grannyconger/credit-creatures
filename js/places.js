@@ -13,7 +13,7 @@ export const PROLOGUE_TEXT = {
   moreShifts: "Work 3 shifts in all. Your piggy bank is filling up!",
   market: "Visit the Shimmer Market. Will you spend or save?",
   cottage: "Check on your creature and its dream at your Cottage.",
-  bank: "Take your coins to the Gilded Vault and open a bank account.",
+  bank: "Take your coins to the Vault and open a bank account.",
 };
 
 // route: the screen it opens. x, y: where it sits on the map (percent).
@@ -23,7 +23,7 @@ export const PROLOGUE_TEXT = {
 // as construction sites.
 export const PLACES = [
   { id: "townhall", kind: "Monthly choices", name: "Town Hall", icon: "townhall", route: "month", feature: "townhall", does: "This month's news, decisions and End Month", x: 50, y: 30 },
-  { id: "vault", kind: "Your bank", name: "The Gilded Vault", icon: "vault", route: "accounts", feature: "vault", does: "Your bank: checking, savings, bills and letters", x: 17, y: 34 },
+  { id: "vault", kind: "Your bank", name: "The Vault", icon: "vault", route: "accounts", feature: "vault", does: "Your bank: checking, savings, bills and letters", x: 17, y: 34 },
   { id: "guild", kind: "Jobs and pay", name: "Guild Hall", icon: "guild", route: "guild", feature: "guild", does: "Work a shift to earn money", x: 83, y: 34 },
   { id: "records", kind: "Your credit score", name: "Hall of Records", icon: "scroll", route: "records", feature: "records", does: "Your credit report and credit score", x: 67, y: 47 },
   { id: "garage", kind: "Cars and loans", name: "The Garage", icon: "car", route: "garage", feature: "garage", does: "Buy a ride with cash or a loan", x: 27, y: 59 },

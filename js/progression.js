@@ -95,7 +95,7 @@ export const UNLOCKS = {
   1: {
     icon: "🏦",
     title: "Your first bank account",
-    text: "The Gilded Vault opened a checking account and a savings account for you, with a debit card. Town Hall, Friendship Plaza and the Academy are open too, and the Guild Hall has a new job: Check Writer.",
+    text: "The Vault opened a checking account and a savings account for you, with a debit card. Town Hall, Friendship Plaza and the Academy are open too, and the Guild Hall has a new job: Check Writer.",
     lesson: "checking",
   },
   2: {

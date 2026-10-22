@@ -1,4 +1,4 @@
-// The creature's digital wallet (SPEC §14): the Gilded Vault debit card that
+// The creature's digital wallet (SPEC §14): the Vault debit card that
 // comes with checking at 18, every open credit card, and loans at a glance.
 import { moneyChipKeys } from "../progression.js";
 import { h, money, percent } from "./dom.js";
@@ -40,7 +40,7 @@ export function walletStrip(life, creature) {
   const items = [
     h(
       "figure.wallet-item",
-      cardArt({ name: "Debit card", network: "visa", design: "vault", holder, issuerText: "🏦 The Gilded Vault", size: "mini" }),
+      cardArt({ name: "Debit card", network: "visa", design: "vault", holder, issuerText: "🏦 The Vault", size: "mini" }),
       h("figcaption", h("strong", "Debit"), ` ${money(life.checking)} in checking`)
     ),
   ];

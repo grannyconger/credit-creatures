@@ -440,12 +440,12 @@ walletPop.addEventListener("beforetoggle", (e) => {
     h("div.wallet-pop-head", h("h2", icon("wallet", { size: 22 }), " Your wallet"), h("button.wallet-pop-close", { type: "button", "aria-label": "Close the wallet", onclick: () => walletPop.hidePopover() }, "✕")),
     moneyChips(life, play),
     stageOf(play) === 0
-      ? h("p.note.tight", bank ? "Your coins are in a piggy bank. Take them to the Gilded Vault to open a bank account." : "Your coins are in a piggy bank for now. Work shifts at the Guild Hall to fill it.")
+      ? h("p.note.tight", bank ? "Your coins are in a piggy bank. Take them to the Vault to open a bank account." : "Your coins are in a piggy bank for now. Work shifts at the Guild Hall to fill it.")
       : walletStrip(life, game.save.creature),
     bank && stageOf(play) > 0
       ? h("div.row", h("button", { type: "button", onclick: goBank("wallet") }, icon("vault", { size: 18 }), " Pay bills and move money"), h("button.secondary", { type: "button", onclick: goBank("inbox") }, icon("inbox", { size: 18 }), " Letters"))
       : bank
-        ? h("div.row", h("button", { type: "button", onclick: goBank("wallet") }, icon("vault", { size: 18 }), " Go to the Gilded Vault"))
+        ? h("div.row", h("button", { type: "button", onclick: goBank("wallet") }, icon("vault", { size: 18 }), " Go to the Vault"))
         : null
   ].filter(Boolean));
   track("walletOpen", { from: location.hash.replace(/^#\/?/, "") || game.step });
