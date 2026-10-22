@@ -14,6 +14,9 @@ import { countUp } from "./change.js";
 
 const fmt = (cents) => `$${(cents / 100).toFixed(2)}`;
 const label = (c) => (c >= 100 ? `$${c / 100}` : `${c}¢`);
+// Coin names, and each coin's real diameter in millimeters (US Mint), so the
+// drawer coins are sized like real ones (teacher request 2026-10-22).
+const COIN = { 25: ["quarter", 24.26], 10: ["dime", 17.91], 5: ["nickel", 21.21], 1: ["penny", 19.05] };
 
 export function cashierRush({ seed, timed, onDone, track }) {
   const cfg = CONFIG.play.jobs.cashier;
@@ -45,8 +48,17 @@ export function cashierRush({ seed, timed, onDone, track }) {
   const piece = (c, i) =>
     h(
       "button.cash-piece",
-      { type: "button", class: c >= 100 ? "bill" : c === 1 ? "coin copper" : "coin", onclick: () => addPiece(c), "aria-label": `Add ${label(c)}`, "aria-keyshortcuts": String(i + 1) },
+      {
+        type: "button",
+        class: c >= 100 ? "bill" : `coin coin-${COIN[c][0]}${c === 1 ? " copper" : ""}`,
+        // 4.4px per millimeter: the smallest coin (the dime) is still a big touch target.
+        style: c < 100 ? `--coin: ${Math.round(COIN[c][1] * 4.4)}px` : null,
+        onclick: () => addPiece(c),
+        "aria-label": `Add ${label(c)}${c < 100 ? `, a ${COIN[c][0]}` : ""}`,
+        "aria-keyshortcuts": String(i + 1),
+      },
       h("span", label(c)),
+      c < 100 ? h("small.coin-name", COIN[c][0]) : null,
       h("kbd.cash-key", { "aria-hidden": "true" }, String(i + 1))
     );
   const money = h(

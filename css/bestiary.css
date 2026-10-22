@@ -3804,3 +3804,21 @@ main#app.app:has(.bestiary) {
 .bst-guild .cash-hint-steps { display: flex; flex-wrap: wrap; gap: var(--b-s2); margin: 0; padding: 0; list-style: none; counter-reset: none; }
 .bst-guild .cash-hint-steps li { padding: 4px 10px; color: var(--b-ink); background: var(--b-grain), var(--b-paper); border-radius: var(--b-r-insert); box-shadow: var(--b-shadow-card); font-size: var(--b-small); }
 .bst-guild .cash-keys-help { margin: 0; font-family: var(--b-hand); font-size: var(--b-small); color: var(--b-on-ground-soft); }
+
+/* Coins at their real sizes (teacher request 2026-10-22): the dime is the
+   smallest and the quarter the biggest, like in a real drawer. Each says its
+   name, and the dime and quarter have a ridged edge like the real coins. */
+.bst-guild .drawer-row.coins { align-items: center; min-height: 116px; }
+.bst-guild .cash-piece.coin {
+  display: grid;
+  place-content: center;
+  gap: 0;
+  width: var(--coin, 76px);
+  height: var(--coin, 76px);
+  font-size: calc(var(--coin, 76px) * 0.3);
+  line-height: 1;
+}
+.bst-guild .cash-piece.coin .coin-name { font-family: var(--b-body); font-size: max(0.7rem, calc(var(--coin, 76px) * 0.16)); font-weight: 700; letter-spacing: 0.02em; color: var(--b-money-ink); }
+.bst-guild .cash-piece.coin:is(.coin-dime, .coin-quarter) { border-style: dotted; border-width: 3px; }
+.bst-guild .cash-piece.coin:is(.coin-nickel, .coin-penny) { border-style: solid; border-width: 2.5px; }
+.bst-guild .tray-piece.coin { border-radius: 999px; }
