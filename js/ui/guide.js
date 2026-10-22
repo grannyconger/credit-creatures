@@ -42,7 +42,8 @@ export function startGuide({ steps: STEPS, id, track, onFinish, returnTo = null 
   const startHash = location.hash;
   const spot = h("div.tour-spot", { "aria-hidden": "true" });
   const bubble = h("div.tour-bubble", { role: "dialog", "aria-modal": "true", "aria-labelledby": "tour-title" });
-  const layer = h("div.tour", spot, bubble);
+  // Sage's notes are bestiary pieces (2026-10-22): a pinned note on paper.
+  const layer = h("div.tour.bst-scope.bst-tour", spot, bubble);
   // The layer swallows clicks on the page, so nothing underneath changes.
   layer.addEventListener("click", (e) => {
     if (!bubble.contains(e.target)) e.stopPropagation();
@@ -136,7 +137,7 @@ export function startGuide({ steps: STEPS, id, track, onFinish, returnTo = null 
         h(
         "div.tour-head",
         h("span.tour-guide", { html: creatureSvg(GUIDE.look, { size: 64, label: "" }) }),
-        h("div", h("p.tour-kicker", `${GUIDE.name}, ${GUIDE.role}`), h("h2", { id: "tour-title" }, step.title))
+        h("div", h("h2", { id: "tour-title" }, step.title), h("p.tour-kicker", `${GUIDE.name}, ${GUIDE.role}`))
       ),
       step.big ? h("div.guide-big", { "aria-hidden": "true" }, step.big) : null,
       step.text.map((t) => h("p", t)),

@@ -6,12 +6,15 @@ import { jobBoard } from "../job-board.js";
 import { placeHeader } from "../place-header.js";
 import { moneyChips } from "../wallet.js";
 import { firstVisitLesson } from "../guide.js";
+import { icon } from "../icons.js";
 
 export function render(root, { game, go, track, refreshWho }) {
   const run = game.run;
   const play = run.play;
   const panel = h("section.panel.place-screen.guild");
-  root.append(panel);
+  // A page of the Mossy Bestiary (2026-10-22): jobs are shift tickets with a
+  // tear-off stub, and each shift is worked on a stitched workbench.
+  root.append(h("div.bestiary.bst-guild", panel));
   let board = null;
 
   const save = async (reason) => {
@@ -25,7 +28,7 @@ export function render(root, { game, go, track, refreshWho }) {
     fill(panel, placeHeader({ go, iconName: "guild", title: "Guild Hall", subtitle: "Pick a job and work a shift. Pay depends on how well you do, and goes up with experience.", practice: run.practice }), moneyChips(run.life, play));
     const prologue = play.prologue && !play.prologue.done;
     if (prologue && P.shiftsLeft(play) <= 0) {
-      add(panel, h("p.callout", "🐷 Your piggy bank is filling up nicely. That's all the shifts for now. Check what Sage says to do next."), h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back to the kingdom")));
+      add(panel, h("p.callout", icon("piggy", { size: 18 }), " Your piggy bank is filling up nicely. That's all the shifts for now. Check what Sage says to do next."), h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back to the kingdom")));
       return;
     }
     if (!play.active && !prologue) {

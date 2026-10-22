@@ -3,18 +3,21 @@
 
 export const JOBS = {
   ledger: {
+    mark: "report",
     icon: "📒",
     title: "Ledger Sort",
     job: "Bookkeeper",
     skill: "Sort items into ASSET, LIABILITY or EQUITY.",
   },
   cashier: {
+    mark: "coins",
     icon: "🪙",
     title: "Cashier Rush",
     job: "Shopkeeper",
     skill: "Count back the exact change for each customer.",
   },
   checks: {
+    mark: "scroll",
     icon: "✍️",
     title: "Check Writer",
     job: "Scribe at The Gilded Vault",

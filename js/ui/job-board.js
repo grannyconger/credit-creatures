@@ -7,6 +7,7 @@ import { JOBS } from "../data/minigames.js";
 import { jobPay, experienceBonus, recordShift, rideAndHomeBonus } from "../progress.js";
 import { openJobs, opensText, unlockStage } from "../progression.js";
 import { icon } from "./icons.js";
+import { sealSvg } from "./bestiary-art.js";
 import * as P from "../play.js";
 import { ledgerSort } from "./minigames/ledger-sort.js";
 import { cashierRush } from "./minigames/cashier-rush.js";
@@ -32,7 +33,12 @@ export function jobBoard({ game, run, track, save, onCollected }) {
       .filter(([key]) => !openJobs(play).includes(key))
       .sort(([a], [b]) => unlockStage(a) - unlockStage(b));
     if (!later.length) return null;
-    return h("p.note.tight.center", icon("lock", { size: 14 }), " Coming later: ", later.map(([key, job]) => `${job.icon} ${job.title} (${opensText(key).replace("Opens", "opens")})`).join(", "));
+    // Unopened jobs are pencil-sketch tickets, each saying when it opens.
+    return h(
+      "ul.jobs-later",
+      { "aria-label": "Jobs coming later" },
+      later.map(([key, job]) => h("li", icon("lock", { size: 16 }), h("strong", job.title), h("small", opensText(key))))
+    );
   }
 
   function board() {
@@ -51,7 +57,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
           return h(
             "button.job-card",
             { type: "button", onclick: () => start(key) },
-            h("span.job-icon", { "aria-hidden": "true" }, job.icon),
+            h("span.job-icon", { "aria-hidden": "true" }, job.mark ? icon(job.mark, { size: 30 }) : job.icon),
             h("strong", job.title),
             h("small", job.job),
             h("span", job.skill),
@@ -78,7 +84,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
         : key === "cashier"
           ? cashierRush(opts)
           : checkWriter({ ...opts, life: run.life, creature: game.save.creature, payFor: (right) => jobPay(play, "checks", { right }) });
-    fill(el, h("h3", `${JOBS[key].icon} ${JOBS[key].title}`), running);
+    fill(el, h("h3", icon(JOBS[key].mark || "guild", { size: 24 }), ` ${JOBS[key].title}`), running);
     el.querySelector("button")?.focus();
   }
 
@@ -86,7 +92,12 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     running = null;
     const pay = jobPay(play, key, result);
     let reaction = "";
-    const collect = h("button.big", { type: "button", "data-sound": "none" }, `Collect ${money(pay)}`);
+    const collect = h(
+      "button.big.bst-seal-btn",
+      { type: "button", "data-sound": "none" },
+      h("span.bst-seal-wax", { html: sealSvg({ seed: 47, size: 80, letter: "G" }) }),
+      h("span.bst-seal-text", `Collect ${money(pay)}`)
+    );
     collect.addEventListener("click", async () => {
       collect.disabled = true;
       const r = P.workShift(play, run.life, pay, `work shift: ${JOBS[key].title}`);
@@ -119,7 +130,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     );
     fill(
       el,
-      h("h3", `${JOBS[key].icon} Shift over!`),
+      h("h3", icon(JOBS[key].mark || "guild", { size: 24 }), " Shift over!"),
       h("div.big-number", money(pay)),
       h("p.center", `${result.right} right${result.wrong ? `, ${result.wrong} missed` : ""}.`),
       result.depositOnly ? h("p.callout.good", "Smart: \"For deposit only\" means nobody else can cash your check.") : null,

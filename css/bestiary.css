@@ -2750,3 +2750,226 @@ main#app.app:has(.bestiary) {
 .bst-book-place details > summary { font-weight: 700; color: var(--b-plum); cursor: pointer; }
 .bst-book-place .data-table th,
 .bst-book-place .data-table td { border-bottom: 1px dashed var(--b-rule); color: var(--b-ink); }
+
+/* ===========================================================================
+   The Guild Hall: one sheet. Jobs are shift tickets with a perforated stub
+   that carries the pay, and a shift is worked on a stitched workbench.
+   =========================================================================== */
+.bst-guild .panel.guild {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--b-s6);
+  color: var(--b-ink);
+  background:
+    radial-gradient(30px 24px at 92% 86%, var(--b-foxing), transparent 70%),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  transform: rotate(0.3deg);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-guild .money-chips {
+  display: flex; flex-wrap: wrap; gap: var(--b-s2) var(--b-s5); margin: 0 0 var(--b-s3); padding: var(--b-s3) 0; list-style: none;
+  border-top: 1px dashed var(--b-rule); border-bottom: 1px dashed var(--b-rule);
+}
+.bst-guild .money-chips li { display: flex; align-items: baseline; gap: var(--b-s2); padding: 0; background: none; }
+.bst-guild .money-chips li > .ico-wrap { color: var(--b-gold-ink); align-self: center; }
+.bst-guild .money-chips small { font-size: var(--b-small); color: var(--b-ink-soft); }
+.bst-guild .money-chips strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-ink); font-variant-numeric: lining-nums tabular-nums; }
+.bst-guild .panel.guild > .muted { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-plum); }
+
+/* Shift tickets. */
+.bst-guild .job-cards { display: flex; flex-wrap: wrap; gap: var(--b-s5); margin-top: var(--b-s4); }
+.bst-guild .job-card {
+  position: relative;
+  flex: 0 1 300px;
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  padding: var(--b-s4) var(--b-s4) 64px;
+  text-align: left;
+  font-family: var(--b-body);
+  font-weight: 400;
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper-insert);
+  border: 0;
+  border-radius: var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+  transition: transform var(--b-quick) var(--ease-bouncy), box-shadow var(--b-quick) ease-out;
+}
+.bst-guild .job-card:nth-child(odd) { transform: rotate(-1.2deg); }
+.bst-guild .job-card:nth-child(even) { transform: rotate(1deg); }
+.bst-guild .job-card:hover { transform: rotate(0deg) translateY(-4px); box-shadow: var(--b-shadow-lift); }
+/* The tear-off stub: a dotted fold and the pay on it. */
+.bst-guild .job-card::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 52px;
+  border-top: 2px dotted var(--b-rule);
+}
+.bst-guild .job-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: var(--b-s1);
+  font-size: var(--b-fs-lead);
+  color: var(--b-ink);
+  border: 2px solid var(--b-ink);
+  border-radius: var(--b-r-blob);
+}
+.bst-guild .job-card strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); line-height: 1.05; }
+.bst-guild .job-card small { color: var(--b-ink-soft); font-size: var(--b-small); }
+.bst-guild .job-card .good-text { color: var(--b-moss-3); font-weight: 700; }
+.bst-guild .job-pay {
+  position: absolute;
+  left: var(--b-s4);
+  right: var(--b-s4);
+  bottom: 14px;
+  font-family: var(--b-display);
+  font-size: var(--b-fs-title);
+  color: var(--b-rust-ink);
+}
+.bst-guild .jobs-later { list-style: none; display: flex; flex-wrap: wrap; gap: var(--b-s3); margin: var(--b-s4) 0 0; padding: 0; }
+.bst-guild .jobs-later li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--b-s2);
+  align-items: center;
+  padding: var(--b-s2) var(--b-s3);
+  color: var(--b-ink-soft);
+  border: 1.5px dashed var(--b-pencil, var(--b-rule));
+  border-radius: var(--b-r-sheet);
+}
+.bst-guild .jobs-later li .ico-wrap { grid-row: span 2; color: var(--b-plum); }
+.bst-guild .jobs-later strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-ink-soft); }
+.bst-guild .jobs-later small { font-size: var(--b-fs-tiny); }
+.bst-guild .untimed {
+  justify-content: flex-start;
+  gap: var(--b-s2);
+  margin-top: var(--b-s4);
+  font-family: var(--b-body);
+  color: var(--b-ink);
+}
+.bst-guild .untimed input { width: 20px; height: 20px; accent-color: var(--b-plum); }
+
+/* The workbench: where a shift is played. */
+.bst-guild .job-board > h3 {
+  display: flex; align-items: center; gap: var(--b-s2);
+  margin: var(--b-s4) 0 var(--b-s3);
+  font-size: var(--b-fs-lead);
+  color: var(--b-ink);
+}
+.bst-guild .minigame,
+.bst-guild .shift {
+  padding: var(--b-s5);
+  color: var(--b-on-ground);
+  background: var(--b-grain), var(--b-ground-deep);
+  border-radius: var(--b-r-tag);
+  outline: 1.5px dashed color-mix(in srgb, var(--b-gold) 60%, transparent);
+  outline-offset: -8px;
+  box-shadow: var(--b-shadow-card);
+}
+.bst-guild .mg-bar { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-on-ground); }
+.bst-guild .mg-clock { color: var(--b-foxfire); }
+.bst-guild .mg-flash { font-family: var(--b-hand); font-size: var(--b-fs-hand); }
+.bst-guild .mg-flash.good { color: var(--b-foxfire); }
+.bst-guild .mg-flash.bad { color: var(--b-seal-shine); }
+.bst-guild .ledger-item,
+.bst-guild .cash-ticket {
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border-radius: var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-guild .ledger-item { font-family: var(--b-display); font-weight: 400; transform: rotate(-0.8deg); }
+.bst-guild .ledger-bin {
+  font-family: var(--b-display);
+  font-weight: 400;
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-guild .ledger-bin small { font-family: var(--b-body); color: var(--b-ink-soft); }
+.bst-guild .ledger-bin kbd { color: var(--b-ink-soft); border-color: var(--b-rule); }
+.bst-guild .ledger-bin:hover { transform: translateY(-2px); box-shadow: var(--b-shadow-lift); }
+.bst-guild .cash-tray { color: var(--b-on-ground); }
+.bst-guild .big-number { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-cover); color: var(--b-gold); }
+.bst-guild .shift .center,
+.bst-guild .job-board > .center { color: var(--b-on-ground); }
+.bst-guild details.math { color: var(--b-ink); background: var(--b-paper); border: 1.5px dashed var(--b-rule); border-radius: var(--b-r-insert); }
+.bst-guild .reaction { background: var(--b-paper); border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
+.bst-guild .reaction[aria-pressed="true"] { border-color: var(--b-plum); background: var(--b-plum-wash); box-shadow: none; }
+:root[data-reading="dyslexia"] .bst-guild :is(.panel.guild, .job-card, .ledger-item) { transform: none; }
+
+/* ===========================================================================
+   Sage's lesson notes (js/ui/guide.js), on every screen: a pinned paper note.
+   =========================================================================== */
+.bst-tour .tour-bubble {
+  color: var(--b-ink);
+  font-family: var(--b-body);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-lift);
+}
+.bst-tour .tour-head h2 { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-ink); }
+.bst-tour .tour-kicker {
+  font-family: var(--b-hand);
+  font-size: var(--b-small) !important;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--b-plum);
+}
+.bst-tour .tour-guide {
+  padding: 2px;
+  background: var(--b-paper);
+  border: 3px double var(--b-rule);
+  border-radius: var(--b-r-sheet);
+  transform: rotate(-3deg);
+}
+.bst-tour .tour-quiz { background: var(--b-plum-wash); border-radius: var(--b-r-insert); }
+.bst-tour .tour-count { color: var(--b-ink-soft); }
+.bst-tour .tour-foot progress { accent-color: var(--b-plum); }
+.bst-tour button:not([class]) {
+  padding: 8px 20px;
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-title);
+  color: var(--b-on-rust);
+  background: var(--b-grain), var(--b-rust);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-tour button.secondary { font-family: var(--b-body); font-weight: 700; color: var(--b-plum); background: none; border: 1.5px solid var(--b-plum); border-radius: var(--b-r-tag); }
+.bst-tour button.link { font-family: var(--b-body); font-weight: 700; color: var(--b-plum); }
+.bst-tour .chip { color: var(--b-ink); background: var(--b-paper); border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
+.bst-tour .chip.right { color: var(--b-paper); background: var(--b-moss-3); border-color: var(--b-moss-3); }
+.bst-tour .chip.wrong { color: var(--b-paper); background: var(--b-rust-ink); border-color: var(--b-rust-ink); }
+/* The lesson spotlight: a dashed foxfire ring, the rest dimmed in moss. */
+.bst-tour .tour-spot { box-shadow: 0 0 0 3px var(--b-foxfire), 0 0 0 9999px color-mix(in srgb, var(--b-ground-deep) 70%, transparent); }
+.bst-tour .tour-spot[hidden] { box-shadow: 0 0 0 9999px color-mix(in srgb, var(--b-ground-deep) 70%, transparent); }
+/* Big action buttons that aren't seals (in minigames and elsewhere). */
+.bestiary button.big:not(.bst-seal-btn) {
+  padding: 12px 28px;
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-title);
+  color: var(--b-on-rust);
+  background: var(--b-grain), var(--b-rust);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.bestiary button.big:not(.bst-seal-btn):hover { transform: translateY(-2px); box-shadow: var(--b-shadow-lift); }
+/* On the dark workbench, outline buttons use pale ink. */
+.bst-guild :is(.minigame, .shift) button.secondary { color: var(--b-on-ground); border-color: var(--b-on-ground-soft); }
+.bst-guild :is(.minigame, .shift) button.secondary:hover { background: color-mix(in srgb, var(--b-on-ground) 10%, transparent); }
