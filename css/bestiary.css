@@ -2973,3 +2973,132 @@ main#app.app:has(.bestiary) {
 /* On the dark workbench, outline buttons use pale ink. */
 .bst-guild :is(.minigame, .shift) button.secondary { color: var(--b-on-ground); border-color: var(--b-on-ground-soft); }
 .bst-guild :is(.minigame, .shift) button.secondary:hover { background: color-mix(in srgb, var(--b-on-ground) 10%, transparent); }
+
+/* ===========================================================================
+   Shimmer Market: a market stall. A striped awning over the page, goods
+   standing on two plank shelves, and a string price tag on each.
+   =========================================================================== */
+.bst-shop .bst-awning {
+  position: relative;
+  z-index: 3;
+  max-width: 1180px;
+  height: 54px;
+  margin: 0 auto -18px;
+  background: repeating-linear-gradient(90deg, var(--b-rust) 0 70px, var(--b-on-ground) 70px 140px);
+  border-radius: var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+  -webkit-mask: radial-gradient(35px 18px at 35px 100%, transparent 98%, var(--b-ink)) 0 0 / 70px 100% repeat-x;
+          mask: radial-gradient(35px 18px at 35px 100%, transparent 98%, var(--b-ink)) 0 0 / 70px 100% repeat-x;
+}
+.bst-shop .panel.shop {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: calc(var(--b-s6) + 10px) var(--b-s6) var(--b-s5);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: 0 0 var(--b-r-sheet) var(--b-r-sheet);
+  box-shadow: var(--b-shadow-page);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-shop .money-chips {
+  display: flex; flex-wrap: wrap; gap: var(--b-s2) var(--b-s5); margin: 0 0 var(--b-s3); padding: var(--b-s3) 0; list-style: none;
+  border-top: 1px dashed var(--b-rule); border-bottom: 1px dashed var(--b-rule);
+}
+.bst-shop .money-chips li { display: flex; align-items: baseline; gap: var(--b-s2); padding: 0; background: none; }
+.bst-shop .money-chips li > .ico-wrap { color: var(--b-gold-ink); align-self: center; }
+.bst-shop .money-chips small { font-size: var(--b-small); color: var(--b-ink-soft); }
+.bst-shop .money-chips strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-ink); font-variant-numeric: lining-nums tabular-nums; }
+.bst-shop .money-chips li:is(.warn, .bad) strong { color: var(--b-rust-ink); }
+
+/* The goods: standing on plank shelves, a row at a time. */
+.bst-shop .shop-grid {
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--b-s6) var(--b-s4);
+  margin-top: var(--b-s5);
+  padding-bottom: var(--b-s3);
+}
+.bst-shop .shop-item {
+  display: grid;
+  justify-items: center;
+  align-content: end;
+  gap: 2px;
+  padding: var(--b-s2) var(--b-s2) 0;
+  text-align: center;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding-bottom: 14px;
+}
+/* The plank each item stands on. */
+.bst-shop .shop-item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10px;
+  background: var(--b-grain), var(--m-door);
+  border-radius: var(--b-r-sheet);
+  box-shadow: 0 8px 8px -6px color-mix(in srgb, var(--b-shadow-ink) 50%, transparent);
+}
+.bst-shop .shop-preview { height: 132px; }
+.bst-shop .shop-preview svg { overflow: visible; }
+.bst-shop .shop-item h3 { margin: var(--b-s2) 0 0; font-size: var(--b-fs-title); color: var(--b-ink); }
+.bst-shop .shop-item .muted { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); }
+/* The price tag, tied on with string and hanging a little crooked. */
+.bst-shop .shop-price {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: var(--b-s2) 0;
+  padding: 3px 12px 3px 8px;
+  font-family: var(--b-hand);
+  font-weight: 400;
+  font-size: var(--b-fs-lead);
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper-insert);
+  border-radius: var(--b-r-price);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(-4deg);
+}
+.bst-shop .shop-item:nth-child(even) .shop-price { transform: rotate(3deg); }
+.bst-tag-hole {
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--b-string);
+  border-radius: 50%;
+}
+.bst-shop .shop-item button { margin-bottom: var(--b-s3); }
+.bst-shop .good-text { color: var(--b-moss-3); font-weight: 700; margin-bottom: var(--b-s3); }
+/* Hand-painted little signs instead of ribbons. */
+.bst-shop .ribbon {
+  top: -6px;
+  left: 50%;
+  translate: -50% 0;
+  padding: 2px 10px;
+  font-family: var(--b-display);
+  font-size: var(--b-fs-tiny);
+  font-weight: 400;
+  color: var(--b-paper);
+  background: var(--b-plum);
+  border-radius: var(--b-r-tag);
+  white-space: nowrap;
+  transform: rotate(-3deg);
+}
+.bst-shop .ribbon.gold { color: var(--b-ink); background: var(--b-gold); }
+.bst-shop .panel.shop > .note { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-plum); }
+
+/* Checkout: a paper slip over the stall. */
+.bst-shop .checkout {
+  padding: var(--b-s4) var(--b-s5);
+  background: var(--b-grain), var(--b-paper-insert);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-lift);
+}
+.bst-shop .checkout h2 { margin: 0 0 var(--b-s3); font-size: var(--b-fs-lead); color: var(--b-ink); }
+.bst-shop .pay-option { color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
+.bst-shop .pay-option small { color: var(--b-ink-soft); }
+:root[data-reading="dyslexia"] .bst-shop .shop-price { transform: none; }

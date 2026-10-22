@@ -311,6 +311,7 @@
   --b-r-spine: 8px 0 0 8px;
   --b-r-side-tab: 0 10px 10px 0;
   --b-r-side-tab-alt: 0 12px 8px 0;
+  --b-r-price: 12px 3px 3px 12px;
 
   /* Depth: an offset, soft shadow, like paper lifted off the ground */
   --b-shadow-page: 0 18px 40px -18px rgba(12, 21, 16, 0.75), 0 2px 4px rgba(12, 21, 16, 0.3);
