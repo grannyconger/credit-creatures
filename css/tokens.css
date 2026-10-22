@@ -191,13 +191,14 @@
 }
 
 /* ---------------------------------------------------------------------------
-   The Mossy Bestiary world. Scoped to .bestiary until the teacher approves a
-   rollout, then these move up to :root. Every page of the bestiary styles
+   The Mossy Bestiary world. Scoped to .bestiary (a bestiary page) and .bst-scope (shared
+   pieces like the top bar) until the rollout is done, then these move up to :root. Every page of the bestiary styles
    itself with --b-* only. Contrast (checked 2026-10-21): ink on paper 11.5:1,
    ink-soft on paper 5.7:1, plum on paper 8.1:1, rust-ink on paper 5.1:1,
    gold-ink on paper 4.9:1, white on rust 5.0:1, on-ground on moss 7:1,
    foxfire on moss 6.6:1. Foxfire and gold are for the dark ground only. */
-.bestiary {
+.bestiary,
+.bst-scope {
   /* Ground: the sanctuary floor the pages lie on */
   --b-ground: #2f4a3a;
   --b-ground-deep: #1e3127;
@@ -248,6 +249,24 @@
   --sp-puddleGolem: #255a72;
   --sp-starJellycorn: #8e3f7d;
   --sp-emberPhoenix: #9e3420;
+  /* The field map (js/ui/bestiary-map.js): ink, pencil and watercolor washes */
+  --m-paper: #e2e5d2;
+  --m-ink: #24302a;
+  --m-pencil: #6d7764;
+  --m-path: #6e5a40;
+  --m-water: #8fb7b0;
+  --m-stone: #cfc8ad;
+  --m-wall: #dcc79c;
+  --m-door: #6e4f36;
+  --m-roof-rust: #c4704a;
+  --m-roof-moss: #6f8f55;
+  --m-roof-plum: #8a5579;
+  --m-roof-slate: #5f7f98;
+  --m-gold: #d9a441;
+  --m-tree: #7c9a5c;
+  --m-tree-2: #93ab6a;
+  --m-window: #eef0e0;
+  --m-smoke: #b3b9aa;
   /* Each dream's ink on the dream page */
   --dr-home: #93401f;
   --dr-shop: #7a5410;
@@ -308,7 +327,8 @@
 
 /* Night in the sanctuary: the pages darken, the ink turns pale. */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-appearance="light"]) .bestiary {
+  :root:not([data-appearance="light"]) .bestiary,
+  :root:not([data-appearance="light"]) .bst-scope {
     --b-ground: #101a14;
     --b-ground-deep: #0a110d;
     --b-on-ground: #dce2cc;
@@ -346,13 +366,48 @@
     --sp-puddleGolem: #7fbad6;
     --sp-starJellycorn: #dc8fc9;
     --sp-emberPhoenix: #ee8a6c;
-    --dr-home: #ec9a74;
+    --m-paper: #26342c;
+    --m-ink: #d9dfc9;
+    --m-pencil: #8d9a86;
+    --m-path: #b39566;
+    --m-water: #2f5552;
+    --m-stone: #4e5546;
+    --m-wall: #5d543c;
+    --m-door: #2a2018;
+    --m-roof-rust: #8a4a30;
+    --m-roof-moss: #3e5a34;
+    --m-roof-plum: #5a3a52;
+    --m-roof-slate: #3d5468;
+    --m-gold: #b8892f;
+    --m-tree: #3f5a35;
+    --m-tree-2: #4d6a3c;
+    --m-window: #f0c35a;
+    --m-smoke: #6f7768;
+    --m-paper: #26342c;
+  --m-ink: #d9dfc9;
+  --m-pencil: #8d9a86;
+  --m-path: #b39566;
+  --m-water: #2f5552;
+  --m-stone: #4e5546;
+  --m-wall: #5d543c;
+  --m-door: #2a2018;
+  --m-roof-rust: #8a4a30;
+  --m-roof-moss: #3e5a34;
+  --m-roof-plum: #5a3a52;
+  --m-roof-slate: #3d5468;
+  --m-gold: #b8892f;
+  --m-tree: #3f5a35;
+  --m-tree-2: #4d6a3c;
+  --m-window: #f0c35a;
+  --m-smoke: #6f7768;
+  --dr-home: #ec9a74;
     --dr-shop: #e2b65a;
     --dr-adventure: #7fbad6;
     --dr-scholar: #dba6cd;
   }
 }
-:root[data-appearance="dark"] .bestiary {
+:root[data-appearance="dark"] .bestiary,
+:root[data-appearance="dark"] .bst-scope {
   --b-paper-insert: #24312a;
   --b-foxing: rgba(0, 0, 0, 0.18);
   --b-ground: #101a14;
@@ -393,7 +448,8 @@
 }
 /* Dyslexia mode in the bestiary: OpenDyslexic for every voice, the hand
    included, and no italics. */
-:root[data-reading="dyslexia"] .bestiary {
+:root[data-reading="dyslexia"] .bestiary,
+:root[data-reading="dyslexia"] .bst-scope {
   --b-fs-title: 1.05rem;
   --b-fs-hand: 1rem;
   --b-fs-lead: 1.15rem;

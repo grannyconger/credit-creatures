@@ -12,7 +12,8 @@ import { HUB_HELP } from "../../data/story.js";
 import * as P from "../../play.js";
 import { placeStatus, nextStep, PLACES, PROLOGUE_TEXT } from "../../places.js";
 import { moneyChips } from "../wallet.js";
-import { kingdomMap } from "../kingdom-map.js";
+import { kingdomMap } from "../bestiary-map.js";
+import { sealSvg } from "../bestiary-art.js";
 import { rankFor } from "../../progress.js";
 import { celebrate } from "../celebrate.js";
 import { runLesson } from "../guide.js";
@@ -24,7 +25,11 @@ export function render(root, { game, go, track }) {
   const life = run.life;
   const c = game.save.creature;
   const panel = h("section.panel.hub");
-  root.append(panel);
+  // A page of the Mossy Bestiary (2026-10-22): the field map with notes
+  // pinned to its edges.
+  root.append(h("div.bestiary.bst-hub", panel));
+  const seal = (label, onclick, extra = {}) =>
+    h("button.bst-seal-btn", { type: "button", onclick, ...extra }, h("span.bst-seal-wax", { html: sealSvg({ seed: 23, size: 72, letter: (c.name || "C").charAt(0).toUpperCase() }) }), h("span.bst-seal-text", label));
 
   function paint(checking = false) {
     const status = placeStatus({ life, play, creature: c, classInfo: game.classInfo });
@@ -112,11 +117,11 @@ export function render(root, { game, go, track }) {
       h("button.guardian-art", { type: "button", "aria-label": `Open ${c.name}'s cottage`, onclick: () => go("cottage"), html: creatureSvg(c, { size: 96, ageMonths: life.ageMonths, label: "" }) }),
       h(
         "div.guardian-text",
-        h("p.step-label", "You are the Guardian of Coin for"),
         h("h1", fullName(c)),
+        h("p.bst-hub-note", "in the care of its Guardian of Coin (you)"),
         h("p.muted.tight", `${ageLabel(life.ageMonths)} · ${r.icon} ${r.title} · ${play.xp} XP`),
         dream
-          ? h("div.dream-mini", h("span.dream-name", `${dream.icon} Dream: `, h("strong", dream.title)), play.dreamDone ? h("span.good-text", " Done!") : meters(prog))
+          ? h("div.dream-mini", h("span.dream-name", icon(dream.mark || "dream", { size: 16 }), " Dream: ", h("strong", dream.title)), play.dreamDone ? h("span.good-text", " Done!") : meters(prog))
           : h("button.small", { type: "button", onclick: () => go("dream") }, "Pick your creature's dream")
       )
     );
@@ -130,15 +135,15 @@ export function render(root, { game, go, track }) {
     return h(
       "section.chapter-box.prologue-box",
       { "aria-live": "polite" },
-      h("p.step-label", `Prologue: step ${done + 1} of ${PROLOGUE_STEPS.length}`),
       h("h2", "Coins in a jar"),
+      h("p.bst-hub-note", `Prologue, step ${done + 1} of ${PROLOGUE_STEPS.length}`),
       h("p.next-step", icon("next", { size: 16 }), " ", PROLOGUE_TEXT[step?.id] || ""),
       h(
         "ol.prologue-steps",
         PROLOGUE_STEPS.map((st, i) => h("li", { class: i < done ? "done" : i === done ? "current" : "" }, i < done ? icon("check", { size: 14 }) : null, ` ${PROLOGUE_LABELS[st.id]}`))
       ),
-      place && step.id !== "welcome" ? h("div.row", h("button", { type: "button", onclick: () => go(place.route) }, icon(place.icon, { size: 18 }), ` Go to ${place.name}`)) : null,
-      step?.id === "welcome" ? h("div.row", h("button", { type: "button", onclick: () => runLesson({ game, track, id: "welcome", returnTo: "hub", onFinish: () => finishWelcome() }) }, "Meet Sage")) : null
+      place && step.id !== "welcome" ? h("div.row", seal(`Go to ${place.name}`, () => go(place.route))) : null,
+      step?.id === "welcome" ? h("div.row", seal("Meet Sage", () => runLesson({ game, track, id: "welcome", returnTo: "hub", onFinish: () => finishWelcome() }))) : null
     );
   }
 
@@ -147,11 +152,11 @@ export function render(root, { game, go, track }) {
     const n = play.chapter;
     const info = chapterInfo(play.active?.chapter ?? n, play);
     const label = play.active ? `Chapter ${play.active.chapter}, month ${play.active.monthIndex + 1} of ${play.active.months || CONFIG.pacing.monthsPerChapter}` : `Chapter ${n}`;
-    const box = h("section.chapter-box", { "aria-live": "polite" }, h("p.step-label", label), h("h2", info.title), h("p.next-step", icon("next", { size: 16 }), " ", nextStep({ play, classInfo: game.classInfo, status })));
+    const box = h("section.chapter-box", { "aria-live": "polite" }, h("h2", info.title), h("p.bst-hub-note", label), h("p.next-step", icon("next", { size: 16 }), " ", nextStep({ play, classInfo: game.classInfo, status })));
     const released = game.classInfo?.releasedChapter || 1;
-    if (play.active || play.summary) add(box, h("div.row", h("button", { type: "button", onclick: () => go("month") }, icon("townhall", { size: 18 }), " Go to Town Hall")));
+    if (play.active || play.summary) add(box, h("div.row", seal("Go to Town Hall", () => go("month"))));
     else if (game.classInfo?.paused) add(box, h("p.muted", "Play is paused by your teacher."));
-    else if (P.canPlay(play, released)) add(box, h("div.row", h("button", { type: "button", onclick: startChapter }, `Start Chapter ${n}`)));
+    else if (P.canPlay(play, released)) add(box, h("div.row", seal(`Start Chapter ${n}`, startChapter)));
     else {
       add(box, h("div.row", h("button.secondary", { type: "button", disabled: checking, onclick: () => refreshRelease(true) }, checking ? "Checking..." : "Check again")));
       if (game.local) add(box, localRelease(n));

@@ -1,4 +1,5 @@
-// Each creature's dream (teacher request 2026-10-20). The student picks one at
+// Each creature's dream (teacher request 2026-10-20). icon is the emoji for
+// older screens, mark is the drawn icon (js/ui/icons.js) for bestiary pages. The student picks one at
 // the start. Each dream has 3 stages, done in order. A stage has goals drawn
 // from the whole game (savings, score, payment habits, utilization, credit
 // mix, work and learning), and some stages cost money to finish, like a real
@@ -122,6 +123,7 @@ const GOAL_FEATURE = { score: "score", utilization: "card", mix: "card", onTime:
 // stage: { title, story, goals: [[type, arg]], cost, costFor, xp }
 export const DREAMS = {
   home: {
+    mark: "home",
     icon: "🏡",
     title: "A home of its own",
     story: "Move out and rent a cozy cottage on Maple Lane.",
@@ -134,6 +136,7 @@ export const DREAMS = {
     ],
   },
   shop: {
+    mark: "market",
     icon: "🏪",
     title: "Its own shop",
     story: "Open a little shop in the Market Village.",
@@ -146,6 +149,7 @@ export const DREAMS = {
     ],
   },
   adventure: {
+    mark: "compass",
     icon: "🗺️",
     title: "A grand adventure",
     story: "Travel to the far islands of the kingdom.",
@@ -158,6 +162,7 @@ export const DREAMS = {
     ],
   },
   scholar: {
+    mark: "academy",
     icon: "🎓",
     title: "Scholar of Coinhaven",
     story: "Study at the Royal Academy across the river.",

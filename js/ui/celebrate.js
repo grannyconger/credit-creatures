@@ -4,6 +4,7 @@ import { h } from "./dom.js";
 import { track } from "../telemetry.js";
 import { sfx } from "./sound.js";
 import { confetti } from "./fx.js";
+import { sealSvg, pinSvg } from "./bestiary-art.js";
 
 const queue = [];
 let open = false;
@@ -43,16 +44,19 @@ function next() {
     return;
   }
   open = true;
-  const cont = h("button.big", { type: "button" }, "Continue");
+  // A page of the Mossy Bestiary (2026-10-22): a record pinned on the moss,
+  // the kicker thumps on as an ink stamp, and leaves fall instead of confetti.
+  const cont = h("button.bst-seal-btn", { type: "button" }, h("span.bst-seal-wax", { html: sealSvg({ seed: 29, size: 76 }) }), h("span.bst-seal-text", "Continue"));
   const dialog = h(
-    "dialog.celebrate",
+    "dialog.celebrate.bst-scope.bst-celebrate",
     { "aria-labelledby": "celebrate-title", "aria-describedby": "celebrate-text" },
     h("div.celebrate-rays", { "aria-hidden": "true" }),
     confetti(),
     h(
       "div.celebrate-body",
+      h("span.bst-attach", { "aria-hidden": "true", html: pinSvg() }),
       h("div.celebrate-icon", { "aria-hidden": "true" }, item.icon),
-      h("p.celebrate-kicker", item.kicker),
+      h("p.celebrate-kicker.bst-stamp-word", item.kicker),
       h("h2", { id: "celebrate-title" }, item.title),
       item.text ? h("p", { id: "celebrate-text" }, item.text) : null,
       item.xp ? h("p.celebrate-xp", `+${item.xp} XP`) : null,

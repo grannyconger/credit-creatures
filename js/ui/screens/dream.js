@@ -10,9 +10,6 @@ import { creatureSvg } from "../creature-art.js";
 import { pegSvg, lineSvg, fernSvg, mossSvg, inkStampSvg } from "../bestiary-art.js";
 import { DREAMS, dreamSummary } from "../../data/dreams.js";
 
-// The data keeps emoji for the hub and Cottage. The bestiary draws its own.
-const DREAM_ICON = { home: "home", shop: "market", adventure: "compass", scholar: "academy" };
-
 const reduced = () => document.documentElement.dataset.motion === "calm" || globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 export function render(root, { game, advance, editing, go, track }) {
@@ -57,7 +54,7 @@ export function render(root, { game, advance, editing, go, track }) {
           onclick: (e) => pick(id, e.currentTarget),
         },
         h("span.bst-packet-flap", { "aria-hidden": "true" }),
-        h("span.bst-packet-icon", icon(DREAM_ICON[id] || "dream", { size: 44 })),
+        h("span.bst-packet-icon", icon(d.mark || "dream", { size: 44 })),
         h("strong.bst-packet-title", d.title),
         h("span.bst-packet-story", d.story),
         h(

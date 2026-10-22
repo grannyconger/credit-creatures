@@ -308,6 +308,20 @@ Choices are words on the page, not chips.
 ### Focus
 Focus is a 2.5px dashed plum outline with a 5px offset, a pencil trace, so it can never be mistaken for the solid ring that means chosen.
 
+### Field Map (hub)
+The Kingdom of Coinhaven is a naturalist's survey map (`js/ui/bestiary-map.js`), on `--m-*` tokens.
+- **Drawing:** every building is a watercolor wash, a little off-register, under an ink line. Copses of map-symbol trees, little hill humps, a sea with an inked bank, dotted ink paths from the Cottage, a compass rose and a title cartouche ("surveyed for the Guardian of ...").
+- **Sheet:** a double-rule border, fold creases at thirds and the middle, and a faint vignette.
+- **Not yet open:** the building is a dashed pencil sketch with no paint, plus surveyor's stakes.
+- **Places:** paper tags in the display face, with status notes in the hand under them. Action is plum with a sparkle icon, warn is a rust outline with an alert icon, and locked is dashed with a lock icon.
+- **Hub notes:** the creature's specimen card (pinned), the coin purse ledger and the field assignment (taped) overlap the map's edges. Dream progress is a vine that grows leaves.
+
+### Top Bar
+The book's leather strap: `--b-ground-deep` with a dashed gold stitch line near its lower edge, the brand in the display face, a framed mini portrait, the save time in the hand and "Save and exit" as a paper tag. It uses `.bst-scope` (the tokens without a page ground).
+
+### Pop-ups
+A record pinned on the moss ground. The kicker lands as a plum ink stamp, the icon sits in a framed plate, falling leaves replace confetti, and Continue is a wax seal.
+
 ### Living Creatures (signature)
 Drawings come from `creatureSvg()` in `js/ui/creature-art.js`, which exposes idle hooks (eyes, lantern, puddle, spark, crest, twinkle, facet, wing) styled only under `.bestiary`. Every creature breathes and blinks on its own offset so they never blink together, and each species has its own idle: the lantern flickers, the bunny drifts, the golem's puddle ripples, the phoenix throws sparks and sways its crest, the jellycorn twinkles and bobs, the owl's facets shimmer, the dragon's wings flap, the turtle breathes slowest. Poking the plate squashes the creature and, after enough pokes, the naturalist comments.
 
