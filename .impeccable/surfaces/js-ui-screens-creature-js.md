@@ -15,7 +15,7 @@ Constraints: plain HTML/CSS/JS, `--b-*` tokens only, light, dark and dyslexia mo
 
 THESIS: the screen is a page of a naturalist's field guide, an open book with a specimen board on the left and the chosen creature's entry on the right. It refuses the centered card wizard with a tile grid, color circles and pill chips.
 
-OWN-WORLD: deep moss ground with grain, grey-green herbarium paper (not cream), ink #1B2420, rust wax seals, plum ink for chosen things, gold and foxfire only on dark. IM Fell English headings, Alegreya body, Mynerve margin notes. Pins, tape, string tags, tracing paper, watercolor dabs, hand-drawn ink rings, fern fronds and moss over page edges.
+OWN-WORLD: deep moss ground with grain, grey-green herbarium paper (not cream), ink #1B2420, rust wax seals, plum ink for chosen things, gold and foxfire only on dark. IM Fell English headings, Alegreya body, Patrick Hand margin notes. Pins, tape, string tags, tracing paper, watercolor dabs, hand-drawn ink rings, fern fronds and moss over page edges.
 
 STORY: the student sees all eight creatures at once, learns which are locked and what opens them, picks one, sees its entry and the naturalist's dry note, changes its look through paper index tabs, writes its name on the specimen label, and presses the wax seal to adopt it.
 

@@ -5,6 +5,7 @@ import { sfx } from "../sound.js";
 import { createRng } from "../../engine/index.js";
 import { DENOMINATIONS, CASHIER_ITEMS } from "../../data/minigames.js";
 import { CONFIG } from "../../data/config.js";
+import { calculator } from "./calculator.js";
 
 const fmt = (cents) => `$${(cents / 100).toFixed(2)}`;
 const label = (c) => (c >= 100 ? `$${c / 100}` : `${c}¢`);
@@ -29,20 +30,46 @@ export function cashierRush({ seed, timed, onDone, track }) {
   const ticket = h("div.cash-ticket");
   const tray = h("div.cash-tray", { "aria-live": "polite" });
   const flash = h("p.mg-flash", { role: "status" });
+  // A cash drawer (teacher request 2026-10-22): bills in one row, coins in
+  // the other, in fixed slots that never move, so hands learn where each is.
+  const piece = (c) => h("button.cash-piece", { type: "button", class: c >= 100 ? "bill" : c === 1 ? "coin copper" : "coin", onclick: () => addPiece(c), "aria-label": `Add ${label(c)}` }, label(c));
   const money = h(
-    "div.cash-money",
+    "div.cash-money.cash-drawer",
     { role: "group", "aria-label": "Bills and coins" },
-    DENOMINATIONS.map((c) => h("button.cash-piece", { type: "button", class: c >= 100 ? "bill" : "coin", onclick: () => addPiece(c), "aria-label": `Add ${label(c)}` }, label(c)))
+    h("div.drawer-row.bills", DENOMINATIONS.filter((c) => c >= 100).map(piece)),
+    h("div.drawer-row.coins", DENOMINATIONS.filter((c) => c < 100).map(piece))
   );
   const giveBtn = h("button.big", { type: "button", "data-sound": "none", onclick: () => give() }, "Give change");
+  // The calculator opens beside the counter (teacher request 2026-10-22), so
+  // nobody needs a new tab. The clock keeps running while it's open.
+  let calcUses = 0;
+  const calcSlot = h("div.calc-slot");
+  const calcBtn = h("button.calc-toggle", { type: "button", "aria-expanded": "false", onclick: () => toggleCalc() }, "Calculator");
+  function toggleCalc() {
+    const open = calcBtn.getAttribute("aria-expanded") !== "true";
+    calcBtn.setAttribute("aria-expanded", String(open));
+    calcBtn.textContent = open ? "Hide calculator" : "Calculator";
+    calcSlot.replaceChildren(...(open ? [calculator({ onUse: () => calcUses++ })] : []));
+    if (open) {
+      track("calcOpen", { game: "cashier" });
+      calcSlot.querySelector(".calc")?.focus();
+    }
+  }
   const el = h(
     "div.minigame.cashier",
-    h("div.mg-bar", clock, score),
-    ticket,
-    money,
-    tray,
-    h("div.row", h("button.secondary", { type: "button", onclick: () => busy || ((given = given.slice(0, -1)), paintTray()) }, "Undo"), h("button.secondary", { type: "button", onclick: () => busy || ((given = []), paintTray()) }, "Clear"), giveBtn),
-    flash
+    h("div.mg-bar", clock, score, calcBtn),
+    h(
+      "div.cash-counter",
+      h(
+        "div.cash-main",
+        ticket,
+        money,
+        tray,
+        h("div.row.cash-actions", h("button.secondary", { type: "button", onclick: () => busy || ((given = given.slice(0, -1)), paintTray()) }, "Undo"), h("button.secondary", { type: "button", onclick: () => busy || ((given = []), paintTray()) }, "Clear"), giveBtn),
+        flash
+      ),
+      calcSlot
+    )
   );
 
   function newCustomer() {
@@ -107,7 +134,7 @@ export function cashierRush({ seed, timed, onDone, track }) {
     over = true;
     clearInterval(timer);
     sfx.questComplete();
-    track("minigameEnd", { game: "cashier", right, wrong, timed });
+    track("minigameEnd", { game: "cashier", right, wrong, timed, calcUses });
     onDone({ right, wrong, total: served, seconds: Math.round((Date.now() - started) / 1000), misses });
   }
 

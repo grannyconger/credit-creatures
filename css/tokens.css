@@ -21,7 +21,8 @@
    licenses beside each file in fonts/.
    IM Fell English: 1680s Oxford letterpress, for headings and specimen names.
    Alegreya: a warm calligraphic book serif for reading.
-   Mynerve: a loose ink hand, only for the naturalist's margin notes. */
+   Patrick Hand: a neat, clear print hand for the naturalist's margin notes
+   (teacher request 2026-10-22: Mynerve was too hard to read). */
 @font-face {
   font-family: "IM Fell English";
   src: url("../fonts/IMFellEnglish-Regular.woff2") format("woff2");
@@ -49,9 +50,12 @@
   font-display: swap;
 }
 @font-face {
-  font-family: "Mynerve";
-  src: url("../fonts/Mynerve-Regular.woff2") format("woff2");
+  font-family: "Patrick Hand";
+  src: url("../fonts/PatrickHand-Regular.woff2") format("woff2");
   font-weight: 400;
+  /* Patrick Hand's letters are small for their size, so it's scaled up once
+     here instead of in every rule that uses the hand. */
+  size-adjust: 112%;
   font-display: swap;
 }
 /* Only the regular file: OpenDyslexic Bold is spaced much wider, so bold
@@ -233,6 +237,15 @@
   --b-string: #8a6a46;
   --b-peg: #b8925a;
   --b-peg-line: #7d5f33;
+  /* Cashier Rush's money (2026-10-22). Real objects, so they look the same
+     in dark mode. Ink on each is #1b2420 or darker: bill 8.6:1, silver 10:1,
+     copper 5.9:1. */
+  --b-bill: #a9c491;
+  --b-bill-edge: #5f8a4e;
+  --b-coin-silver: #c9ccc6;
+  --b-coin-copper: #c98a5a;
+  --b-coin-edge: #6f6a5c;
+  --b-money-ink: #14200f;
   --b-tracing: rgba(217, 222, 200, 0.82);
   --b-moss-1: #4f7a3a;
   --b-moss-2: #6c9446;
@@ -286,7 +299,7 @@
   /* Type */
   --b-display: "IM Fell English", "Alegreya", Georgia, serif;
   --b-body: "Alegreya", Georgia, serif;
-  --b-hand: "Mynerve", "Alegreya", cursive;
+  --b-hand: "Patrick Hand", "Alegreya", cursive;
   --b-text: 1.1875rem;
   --b-small: 1rem;
   --b-leading: 1.5;

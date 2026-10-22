@@ -1,8 +1,8 @@
-Copyright 2022 The Mynerve Project Authors (https://github.com/carolinashort/MyNerve)
+Copyright (c) 2010-2012 Patrick Wagesreiter (mail@patrickwagesreiter.at)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
-https://scripts.sil.org/OFL
+http://scripts.sil.org/OFL
 
 
 -----------------------------------------------------------

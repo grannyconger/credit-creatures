@@ -53,7 +53,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
           h("p.muted.tight", `${life ? ageLabel(life.ageMonths) : ""} · ${r.icon} ${r.title}`),
           xpBar(play.xp)
         ),
-        h("nav.cottage-rooms", { "aria-label": "Rooms in the Cottage" }, h("ul", rooms(dream, prog, homeOpen).map((rm) => h("li", roomButton(rm)))))
+        roomsNav(rooms(dream, prog, homeOpen))
       ),
       h("div.cottage-room-body", { id: "cottage-room" }, room === "home" ? homeCard() : dreamCard(dream, prog))
     );
@@ -70,13 +70,25 @@ export function render(root, { game, go, track, refreshWho, back }) {
     else if (prog?.ready) dreamNote = `Stage ${prog.stageIndex + 1} is ready to finish!`;
     else if (prog?.stage) [dreamNote, dreamTone] = [`Stage ${prog.stageIndex + 1} of ${prog.stages.length}: ${prog.stage.goals.filter((g) => g.ok).length} of ${prog.stage.goals.length} goals met`, "calm"];
     return [
-      { id: "dream", ico: "dream", title: "The dream", does: `What ${c.name} is working toward, and the button to finish each stage.`, note: dreamNote, tone: dreamTone, here: true },
-      { id: "wardrobe", ico: "palette", title: "Wardrobe", does: `Change ${c.name}'s look and wear what you bought at the Market.`, note: owned ? `${owned} item${owned === 1 ? "" : "s"} in the closet` : "Buy clothes and items at the Market", tone: "calm", route: "creature" },
-      { id: "home", ico: "home", title: "Fix up the house", does: "Add a garden, a workshop and more, paid with cash or a loan.", note: homeOpen ? `${done} of ${HOME_UPGRADES.length} upgrades done` : opensText("homeLoan"), tone: homeOpen ? "calm" : "locked", here: true },
+      { id: "dream", main: true, ico: "dream", title: "The dream", does: `What ${c.name} is working toward, and the button to finish each stage.`, note: dreamNote, tone: dreamTone, here: true },
+      { id: "wardrobe", main: true, ico: "palette", title: "Wardrobe", does: `Change ${c.name}'s look and wear what you bought at the Market.`, note: owned ? `${owned} item${owned === 1 ? "" : "s"} in the closet` : "Buy clothes and items at the Market", tone: "calm", route: "creature" },
+      { id: "home", main: true, ico: "home", title: "Fix up the house", does: "Add a garden, a workshop and more, paid with cash or a loan.", note: homeOpen ? `${done} of ${HOME_UPGRADES.length} upgrades done` : opensText("homeLoan"), tone: homeOpen ? "calm" : "locked", here: true },
       { id: "trophies", ico: "trophy", title: "Trophies", does: "Achievements, your rank and the class leaderboard.", note: hasFeature(play, "academy") ? `${earned} of ${ACHIEVEMENTS.length} earned` : opensText("academy"), tone: hasFeature(play, "academy") ? "calm" : "locked", route: "trophies" },
       game.classInfo?.social === false ? null : { id: "friends", ico: "people", title: "Friends", does: "Add classmates as friends and send gifts.", note: hasFeature(play, "plaza") ? "At Friendship Plaza" : opensText("plaza"), tone: hasFeature(play, "plaza") ? "calm" : "locked", route: "friends" },
       { id: "settings", ico: "gear", title: "Settings", does: "Light or dark, reading size, motion and sound.", note: "Also the gear at the top", tone: "calm", route: "settings" },
     ].filter(Boolean);
+  }
+
+  // The dream, the wardrobe and the house are the big rooms (teacher request
+  // 2026-10-22: six same-looking cards were hard to tell apart). Trophies,
+  // friends and settings are a small row under them.
+  function roomsNav(list) {
+    return h(
+      "nav.cottage-rooms",
+      { "aria-label": "Rooms in the Cottage" },
+      h("ul.rooms-main", list.filter((rm) => rm.main).map((rm) => h("li", roomButton(rm)))),
+      h("ul.rooms-small", list.filter((rm) => !rm.main).map((rm) => h("li", roomButton(rm))))
+    );
   }
 
   function roomButton(rm) {
@@ -85,7 +97,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
       "button.cottage-room",
       {
         type: "button",
-        class: `tone-${rm.tone}${open ? " open" : ""}`,
+        class: `tone-${rm.tone}${open ? " open" : ""} room-${rm.id}`,
         "data-room": rm.id,
         "aria-pressed": rm.here ? String(open) : null,
         disabled: rm.tone === "locked",
@@ -97,8 +109,8 @@ export function render(root, { game, go, track, refreshWho, back }) {
           document.getElementById("cottage-room")?.scrollIntoView({ block: "start", behavior: "smooth" });
         },
       },
-      h("span.room-icon", icon(rm.tone === "locked" ? "lock" : rm.ico, { size: 26 })),
-      h("span.room-text", h("strong", rm.title, rm.route ? icon("next", { size: 14 }) : null), h("span.room-does", rm.does), h("small.room-note", rm.note)),
+      h("span.room-icon", icon(rm.tone === "locked" ? "lock" : rm.ico, { size: rm.main ? 40 : 22 })),
+      h("span.room-text", h("strong", rm.title, rm.route ? icon("next", { size: 14 }) : null), rm.main ? h("span.room-does", rm.does) : null, h("small.room-note", rm.note)),
       open ? h("span.room-open", "Open below") : null
     );
   }

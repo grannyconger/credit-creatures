@@ -3372,7 +3372,7 @@ main#app.app:has(.bestiary) {
   .bst-topbar .chapter-chip { max-width: 220px; }
 }
 @media (max-width: 1100px) {
-  .bst-topbar .brand-text, .bst-topbar .save-state { display: none; }
+  .bst-topbar .save-state { display: none; }
   .bst-topbar .topnav button span:not(.ico-wrap) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 }
 
@@ -3602,3 +3602,146 @@ main#app.app:has(.bestiary) {
 .bst-home .practice-box :is(.note, p) { color: var(--b-ink-soft); }
 .bst-home .practice-box button { font-family: var(--b-body); font-weight: 700; color: var(--b-ink); background: var(--b-grain), var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
 .bst-home .practice-box { margin-bottom: var(--b-s5); }
+
+/* The wallet pop-up, bigger and easier to read (teacher request 2026-10-22).
+   Scoped to the pop-up, so the Vault's own wallet is unchanged. */
+.wallet-pop { width: min(540px, calc(100vw - 32px)); padding: var(--b-s5); font-size: var(--b-text); }
+.wallet-pop .money-chips { gap: var(--b-s2); }
+.wallet-pop .money-chips small { font-size: var(--b-text); color: var(--b-ink); }
+.wallet-pop .money-chips strong { font-size: var(--b-fs-lead); }
+.wallet-pop .money-chips li > .ico-wrap svg { width: 26px; height: 26px; }
+.wallet-pop .note { font-size: var(--b-text); color: var(--b-ink); }
+.wallet-pop .wallet h3 { font-size: var(--b-fs-lead); margin: var(--b-s4) 0 var(--b-s3); }
+.wallet-pop .wallet-row { gap: var(--b-s4); }
+.wallet-pop .card-art.mini { width: 260px; font-size: 0.8rem; }
+.wallet-pop .wallet-item figcaption { font-size: var(--b-text); color: var(--b-ink); }
+.wallet-pop .loan-list li { font-size: var(--b-small); color: var(--b-ink); background: var(--b-paper-2); }
+.wallet-pop .row button { font-size: var(--b-text); padding: 10px 16px; }
+.wallet-pop-close { font-size: var(--b-fs-title); }
+
+/* Cottage rooms (teacher request 2026-10-22): three big rooms, each with its
+   own edge color, tint and drawn icon, and the words always say which is
+   which. Three small rooms sit in a row under them. */
+.bst-cottage .cottage-rooms { display: grid; gap: var(--b-s4); }
+.bst-cottage .cottage-rooms .rooms-main { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-s4); }
+.bst-cottage .rooms-main .cottage-room {
+  --room: var(--b-plum);
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  align-content: start;
+  gap: var(--b-s2);
+  min-height: 236px;
+  padding: var(--b-s4) var(--b-s4) var(--b-s5);
+  border: 0;
+  border-top: 7px solid var(--room);
+  background: var(--b-grain), color-mix(in srgb, var(--room) 9%, var(--b-paper));
+  box-shadow: var(--b-shadow-lift);
+}
+.bst-cottage .rooms-main .room-wardrobe { --room: var(--b-rust); }
+.bst-cottage .rooms-main .room-home { --room: var(--b-moss-2); }
+.bst-cottage .rooms-main .room-icon { width: 68px; height: 68px; color: var(--room); background: color-mix(in srgb, var(--room) 16%, var(--b-paper)); }
+.bst-cottage .rooms-main .room-text strong { font-size: var(--b-fs-lead); }
+.bst-cottage .rooms-main .room-does { font-size: var(--b-text); line-height: 1.35; }
+.bst-cottage .rooms-main .room-note { font-size: var(--b-fs-hand); color: var(--b-ink); }
+.bst-cottage .rooms-main .cottage-room.tone-action .room-note { color: var(--b-rust-ink); }
+.bst-cottage .rooms-main .cottage-room.open { border: 0; border-top: 7px solid var(--room); box-shadow: inset 0 0 0 3px var(--room), var(--b-shadow-lift); }
+.bst-cottage .rooms-main .cottage-room.tone-locked { border-top-style: dashed; background: var(--b-grain), var(--b-paper-2); box-shadow: none; }
+.bst-cottage .rooms-main .cottage-room.tone-locked .room-icon { color: var(--b-ink-soft); background: var(--b-paper); }
+.bst-cottage .cottage-rooms .rooms-small { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-s3); }
+.bst-cottage .rooms-small .cottage-room { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--b-s2); padding: var(--b-s2) var(--b-s3); min-height: 0; transform: none; box-shadow: var(--b-shadow-card); }
+.bst-cottage .rooms-small .room-icon { width: 36px; height: 36px; }
+.bst-cottage .rooms-small .room-text strong { font-size: var(--b-fs-title); }
+.bst-cottage .rooms-small .room-note { font-size: var(--b-small); color: var(--b-ink-soft); }
+@media (max-width: 1100px) {
+  .bst-cottage .cottage-rooms .rooms-main { grid-template-columns: minmax(0, 1fr); }
+  .bst-cottage .rooms-main .cottage-room { min-height: 0; }
+}
+
+/* The logo stands alone (teacher request 2026-10-22), so the creature and
+   the chapter sit right beside it and chapter titles have room. */
+.bst-topbar .brand { padding: 6px; border-radius: var(--b-r-tag); }
+.bst-topbar .brand:hover { background: color-mix(in srgb, var(--b-on-ground) 10%, transparent); }
+.bst-topbar { gap: var(--b-s2); }
+.bst-topbar .chapter-chip { max-width: 440px; }
+@media (max-width: 1280px) { .bst-topbar .chapter-chip { max-width: 330px; } }
+
+/* ===========================================================================
+   Cashier Rush (teacher request 2026-10-22): a counter with a cash drawer
+   and a calculator beside it. Big fixed touch slots that never move, no
+   double-tap zoom, and an instant press-down.
+   =========================================================================== */
+.bst-guild .cashier { touch-action: manipulation; }
+.bst-guild .cashier .mg-bar { align-items: center; gap: var(--b-s3); }
+.bst-guild .cash-counter { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--b-s4); align-items: start; }
+.bst-guild .cash-main { display: grid; gap: var(--b-s3); min-width: 0; }
+.bst-guild .cash-ticket { font-size: var(--b-fs-title); padding: var(--b-s3) var(--b-s4); }
+.bst-guild .cash-drawer {
+  display: grid;
+  gap: var(--b-s3);
+  margin: 0;
+  padding: var(--b-s3);
+  background: var(--b-grain), var(--b-ground-deep);
+  border-radius: var(--b-r-tag);
+  box-shadow: inset 0 4px 10px color-mix(in srgb, var(--b-shadow-ink) 45%, transparent);
+}
+.bst-guild .drawer-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--b-s3); }
+.bst-guild .cash-piece {
+  min-width: 0;
+  min-height: 72px;
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-lead);
+  color: var(--b-money-ink);
+  border: 2px solid var(--b-bill-edge);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--b-shadow-ink) 40%, transparent);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 60ms ease-out, box-shadow 60ms ease-out;
+}
+.bst-guild .cash-piece.bill { background: var(--b-grain), var(--b-bill); border-radius: 6px; }
+.bst-guild .cash-piece.coin { justify-self: center; width: 76px; height: 76px; min-height: 0; padding: 0; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--b-paper) 50%, var(--b-coin-silver)), var(--b-coin-silver) 60%); border-color: var(--b-coin-edge); border-radius: 50%; font-size: var(--b-fs-title); }
+.bst-guild .cash-piece.coin.copper { background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--b-paper) 35%, var(--b-coin-copper)), var(--b-coin-copper) 60%); }
+.bst-guild .cash-piece:active { transform: translateY(3px); box-shadow: 0 0 0 transparent; }
+.bst-guild .cash-piece:hover { filter: brightness(1.04); }
+.bst-guild .cash-tray { min-height: 96px; align-content: center; padding: var(--b-s2) var(--b-s3); border: 1.5px dashed color-mix(in srgb, var(--b-on-ground) 40%, transparent); border-radius: var(--b-r-insert); font-size: var(--b-fs-title); }
+.bst-guild .tray-piece { color: var(--b-money-ink); padding: 2px 8px; border-radius: 4px; background: var(--b-bill); }
+.bst-guild .tray-piece.coin { border-radius: 999px; background: var(--b-coin-silver); }
+.bst-guild .cash-actions { justify-content: flex-end; gap: var(--b-s2); }
+.bst-guild .cash-actions button { min-height: 56px; touch-action: manipulation; }
+.bst-guild .calc-toggle {
+  margin-left: auto;
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  min-height: 48px;
+}
+.bst-guild .calc-toggle[aria-expanded="true"] { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
+.bst-guild .calc {
+  width: 272px;
+  padding: var(--b-s3);
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-lift);
+  touch-action: manipulation;
+}
+.bst-guild .calc:focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
+.bst-guild .calc-top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--b-s2); margin-bottom: var(--b-s2); }
+.bst-guild .calc-screen { display: block; padding: 8px 12px; overflow: hidden; text-align: right; font-family: var(--b-body); font-size: var(--b-fs-lead); font-variant-numeric: tabular-nums; background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; }
+.bst-guild .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--b-s2); }
+.bst-guild .calc-key { min-height: 54px; padding: 0; font-family: var(--b-body); font-weight: 700; font-size: var(--b-fs-title); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; touch-action: manipulation; user-select: none; }
+.bst-guild .calc-key:active { transform: translateY(2px); }
+.bst-guild .calc-key.calc-op { color: var(--b-on-rust); background: var(--b-rust); border-color: transparent; }
+.bst-guild .calc-key.calc-fn { min-width: 52px; }
+@media (max-width: 1100px) {
+  .bst-guild .cash-counter { grid-template-columns: minmax(0, 1fr); }
+}
+.bst-guild .cash-drawer { justify-content: stretch; flex-wrap: nowrap; }
+.bst-guild .drawer-row .cash-piece.bill { width: 100%; }
+.bst-guild .calc-key.calc-op { font-family: system-ui, sans-serif; font-size: 1.6rem; line-height: 1; }
+.bst-guild .cashier .cash-actions button.secondary { color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }

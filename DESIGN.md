@@ -93,7 +93,7 @@ typography:
     fontWeight: 400
     lineHeight: 1.25
   hand:
-    fontFamily: "Mynerve, Alegreya, cursive"
+    fontFamily: "Patrick Hand, Alegreya, cursive"
     fontSize: "1.15rem"
     fontWeight: 400
     lineHeight: 1.35
@@ -179,7 +179,7 @@ Density is generous and the grid is broken on purpose. Pages tilt a fraction of 
 **Key Characteristics:**
 - An open book on a moss ground: asymmetric two-page spreads that stack into one column on narrow screens.
 - Grey-green herbarium paper, never cream, with grain, fibers and foxing spots.
-- Three voices in type: IM Fell English for headings and names, Alegreya for reading, Mynerve for the naturalist's hand.
+- Three voices in type: IM Fell English for headings and names, Alegreya for reading, Patrick Hand for the naturalist's hand.
 - Authored inline SVG for every drawn piece, seeded so it looks the same on every visit.
 - Imperfect paper radii and soft lifted shadows instead of uniform rounded cards.
 - One authored entrance per screen, then living creatures that idle and blink, all still under Calm and reduce motion.
@@ -217,9 +217,9 @@ A dark moss ground, pale grey-green paper and near-black green ink, with four je
 
 **Display Font:** IM Fell English (with Alegreya, Georgia, serif)
 **Body Font:** Alegreya (with Georgia, serif)
-**Hand Font:** Mynerve (with Alegreya, cursive)
+**Hand Font:** Patrick Hand (with Alegreya, cursive)
 
-**Character:** IM Fell is an old printer's face with uneven ink, so headings read as a book set in metal type. Alegreya is a warm literary serif that stays readable at length. Mynerve is the naturalist's pen, used only for what the naturalist writes by hand. All three are self-hosted in `fonts/` with their OFL files.
+**Character:** IM Fell is an old printer's face with uneven ink, so headings read as a book set in metal type. Alegreya is a warm literary serif that stays readable at length. Patrick Hand is the naturalist's pen, used only for what the naturalist writes by hand. All three are self-hosted in `fonts/` with their OFL files.
 
 ### Hierarchy
 - **Display** (400, clamp(2.5rem, 3.6vw, 3.8rem), 0.98): the page heading, top left of the left page, balanced, at most 15ch wide.
@@ -230,7 +230,7 @@ A dark moss ground, pale grey-green paper and near-black green ink, with four je
 - **Hand** (400, 1.08rem to 1.55rem, 1.35): margin notes, the plate caption, "chosen", the next-step note and the text a student writes into the name field (1.55rem).
 
 ### Named Rules
-**The Three Voices Rule.** Fell prints, Alegreya reads, Mynerve writes. Mynerve never carries instructions a student must understand to proceed, and never sets a button.
+**The Three Voices Rule.** Fell prints, Alegreya reads, Patrick Hand writes. Patrick Hand never carries instructions a student must understand to proceed, and never sets a button.
 
 **The Weight Comes From Size Rule.** Display headings stay at weight 400 with no letter spacing. Hierarchy comes from size and the face, not from bolding Fell.
 
