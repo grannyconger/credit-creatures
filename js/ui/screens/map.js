@@ -18,7 +18,7 @@ export function render(root, { game, go, track }) {
         "section.panel.map-page",
         h("h1.sr-only", "Map of Coinhaven"),
         kingdomMap({ creature: c, ageMonths: life.ageMonths, status, home: play.home || [], calm: true, onOpen: (pl) => openPlace(pl, status, { game, go, track }) }),
-        h("p.map-help", "Tap a place to go there. Dashed tags are places that open later.")
+        h("p.map-help", "Tap a place to go there. New places appear on the map as they open.")
       )
     )
   );

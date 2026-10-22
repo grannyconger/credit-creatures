@@ -166,18 +166,10 @@ const BUILDINGS = {
     </g>`,
 };
 
-// A place not open yet: the building as a faint pencil sketch with surveyor's
-// stakes. The button over it says when it opens.
-const stakes = ({ x, y }) => `
-  <g class="m-stakes" transform="translate(${x} ${y})">
-    ${[-56, 56].map((sx) => `${ink(`M${sx} 40 v-26`, 2)}<path d="M${sx} 14 l12 4 -12 4z" fill="var(--m-roof-rust)"/>`).join("")}
-    <path d="M-56 30 Q0 40 56 30" fill="none" stroke="var(--m-pencil)" stroke-width="1.2" stroke-dasharray="3 4"/>
-  </g>`;
-
 // Little map trees and hill marks, scattered where nothing else is.
 function terrain(paths, places) {
   const r = rng(41);
-  const busy = [...places.map((p) => [p.x, p.y, 105]), [175, 57, 140], [940, 300, 60], ...paths.flatMap((pts) => pts.map(([x, y]) => [x, y, 26]))];
+  const busy = [...places.map((p) => [p.x, p.y, 105]), [857, 485, 150], ...paths.flatMap((pts) => pts.map(([x, y]) => [x, y, 26]))];
   const free = (x, y, pad = 0) => busy.every(([bx, by, br]) => (x - bx) ** 2 + (y - by) ** 2 > (br + pad) ** 2);
   const trees = [];
   for (let i = 0; i < 400 && trees.length < 18; i++) {
@@ -227,32 +219,29 @@ function scene(creature, ageMonths, status = {}, home = [], guardian = "", calm 
       </filter>
     </defs>
     <!-- The sea along the south edge, with inked banks and little wave marks. -->
-    ${wash("M0 540 Q250 498 500 546 T1000 520 V600 H0 Z", "var(--m-water)")}
-    ${ink("M0 540 Q250 498 500 546 T1000 520", 2)}
+    ${wash("M0 572 Q250 548 500 578 T1000 566 V600 H0 Z", "var(--m-water)")}
+    ${ink("M0 572 Q250 548 500 578 T1000 566", 2)}
     <!-- Paths: dotted ink trails from the Cottage. Unopened ones are fainter. -->
-    ${others.map((pl) => `<path d="${pathTo(p[pl.id])}" fill="none" stroke="var(--m-path)" stroke-width="3" stroke-linecap="round" stroke-dasharray="0.1 11" opacity="${locked(pl.id) ? 0.3 : 0.6}"/>`).join("")}
+    ${others.filter((pl) => !locked(pl.id)).map((pl) => `<path d="${pathTo(p[pl.id])}" fill="none" stroke="var(--m-path)" stroke-width="3" stroke-linecap="round" stroke-dasharray="0.1 11" opacity="0.6"/>`).join("")}
     ${calm ? "" : terrain(others.map((pl) => samples(p[pl.id])), Object.values(p))}
-    <!-- The title cartouche and the compass rose. -->
-    <g transform="translate(40 24)">
+    <!-- The title cartouche, in the open corner at the bottom right so it never
+         sits on a building (2026-10-22). -->
+    <g transform="translate(745 458) scale(0.88)">
       ${both("M0 6 Q0 0 8 0 H262 Q270 0 270 6 V60 Q270 66 262 66 H8 Q0 66 0 60 Z", "var(--m-paper)", 1.6)}
       ${ink("M6 6 H264 V60 H6 Z", 0.8)}
       <text x="135" y="32" text-anchor="middle" font-size="26" fill="var(--m-ink)" style="font-family: var(--b-display)">Coinhaven</text>
       <text x="135" y="52" text-anchor="middle" font-size="14" font-style="italic" fill="var(--m-ink)" style="font-family: var(--b-body)">${guardian ? `surveyed for the Guardian of ${guardian}` : "as surveyed by the naturalist"}</text>
     </g>
-    <g class="m-compass" transform="translate(944 300)">
-      ${ink("M0 -34 a34 34 0 1 0 0.1 0", 1.2)}${ink("M0 -26 a26 26 0 1 0 0.1 0", 0.8)}
-      ${both("M0 -42 L7 0 L0 6 L-7 0 Z", "var(--m-roof-rust)", 1.4)}
-      ${both("M0 42 L7 0 L0 -6 L-7 0 Z", "var(--m-paper)", 1.4)}
-      ${ink("M-38 0 H38", 1)}
-      <text x="0" y="-48" text-anchor="middle" font-size="13" fill="var(--m-ink)" style="font-family: var(--b-display)">N</text>
-    </g>
-    ${PLACES.map((pl) => (locked(pl.id) ? `<g class="m-sketch">${BUILDINGS[pl.id](p[pl.id])}</g>${stakes(p[pl.id])}` : BUILDINGS[pl.id](p[pl.id], home))).join("")}
+    ${PLACES.filter((pl) => !locked(pl.id)).map((pl) => BUILDINGS[pl.id](p[pl.id], home)).join("")}
     ${critter}
   </svg>`;
 }
 
 // status: placeStatus() result. onOpen(place) runs when a place is chosen.
 export function kingdomMap({ creature, ageMonths, status, onOpen, home = [], calm = false }) {
+  // Places that haven't opened yet stay off the map entirely (teacher request
+  // 2026-10-22). They appear, with Sage's lesson, when they unlock.
+  const open = PLACES.filter((pl) => status[pl.id]?.tone !== "locked");
   const placeButton = (pl, inList) => {
     const st = status[pl.id] || { text: "", tone: "calm" };
     return h(
@@ -273,7 +262,7 @@ export function kingdomMap({ creature, ageMonths, status, onOpen, home = [], cal
   return h(
     "section.kingdom.bst-map",
     { "aria-label": "The Kingdom of Coinhaven" },
-    h("div.kingdom-stage.bst-map-stage", { html: scene(creature, ageMonths, status, home, creature?.name || "", calm) }, PLACES.map((pl) => placeButton(pl, false))),
-    h("div.kingdom-list", PLACES.map((pl) => placeButton(pl, true)))
+    h("div.kingdom-stage.bst-map-stage", { html: scene(creature, ageMonths, status, home, creature?.name || "", calm) }, open.map((pl) => placeButton(pl, false))),
+    h("div.kingdom-list", open.map((pl) => placeButton(pl, true)))
   );
 }

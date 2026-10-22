@@ -25,7 +25,7 @@ export const LESSONS = {
       { route: "hub", big: "🏰", title: "Welcome to Coinhaven, Guardian!", text: ["I'm Sage, the Royal Treasurer. Your creature is 16 and has no money of its own yet. Let's change that.", "I'll show you one thing at a time. The kingdom grows as you learn."] },
       { route: "hub", target: ".money-chips", title: "Your piggy bank", text: ["Right now your only account is a piggy bank. Coins you earn go in here.", "It's simple, but it can't do much. It can't pay bills, and lost coins are gone for good."] },
       { route: "hub", target: "#topnav", title: "Find your way", text: ["Home, the Map, your Wallet and the Leaderboard are always up here. Your chapter's progress sits next to them."] },
-      { route: "map", target: ".kingdom", title: "A kingdom under construction", text: ["The buildings with scaffolding open later, as you learn. Three are open now: your Cottage, the Guild Hall and the Shimmer Market."] },
+      { route: "map", target: ".kingdom", title: "A kingdom that grows", text: ["More places appear on the map as you learn. Three are open now: your Cottage, the Guild Hall and the Shimmer Market."] },
       { route: "map", target: ['.place[data-place="guild"]', '.place-row[data-place="guild"]'], title: "Start at the Guild Hall", text: ["Jobs pay coins. Your first job is Cashier Rush: count back the right change. Tap the Guild Hall when you're ready."] },
     ],
   },
