@@ -1915,3 +1915,390 @@ main#app.app:has(.bestiary) {
 }
 .bst-bug-button > span { display: inline-flex; vertical-align: -0.25em; }
 .bst-bug-button:hover { transform: rotate(0deg) translateY(-2px); }
+
+/* ===========================================================================
+   Shared on every bestiary page: the place header, seal buttons that carry
+   the old `big` class, callouts, and the "Back to the kingdom" tag.
+   =========================================================================== */
+.bestiary button.bst-seal-btn { padding: 0; background: none; border: 0; font-size: inherit; }
+.bestiary .place-header-wrap { margin: 0 0 var(--b-s4); }
+.bestiary .place-header { display: grid; gap: var(--b-s3); }
+.bestiary .back-home {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px 6px 10px;
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(-1.2deg);
+  transition: transform var(--b-quick) var(--ease-bouncy);
+}
+.bestiary .back-home:hover { color: var(--b-plum); transform: rotate(0deg) translateX(-3px); }
+.bestiary .place-title { display: flex; gap: var(--b-s4); align-items: center; }
+.bestiary .place-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  flex: none;
+  color: var(--b-ink);
+  background: var(--b-paper);
+  border: 2px solid var(--b-ink);
+  border-radius: var(--b-r-blob);
+}
+.bestiary .place-title h1 {
+  margin: 0;
+  font-size: clamp(2.3rem, 3vw, 3.2rem);
+  line-height: 1;
+  color: var(--b-ink);
+}
+.bestiary .place-kicker {
+  margin: var(--b-s1) 0 0;
+  font-family: var(--b-hand);
+  font-size: var(--b-fs-hand);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--b-plum);
+}
+.bestiary .place-title .muted { margin: var(--b-s2) 0 0; color: var(--b-ink-soft); max-width: 60ch; }
+.bestiary .practice { color: var(--b-rust-ink); }
+.bestiary .callout {
+  margin: var(--b-s3) 0;
+  padding: var(--b-s3) var(--b-s4);
+  color: var(--b-ink);
+  background: var(--b-plum-wash);
+  border-radius: var(--b-r-insert);
+}
+.bestiary .callout.good { background: color-mix(in srgb, var(--b-moss-2) 18%, transparent); }
+.bestiary .callout.good .ico-wrap { color: var(--b-moss-3); }
+.bestiary .callout.warn,
+.bestiary .callout.bad { background: color-mix(in srgb, var(--b-rust) 14%, transparent); }
+.bestiary .callout.warn .ico-wrap,
+.bestiary .callout.bad .ico-wrap { color: var(--b-rust-ink); }
+.bestiary button.secondary,
+.bestiary button.small.secondary {
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-plum);
+  background: none;
+  border: 1.5px solid var(--b-plum);
+  border-radius: var(--b-r-tag);
+}
+.bestiary button.secondary:hover { background: var(--b-plum-wash); }
+.bestiary .row { display: flex; flex-wrap: wrap; gap: var(--b-s3); align-items: center; }
+/* Any plain button on a bestiary page is a rust ribbon tag. */
+.bestiary button:not([class]) {
+  padding: 10px 22px;
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-title);
+  color: var(--b-on-rust);
+  background: var(--b-grain), var(--b-rust);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transition: transform var(--b-quick) var(--ease-bouncy);
+}
+.bestiary button:not([class]):hover { transform: translateY(-2px) rotate(-0.6deg); box-shadow: var(--b-shadow-lift); }
+
+/* ===========================================================================
+   Town Hall (the month screen): a page of the logbook. Header and money tally
+   across the top, the agenda down the left margin as dated entries, and the
+   current card pinned beside it as a printed notice.
+   =========================================================================== */
+.bst-month .panel.month {
+  position: relative;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: var(--b-s6);
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  column-gap: var(--b-s6);
+  align-items: start;
+  background:
+    radial-gradient(36px 28px at 90% 8%, var(--b-foxing), transparent 70%),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-month .panel.month > * { grid-column: 1 / -1; }
+.bst-month .panel.month > .agenda { grid-column: 1; }
+.bst-month .panel.month > .month-main { grid-column: 2; }
+
+/* Money as a handwritten tally under the heading. */
+.bst-month .money-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--b-s2) var(--b-s5);
+  margin: 0 0 var(--b-s5);
+  padding: var(--b-s3) 0;
+  list-style: none;
+  border-top: 1px dashed var(--b-rule);
+  border-bottom: 1px dashed var(--b-rule);
+}
+.bst-month .money-chips li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--b-s2);
+  padding: 0;
+  background: none;
+}
+.bst-month .money-chips li > .ico-wrap { color: var(--b-gold-ink); align-self: center; }
+.bst-month .money-chips small { font-size: var(--b-small); color: var(--b-ink-soft); }
+.bst-month .money-chips strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-ink); font-variant-numeric: lining-nums tabular-nums; }
+.bst-month .money-chips li.warn strong,
+.bst-month .money-chips li.bad strong { color: var(--b-rust-ink); }
+
+/* Last month's summary: a note clipped above the log. */
+.bst-month .month-summary {
+  max-width: 760px;
+  margin: 0 0 var(--b-s5);
+  background: var(--b-grain), var(--b-paper-insert);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(-0.6deg);
+}
+.bst-month .month-summary h3 { margin: 0 0 var(--b-s2); font-size: var(--b-fs-lead); }
+.bst-month .event-list li { color: var(--b-ink); }
+
+/* The agenda: dated log entries down the margin. */
+/* A ruled red margin down the log's edge, like a ledger. */
+.bst-month .quest-board {
+  margin: 0;
+  padding: 0 var(--b-s4) 0 0;
+  display: grid;
+  gap: var(--b-s2);
+  background: none !important;
+  box-shadow: none;
+  border-radius: 0;
+  border-right: 1.5px solid color-mix(in srgb, var(--b-rust) 45%, transparent);
+}
+.bst-month .quest-board li { display: block; }
+.bst-month .quest-board li:nth-child(n) button { transform: none; }
+.bst-month .quest-board button {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  min-height: 0;
+  padding: var(--b-s2) var(--b-s3) var(--b-s2) var(--b-s5);
+  text-align: left;
+  font-family: var(--b-body);
+  font-weight: 400;
+  color: var(--b-ink);
+  background: none;
+  border: 0;
+  border-bottom: 1px dashed var(--b-rule);
+  border-radius: 0;
+  box-shadow: none;
+  filter: none;
+  cursor: pointer;
+}
+.bst-month .quest-board button:not(:disabled):hover { background: var(--b-plum-wash); transform: none; }
+.bst-month .quest-board button:disabled { cursor: default; color: var(--b-ink-soft); filter: none; }
+/* A drawn tick box in place of the old red pin. */
+.bst-month .quest-pin {
+  top: 12px;
+  left: 6px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1.5px solid var(--b-rule);
+  border-radius: 3px;
+  background: none;
+  box-shadow: none;
+}
+.bst-month li.done .quest-pin { border-color: var(--b-plum); }
+.bst-month li.done .quest-pin::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: -3px;
+  width: 6px;
+  height: 12px;
+  border: solid var(--b-plum);
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(40deg);
+}
+.bst-month .quest-label {
+  font-family: var(--b-hand);
+  font-size: var(--b-small);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--b-plum);
+}
+.bst-month .quest-title {
+  font-family: var(--b-display);
+  font-size: var(--b-fs-title);
+  line-height: 1.1;
+  -webkit-line-clamp: 3;
+}
+.bst-month li.done .quest-title { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--b-plum) 60%, transparent); }
+.bst-month .quest-stamp { display: none; }
+.bst-month li.current button,
+.bst-month .quest-board button[aria-current="step"] {
+  background: var(--b-grain), var(--b-paper-2);
+  border-bottom-color: transparent;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transform: translateX(10px) rotate(-1deg);
+}
+.bst-month li.current .quest-pin { border-color: var(--b-plum); background: var(--b-plum-wash); }
+
+/* The current card: a printed notice pinned beside the log. */
+.bst-month .month-main { position: relative; min-width: 0; }
+.bst-month .decision-card,
+.bst-month .end-month {
+  position: relative;
+  padding: var(--b-s5) var(--b-s5) var(--b-s4);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper-insert);
+  border: 0;
+  border-radius: var(--b-r-sheet);
+  outline: 1px solid var(--b-rule);
+  outline-offset: -9px;
+  box-shadow: var(--b-shadow-lift);
+  overflow: visible;
+  transform: rotate(0.5deg);
+}
+.bst-month .decision-card::before,
+.bst-month .end-month::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--b-pin-shine), var(--b-pin) 45%, var(--b-pin-edge));
+  box-shadow: 2px 3px 3px color-mix(in srgb, var(--b-shadow-ink) 35%, transparent);
+}
+.bst-month .dc-head { display: flex; gap: var(--b-s4); align-items: center; padding: 0; background: none; }
+.bst-month .life-card .dc-head { background: none; }
+.bst-month .dc-icon {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  flex: none;
+  font-size: 2.5rem;
+  background: var(--b-paper);
+  border: 4px double var(--b-rule);
+  border-radius: var(--b-r-sheet);
+}
+.bst-month .dc-head h2,
+.bst-month .end-month h2 {
+  margin: 0;
+  font-size: clamp(2.3rem, 3vw, 3.2rem);
+  line-height: 1;
+  color: var(--b-ink);
+}
+.bst-month .end-month h2 .ico-wrap { color: var(--b-gold-ink); }
+.bst-month .dc-kind {
+  margin: var(--b-s1) 0 0;
+  font-family: var(--b-hand);
+  font-size: var(--b-fs-hand);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--b-plum);
+}
+.bst-month .dc-text { padding: var(--b-s4) 0 0; font-size: var(--b-text); max-width: 62ch; }
+.bst-month .dc-text p { margin: 0 0 var(--b-s2); }
+.bst-month .dc-body { padding: 0; }
+
+/* Choices: written options, each with a box to tick. */
+.bst-month .dc-choices { max-width: none; margin: var(--b-s4) 0 0; gap: var(--b-s2); }
+.bst-month .dc-choice {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  padding: var(--b-s3) var(--b-s4) var(--b-s3) 52px;
+  text-align: left;
+  font-family: var(--b-body);
+  font-size: var(--b-text);
+  font-weight: 400;
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transition: transform var(--b-quick) var(--ease-bouncy), box-shadow var(--b-quick) ease-out;
+}
+.bst-month .dc-choice::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 17px;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--b-ink-soft);
+  border-radius: 4px;
+}
+.bst-month .dc-choice:hover:not(:disabled) { transform: translateX(4px) rotate(-0.4deg); box-shadow: var(--b-shadow-lift); }
+.bst-month .dc-choice:hover:not(:disabled)::before { border-color: var(--b-plum); background: var(--b-plum-wash); }
+.bst-month .dc-choice strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); line-height: 1.1; }
+.bst-month .dc-choice small { font-size: var(--b-small); color: var(--b-ink-soft); opacity: 1; }
+.bst-month .dc-choice:disabled { color: var(--b-ink-soft); background: var(--b-paper-2); cursor: not-allowed; }
+.bst-month .dc-choice:disabled::before { border-style: dashed; }
+.bst-month .dc-choice:disabled .error-text { color: var(--b-rust-ink); }
+
+/* The outcome: the naturalist's verdict, never color alone. */
+.bst-month .dc-outcome { margin: var(--b-s4) 0 0; font-size: var(--b-text); }
+.bst-month .dc-outcome strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.bst-month .dc-verdict {
+  display: flex;
+  gap: var(--b-s2);
+  align-items: flex-start;
+  margin-top: var(--b-s2);
+  font-family: var(--b-hand);
+  font-size: var(--b-fs-hand);
+  color: var(--b-plum);
+}
+.bst-month .dc-outcome.good .dc-verdict .ico-wrap { color: var(--b-moss-3); }
+.bst-month .dc-outcome.bad .dc-verdict .ico-wrap { color: var(--b-rust-ink); }
+.bst-month .factor-chip { font-weight: 700; color: var(--b-ink); background: var(--b-paper); border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
+.bst-month .factor-chip.up { color: var(--b-moss-3); }
+.bst-month .factor-chip.down { color: var(--b-rust-ink); }
+.bst-month details.math { background: var(--b-paper); border: 1.5px dashed var(--b-rule); border-radius: var(--b-r-insert); }
+.bst-month details.math summary { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-month .quick-check { border: 1.5px dashed var(--b-plum); border-radius: var(--b-r-insert); }
+.bst-month .chip { color: var(--b-ink); background: var(--b-paper); border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
+.bst-month .chip[aria-pressed="true"],
+.bst-month .reaction[aria-pressed="true"] { color: var(--b-plum); background: var(--b-plum-wash); border-color: var(--b-plum); box-shadow: none; }
+.bst-month .reaction { background: var(--b-paper); border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
+.bst-month .dc-body > .row { margin-top: var(--b-s4); justify-content: flex-end; }
+
+/* Choose how to pay: the pay-with picker as a column of options to tick. */
+.bst-month .pay-with h3 { font-size: var(--b-fs-lead); }
+.bst-month .pay-option {
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-month .pay-option:hover:not(:disabled) { box-shadow: var(--b-shadow-lift); }
+.bst-month .pay-option small { color: var(--b-ink-soft); }
+
+/* End Month */
+.bst-month .end-month > p { max-width: 62ch; }
+.bst-month .end-month .row { margin-top: var(--b-s4); justify-content: flex-end; }
+
+:root[data-reading="dyslexia"] .bst-month :is(.decision-card, .end-month, .month-summary, li.current button) { transform: none; }
+
+@media (max-width: 1180px) {
+  .bst-month .panel.month { grid-template-columns: 210px minmax(0, 1fr); padding: var(--b-s5); column-gap: var(--b-s5); }
+}

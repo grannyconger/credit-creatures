@@ -17,11 +17,14 @@ import { sfx } from "../sound.js";
 import { createRng } from "../../engine/index.js";
 import { factorOptions, factorChoice } from "../../data/practice-questions.js";
 import { monthSummary } from "../month-summary.js";
+import { sealSvg } from "../bestiary-art.js";
 
 export function render(root, { game, go, track, refreshWho }) {
   const run = game.run;
   const panel = h("section.panel.month");
-  root.append(panel);
+  // A page of the Mossy Bestiary (2026-10-22): the Town Hall logbook. The
+  // month's agenda runs down the margin and the current card is a pinned notice.
+  root.append(h("div.bestiary.bst-month", panel));
   // The teacher can pause play for the class. Practice mode still works.
   const paused = () =>
     fill(
@@ -241,7 +244,12 @@ export function render(root, { game, go, track, refreshWho }) {
   }
 
   function endButton(label) {
-    const btn = h("button.big", { type: "button", "data-sound": "none" }, label);
+    const btn = h(
+      "button.big.bst-seal-btn",
+      { type: "button", "data-sound": "none" },
+      h("span.bst-seal-wax", { html: sealSvg({ seed: 37, size: 84, letter: (game.save.creature.name || "C").charAt(0).toUpperCase() }) }),
+      h("span.bst-seal-text", label)
+    );
     btn.addEventListener("click", async () => {
       btn.disabled = true;
       const play = run.play;

@@ -5,6 +5,15 @@ import { payWith } from "./pay-with.js";
 import { sfx } from "./sound.js";
 import { FACTOR_LABELS } from "../engine/index.js";
 import { GROUP_LABELS } from "../data/scenarios.js";
+import { icon } from "./icons.js";
+import { sealSvg } from "./bestiary-art.js";
+
+// The naturalist's aside after a good or a bad choice, so the result is
+// never shown by color alone. Gentle, never shaming.
+const VERDICT = {
+  good: ["check", "Nicely done. Your creature looks quietly impressed."],
+  bad: ["alert", "That one stung a little. Creatures bounce back, and so do scores."],
+};
 
 const FACTOR_ICONS = { payment: "⏰", owed: "📊", length: "🌳", mix: "🧩", newCredit: "🆕" };
 const REACTIONS = [
@@ -28,8 +37,8 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
       h("span.dc-icon", { "aria-hidden": "true" }, def.icon),
       h(
         "div",
-        h("p.dc-kind", kind === "life" ? "Life card" : `Decision card · ${GROUP_LABELS[def.group]}`),
-        h("h2", { id: `dc-${def.id}` }, def.title)
+        h("h2", { id: `dc-${def.id}` }, def.title),
+        h("p.dc-kind", kind === "life" ? "Life card" : `Decision card · ${GROUP_LABELS[def.group]}`)
       )
     ),
     h("div.dc-text", [].concat(def.text(life, ctx)).map((t) => h("p", t))),
@@ -120,7 +129,13 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         "This was confusing"
       )
     );
-    const cont = h("button.big", { type: "button", onclick: () => onContinue({ reaction, confusing }) }, "Continue");
+    const cont = h(
+      "button.big.bst-seal-btn",
+      { type: "button", onclick: () => onContinue({ reaction, confusing }) },
+      h("span.bst-seal-wax", { html: sealSvg({ seed: 31, size: 72 }) }),
+      h("span.bst-seal-text", "Continue")
+    );
+    const verdict = VERDICT[c.quality];
     fill(
       body,
       h(
@@ -128,6 +143,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         { class: c.quality === "bad" ? "bad" : c.quality === "good" ? "good" : "", role: "status" },
         h("p", h("strong", c.label)),
         r.outcome ? h("p", r.outcome) : null,
+        verdict && !r.denied ? h("p.dc-verdict", icon(verdict[0], { size: 16 }), h("span", verdict[1])) : null,
         r.message && !c.quiz ? h("p.note.tight", r.message) : null,
         factor
       ),
