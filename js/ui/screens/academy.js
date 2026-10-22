@@ -12,7 +12,9 @@ import { hasFeature } from "../../progression.js";
 export function render(root, { game, go, track, refreshWho }) {
   const run = game.run;
   const panel = h("section.panel.place-screen.academy");
-  root.append(panel);
+  // A page of the Mossy Bestiary (2026-10-22): the naturalist's study, with
+  // Sage's lessons as books on a shelf and practice on an exam sheet.
+  root.append(h("div.bestiary.bst-academy", panel));
   const ctx = {
     game,
     run,
@@ -42,11 +44,18 @@ export function render(root, { game, go, track, refreshWho }) {
     const ids = LESSON_ORDER.filter((id) => hasFeature(run.play, LESSONS[id].feature, run.life));
     return h(
       "section.lesson-shelf",
-      h("h3", "📚 Lessons from Sage"),
+      h("h3", icon("academy", { size: 22 }), " Lessons from Sage"),
       h("p.note.tight", "Replay any lesson you've unlocked. New ones arrive as the kingdom grows."),
       h(
-        "div.chip-group",
-        ids.map((id) => h("button.chip", { type: "button", onclick: () => runLesson({ game, track, id, returnTo: "academy" }) }, seen.includes(id) ? icon("check", { size: 14 }) : "▶", ` ${LESSONS[id].title}`))
+        "div.chip-group.bst-books",
+        ids.map((id, i) =>
+          h(
+            "button.chip.bst-book",
+            { type: "button", style: `--i: ${i}`, "aria-label": `${LESSONS[id].title}${seen.includes(id) ? ", read" : ", not read yet"}`, onclick: () => runLesson({ game, track, id, returnTo: "academy" }) },
+            h("span.bst-book-title", LESSONS[id].title),
+            seen.includes(id) ? h("span.bst-book-read", icon("check", { size: 14 }), " read") : h("span.bst-book-read.new", "new")
+          )
+        )
       )
     );
   }

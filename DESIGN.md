@@ -112,6 +112,7 @@ rounded:
   side-tab: "0 10px 10px 0"
   side-tab-alt: "0 12px 8px 0"
   price: "12px 3px 3px 12px"
+  book: "3px 6px 6px 3px"
 spacing:
   s1: "4px"
   s2: "8px"
