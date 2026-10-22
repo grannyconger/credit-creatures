@@ -382,9 +382,11 @@ function paintChapter() {
     sub = play.summary ? "Done. Wrap it up at Town Hall" : game.classInfo?.paused ? "Paused by your teacher" : canPlay(play, game.classInfo?.releasedChapter || 1) ? "Ready to start" : "Waiting for your teacher";
   }
   chapterChip.replaceChildren(
-    icon("scroll", { size: 20 }),
-    h("span.chip-text", h("strong", title), h("small", sub)),
-    total ? h("span.chip-pips", { "aria-hidden": "true" }, Array.from({ length: total }, (_, k) => h("span", { class: k < done ? "done" : k === done ? "current" : "" }))) : null
+    ...[
+      icon("scroll", { size: 20 }),
+      h("span.chip-text", h("strong", title), h("small", sub)),
+      total ? h("span.chip-pips", { "aria-hidden": "true" }, Array.from({ length: total }, (_, k) => h("span", { class: k < done ? "done" : k === done ? "current" : "" }))) : null,
+    ].filter(Boolean)
   );
   chapterChip.setAttribute("aria-label", `${title}. ${sub}.`);
   chapterChip.title = play.active || play.summary ? "Go to Town Hall" : "Go Home";
@@ -543,6 +545,19 @@ document.getElementById("brand").addEventListener("click", (e) => {
   track("brandClick", { from: location.hash.replace(/^#\/?/, "") || game.step });
   location.hash = game.step === "hub" ? "#/hub" : `#/${game.step}`;
 });
+// A backup save when the tab is hidden, closed or refreshed (bug fix
+// 2026-10-22: progress was lost when a student clicked out). The game also
+// saves after every choice. persist() flushes telemetry too. pagehide often
+// follows visibilitychange, so one save covers both.
+let lastBackup = 0;
+function backupSave(reason) {
+  if (!game || Date.now() - lastBackup < 2000) return;
+  // Before there's a creature there's nothing to save, only play data to send.
+  if (!game.save.creature) return flush(reason);
+  lastBackup = Date.now();
+  game.persist(reason);
+}
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden" && game) flush("hidden");
+  if (document.visibilityState === "hidden") backupSave("hidden");
 });
+addEventListener("pagehide", () => backupSave("pagehide"));

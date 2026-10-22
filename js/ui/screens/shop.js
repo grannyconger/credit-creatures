@@ -71,7 +71,10 @@ export function render(root, { game, go, track }) {
         onBack: () => paint(),
         onPick: async (method) => {
           const r = resolveChoice(run.life, { cost: { amount: item.price, item: `shop: ${item.name}`, merchant: "Shimmer Market" } }, method);
-          if (!r.ok) return toast(r.message, "bad");
+          if (!r.ok) {
+            toast(r.message, "bad");
+            return paint(item);
+          }
           run.life = r.life;
           play.owned.push(item.id);
           track("shopBuy", { id: item.id, price: item.price, method: method.startsWith("card:") ? "card" : method, big: Boolean(item.big) });

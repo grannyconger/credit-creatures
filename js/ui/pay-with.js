@@ -15,7 +15,27 @@ const WHAT = {
 export function payWith({ life, cost, onPick, onBack, allowed = null, piggy = false }) {
   const methods = (cost.methods || ["debit", "card", "bnpl"]).filter((m) => !allowed || allowed.includes(m));
   const options = paymentOptions(life, { ...cost, methods });
-  const list = h("div.pay-options", { role: "list" });
+  const list = h("div.pay-options", { role: "group", "aria-label": "Ways to pay" });
+  // Tapping a way to pay only selects it. The Pay button makes it count (bug
+  // fix 2026-10-22: a scroll on a touch screen could pick one by accident).
+  let selected = null;
+  const payBtn = h("button.pay-confirm", { type: "button", disabled: true }, "Pay this way");
+  payBtn.addEventListener("click", () => {
+    if (!selected || payBtn.disabled) return;
+    payBtn.disabled = true;
+    list.querySelectorAll("button").forEach((b) => (b.disabled = true));
+    onPick(selected.method, selected);
+  });
+  const select = (o, btn) => {
+    selected = o;
+    list.querySelectorAll(".pay-option").forEach((b) => {
+      const on = b === btn;
+      b.setAttribute("aria-pressed", String(on));
+      b.querySelector(".pay-chosen")?.remove();
+      if (on) b.querySelector(".pay-text").append(h("small.pay-chosen", "Chosen"));
+    });
+    payBtn.disabled = false;
+  };
   for (const o of options) {
     let icon = "🏦";
     let name = "Vault debit card";
@@ -45,7 +65,7 @@ export function payWith({ life, cost, onPick, onBack, allowed = null, piggy = fa
     list.append(
       h(
         "button.pay-option",
-        { type: "button", role: "listitem", disabled: !o.ok, onclick: () => onPick(o.method, o) },
+        { type: "button", "aria-pressed": "false", disabled: !o.ok, onclick: (e) => select(o, e.currentTarget) },
         h("span.pay-icon", { "aria-hidden": "true" }, icon),
         h("span.pay-text", h("strong", name), h("small", piggy && o.kind === "debit" ? "Cash you already have. Once it's spent, it's gone." : WHAT[o.kind]), numbers, o.ok ? null : h("small.error-text", o.reason))
       )
@@ -58,7 +78,7 @@ export function payWith({ life, cost, onPick, onBack, allowed = null, piggy = fa
     piggy ? null : h("p.note.tight", "📱 Your digital wallet holds your debit card and any credit cards."),
     list,
     none ? h("p.error-text", piggy ? "Your piggy bank doesn't have enough yet. Work a shift at the Guild Hall." : "Nothing in your wallet can cover this right now.") : null,
-    h("div.row", h("button.secondary", { type: "button", onclick: onBack }, "Back"))
+    h("div.row", h("button.secondary", { type: "button", onclick: onBack }, "Back"), none ? null : payBtn)
   );
 }
 

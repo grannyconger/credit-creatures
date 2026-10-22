@@ -26,6 +26,8 @@ export function jobBoard({ game, run, track, save, onCollected }) {
   // New players start untimed (Phase 10 prologue).
   let timed = !(play.prologue && !play.prologue.done);
   let running = null;
+  // The finished shift's telemetry, sent on Collect or when the student leaves.
+  let logShift = null;
 
   // Jobs that open later, so students know more is coming.
   function lockedJobs() {
@@ -76,7 +78,13 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     const shifts = play.active ? play.active.month.shifts : `p${play.prologue?.shifts ?? 0}`;
     const seed = `${run.life.seed}:job:${run.life.month}:${shifts}`;
     track("minigameStart", { game: key, timed });
-    const done = (result) => finish(key, result);
+    // A minigame can only end a shift once.
+    let ended = false;
+    const done = (result) => {
+      if (ended) return;
+      ended = true;
+      finish(key, result);
+    };
     const opts = { seed, timed, onDone: done, track };
     running =
       key === "ledger"
@@ -92,6 +100,19 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     running = null;
     const pay = jobPay(play, key, result);
     let reaction = "";
+    // The pay is banked and saved the moment the shift ends (bug fix
+    // 2026-10-22: leaving before Collect lost the whole shift). Collect is
+    // just the coins and the reaction now.
+    const r = P.workShift(play, run.life, pay, `work shift: ${JOBS[key].title}`);
+    if (r.ok) {
+      run.life = r.life;
+      recordShift(play, key, { right: result.right, pay });
+    }
+    const saved = r.ok ? save("shift") : Promise.resolve();
+    logShift = () => {
+      logShift = null;
+      track("minigame", { game: key, right: result.right, wrong: result.wrong, total: result.total, pay, seconds: result.seconds, timed, reaction, depositOnly: result.depositOnly ?? null });
+    };
     const collect = h(
       "button.big.bst-seal-btn",
       { type: "button", "data-sound": "none" },
@@ -99,14 +120,12 @@ export function jobBoard({ game, run, track, save, onCollected }) {
       h("span.bst-seal-text", `Collect ${money(pay)}`)
     );
     collect.addEventListener("click", async () => {
+      if (collect.disabled) return;
       collect.disabled = true;
-      const r = P.workShift(play, run.life, pay, `work shift: ${JOBS[key].title}`);
       if (!r.ok) return;
       coinsFly(collect);
-      run.life = r.life;
-      recordShift(play, key, { right: result.right, pay });
-      track("minigame", { game: key, right: result.right, wrong: result.wrong, total: result.total, pay, seconds: result.seconds, timed, reaction, depositOnly: result.depositOnly ?? null });
-      await save("shift");
+      logShift?.();
+      await saved;
       onCollected(pay);
     });
     const reacts = h(
@@ -145,6 +164,9 @@ export function jobBoard({ game, run, track, save, onCollected }) {
 
   board();
   // The month screen calls this when it repaints, so a running timer stops cleanly.
-  el.stop = () => running?.stop?.();
+  el.stop = () => {
+    running?.stop?.();
+    logShift?.();
+  };
   return el;
 }

@@ -35,8 +35,10 @@ export const CONFIG = {
       pay: { min: 40, max: 120 },
       // Every `everyShifts` shifts at one job adds `bonus` dollars, up to `max`.
       experience: { everyShifts: 3, bonus: 5, max: 20 },
-      ledger: { seconds: 45, untimedItems: 12, perRight: 8, perWrong: 4 },
-      cashier: { seconds: 60, untimedCustomers: 6, perRight: 14 },
+      // lockMs and nextCustomerMs: a short pause after each answer, so a
+      // double click can't answer the next item too (bug fix 2026-10-22).
+      ledger: { seconds: 45, untimedItems: 12, perRight: 8, perWrong: 4, lockMs: 300 },
+      cashier: { seconds: 60, untimedCustomers: 6, perRight: 14, nextCustomerMs: 900 },
       checks: { perField: 13 },
     },
     monthRecordsKept: 6,

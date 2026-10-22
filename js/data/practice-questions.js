@@ -71,9 +71,11 @@ export const QUESTION_TYPES = {
       const paid = step(rng, 50, Math.min(150, bal + buy), 5);
       const right = bal + buy - paid;
       return {
-        prompt: [`Your card has a ${dollars(bal)} balance. You buy something for ${dollars(buy)}, then pay ${dollars(paid)}.`, "What is your new balance?"],
+        // Worded as what you OWE (bug fix 2026-10-22: "balance" and "pay" read
+        // like money you have, so both sounded like subtraction).
+        prompt: [`You owe ${dollars(bal)} on your credit card.`, `You use the card to buy something for ${dollars(buy)}.`, `Then you make a ${dollars(paid)} payment toward the card.`, "How much do you owe on the card now?"],
         ...mc(rng, dollars(right), [dollars(bal + buy + paid), dollars(Math.abs(bal - buy - paid)), dollars(bal - buy + paid), dollars(right + 10)]),
-        math: `${dollars(bal)} + ${dollars(buy)} purchase − ${dollars(paid)} payment = ${dollars(right)}. Purchases add to a card balance. Payments subtract.`,
+        math: `${dollars(bal)} owed + ${dollars(buy)} purchase − ${dollars(paid)} payment = ${dollars(right)} owed. A purchase on a card adds to what you owe. A payment takes it down.`,
       };
     },
   },

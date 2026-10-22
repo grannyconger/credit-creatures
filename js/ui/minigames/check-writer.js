@@ -100,7 +100,10 @@ export function checkWriter({ seed, life, creature, payFor, onDone, track }) {
       fill(backSlot, signatureMark(sig));
       depositBtn.disabled = false;
     });
+    let deposited = false;
     depositBtn.addEventListener("click", () => {
+      if (deposited) return;
+      deposited = true;
       depositBtn.disabled = true;
       const misses = Object.entries(grade)
         .filter(([, ok]) => !ok)

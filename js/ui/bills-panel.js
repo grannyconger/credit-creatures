@@ -9,6 +9,9 @@ import { CONFIG } from "../data/config.js";
 // onMove("toSavings" | "toChecking", amount) moves money between accounts.
 // onAutopay(accountId, mode) sets AutoPay: null, "min" or "full".
 export function billsPanel({ life, onPay, onMove, onAutopay }) {
+  // A double click can't pay a bill or move money twice (bug fix 2026-10-22).
+  onPay = once(onPay);
+  onMove = once(onMove);
   const cards = ownCards(life);
   const cosigned = life.accounts.filter((a) => a.owner === "cosigned" && a.status === "open" && a.pastDue > 0);
   const collections = life.accounts.filter((a) => a.status === "collections" && amountOwed(a) > 0);
@@ -177,4 +180,18 @@ function savingsMover(life, onMove) {
 
 function fact(label, value) {
   return h("div", h("dt", label), h("dd", value));
+}
+
+// Ignores calls while the last one is still running.
+function once(fn) {
+  let busy = false;
+  return async (...args) => {
+    if (busy) return;
+    busy = true;
+    try {
+      await fn(...args);
+    } finally {
+      busy = false;
+    }
+  };
 }

@@ -39,7 +39,7 @@ test("the math in number questions is right", () => {
     const [bal, limit] = q.prompt[0].match(/\$[\d,.]+/g).map((x) => Number(x.replace(/[$,]/g, "")));
     assert.equal(q.choices[q.answer], `${Math.round((bal / limit) * 100)}%`);
     const r = QUESTION_TYPES.runningBalance.make(E.createRng(`r${i}`));
-    const [b, buy, paid] = r.prompt[0].match(/\$[\d,.]+/g).map((x) => Number(x.replace(/[$,]/g, "")));
+    const [b, buy, paid] = r.prompt.join(" ").match(/\$[\d,.]+/g).map((x) => Number(x.replace(/[$,]/g, "")));
     assert.equal(r.choices[r.answer], E.dollars(b + buy - paid));
   }
 });

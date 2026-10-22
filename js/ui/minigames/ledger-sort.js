@@ -47,8 +47,12 @@ export function ledgerSort({ seed, timed, onDone, track }) {
     score.textContent = `✓ ${right}   ✗ ${wrong}`;
   }
 
+  // A short lock after each sort, so a double click or a held key can't sort
+  // the next item too (bug fix 2026-10-22).
+  let lockedUntil = 0;
   function sort(key) {
-    if (over) return;
+    if (over || Date.now() < lockedUntil) return;
+    lockedUntil = Date.now() + cfg.lockMs;
     total++;
     const ok = key === item.answer;
     if (ok) {

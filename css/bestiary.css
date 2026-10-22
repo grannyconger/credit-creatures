@@ -2257,6 +2257,22 @@ main#app.app:has(.bestiary) {
 .bst-month .dc-choice:disabled { color: var(--b-ink-soft); background: var(--b-paper-2); cursor: not-allowed; }
 .bst-month .dc-choice:disabled::before { border-style: dashed; }
 .bst-month .dc-choice:disabled .error-text { color: var(--b-rust-ink); }
+/* The selected choice: a ticked box, a plum edge and the word "Chosen". */
+.bst-month .dc-choice[aria-pressed="true"] { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
+.bst-month .dc-choice[aria-pressed="true"]::before { border-color: var(--b-plum); background: var(--b-plum); box-shadow: inset 0 0 0 3px var(--b-paper); }
+.bst-month .dc-choice .dc-chosen { font-family: var(--b-hand); color: var(--b-plum); }
+.bst-month .dc-submit-row { display: flex; align-items: center; justify-content: flex-end; gap: var(--b-s3); margin-top: var(--b-s3); }
+.bst-month .dc-submit-hint { font-family: var(--b-hand); font-size: var(--b-small); color: var(--b-ink-soft); }
+.bst-month .dc-submit {
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-on-rust);
+  background: var(--b-grain), var(--b-rust);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-month .dc-submit:disabled { color: var(--b-ink-soft); background: var(--b-paper-2); box-shadow: none; cursor: not-allowed; }
 
 /* The outcome: the naturalist's verdict, never color alone. */
 .bst-month .dc-outcome { margin: var(--b-s4) 0 0; font-size: var(--b-text); }
@@ -2295,6 +2311,11 @@ main#app.app:has(.bestiary) {
 }
 .bst-month .pay-option:hover:not(:disabled) { box-shadow: var(--b-shadow-lift); }
 .bst-month .pay-option small { color: var(--b-ink-soft); }
+.bst-month .pay-option[aria-pressed="true"], .bst-shop .pay-option[aria-pressed="true"] { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
+:is(.bst-month, .bst-shop) .pay-chosen { font-family: var(--b-hand); color: var(--b-plum); }
+:is(.bst-month, .bst-shop) .pay-confirm { font-family: var(--b-body); font-weight: 700; color: var(--b-on-rust); background: var(--b-grain), var(--b-rust); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
+:is(.bst-month, .bst-shop) .pay-confirm:disabled { color: var(--b-ink-soft); background: var(--b-paper-2); box-shadow: none; cursor: not-allowed; }
+.bst-month .dc-choice[aria-pressed="true"] { outline: 0; }
 
 /* End Month */
 .bst-month .end-month > p { max-width: 62ch; }
@@ -3558,3 +3579,26 @@ main#app.app:has(.bestiary) {
 .wallet-pop .row button .ico-wrap { color: inherit; }
 .wallet-pop .wallet h3 { font-size: var(--b-fs-title); }
 .bst-topbar .chapter-chip { max-width: 380px; }
+
+/* Home's recap and practice boxes sit in normal flow under the layout as paper
+   sheets, so the text is readable and nothing is laid over them (bug fix
+   2026-10-22: the old sticky map column's note sat on top of the recap). */
+.bst-home :is(.recap, .practice-box) {
+  position: relative;
+  z-index: 1;
+  clear: both;
+  max-width: 1020px;
+  margin: var(--b-s4) auto 0;
+  padding: var(--b-s4) var(--b-s5);
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-home .recap summary { cursor: pointer; font-family: var(--b-display); font-size: var(--b-fs-title); }
+.bst-home .recap p { margin: var(--b-s2) 0 0; }
+.bst-home .practice-box h3 { margin: 0; font-family: var(--b-display); font-weight: 400; }
+.bst-home .practice-box :is(.note, p) { color: var(--b-ink-soft); }
+.bst-home .practice-box button { font-family: var(--b-body); font-weight: 700; color: var(--b-ink); background: var(--b-grain), var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
+.bst-home .practice-box { margin-bottom: var(--b-s5); }

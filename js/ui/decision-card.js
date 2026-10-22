@@ -46,22 +46,47 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
   );
   track(kind === "life" ? "lifeCardShown" : "cardShown", { id: def.id, choices: choices.length });
 
+  // Tapping a choice only selects it. "Lock in my choice" makes it count
+  // (bug fix 2026-10-22: a student scrolling on a touch screen picked an
+  // answer by accident and it lowered her score).
   function showChoices(error = "") {
+    let selected = null;
+    const submit = h("button.dc-submit", { type: "button", disabled: true }, "Lock in my choice");
+    const buttons = choices.map((c) =>
+      h(
+        "button.dc-choice",
+        {
+          type: "button",
+          "data-sound": "none",
+          "aria-pressed": "false",
+          disabled: Boolean(c.disabled),
+          onclick: (e) => {
+            selected = c;
+            buttons.forEach((b) => {
+              const on = b === e.currentTarget;
+              b.setAttribute("aria-pressed", String(on));
+              b.querySelector(".dc-chosen")?.remove();
+              if (on) b.append(h("small.dc-chosen", "Chosen"));
+            });
+            submit.disabled = false;
+          },
+        },
+        h("strong", c.label),
+        c.detail ? h("small", c.detail) : null,
+        c.cost ? h("small", "Choose how to pay next") : null,
+        c.disabled ? h("small.error-text", c.disabled) : null
+      )
+    );
+    submit.addEventListener("click", () => {
+      if (!selected || submit.disabled) return;
+      submit.disabled = true;
+      buttons.forEach((b) => (b.disabled = true));
+      pick(selected);
+    });
     fill(
       body,
-      h(
-        "div.dc-choices",
-        choices.map((c) =>
-          h(
-            "button.dc-choice",
-            { type: "button", "data-sound": "none", disabled: Boolean(c.disabled), onclick: () => pick(c) },
-            h("strong", c.label),
-            c.detail ? h("small", c.detail) : null,
-            c.cost ? h("small", "Choose how to pay next") : null,
-            c.disabled ? h("small.error-text", c.disabled) : null
-          )
-        )
-      ),
+      h("div.dc-choices", { role: "group", "aria-label": "Your choices" }, buttons),
+      h("div.dc-submit-row", h("small.dc-submit-hint", "Tap a choice, then lock it in."), submit),
       error ? h("p.error", { role: "alert" }, error) : null
     );
   }

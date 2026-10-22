@@ -21,6 +21,8 @@ export function cashierRush({ seed, timed, onDone, track }) {
   let timer = null;
   let customer = null;
   let given = [];
+  // True from "Give change" until the next customer is at the counter.
+  let busy = false;
 
   const clock = h("span.mg-clock", { role: "timer" });
   const score = h("span.mg-score");
@@ -39,7 +41,7 @@ export function cashierRush({ seed, timed, onDone, track }) {
     ticket,
     money,
     tray,
-    h("div.row", h("button.secondary", { type: "button", onclick: () => ((given = given.slice(0, -1)), paintTray()) }, "Undo"), h("button.secondary", { type: "button", onclick: () => ((given = []), paintTray()) }, "Clear"), giveBtn),
+    h("div.row", h("button.secondary", { type: "button", onclick: () => busy || ((given = given.slice(0, -1)), paintTray()) }, "Undo"), h("button.secondary", { type: "button", onclick: () => busy || ((given = []), paintTray()) }, "Clear"), giveBtn),
     flash
   );
 
@@ -59,15 +61,25 @@ export function cashierRush({ seed, timed, onDone, track }) {
   }
 
   function addPiece(c) {
-    if (over) return;
+    if (over || busy) return;
     given.push(c);
     paintTray();
   }
 
+  // Bug fix 2026-10-22: the next customer used to load at once, so a double
+  // click gave them an empty tray and skipped them. Now the button locks and
+  // the result shows for a moment before the next customer steps up.
   function give() {
-    if (over || !customer) return;
+    if (over || !customer || busy) return;
     const want = customer.paid - customer.price;
     const sum = given.reduce((a, b) => a + b, 0);
+    if (!sum) {
+      flash.className = "mg-flash";
+      flash.textContent = "Tap bills and coins to count out the change first.";
+      return;
+    }
+    busy = true;
+    giveBtn.disabled = true;
     served++;
     const ok = sum === want;
     if (ok) {
@@ -78,13 +90,20 @@ export function cashierRush({ seed, timed, onDone, track }) {
       sfx.error();
       misses.push(`${fmt(customer.paid)} − ${fmt(customer.price)} = ${fmt(want)} (you gave ${fmt(sum)})`);
     }
+    score.textContent = `✓ ${right}   ✗ ${wrong}`;
     flash.className = `mg-flash ${ok ? "good" : "bad"}`;
     flash.textContent = ok ? `✓ Exact! ${fmt(customer.paid)} − ${fmt(customer.price)} = ${fmt(want)}` : `✗ The change was ${fmt(want)}. You gave ${fmt(sum)}.`;
     if (!timed && served >= cfg.untimedCustomers) return end();
-    newCustomer();
+    setTimeout(() => {
+      if (over) return;
+      newCustomer();
+      busy = false;
+      giveBtn.disabled = false;
+    }, cfg.nextCustomerMs);
   }
 
   function end() {
+    if (over) return;
     over = true;
     clearInterval(timer);
     sfx.questComplete();
