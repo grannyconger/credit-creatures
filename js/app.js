@@ -44,6 +44,7 @@ import { watchSentences } from "./ui/sentences.js";
 import { publishSpringTokens, motionOn } from "./ui/motion/spring.js";
 import { installBoops } from "./ui/motion/boop.js";
 import { installSparkles } from "./ui/motion/sparkles.js";
+import { installGaze } from "./ui/motion/gaze.js";
 
 // The leaderboard opens straight from the top bar (teacher request 2026-10-22).
 const leaderboard = { render: (root, ctx) => trophies.render(root, { ...ctx, startTab: "board" }) };
@@ -69,6 +70,8 @@ publishSpringTokens();
 installBoops();
 // Phase 16: sparkles on anything marked data-sparkle (js/ui/motion/sparkles.js).
 installSparkles();
+// Phase 17: eyes that follow the pointer, blinks and reactions (js/ui/motion/gaze.js).
+installGaze();
 
 const { auth, db } = await loadBackends();
 const bug = mountBugButton({

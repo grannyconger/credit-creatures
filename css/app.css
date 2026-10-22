@@ -1468,3 +1468,21 @@ body { font-variation-settings: "SOFT" 100, "WONK" 1; }
   :is(.ico, .ico *, .fx-sparkle, .fx-sparkle *) { animation: none !important; }
   .fx-sparkle, .fx-particles { display: none; }
 }
+
+/* ---------- Phase 17: living creatures (js/ui/motion/gaze.js) ---------- */
+.cc .cc-eye { transform-box: fill-box; transform-origin: 50% 50%; transition: transform 70ms ease-in, scale 0.25s var(--ease-bouncy, ease-out); }
+.cc.cc-blinking .cc-eye { transform: scaleY(0.1); }
+/* The eyes widen a little when the pointer comes close. */
+.cc.cc-close .cc-eye[data-cx] { scale: 1.14; }
+/* A happy hop on earning and a worried wobble after a fee or a late mark.
+   The words on screen always say what happened. */
+.cc.cc-react-happy { animation: cc-react-happy 0.8s var(--ease-bouncy, ease-out); transform-origin: 50% 100%; }
+.cc.cc-react-worried { animation: cc-react-worried 0.8s ease-in-out; transform-origin: 50% 100%; }
+@keyframes cc-react-happy { 25% { transform: translateY(-14%) scale(0.96, 1.06); } 55% { transform: translateY(0) scale(1.08, 0.92); } 75% { transform: translateY(-4%) scale(0.98, 1.02); } }
+@keyframes cc-react-worried { 15% { transform: rotate(-6deg); } 35% { transform: rotate(5deg); } 55% { transform: rotate(-3deg); } 75% { transform: rotate(2deg) scale(0.97); } }
+:root[data-motion="calm"] .cc :is(.cc-eye), :root[data-motion="calm"] .cc { animation: none !important; transition: none !important; }
+:root[data-motion="calm"] .cc .cc-eye { transform: none !important; scale: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .cc, .cc .cc-eye { animation: none !important; transition: none !important; }
+  .cc .cc-eye { transform: none !important; scale: none !important; }
+}

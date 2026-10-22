@@ -865,11 +865,11 @@ main#app.app:has(.bestiary) {
 }
 
 /* Every creature blinks now and then, never all at once. */
+/* Phase 17: blinks come from js/ui/motion/gaze.js now (.cc-blinking), every
+   3 to 6 seconds per creature, so the old looping blink is gone. */
 .bestiary .cc-eyes {
   transform-box: fill-box;
   transform-origin: 50% 50%;
-  animation: bst-blink 6s infinite;
-  animation-delay: calc(var(--i, 3) * -0.83s);
 }
 .bst-specimen:hover .cc-eyes { animation: bst-blink 0.5s 1; }
 @keyframes bst-blink {

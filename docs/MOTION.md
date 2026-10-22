@@ -68,7 +68,14 @@ Teacher request 2026-10-21: make the game captivating for Gen Z and Gen Alpha st
    - the fountain splashes
    - windows glow at night
 
-## Phase 17: living creatures
+## Phase 17: done (2026-10-22)
+
+- Eyes (`eyes()` in `js/ui/creature-art.js`): open eyes (round, sparkle, starry) have a white and a `.cc-pupil` group with `data-cx`, `data-cy` and `data-max`. Happy, wink and sleepy eyes are drawn shapes in a `.cc-eye` group, so they still blink.
+- `js/ui/motion/gaze.js`: one tracker. Pupils spring toward the pointer (pure `lookAt`, tested in `tests/gaze.test.js`), held inside the white. Creatures under 48px hold their eyes still. Touch follows the last tap. After 5 seconds with no pointer the eyes wander. Blinks every 3 to 6 seconds per creature (`.cc-blinking`, which replaced the old looping CSS blink). The eyes widen when the pointer is close (`.cc-close`). `react("happy" | "worried")`: a hop when coins come in or the score goes up at End Month, a wobble after a fee or a late mark. Settled eyes check back 8 times a second instead of every frame. Calm re-centers the pupils and stops everything.
+- Storybook detail (`storybook()` in `creature-art.js`): soft radial shading, a rim of light, a texture per species (fur, scales, feather barbs, speckles, a glassy sheen) toward the body's edge, cheek blush, toes and a ground shadow. `creatureSvg(look, { detail })` is "full" at 120px and up and "lite" below, so top bar, roster and friends avatars stay light. Ids come from the species, so the same look draws the same SVG.
+- Petting is in the Cottage (Phase 16, `creaturePet` telemetry).
+
+### Original plan
 
 1. **Eyes that follow the mouse:**
    - Each eye becomes white sclera, an iris and a pupil group (`.cc-pupil`) inside `eyes()` in `creature-art.js`.

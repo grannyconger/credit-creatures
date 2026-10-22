@@ -248,16 +248,26 @@ function star(cx, cy, r, fill) {
 }
 
 // style: round | happy | sleepy | sparkle | wink | starry. scale makes teen eyes a bit bigger.
+// Phase 17: open eyes have a white, and the dark part sits in .cc-pupil, which
+// js/ui/motion/gaze.js moves toward the pointer (data-max is how far, in
+// drawing units). Each eye is a .cc-eye group, so it can blink on its own.
+// Happy, wink and sleepy eyes are drawn shapes and only blink.
+const WHITE = "#fbfaf2";
 function eyes(e, p, style = "round", scale = 1) {
   const r = e.r * scale;
+  const f = (n) => Number(n.toFixed(2));
+  const eye = (x, inner, track = false, white = 1.45) =>
+    `<g class="cc-eye"${track ? ` data-cx="${x}" data-cy="${e.y}" data-max="${f(r * (white - 1) * 0.95)}"` : ""}>` +
+    (track ? `<circle class="cc-white" cx="${x}" cy="${e.y}" r="${f(r * white)}" fill="${WHITE}" stroke="${p.eye}" stroke-opacity="0.35" stroke-width="1"/><g class="cc-pupil">${inner}</g>` : inner) +
+    "</g>";
   const one = (x, side) => {
-    if (style === "happy" || (style === "wink" && side === "right")) return `<path d="M${x - r} ${e.y + 1} Q${x} ${e.y - r * 1.3} ${x + r} ${e.y + 1}" stroke="${p.eye}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    if (style === "happy" || (style === "wink" && side === "right")) return eye(x, `<path d="M${x - r} ${e.y + 1} Q${x} ${e.y - r * 1.3} ${x + r} ${e.y + 1}" stroke="${p.eye}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`);
     if (style === "sleepy")
-      return `<path d="M${x - r} ${e.y} Q${x} ${e.y + r} ${x + r} ${e.y} Z" fill="${p.eye}"/><path d="M${x - r - 1} ${e.y} L${x + r + 1} ${e.y}" stroke="${p.eye}" stroke-width="2" stroke-linecap="round"/>`;
-    const base = `<circle cx="${x}" cy="${e.y}" r="${r}" fill="${p.eye}"/><circle cx="${x + r * 0.35}" cy="${e.y - r * 0.35}" r="${r * 0.38}" fill="#ffffff"/>`;
-    if (style === "sparkle") return base + `<circle cx="${x - r * 0.35}" cy="${e.y + r * 0.3}" r="${r * 0.18}" fill="#ffffff"/>`;
-    if (style === "starry") return `<circle cx="${x}" cy="${e.y}" r="${r * 1.1}" fill="${p.eye}"/>` + star(x, e.y, r * 0.75, "#ffe27a");
-    return base;
+      return eye(x, `<path d="M${x - r} ${e.y} Q${x} ${e.y + r} ${x + r} ${e.y} Z" fill="${p.eye}"/><path d="M${x - r - 1} ${e.y} L${x + r + 1} ${e.y}" stroke="${p.eye}" stroke-width="2" stroke-linecap="round"/>`);
+    const base = `<circle cx="${x}" cy="${e.y}" r="${r}" fill="${p.eye}"/><circle cx="${f(x + r * 0.35)}" cy="${f(e.y - r * 0.35)}" r="${f(r * 0.38)}" fill="#ffffff"/>`;
+    if (style === "sparkle") return eye(x, base + `<circle cx="${f(x - r * 0.35)}" cy="${f(e.y + r * 0.3)}" r="${f(r * 0.18)}" fill="#ffffff"/>`, true);
+    if (style === "starry") return eye(x, `<circle cx="${x}" cy="${e.y}" r="${f(r * 1.1)}" fill="${p.eye}"/>` + star(x, e.y, r * 0.75, "#ffe27a"), true, 1.55);
+    return eye(x, base, true);
   };
   return one(e.lx, "left") + one(e.rx, "right");
 }
@@ -523,11 +533,53 @@ const FACE = {
   },
 };
 
+// ---------- Storybook detail (Phase 17) ----------
+// Big views (the Cottage, the creator, the title) get soft shading, a rim of
+// light, a texture for the species, cheek blush and toes. Small avatars skip
+// it. Every id comes from the species, so the same look draws the same SVG.
+const TEXTURE = { lanternFox: "fur", cloudBunny: "fur", mossDragon: "scales", crystalOwl: "feathers", emberPhoenix: "feathers", puddleGolem: "glass", starJellycorn: "glass", shellTurtle: "speckles" };
+
+function texture(kind, a, p) {
+  const f = (n) => Number(n.toFixed(1));
+  // Fixed spots across the body area, from -1 to 1 on each axis.
+  const spots = [[-0.6, -0.5], [-0.15, -0.7], [0.35, -0.55], [0.7, -0.2], [-0.75, 0.05], [-0.35, -0.15], [0.15, -0.2], [0.55, 0.2], [-0.55, 0.5], [-0.1, 0.35], [0.3, 0.6], [0.75, 0.45]];
+  const at = ([u, v]) => [a.cx + u * a.rx * 0.85, a.cy + v * a.ry * 0.85];
+  // Texture sits toward the edge, off the belly in the middle.
+  const edge = spots.filter(([u, v]) => u * u + v * v > 0.42);
+  if (kind === "fur") return edge.map((sp, i) => { const [x, y] = at(sp); const d = i % 2 ? 1 : -1; return `<path d="M${f(x)} ${f(y)} q${2 * d} -4 ${5 * d} -5" stroke="${p.accent}" stroke-opacity="0.35" stroke-width="1.4" fill="none" stroke-linecap="round"/>`; }).join("");
+  if (kind === "scales") return edge.map((sp) => { const [x, y] = at(sp); return `<path d="M${f(x - 4)} ${f(y)} q4 4 8 0" stroke="${p.accent}" stroke-opacity="0.4" stroke-width="1.3" fill="none" stroke-linecap="round"/>`; }).join("");
+  if (kind === "feathers") return edge.map((sp) => { const [x, y] = at(sp); return `<path d="M${f(x - 4)} ${f(y - 3)} l4 4 l4 -4" stroke="${p.accent}" stroke-opacity="0.38" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`; }).join("");
+  if (kind === "speckles") return edge.map((sp, i) => { const [x, y] = at(sp); return `<circle cx="${f(x)}" cy="${f(y)}" r="${i % 3 ? 1.2 : 1.8}" fill="${p.accent}" fill-opacity="0.35"/>`; }).join("");
+  if (kind === "glass")
+    return `<ellipse cx="${f(a.cx - a.rx * 0.38)}" cy="${f(a.cy - a.ry * 0.42)}" rx="${f(a.rx * 0.28)}" ry="${f(a.ry * 0.16)}" fill="#ffffff" fill-opacity="0.38" transform="rotate(-24 ${f(a.cx - a.rx * 0.38)} ${f(a.cy - a.ry * 0.42)})"/><circle cx="${f(a.cx + a.rx * 0.45)}" cy="${f(a.cy - a.ry * 0.3)}" r="2" fill="#ffffff" fill-opacity="0.7"/><circle cx="${f(a.cx + a.rx * 0.55)}" cy="${f(a.cy - a.ry * 0.12)}" r="1.2" fill="#ffffff" fill-opacity="0.6"/>`;
+  return "";
+}
+
+function storybook(s, species, p, creature) {
+  const a = s.area;
+  const id = `cc-${species}`;
+  const f = (n) => Number(n.toFixed(1));
+  // The rim: a thin arc of light along the upper left edge of the body.
+  const arc = (deg) => [a.cx + Math.cos((deg * Math.PI) / 180) * a.rx * 0.9, a.cy + Math.sin((deg * Math.PI) / 180) * a.ry * 0.9];
+  const [x1, y1] = arc(190);
+  const [x2, y2] = arc(260);
+  const cheeks = creature.markings === "blush" ? "" : [s.eyes.lx - s.eyes.r - 2, s.eyes.rx + s.eyes.r + 2].map((x) => `<ellipse cx="${x}" cy="${s.eyes.y + s.eyes.r + 6}" rx="5.5" ry="3" fill="#f48fb1" fill-opacity="0.28"/>`).join("");
+  const toes = (s.feet || []).map((ft) => `<path d="M${ft.x - 3} ${ft.y - 3} v4 M${ft.x + 3} ${ft.y - 3} v4" stroke="${p.eye}" stroke-opacity="0.35" stroke-width="1.2" stroke-linecap="round"/>`).join("");
+  return {
+    defs: `<radialGradient id="${id}-shade" cx="0.36" cy="0.3" r="0.8"><stop offset="0" stop-color="#ffffff" stop-opacity="0.3"/><stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#1b2420" stop-opacity="0.24"/></radialGradient><clipPath id="${id}-area"><ellipse cx="${a.cx}" cy="${a.cy}" rx="${a.rx}" ry="${a.ry}"/></clipPath>`,
+    shadow: `<ellipse class="cc-shadow" cx="100" cy="191" rx="${f(Math.min(60, a.rx * 1.05))}" ry="6" fill="#1b2420" fill-opacity="0.16"/>`,
+    over: `<g class="cc-detail" clip-path="url(#${id}-area)"><ellipse cx="${a.cx}" cy="${a.cy}" rx="${a.rx}" ry="${a.ry}" fill="url(#${id}-shade)"/>${texture(TEXTURE[species], a, p)}</g><path d="M${f(x1)} ${f(y1)} A${a.rx * 0.9} ${a.ry * 0.9} 0 0 1 ${f(x2)} ${f(y2)}" stroke="#ffffff" stroke-opacity="0.4" stroke-width="2.5" fill="none" stroke-linecap="round"/>${toes}`,
+    face: cheeks,
+  };
+}
+
 // Idle motion for each body, played only where a container has .cc-anim (css/app.css).
 const MOTION = { cloudBunny: "hop", crystalOwl: "float", mossDragon: "float", starJellycorn: "float", emberPhoenix: "float" };
 
 // ageMonths (optional) adds small signs of growing up.
-export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {}) {
+// detail: "full" (storybook shading and texture) or "lite". Big drawings get
+// full by default, small avatars (the top bar, the roster, friends) get lite.
+export function creatureSvg(creature, { size = 200, label, ageMonths = 0, detail = size >= 120 ? "full" : "lite" } = {}) {
   const species = SHAPES[creature.species] ? creature.species : "mossDragon";
   const p = PALETTES[creature.palette] || PALETTES.moss;
   const s = SHAPES[species](p);
@@ -536,16 +588,20 @@ export function creatureSvg(creature, { size = 200, label, ageMonths = 0 } = {})
   // Same look, same id, so repeated drawings stay identical.
   const clipId = `pat-${species}-${creature.pattern || "none"}`;
   const name = label ?? (creature.name ? `${creature.name}, a ${SPECIES[species].label.toLowerCase()}` : SPECIES[species].label);
-  return `<svg class="cc cc-sp-${species}" viewBox="0 0 200 200" width="${size}" height="${size}" role="img" aria-label="${escapeAttr(name)}">
+  const sb = detail === "full" ? storybook(s, species, p, creature) : null;
+  return `<svg class="cc cc-sp-${species}${sb ? " cc-full" : ""}" viewBox="0 0 200 200" width="${size}" height="${size}" role="img" aria-label="${escapeAttr(name)}">
+    ${sb ? `<defs>${sb.defs}</defs>${sb.shadow}` : ""}
     ${EFFECT_BEHIND[acc.effect] ? EFFECT_BEHIND[acc.effect]() : ""}
     <g class="cc-body cc-${MOTION[species] || "breathe"}">
     ${BEHIND[acc.neck] ? BEHIND[acc.neck](s.neck) : ""}
     ${s.body}
     ${pattern(s, creature.pattern, p, clipId)}
+    ${sb ? sb.over : ""}
     ${FEET[acc.feet] ? s.feet.map((f) => FEET[acc.feet](f)).join("") : ""}
     ${(NECK[acc.neck] || NECK.none)(s.neck)}
     <g class="cc-eyes">${eyes(s.eyes, eyeP, creature.eyes, ageMonths && ageMonths < 216 ? 1.15 : 1)}</g>
     ${s.over ? s.over(s.eyes) : ""}
+    ${sb ? sb.face : ""}
     ${markings(s.eyes, creature.markings)}
     ${ageDetails(s.eyes, ageMonths, p)}
     ${s.noMouth ? "" : mouth(s.eyes, p)}

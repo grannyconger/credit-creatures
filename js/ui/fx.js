@@ -4,6 +4,7 @@
 import { h } from "./dom.js";
 import { sfx } from "./sound.js";
 import { burstFrom } from "./motion/particles.js";
+import { react } from "./motion/gaze.js";
 
 const reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -20,6 +21,8 @@ export function coinsFly(from, { chime = 0 } = {}) {
   // Phase 16: the coins are canvas particles now (js/ui/motion/particles.js).
   // They hop up, then tumble into the Checking line. Off under Calm.
   burstFrom(from, "coins", { to: { x: b.left + Math.min(40, b.width / 2), y: b.top + b.height / 2 } });
+  // Phase 17: every creature on screen does a happy hop.
+  react("happy");
   if (reduced()) return;
   setTimeout(() => {
     target.classList.add("fx-bump");

@@ -4,6 +4,7 @@
 // In practice mode the same screen runs on a throwaway copy.
 import { payMethods } from "../../progression.js";
 import { firstVisitLesson } from "../guide.js";
+import { react } from "../motion/gaze.js";
 import { h, add, fill, money, ageLabel, toast } from "../dom.js";
 import { ownCards, upcomingPayments, utilization, amountOwed } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
@@ -290,6 +291,10 @@ export function render(root, { game, go, track, refreshWho }) {
       if (r.chapterDone) go("chapterEnd");
       else paint();
       window.scrollTo(0, 0);
+      // Phase 17: the creature wobbles after a fee or a late mark, or hops
+      // when the score goes up. The month summary says why in words.
+      const worried = fees > 0 || r.events.some((e) => e.type === "late");
+      if (worried || delta > 0) setTimeout(() => react(worried ? "worried" : "happy"), 300);
     });
     return btn;
   }
