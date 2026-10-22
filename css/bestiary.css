@@ -3763,3 +3763,44 @@ main#app.app:has(.bestiary) {
 }
 :root[data-appearance="dark"] .bst-map .m-win { filter: drop-shadow(0 0 3px var(--m-window)); animation: bst-window 5s ease-in-out infinite; }
 @keyframes bst-window { 0%, 100% { opacity: 1; } 47% { opacity: 0.82; } 50% { opacity: 1; } 53% { opacity: 0.9; } }
+
+/* Cashier Rush extras (teacher request 2026-10-22): key numbers on the
+   drawer, money in the tray you can tap to take back, and the count-up hint. */
+.bst-guild .cash-piece { position: relative; }
+.bst-guild .cash-key {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  padding: 0 4px;
+  font-family: var(--b-body);
+  font-size: var(--b-fs-tiny);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--b-money-ink);
+  background: color-mix(in srgb, var(--b-paper) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--b-money-ink) 35%, transparent);
+  border-radius: 4px;
+}
+.bst-guild .cash-piece.coin .cash-key { top: -6px; left: -6px; }
+.bst-guild .cash-piece.pressed { transform: translateY(3px); box-shadow: 0 0 0 transparent; }
+.bst-guild button.tray-piece {
+  min-height: 40px;
+  padding: 4px 10px;
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-title);
+  color: var(--b-money-ink);
+  border: 1.5px solid var(--b-bill-edge);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--b-shadow-ink) 35%, transparent);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.bst-guild button.tray-piece.coin { border-color: var(--b-coin-edge); }
+.bst-guild button.tray-piece:hover { text-decoration: line-through; filter: brightness(0.95); }
+.bst-guild .tray-pieces { display: inline-flex; flex-wrap: wrap; gap: var(--b-s2); margin-left: var(--b-s2); }
+.bst-guild .cash-hint { min-height: 0; }
+.bst-guild .cash-hint-btn { font-family: var(--b-body); font-weight: 700; color: var(--b-ink); background: var(--b-grain), var(--b-paper-2); border: 1.5px dashed var(--b-rule); border-radius: var(--b-r-tag); }
+.bst-guild .cash-hint-title { margin: 0 0 var(--b-s1); color: var(--b-on-ground); font-family: var(--b-hand); font-size: var(--b-fs-hand); }
+.bst-guild .cash-hint-steps { display: flex; flex-wrap: wrap; gap: var(--b-s2); margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.bst-guild .cash-hint-steps li { padding: 4px 10px; color: var(--b-ink); background: var(--b-grain), var(--b-paper); border-radius: var(--b-r-insert); box-shadow: var(--b-shadow-card); font-size: var(--b-small); }
+.bst-guild .cash-keys-help { margin: 0; font-family: var(--b-hand); font-size: var(--b-small); color: var(--b-on-ground-soft); }

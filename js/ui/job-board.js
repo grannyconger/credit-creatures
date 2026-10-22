@@ -93,7 +93,8 @@ export function jobBoard({ game, run, track, save, onCollected }) {
           ? cashierRush(opts)
           : checkWriter({ ...opts, life: run.life, creature: game.save.creature, payFor: (right) => jobPay(play, "checks", { right }) });
     fill(el, h("h3", icon(JOBS[key].mark || "guild", { size: 24 }), ` ${JOBS[key].title}`), running);
-    el.querySelector("button")?.focus();
+    // A minigame can say where the keyboard starts (Cashier Rush: Give change).
+    (el.querySelector("[data-autofocus]") || el.querySelector("button"))?.focus();
   }
 
   function finish(key, result) {
