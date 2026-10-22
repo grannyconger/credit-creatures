@@ -658,7 +658,7 @@ ul.plain li { padding: 4px 0; }
 .check-sign small { border-top: 2px solid #5f7f62; width: 100%; text-align: center; }
 .check-fill { font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive; border-bottom: 2px solid #5f7f62; padding: 0 6px; flex: 1; }
 .sig-slot { background: #fff8; color: #1d2b44; border: 2px dashed #5f7f62; min-height: 56px; min-width: 220px; display: grid; place-items: center; }
-.sig-img { height: 50px; max-width: 220px; }
+.sig-img { height: 50px; max-width: 220px; object-fit: contain; }
 .sig-script, .sig-typed { font-family: "Dancing Script", "Segoe Script", "Brush Script MT", "Snell Roundhand", "Apple Chancery", cursive; font-size: 1.7rem; color: #1d2b44; }
 .check-back { min-height: 220px; align-items: center; justify-content: space-between; }
 .endorse-title { font-weight: 800; letter-spacing: 0.15em; margin: 0; }

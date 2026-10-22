@@ -24,9 +24,9 @@ export function askSignature({ name, title = "Sign here" }) {
       const scale = window.devicePixelRatio || 1;
       canvas.width = Math.round(r.width * scale);
       canvas.height = Math.round(r.height * scale);
-      ctx = canvas.getContext("2d");
+      ctx = canvas.getContext("2d", { willReadFrequently: true });
       ctx.scale(scale, scale);
-      ctx.lineWidth = 3.5;
+      ctx.lineWidth = 6;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.strokeStyle = "#1d2b44";
@@ -67,7 +67,38 @@ export function askSignature({ name, title = "Sign here" }) {
     canvas.addEventListener("pointerup", end);
     canvas.addEventListener("pointercancel", end);
 
-    doneBtn.addEventListener("click", () => finish({ kind: "drawn", image: canvas.toDataURL("image/png") }));
+    // Crop to just the ink (plus a margin) so the signature fills the small
+    // slot on the check instead of shrinking to a hairline (teacher request
+    // 2026-10-22: the signature on the check was too faint to read).
+    function inkImage() {
+      const w = canvas.width;
+      const hgt = canvas.height;
+      const px = ctx.getImageData(0, 0, w, hgt).data;
+      let x0 = w, y0 = hgt, x1 = -1, y1 = -1;
+      for (let y = 0; y < hgt; y++) {
+        for (let x = 0; x < w; x++) {
+          if (px[(y * w + x) * 4 + 3] > 20) {
+            if (x < x0) x0 = x;
+            if (x > x1) x1 = x;
+            if (y < y0) y0 = y;
+            if (y > y1) y1 = y;
+          }
+        }
+      }
+      if (x1 < 0) return canvas.toDataURL("image/png");
+      const pad = Math.round(12 * (window.devicePixelRatio || 1));
+      x0 = Math.max(0, x0 - pad);
+      y0 = Math.max(0, y0 - pad);
+      x1 = Math.min(w - 1, x1 + pad);
+      y1 = Math.min(hgt - 1, y1 + pad);
+      const out = document.createElement("canvas");
+      out.width = x1 - x0 + 1;
+      out.height = y1 - y0 + 1;
+      out.getContext("2d").drawImage(canvas, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
+      return out.toDataURL("image/png");
+    }
+
+    doneBtn.addEventListener("click", () => finish({ kind: "drawn", image: inkImage() }));
 
     const drawPanel = h(
       "div.sig-draw",
