@@ -10,6 +10,7 @@ import { CONFIG } from "../../data/config.js";
 import { creatureSvg } from "../creature-art.js";
 import { GUIDE } from "../../data/lessons.js";
 import { walletTab } from "../accounts/wallet-tab.js";
+import { sealSvg } from "../bestiary-art.js";
 import { statementsTab } from "../accounts/statements-tab.js";
 import { scoreTab } from "../accounts/score-tab.js";
 import { reportTab } from "../accounts/report-tab.js";
@@ -46,7 +47,9 @@ export function tabbedPlace(root, { game, go, track, refreshWho }, { tabs, state
   if (!TABS.some(([k]) => k === game[stateKey])) game[stateKey] = TABS[0][0];
   const shell = h("section.panel.accounts");
   const body = h("div.acct-body", { id: "acct-body", role: "tabpanel" });
-  root.append(shell);
+  // A page of the Mossy Bestiary (2026-10-22): a bank passbook, with its
+  // tabs as index tabs on the page's right edge.
+  root.append(h(`div.bestiary.bst-book-place.${iconName === "vault" ? "bst-vault" : "bst-records"}`, shell));
 
   const ctx = {
     game,
@@ -104,11 +107,16 @@ function bankOpening(root, { game, go, track, refreshWho }) {
   const options = [0, Math.floor(coins * 0.25), Math.floor(coins * 0.5)].filter((v, i, a) => a.indexOf(v) === i);
   let toSavings = options[1] ?? 0;
   const panel = h("section.panel.place-screen.bank-open");
-  root.append(panel);
+  root.append(h("div.bestiary.bst-book-place.bst-vault", panel));
   track("bankOpenView", { coins });
 
   function paint() {
-    const open = h("button.big", { type: "button", "data-sound": "none" }, "Open my accounts");
+    const open = h(
+      "button.big.bst-seal-btn",
+      { type: "button", "data-sound": "none" },
+      h("span.bst-seal-wax", { html: sealSvg({ seed: 43, size: 84, letter: "V" }) }),
+      h("span.bst-seal-text", "Open my accounts")
+    );
     open.addEventListener("click", async () => {
       open.disabled = true;
       const r = openBankAccount(play, game.life, { toSavings });

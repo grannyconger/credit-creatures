@@ -1,5 +1,6 @@
 // My Credit Report (SPEC §14): accounts, the 24-month on-time grid, inquiries,
 // collections, authorized-user accounts, and "helping you / hurting you".
+import { icon } from "../icons.js";
 import { h, money, ageLabel } from "../dom.js";
 import { creditReport, FACTOR_LABELS } from "../../engine/index.js";
 
@@ -51,7 +52,7 @@ export function reportTab({ run }) {
       : h("p.muted", "No hard inquiries."),
     soft.length ? h("ul.plain", soft.map((q) => h("li", `👀 Soft: ${q.source}, at ${ageAt(q.month)}. Never changes your score.`))) : null,
     h("h2", "Collections"),
-    r.collections.length ? h("ul.plain", r.collections.map((c) => h("li", `🚨 ${c.name}: ${money(c.balance)} ${c.paid ? "(paid)" : "unpaid"}`))) : h("p.muted", "None. Keep it that way.")
+    r.collections.length ? h("ul.plain", r.collections.map((c) => h("li", icon("alert", { size: 16 }), ` ${c.name}: ${money(c.balance)} ${c.paid ? "(paid)" : "unpaid"}`))) : h("p.muted", "None. Keep it that way.")
   );
 }
 

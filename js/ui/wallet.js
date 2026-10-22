@@ -58,7 +58,7 @@ export function walletStrip(life, creature) {
   return h(
     "section.wallet",
     { "aria-label": "Your digital wallet" },
-    h("h3", "📱 Your digital wallet"),
+    h("h3", icon("wallet", { size: 20 }), " Your digital wallet"),
     h("div.wallet-row", items),
     loans.length
       ? h(

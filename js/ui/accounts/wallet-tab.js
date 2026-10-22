@@ -1,5 +1,6 @@
 // Wallet: the cards in the digital wallet, loans, BNPL plans and bills,
 // with payments, AutoPay and payoff previews.
+import { icon } from "../icons.js";
 import { h, money, percent, toast } from "../dom.js";
 import { pay, setAutopay, moveToSavings, moveToChecking, amountOwed, dollars } from "../../engine/index.js";
 import { walletStrip } from "../wallet.js";
@@ -24,7 +25,7 @@ export function walletTab({ game, run, track, save, repaint, go }) {
   return h(
     "div",
     noCard && !run.practice
-      ? h("section.callout.apply-card", h("p.tight", h("strong", "💳 Ready for your first credit card?")), h("p.tight", "Learn who's behind a card, design yours and apply. The Vault tells you why it says yes or no."), h("div.row", h("button", { type: "button", onclick: () => go("cardIntro") }, "Apply for a credit card")))
+      ? h("section.callout.apply-card", h("p.tight", h("strong", icon("card", { size: 18 }), " Ready for your first credit card?")), h("p.tight", "Learn who's behind a card, design yours and apply. The Vault tells you why it says yes or no."), h("div.row", h("button", { type: "button", onclick: () => go("cardIntro") }, "Apply for a credit card")))
       : null,
     walletStrip(life, game.save.creature),
     loans.length

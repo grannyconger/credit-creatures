@@ -2441,3 +2441,312 @@ main#app.app:has(.bestiary) {
 .bst-title .signin-inner { min-height: 0; }
 .bst-title .signin-parade { margin-top: 0; }
 .bst-title.signin-hero { align-items: center; }
+
+/* ===========================================================================
+   The Gilded Vault and the Hall of Records (tabbedPlace in
+   js/ui/screens/accounts.js): a bank passbook. One page with brass corners,
+   and its tabs stand out from the right edge as index tabs.
+   =========================================================================== */
+.bst-book-place :is(.panel.accounts, .panel.bank-open) {
+  position: relative;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: var(--b-s6) var(--b-s6) var(--b-s5);
+  color: var(--b-ink);
+  background:
+    radial-gradient(34px 26px at 8% 92%, var(--b-foxing), transparent 70%),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+/* Brass corner guards on the page, top left and bottom right. */
+.bst-book-place :is(.panel.accounts, .panel.bank-open)::before,
+.bst-book-place :is(.panel.accounts, .panel.bank-open)::after {
+  content: "";
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  pointer-events: none;
+  background: linear-gradient(135deg, var(--b-pin) 0 50%, transparent 50%);
+  filter: drop-shadow(1px 2px 1px color-mix(in srgb, var(--b-shadow-ink) 40%, transparent));
+  opacity: 0.9;
+}
+.bst-book-place :is(.panel.accounts, .panel.bank-open)::before { top: 0; left: 0; border-top-left-radius: var(--b-r-sheet); }
+.bst-book-place :is(.panel.accounts, .panel.bank-open)::after { right: 0; bottom: 0; transform: rotate(180deg); }
+
+/* Index tabs on the right edge. */
+.bst-book-place .acct-tabs {
+  position: absolute;
+  top: 150px;
+  right: -126px;
+  z-index: 0;
+  width: 132px;
+  display: grid;
+  gap: var(--b-s2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.bst-book-place .acct-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--b-s2) var(--b-s3) var(--b-s2) var(--b-s4);
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-title);
+  color: var(--b-ink-soft);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 0;
+  border-radius: var(--b-r-side-tab);
+  box-shadow: var(--b-shadow-card);
+  transform: translateX(-6px);
+  transition: transform var(--b-quick) var(--ease-bouncy);
+}
+.bst-book-place .acct-tabs button:nth-child(2) { border-radius: var(--b-r-side-tab-alt); }
+.bst-book-place .acct-tabs button:hover { transform: translateX(0); color: var(--b-ink); }
+.bst-book-place .acct-tabs button[aria-current="page"] {
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper);
+  transform: translateX(-2px);
+  text-decoration: underline;
+  text-decoration-color: var(--b-plum);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.bst-book-place .acct-tabs .count-badge {
+  margin-left: auto;
+  padding: 0 7px;
+  font-family: var(--b-body);
+  font-size: var(--b-fs-tiny);
+  font-weight: 700;
+  color: var(--b-paper);
+  background: var(--b-plum);
+  border-radius: var(--b-r-round);
+}
+.bst-book-place .acct-body { padding-top: var(--b-s2); }
+.bst-book-place .acct-body h3,
+.bst-book-place .bank-open h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--b-s2);
+  margin: var(--b-s5) 0 var(--b-s2);
+  font-size: var(--b-fs-lead);
+  color: var(--b-ink);
+}
+.bst-book-place .acct-body h3 .ico-wrap { color: var(--b-gold-ink); }
+.bst-book-place .muted,
+.bst-book-place .note { color: var(--b-ink-soft); }
+.bst-book-place .warn-text { display: flex; gap: 6px; align-items: center; color: var(--b-rust-ink); font-weight: 700; }
+.bst-book-place .badge {
+  padding: 1px 8px;
+  font-size: var(--b-fs-tiny);
+  font-weight: 700;
+  color: var(--b-plum);
+  background: var(--b-plum-wash);
+  border-radius: var(--b-r-tag);
+}
+
+/* Balances: passbook lines, like the Town Hall tally. */
+.bst-book-place .money-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--b-s2) var(--b-s5);
+  margin: 0 0 var(--b-s3);
+  padding: var(--b-s3) 0;
+  list-style: none;
+  border-top: 1px dashed var(--b-rule);
+  border-bottom: 1px dashed var(--b-rule);
+}
+.bst-book-place .money-chips li { display: flex; align-items: baseline; gap: var(--b-s2); padding: 0; background: none; }
+.bst-book-place .money-chips li > .ico-wrap { color: var(--b-gold-ink); align-self: center; }
+.bst-book-place .money-chips small { font-size: var(--b-small); color: var(--b-ink-soft); }
+.bst-book-place .money-chips strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-ink); font-variant-numeric: lining-nums tabular-nums; }
+.bst-book-place .money-chips li:is(.warn, .bad) strong { color: var(--b-rust-ink); }
+
+/* The ticket that offers a first credit card. */
+.bst-book-place .apply-card {
+  position: relative;
+  padding: var(--b-s4) var(--b-s5);
+  background: var(--b-grain), var(--b-paper-insert);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(-0.6deg);
+}
+.bst-book-place .apply-card strong { display: inline-flex; align-items: center; gap: 6px; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.bst-book-place .apply-card strong .ico-wrap { color: var(--b-plum); }
+
+/* The digital wallet: a leather card wallet with stitched edges. */
+.bst-book-place .wallet {
+  margin-top: var(--b-s5);
+  padding: var(--b-s4) var(--b-s5) var(--b-s5);
+  color: var(--b-on-ground);
+  background: var(--b-grain), var(--b-ground-deep);
+  border-radius: var(--b-r-tag);
+  outline: 1.5px dashed color-mix(in srgb, var(--b-gold) 65%, transparent);
+  outline-offset: -8px;
+  box-shadow: var(--b-shadow-card);
+}
+.bst-book-place .wallet h3 { margin-top: 0; color: var(--b-on-ground); }
+.bst-book-place .wallet h3 .ico-wrap { color: var(--b-gold); }
+.bst-book-place .wallet-row { display: flex; flex-wrap: wrap; gap: var(--b-s4); }
+.bst-book-place .wallet-item figcaption { margin-top: var(--b-s2); color: var(--b-on-ground-soft); }
+.bst-book-place .wallet-item figcaption strong { color: var(--b-on-ground); }
+.bst-book-place .wallet .note,
+.bst-book-place .wallet .muted { color: var(--b-on-ground-soft); }
+
+/* Bills: ledger entries, each card a ruled entry with its own margin. */
+.bst-book-place .bill-card {
+  position: relative;
+  margin: var(--b-s3) 0;
+  padding: var(--b-s3) var(--b-s4) var(--b-s3) var(--b-s5);
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper-insert);
+  border: 0;
+  border-left: 0;
+  border-radius: var(--b-r-insert);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-book-place .bill-card::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: var(--b-s3);
+  border-left: 1.5px solid color-mix(in srgb, var(--b-rust) 45%, transparent);
+}
+.bst-book-place .bill-card.bad::before { border-left-style: dashed; border-left-color: var(--b-rust-ink); }
+.bst-book-place .bill-head { display: flex; flex-wrap: wrap; gap: var(--b-s2); align-items: center; }
+.bst-book-place .bill-head strong { display: inline-flex; gap: 6px; align-items: center; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.bst-book-place .bill-card.bad .bill-head .ico-wrap { color: var(--b-rust-ink); }
+.bst-book-place .util-bar { background: var(--b-paper-2); border-radius: var(--b-r-round); }
+.bst-book-place .util-bar span { background: var(--b-moss-2); border-radius: var(--b-r-round); }
+.bst-book-place .util-bar span.high { background: var(--b-rust); }
+.bst-book-place .upcoming { list-style: none; margin: 0; padding: 0; max-width: 520px; }
+.bst-book-place .upcoming li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--b-rule); }
+.bst-book-place .upcoming li strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); font-variant-numeric: lining-nums tabular-nums; }
+.bst-book-place .upcoming li.total { border-bottom: 3px double var(--b-ink-soft); font-weight: 700; }
+
+/* Move money: a deposit slip with a perforated edge. */
+.bst-book-place .mover {
+  position: relative;
+  max-width: 620px;
+  margin-top: var(--b-s5);
+  padding: var(--b-s4) var(--b-s5) var(--b-s4) calc(var(--b-s5) + 10px);
+  background: var(--b-grain), var(--b-paper-insert);
+  border-radius: 2px var(--b-r-sheet) var(--b-r-sheet) 2px;
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(0.6deg);
+}
+.bst-book-place .mover::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 10px;
+  border-left: 2px dotted var(--b-rule);
+}
+.bst-book-place .mover h3 { margin-top: 0; }
+.bst-book-place .custom-pay { display: flex; flex-wrap: wrap; gap: var(--b-s3); align-items: center; }
+.bst-book-place input[type="number"],
+.bst-book-place input[type="text"] {
+  width: auto;
+  min-width: 9ch;
+  padding: 4px 2px;
+  font-family: var(--b-hand);
+  font-size: var(--b-fs-lead);
+  color: var(--b-ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px dashed var(--b-rule);
+  border-radius: 0;
+  box-shadow: none;
+}
+.bst-book-place input[type="number"]::placeholder { color: var(--b-ink-soft); opacity: 1; }
+.bst-book-place input:focus { outline: 2.5px dashed var(--b-plum); outline-offset: 5px; border-bottom-style: solid; }
+.bst-book-place .chip { color: var(--b-ink); background: var(--b-paper); border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); font-weight: 700; }
+.bst-book-place .chip[aria-pressed="true"] { color: var(--b-paper); background: var(--b-plum); border-color: var(--b-plum); }
+.bst-book-place .autopay-label { font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-ink); }
+
+/* Statements and letters in the inbox: ruled paper. */
+.bst-book-place .stmt-items li { border-bottom: 1px dashed var(--b-rule); }
+.bst-book-place .note-icon { color: var(--b-plum); }
+
+/* The day the bank account opens (end of the prologue). */
+.bst-book-place .bank-sage {
+  display: flex;
+  gap: var(--b-s4);
+  align-items: center;
+  padding: var(--b-s4);
+  background: var(--b-grain), var(--b-paper-insert);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-book-place .bank-sage p { margin: 0; font-style: italic; max-width: 60ch; }
+.bst-book-place .bank-accounts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-s4); margin-top: var(--b-s4); }
+.bst-book-place .bank-accounts article {
+  padding: var(--b-s4);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-book-place .bank-accounts article:nth-child(1) { transform: rotate(-1.2deg); }
+.bst-book-place .bank-accounts article:nth-child(2) { transform: rotate(0.8deg) translateY(8px); }
+.bst-book-place .bank-accounts article:nth-child(3) { transform: rotate(-0.4deg); }
+.bst-book-place .bank-accounts h3 { margin: 0 0 var(--b-s2); }
+.bst-book-place .bank-open .row { margin-top: var(--b-s4); justify-content: flex-end; }
+
+:root[data-reading="dyslexia"] .bst-book-place :is(.apply-card, .mover, .bank-accounts article) { transform: none; }
+@media (max-width: 1360px) {
+  .bst-book-place :is(.panel.accounts, .panel.bank-open) { margin-right: 150px; margin-left: auto; }
+}
+.bst-book-place .custom-pay input[type="number"] { flex: 0 0 12ch; width: 12ch; }
+/* A card's facts: a row of ledger columns, label over value. */
+.bst-book-place :is(.bill-facts, .stmt-lines) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0;
+  margin: var(--b-s3) 0;
+  border-top: 1px dashed var(--b-rule);
+  border-bottom: 1px dashed var(--b-rule);
+}
+.bst-book-place :is(.bill-facts, .stmt-lines) > div {
+  padding: var(--b-s2) var(--b-s3);
+  background: none;
+  border-radius: 0;
+  border-right: 1px dashed var(--b-rule);
+}
+.bst-book-place :is(.bill-facts, .stmt-lines) > div:last-child { border-right: 0; }
+.bst-book-place :is(.bill-facts, .stmt-lines) dt { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+.bst-book-place :is(.bill-facts, .stmt-lines) dd { margin: 0; font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-ink); font-variant-numeric: lining-nums tabular-nums; }
+
+/* Hall of Records: index tabs a little wider for "My Score" and "My Report". */
+.bst-records .acct-tabs { width: 168px; right: -162px; }
+.bst-records .acct-tabs button { white-space: nowrap; }
+.bst-book-place .big-score { font-family: var(--b-display); font-weight: 400; font-size: clamp(2.5rem, 3.6vw, 3.8rem); color: var(--b-ink); }
+.bst-book-place .band-label { font-family: var(--b-hand); font-weight: 400; font-size: var(--b-fs-hand); color: var(--b-plum); }
+.bst-book-place .gauge-block :is(small, .note) { color: var(--b-ink-soft); }
+.bst-book-place .acct-body h2 { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-ink); }
+/* The five parts of the score: ledger entries, not a stack of boxes. Each
+   keeps its validated factor color on the icon ring and the bar, always next
+   to its name and a word (Strong, Okay, Weak). */
+.bst-book-place .factor-list { display: grid; gap: 0; border-top: 1px dashed var(--b-rule); }
+.bst-book-place .factor-row {
+  padding: var(--b-s4) 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px dashed var(--b-rule);
+  border-radius: 0;
+  box-shadow: none;
+}
+.bst-book-place .factor-row h3 { margin: 0; }
+.bst-book-place .factor-icon { width: 48px; height: 48px; font-size: var(--b-fs-lead); background: var(--b-paper); border-width: 2.5px; }
+.bst-book-place .factor-meter { height: 8px; background: var(--b-paper-2); border-radius: var(--b-r-round); }
+.bst-book-place .factor-meter span { border-radius: var(--b-r-round); }
+.bst-book-place .strength { font-family: var(--b-body); border-radius: var(--b-r-tag); }
+.bst-book-place details > summary { font-weight: 700; color: var(--b-plum); cursor: pointer; }
+.bst-book-place .data-table th,
+.bst-book-place .data-table td { border-bottom: 1px dashed var(--b-rule); color: var(--b-ink); }

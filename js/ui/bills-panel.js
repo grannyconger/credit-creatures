@@ -1,5 +1,6 @@
 // Pay your cards, set AutoPay, preview payoff time, and see what comes out of
 // checking at End Month. Used by the month's bills task and the Wallet tab.
+import { icon } from "./icons.js";
 import { h, add, money, percent } from "./dom.js";
 import { ownCards, amountOwed, upcomingPayments, minimumOnlyPlan, payoffPlan } from "../engine/index.js";
 import { CONFIG } from "../data/config.js";
@@ -39,7 +40,7 @@ export function billsPanel({ life, onPay, onMove, onAutopay }) {
           due ? fact("Minimum still due", minLeft > 0 ? money(minLeft) : "✓ Paid") : null,
           fact("Due", !due ? "after your first statement" : minLeft > 0 || stmtLeft > 0 ? "at this End Month" : "Nothing due")
         ),
-        minLeft > 0 && !a.autopay ? h("p.warn-text", `⚠️ Pay at least ${money(minLeft)} before End Month or it will be late.`) : null,
+        minLeft > 0 && !a.autopay ? h("p.warn-text", icon("alert", { size: 16 }), ` Pay at least ${money(minLeft)} before End Month or it will be late.`) : null,
         h(
           "div.row.pay-buttons",
           minLeft > 0 ? btn("Pay minimum", minLeft, "min") : null,
@@ -72,7 +73,7 @@ export function billsPanel({ life, onPay, onMove, onAutopay }) {
       el,
       h(
         "div.bill-card.bad",
-        h("div.bill-head", h("strong", `🚨 ${a.name}`)),
+        h("div.bill-head", h("strong", icon("alert", { size: 16 }), ` ${a.name}`)),
         h("p", "This is on your credit report as a collection. Paying it won't erase the mark, but a paid collection hurts much less than an unpaid one."),
         h("div.row", h("button", { type: "button", disabled: owed > life.checking, onclick: () => onPay(a.id, owed, "collection") }, `Pay ${money(owed)} to settle it`))
       )
@@ -103,7 +104,7 @@ export function billsPanel({ life, onPay, onMove, onAutopay }) {
         )
       : h("p.muted", "Nothing automatic this month."),
     up.short > 0
-      ? h("p.callout.warn", `⚠️ Checking is ${money(up.short)} short. Each payment that bounces costs a ${money(CONFIG.fees.overdraft)} overdraft fee. Work a shift or move money from savings.`)
+      ? h("p.callout.warn", icon("alert", { size: 16 }), ` Checking is ${money(up.short)} short. Each payment that bounces costs a ${money(CONFIG.fees.overdraft)} overdraft fee. Work a shift or move money from savings.`)
       : h("p.note.tight", `After these, checking would have ${money(life.checking - up.total)} left.`),
     savingsMover(life, onMove)
   );
