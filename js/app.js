@@ -567,5 +567,16 @@ function backupSave(reason) {
 }
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") backupSave("hidden");
+  else checkReset();
 });
+
+// A tab left open when the teacher sent the student back to the start
+// reloads when the student comes back to it, so it can't keep the old game.
+let resetCheckedAt = 0;
+async function checkReset() {
+  if (!game || Date.now() - resetCheckedAt < 20000) return;
+  resetCheckedAt = Date.now();
+  const at = await db.getReset(game.user.email || "").catch(() => null);
+  if (at && game.save.resetSeen !== at) location.reload();
+}
 addEventListener("pagehide", () => backupSave("pagehide"));

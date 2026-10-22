@@ -57,7 +57,8 @@ service cloud.firestore {
       allow create, update: if isMe(uid)
         && request.resource.data.keys().hasOnly(['creature', 'onboarding', 'chapter', 'play', 'lifeJson',
           'classId', 'teacherEmail', 'studentEmail', 'studentName', 'displayName', 'xp',
-          'creatureName', 'step', 'score', 'month', 'ageMonths', 'engineVersion', 'updatedAt'])
+          'creatureName', 'step', 'score', 'month', 'ageMonths', 'engineVersion', 'updatedAt', 'resetSeen'])
+        && (!('resetSeen' in request.resource.data) || request.resource.data.resetSeen is number)
         && request.resource.data.lifeJson is string
         && request.resource.data.lifeJson.size() < 900000
         && request.resource.data.get('studentEmail', myEmail()) == myEmail()
@@ -68,6 +69,18 @@ service cloud.firestore {
         && shortString('studentName', 100)
         && shortString('teacherEmail', 100)
         && shortString('step', 20);
+    }
+
+    // Start over (teacher request 2026-10-22): a teacher leaves a note for a
+    // student's email, and the student's game starts completely over once for
+    // each new note. Students can only read their own note.
+    match /resets/{email} {
+      allow get: if isSchool() && (email == myEmail() || isTeacher());
+      allow create, update: if isTeacher()
+        && email.matches('.*@greermiddlecollege[.]org$')
+        && request.resource.data.keys().hasOnly(['at', 'by'])
+        && request.resource.data.at == request.time
+        && request.resource.data.by == myEmail();
     }
 
     // Classes are created by teachers. Any school user can look one up by id.

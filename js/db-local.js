@@ -237,3 +237,12 @@ export async function listClassSocial() {
 export function resetLocal() {
   for (const k of Object.keys(localStorage)) if (k.startsWith(key(""))) localStorage.removeItem(k);
 }
+
+// Start over, like db.js: a note per email that the game reads on load.
+export async function getReset(email) {
+  return read(`resets/${String(email).toLowerCase()}`) || null;
+}
+
+export async function sendResets(teacherEmail, emails) {
+  for (const e of emails) write(`resets/${e.toLowerCase()}`, Date.now());
+}

@@ -330,3 +330,11 @@ export function tuning(batches, rows = []) {
     xpCapHits: of("question").filter((e) => e.correct && e.xp === 0).length,
   };
 }
+
+// Emails pasted into "Send students back to the start": school addresses
+// only, lowercased and without repeats. bad lists anything else.
+const SCHOOL = /^[^@\s]+@greermiddlecollege\.org$/;
+export function parseEmails(text) {
+  const all = String(text).toLowerCase().split(/[\s,;]+/).filter(Boolean);
+  return { good: [...new Set(all.filter((e) => SCHOOL.test(e)))], bad: all.filter((e) => !SCHOOL.test(e)) };
+}

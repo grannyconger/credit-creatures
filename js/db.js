@@ -49,7 +49,7 @@ export async function loadSave(uid) {
   const snap = await getDoc(doc(db, "saves", uid));
   if (!snap.exists()) return null;
   const d = snap.data();
-  return { creature: d.creature, onboarding: d.onboarding, chapter: d.chapter, play: d.play || null, life: d.lifeJson ? JSON.parse(d.lifeJson) : null };
+  return { creature: d.creature, onboarding: d.onboarding, chapter: d.chapter, play: d.play || null, life: d.lifeJson ? JSON.parse(d.lifeJson) : null, resetSeen: d.resetSeen ?? null };
 }
 
 export async function writeSave(uid, save, summary) {
@@ -59,6 +59,7 @@ export async function writeSave(uid, save, summary) {
     chapter: save.play?.chapter ?? save.chapter ?? 1,
     play: plain(save.play),
     lifeJson: save.life ? JSON.stringify(save.life) : "",
+    ...(save.resetSeen ? { resetSeen: save.resetSeen } : {}),
     ...plain(summary),
     updatedAt: serverTimestamp(),
   });
@@ -249,6 +250,21 @@ export async function listClassSaves(teacherEmail, classId) {
 
 export async function updateClass(classId, fields) {
   await updateDoc(doc(db, "classes", classId), fields);
+}
+
+// Start over (teacher request 2026-10-22): resets/{email} = { at, by }. The
+// student's game reads it when it loads and starts completely over once for
+// each new note, so a tab left open can't bring the old game back. at is the
+// note's time in milliseconds, or null if there's no note.
+export async function getReset(email) {
+  const snap = await getDoc(doc(db, "resets", String(email).toLowerCase()));
+  return snap.exists() ? snap.data().at?.toMillis?.() ?? null : null;
+}
+
+export async function sendResets(teacherEmail, emails) {
+  const b = writeBatch(db);
+  for (const e of emails) b.set(doc(db, "resets", e.toLowerCase()), { at: serverTimestamp(), by: teacherEmail.toLowerCase() });
+  await b.commit();
 }
 
 // Delete a class (teacher request 2026-10-22): every student's save and

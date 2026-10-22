@@ -7,7 +7,7 @@ import { h, add, fill, money, ageLabel } from "../ui/dom.js";
 import { creatureSvg } from "../ui/creature-art.js";
 import { reportTab } from "../ui/accounts/report-tab.js";
 import { scoreTab } from "../ui/accounts/score-tab.js";
-import { rosterRow, studentDetail, rosterCsv, tuning, tuningExport, classAlley, byName, FLAGS, LESSON_COUNT } from "./analyze.js";
+import { rosterRow, studentDetail, rosterCsv, tuning, tuningExport, classAlley, byName, FLAGS, LESSON_COUNT, parseEmails } from "./analyze.js";
 import { STALLS } from "../data/alley.js";
 import { STANDARD_LABELS } from "../data/practice-questions.js";
 import { CONFIG } from "../data/config.js";
@@ -96,7 +96,8 @@ function paint() {
         )
       : null,
     cls() ? h("div", { id: "tab-body" }, tabBody()) : null,
-    LOCAL ? null : createForm()
+    LOCAL ? null : createForm(),
+    startOverForm()
   );
 }
 
@@ -136,6 +137,47 @@ function createForm() {
     name,
     h("button", { type: "submit" }, "Create class"),
     err
+  );
+}
+
+// ---------- send students back to the start ----------
+
+// Teacher request 2026-10-22: deleting a class didn't reset students who had
+// the game open, and their games then pointed at no class, so they didn't show
+// on any roster. A note per email makes the student's own game start
+// completely over the next time it loads (or when they come back to an open
+// tab). They make a new creature and join with a class code.
+function startOverForm() {
+  const box = h("textarea", { id: "reset-emails", rows: 4, placeholder: "student1@greermiddlecollege.org\nstudent2@greermiddlecollege.org" });
+  const msg = h("p", { role: "status" });
+  const btn = h("button.danger", { type: "button" }, "Send these students back to the start");
+  btn.addEventListener("click", async () => {
+    const { good, bad } = parseEmails(box.value);
+    msg.className = "error";
+    if (bad.length) return (msg.textContent = `These aren't school emails, so nothing was sent: ${bad.join(", ")}. Fix them and try again.`);
+    if (!good.length) return (msg.textContent = "Paste at least one student email.");
+    if (!confirm(`Send ${good.length} student${good.length === 1 ? "" : "s"} back to the start? Their creature, money, score, XP and everything else are wiped the next time they open the game. This can't be undone.`)) return;
+    btn.disabled = true;
+    try {
+      await state.db.sendResets(state.me.email, good);
+    } catch (e) {
+      console.error(e);
+      btn.disabled = false;
+      return (msg.textContent = "Could not send the resets. Check that the newest Firestore rules are published (docs/setup-firebase.md).");
+    }
+    btn.disabled = false;
+    box.value = "";
+    msg.className = "muted";
+    msg.textContent = `Done. ${good.length} student${good.length === 1 ? "" : "s"} will start over at the opening story the next time they open the game, then join with your class code.`;
+  });
+  return h(
+    "details.t-delete.t-start-over",
+    h("summary", "Send students back to the start"),
+    h("p", "Paste school emails, one per line. Each student's game is wiped the next time they open it (or come back to an open tab), and they start over at the opening story. They make a new creature and join with your class code. It works even if their class was deleted."),
+    h("label", { for: "reset-emails" }, "Student emails"),
+    box,
+    h("div.row", btn),
+    msg
   );
 }
 
@@ -385,6 +427,8 @@ function detail(uid) {
     if (typed !== "RESET") return;
     try {
       await state.db.deleteStudentSave(uid, state.classId);
+      // The note makes it stick even if the student has the game open.
+      if (r.studentEmail) await state.db.sendResets(state.me.email, [r.studentEmail]);
       close();
       loadRoster();
     } catch (err) {

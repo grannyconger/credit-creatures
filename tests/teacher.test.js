@@ -106,3 +106,11 @@ test("old saves with the legacy credit union still replay cleanly", () => {
   life = E.endMonth(life).life;
   assert.deepEqual(T.logMismatches(life), []);
 });
+
+test("pasted reset emails keep school addresses only, once each", async () => {
+  const { parseEmails } = await import("../js/teacher/analyze.js");
+  const r = parseEmails("A.Lee@GreerMiddleCollege.org, b.ray@greermiddlecollege.org\n\na.lee@greermiddlecollege.org; me@gmail.com");
+  assert.deepEqual(r.good, ["a.lee@greermiddlecollege.org", "b.ray@greermiddlecollege.org"]);
+  assert.deepEqual(r.bad, ["me@gmail.com"]);
+  assert.deepEqual(parseEmails("   ").good, []);
+});

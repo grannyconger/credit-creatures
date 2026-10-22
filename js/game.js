@@ -58,8 +58,22 @@ export function createGame(user, db) {
           chapter: save.chapter || 1,
           life: save.life || null,
           play: save.play || null,
+          resetSeen: save.resetSeen ?? null,
         };
         game.returning = true;
+      }
+      // The teacher sent this student back to the start (a note in resets/).
+      // Each new note wipes the game once, even if an old tab saved over it.
+      const resetAt = await db.getReset(user.email || "").catch(() => null);
+      if (resetAt && game.save.resetSeen !== resetAt) {
+        const { firstName, lastName } = game.save.onboarding || {};
+        game.save = { creature: null, onboarding: { step: "intro" }, chapter: 1, life: null, play: null, resetSeen: resetAt };
+        game.returning = false;
+        // They join a class again with its code. The old class may be gone.
+        game.profile.classId = "";
+        track("progressReset", { hadName: Boolean(firstName || lastName) });
+        await game.persist("progressReset");
+        return;
       }
       if (OLD_STEPS.has(game.step)) game.beginPrologue();
       if (game.save.play?.settings) applySettings(game.save.play.settings);

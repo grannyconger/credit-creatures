@@ -1486,3 +1486,4 @@ body { font-variation-settings: "SOFT" 100, "WONK" 1; }
   .cc, .cc .cc-eye { animation: none !important; transition: none !important; }
   .cc .cc-eye { transform: none !important; scale: none !important; }
 }
+.t-start-over textarea { display: block; width: min(100%, 36rem); font: inherit; padding: 8px 10px; border-radius: 8px; border: 1.5px solid var(--border); margin: 6px 0 10px; }

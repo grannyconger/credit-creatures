@@ -6,6 +6,8 @@ Last updated: 2026-10-21 (Phase 15: motion)
 
 ## Next step
 
+**Send students back to the start (teacher request 2026-10-22, pushed):** deleting a class didn't reset students who had the game open (their tab saved the old game again), and those games then pointed at a deleted class with no teacher, so they showed on no roster. New: `resets/{email}` notes (`sendResets`, `getReset` in `js/db.js`). The game reads the note on load (`game.load` in `js/game.js`) and when a tab comes back into view (`checkReset` in `js/app.js`), and starts completely over once per new note (`save.resetSeen`). Dashboard: "Send students back to the start" (paste emails), and "Reset this student" now also leaves a note. Telemetry: `progressReset`. **Rules changed, so the teacher must publish `firestore.rules`.**
+
 **Phase 17 (2026-10-22, pushed, awaiting review):** living creatures: eyes with whites that follow the pointer, blinks, widening up close, happy hops and worried wobbles, and storybook shading and texture on big views. See `docs/MOTION.md`. Checked: all 8 species, pupils follow a synthetic pointer, about one blink every 3.5 seconds, Calm re-centers and stops, no console errors. 183 tests pass. Still waiting: the `docs/tuning v1` review and phone layout (on hold).
 
 **Phase 16 (2026-10-22, pushed, awaiting review):** particles, sparkles, animated icons and a living map, built for the bestiary. See `docs/MOTION.md`. Checked: no console errors, Calm stops the canvas, the sparkles and the map motion, light and dark at 1366. 180 tests pass. Next after approval: Phase 17 (living creatures, eyes that follow the mouse). Still waiting: the `docs/tuning v1` review and phone layout (on hold).
