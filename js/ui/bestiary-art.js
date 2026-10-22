@@ -206,3 +206,19 @@ export function inkRingSvg(seed = 2) {
     <path d="M14 ${24 + +wob()} C12 6 ${100 + +wob()} 2 110 18 C118 34 ${70 + +wob()} 44 30 40 C10 38 4 28 20 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
   </svg>`;
 }
+
+// A wooden clothes peg, for things hung on a string line.
+export function pegSvg() {
+  return `<svg class="bst-peg" viewBox="0 0 16 40" width="16" height="40" aria-hidden="true" focusable="false">
+    <rect x="3" y="1" width="10" height="38" rx="3" fill="var(--b-peg)"/>
+    <path d="M8 4v32" stroke="var(--b-peg-line)" stroke-width="1.2"/>
+    <rect x="2" y="14" width="12" height="5" rx="1.5" fill="var(--b-pin)" stroke="var(--b-pin-edge)" stroke-width="0.8"/>
+  </svg>`;
+}
+
+// The string line itself, with a little sag.
+export function lineSvg() {
+  return `<svg class="bst-line" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path d="M0 8 Q500 44 1000 8" fill="none" stroke="var(--b-string)" stroke-width="2.2" vector-effect="non-scaling-stroke"/>
+  </svg>`;
+}

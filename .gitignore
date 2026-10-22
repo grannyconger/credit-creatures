@@ -9,3 +9,7 @@ pilot-data/
 # Impeccable: per-developer hook consent and cache
 .impeccable/config.local.json
 .impeccable/hook.cache.json
+
+# Impeccable product context. Names the teachers, so it stays local.
+PRODUCT.md
+.impeccable/review/

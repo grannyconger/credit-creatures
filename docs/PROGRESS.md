@@ -6,7 +6,21 @@ Last updated: 2026-10-21 (Phase 15: motion)
 
 ## Next step
 
-Phase 16 (particles, sparkles, animated icons), then Phase 17 (detailed creatures, eyes that follow the mouse). The full plan and the teacher's decisions are in `docs/MOTION.md`. "Keep going" approves Phase 15 and starts Phase 16.
+**Bestiary rollout: the dream screen is approved and pushed (2026-10-22).** Next: the join screen, desktop only, then stop for approval. The list-gap bug turned out to be the packets' tilt, not layout (items sit 23px apart, and they look even in dyslexia mode, where nothing tilts). Checked: 1440 and 1280, dark, dyslexia, the Cottage's edit path, and the PLANTED stamp. Detector clean, 172 tests pass. The teacher said "keep going" after approving the adoption screen. Defaults in use: tokens first, then the dream screen, Phases 16 and 17 on hold until the rollout settles, desktop only (no phone work without the teacher's explicit OK). Stop after the dream screen for approval.
+
+Uncommitted in the working tree (`git status`):
+1. **Done: token cleanup.** `css/tokens.css` has a type ramp (`--b-fs-tiny`, `--b-fs-ui`, `--b-fs-hand`, `--b-fs-title`, `--b-fs-lead`, plus dyslexia sizes) and named radii (`--b-r-sheet`, `--b-r-tagtop`, `--b-r-tab`, `--b-r-tab-alt`, `--b-r-insert`, `--b-r-round`). `css/bestiary.css` uses them everywhere, and DESIGN.md's frontmatter lists them. The Impeccable detector was clean on bestiary.css after this. The adoption screen looks the same.
+2. **Built, needs finishing: the dream screen** (`js/ui/screens/dream.js`, new section at the end of `css/bestiary.css`). One wide notebook sheet: the creature's framed portrait and the question at top, a string line with pegs, and four seed packets (one per dream) with a drawn icon in the dream's ink (`--dr-home/shop/adventure/scholar` tokens, light and dark), the story, what it needs (save and score), "Grows in 3 stages" with the stage list, and the why in the hand. Picking one stamps PLANTED and then moves on (`dreamChosen` telemetry unchanged). Edit mode (from the Cottage) has "Keep my dream" and the restart warning. New: a `compass` icon in `js/ui/icons.js`, and `pegSvg()`/`lineSvg()` in `js/ui/bestiary-art.js` with `--b-peg` tokens. Emoji stay in `js/data/dreams.js` because the hub and Cottage still use them.
+   - **Open bug:** each stage list item is about 31px tall although its line height is 20.8px, so the lists look gappy. Padding and margin are ruled out. Likely cause: the `li::marker` is set in IM Fell (`.bst-packet-stages li::marker`), whose taller line box grows each line. Try removing the marker font, or use `list-style: none` with a counter in `::before`.
+   - Then check at 1440 and 1280, light and dark, and dyslexia. Check the Cottage's "Change the dream" path (edit mode) and the PLANTED stamp. Run `npm test` (172 passing at pause).
+   - Then show the teacher and wait for approval before committing and pushing.
+3. `.gitignore` now ignores `PRODUCT.md` (it names the teachers, and the teacher said don't publish it) and `.impeccable/review/` (screenshots). Keep both out of the repo.
+
+Screenshot helper (scratchpad, not in the repo): headless Chrome through the DevTools protocol, starting from `?local` with a seeded save at the creature step. Rebuild it if the scratchpad is gone.
+
+After the dream screen: the join screen, then the hub, one at a time with approval. Phases 16 (particles) and 17 (detailed creatures) from `docs/MOTION.md` wait until the rollout settles, and they should be designed for the bestiary world.
+
+Earlier plan (on hold): Phase 16 (particles, sparkles, animated icons), then Phase 17 (detailed creatures, eyes that follow the mouse), in `docs/MOTION.md`.
 
 ## Status
 

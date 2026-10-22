@@ -230,6 +230,8 @@
   --b-pin-shine: #fff3c9;
   --b-tape: rgba(236, 232, 205, 0.72);
   --b-string: #8a6a46;
+  --b-peg: #b8925a;
+  --b-peg-line: #7d5f33;
   --b-tracing: rgba(217, 222, 200, 0.82);
   --b-moss-1: #4f7a3a;
   --b-moss-2: #6c9446;
@@ -246,6 +248,11 @@
   --sp-puddleGolem: #255a72;
   --sp-starJellycorn: #8e3f7d;
   --sp-emberPhoenix: #9e3420;
+  /* Each dream's ink on the dream page */
+  --dr-home: #93401f;
+  --dr-shop: #7a5410;
+  --dr-adventure: #255a72;
+  --dr-scholar: #5b2a4e;
 
   /* Type */
   --b-display: "IM Fell English", "Alegreya", Georgia, serif;
@@ -254,6 +261,13 @@
   --b-text: 1.1875rem;
   --b-small: 1rem;
   --b-leading: 1.5;
+  /* The rest of the ramp. Display and headline sizes are clamps in
+     css/bestiary.css. */
+  --b-fs-tiny: 0.875rem;  /* swatch names, lock notes */
+  --b-fs-ui: 1.05rem;     /* option words */
+  --b-fs-hand: 1.15rem;   /* margin notes in the hand */
+  --b-fs-title: 1.3rem;   /* specimen names, tabs, small headings */
+  --b-fs-lead: 1.5rem;    /* the seal's label, names written on the label */
 
   /* Space: one rhythm, a little uneven on purpose in the layout */
   --b-s1: 4px;
@@ -267,6 +281,12 @@
   --b-r-paper: 3px 7px 4px 6px / 6px 3px 7px 4px;
   --b-r-tag: 4px 10px 6px 12px / 10px 5px 12px 6px;
   --b-r-blob: 46% 54% 42% 58% / 55% 44% 56% 45%;
+  --b-r-sheet: 2px;
+  --b-r-tagtop: 28px 28px 4px 4px / 22px 22px 4px 4px;
+  --b-r-tab: 10px 14px 0 0 / 12px 10px 0 0;
+  --b-r-tab-alt: 14px 9px 0 0 / 10px 13px 0 0;
+  --b-r-insert: 2px 9px 5px 11px / 9px 4px 12px 5px;
+  --b-r-round: 999px;
 
   /* Depth: an offset, soft shadow, like paper lifted off the ground */
   --b-shadow-page: 0 18px 40px -18px rgba(12, 21, 16, 0.75), 0 2px 4px rgba(12, 21, 16, 0.3);
@@ -308,6 +328,10 @@
     --b-plum-wash: rgba(219, 166, 205, 0.14);
     --b-gold-ink: #e2b65a;
     --b-tape: rgba(120, 130, 105, 0.55);
+  --b-peg: #8a6c40;
+  --b-peg-line: #5a4426;
+    --b-peg: #8a6c40;
+    --b-peg-line: #5a4426;
     --b-tracing: rgba(31, 43, 36, 0.84);
     --b-moss-1: #3c5f2d;
     --b-moss-2: #4f7334;
@@ -322,6 +346,10 @@
     --sp-puddleGolem: #7fbad6;
     --sp-starJellycorn: #dc8fc9;
     --sp-emberPhoenix: #ee8a6c;
+    --dr-home: #ec9a74;
+    --dr-shop: #e2b65a;
+    --dr-adventure: #7fbad6;
+    --dr-scholar: #dba6cd;
   }
 }
 :root[data-appearance="dark"] .bestiary {
@@ -358,10 +386,17 @@
   --sp-puddleGolem: #7fbad6;
   --sp-starJellycorn: #dc8fc9;
   --sp-emberPhoenix: #ee8a6c;
+  --dr-home: #ec9a74;
+  --dr-shop: #e2b65a;
+  --dr-adventure: #7fbad6;
+  --dr-scholar: #dba6cd;
 }
 /* Dyslexia mode in the bestiary: OpenDyslexic for every voice, the hand
    included, and no italics. */
 :root[data-reading="dyslexia"] .bestiary {
+  --b-fs-title: 1.05rem;
+  --b-fs-hand: 1rem;
+  --b-fs-lead: 1.15rem;
   --b-display: "OpenDyslexic", system-ui, sans-serif;
   --b-body: "OpenDyslexic", system-ui, sans-serif;
   --b-hand: "OpenDyslexic", system-ui, sans-serif;

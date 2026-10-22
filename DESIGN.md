@@ -59,7 +59,12 @@ typography:
     letterSpacing: "0"
   title:
     fontFamily: "IM Fell English, Alegreya, Georgia, serif"
-    fontSize: "1.35rem"
+    fontSize: "1.3rem"
+    fontWeight: 400
+    lineHeight: 1.1
+  lead:
+    fontFamily: "IM Fell English, Alegreya, Georgia, serif"
+    fontSize: "1.5rem"
     fontWeight: 400
     lineHeight: 1.1
   body:
@@ -72,9 +77,19 @@ typography:
     fontSize: "1rem"
     fontWeight: 700
     lineHeight: 1.35
+  ui:
+    fontFamily: "Alegreya, Georgia, serif"
+    fontSize: "1.05rem"
+    fontWeight: 400
+    lineHeight: 1.35
+  tiny:
+    fontFamily: "Alegreya, Georgia, serif"
+    fontSize: "0.875rem"
+    fontWeight: 400
+    lineHeight: 1.25
   hand:
     fontFamily: "Mynerve, Alegreya, cursive"
-    fontSize: "1.2rem"
+    fontSize: "1.15rem"
     fontWeight: 400
     lineHeight: 1.35
 rounded:
@@ -82,6 +97,11 @@ rounded:
   tag: "4px 10px 6px 12px / 10px 5px 12px 6px"
   blob: "46% 54% 42% 58% / 55% 44% 56% 45%"
   sheet: "2px"
+  tagtop: "28px 28px 4px 4px / 22px 22px 4px 4px"
+  tab: "10px 14px 0 0 / 12px 10px 0 0"
+  tab-alt: "14px 9px 0 0 / 10px 13px 0 0"
+  insert: "2px 9px 5px 11px / 9px 4px 12px 5px"
+  round: "999px"
 spacing:
   s1: "4px"
   s2: "8px"
