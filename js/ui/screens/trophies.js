@@ -41,13 +41,14 @@ export function render(root, { game, go, track, startTab }) {
     const body = h("div.tr-body");
     fill(
       panel,
-      placeHeader({ go, iconName: "trophy", kicker: "The Academy's hall of honors", title: "Trophies", subtitle: `${earned} of ${ACHIEVEMENTS.length} achievements earned.` }),
-      h(
-        "div.tr-rank",
-        rankSeal(r.level, 78),
-        h("div.tr-rank-text", h("small", "Your rank"), h("strong", r.title), h("span", `${play.xp} XP`)),
-        xpBar(play.xp)
-      ),
+      placeHeader({
+        go,
+        iconName: "trophy",
+        kicker: "The Academy's hall of honors",
+        title: "Trophies",
+        subtitle: `${earned} of ${ACHIEVEMENTS.length} achievements earned.`,
+        aside: h("div.tr-rank", rankSeal(r.level, 64), h("div.tr-rank-text", h("small", "Your rank"), h("strong", r.title), h("span", `${play.xp} XP`)), xpBar(play.xp)),
+      }),
       h(
         "nav.tr-tabs",
         { "aria-label": "Trophies" },

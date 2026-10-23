@@ -7,14 +7,21 @@ import { icon } from "./icons.js";
 // The kicker sits under the title as a note, never above it as an eyebrow
 // (Mossy Bestiary rules, 2026-10-22).
 
-export function placeHeader({ go, iconName, kicker = "Coinhaven", title, subtitle = "", practice = false }) {
+// aside: a node that sits to the right of the title in the same row, so the
+// page's main content starts higher (teacher request 2026-10-23).
+export function placeHeader({ go, iconName, kicker = "Coinhaven", title, subtitle = "", practice = false, aside = null }) {
   return h(
     "div.place-header-wrap",
     practice ? h("p.callout.warn.practice", "Practice mode. Nothing you do here is saved.") : null,
     h(
       "header.place-header",
-      h("button.back-home", { type: "button", onclick: () => go("map") }, icon("back", { size: 18 }), " Back to the map"),
-      h("div.place-title", h("span.place-icon", icon(iconName, { size: 30 })), h("div", h("h1", title), h("p.step-label.place-kicker", kicker), subtitle ? h("p.muted.tight", subtitle) : null))
+      { class: aside ? "has-aside" : "" },
+      h(
+        "div.place-head-main",
+        h("button.back-home", { type: "button", onclick: () => go("map") }, icon("back", { size: 18 }), " Back to the map"),
+        h("div.place-title", h("span.place-icon", icon(iconName, { size: 30 })), h("div", h("h1", title), h("p.step-label.place-kicker", kicker), subtitle ? h("p.muted.tight", subtitle) : null))
+      ),
+      aside ? h("div.place-aside", aside) : null
     )
   );
 }

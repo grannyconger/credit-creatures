@@ -50,8 +50,7 @@ export function render(root, { game, go, track }) {
     const c = game.save.creature;
     fill(
       panel,
-      placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `Chapter ${chapter} stock`, title: "Market", subtitle: "Spend money on things for your creature and your Cottage. Time is paused while you shop. The creature shelf has new stock every chapter.", practice: run.practice }),
-      moneyChips(run.life, play),
+      placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `Chapter ${chapter} stock`, title: "Market", subtitle: "Spend money on things for your creature and your Cottage. Time is paused while you shop.", practice: run.practice, aside: moneyChips(run.life, play) }),
       buying ? null : tabs(),
       buying ? checkout(buying, c) : tab === "home" ? homeShelf() : h("div.shop-grid", stock.map((item) => card(item, c))),
       h("p.note.center", "Wants are fun, but check your bills first. Everything you buy goes into your Dock at the bottom of the screen.")

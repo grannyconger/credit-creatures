@@ -27,8 +27,7 @@ export function render(root, { game, go, track, refreshWho }) {
     const mine = VEHICLE_BY_ID[play.garage?.vehicle];
     fill(
       panel,
-      placeHeader({ go, iconName: "car", title: "The Garage", subtitle: "Buy a ride with cash or a loan. A ride gets you to better jobs, so every shift pays more.", practice: run.practice }),
-      moneyChips(life, play),
+      placeHeader({ go, iconName: "car", title: "The Garage", subtitle: "Buy a ride with cash or a loan. A ride gets you to better jobs, so every shift pays more.", practice: run.practice, aside: moneyChips(life, play) }),
       // The brass plate screwed to the garage wall.
       h(
         "section.gr-plate",

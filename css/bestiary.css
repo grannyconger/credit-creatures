@@ -5795,3 +5795,26 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .bst-topbar .status-chips li, .bst-bottombar .shortcuts button, .bst-bottombar .dock-btn, .challenge-toggle { border-color: var(--b-on-bar-soft); }
 .bst-bottombar .things-btn { color: var(--b-on-rust); border-color: var(--b-seal-deep); }
 .bst-bottombar .who-art { border-color: var(--b-bar-accent); }
+
+/* ===========================================================================
+   Compact place headers (teacher request 2026-10-23): the title on the left
+   and the page's summary (rank, money) beside it, so the main content starts
+   high and needs little scrolling.
+   =========================================================================== */
+.bestiary .place-header-wrap { margin: 0 0 var(--b-s3); }
+.bestiary .place-header { grid-template-columns: minmax(0, 1fr); gap: var(--b-s2) var(--b-s5); align-items: center; }
+.bestiary .place-header.has-aside { grid-template-columns: minmax(0, 1fr) auto; }
+.bestiary .place-head-main { display: grid; gap: var(--b-s2); min-width: 0; }
+.bestiary .place-aside { justify-self: end; min-width: 0; max-width: 560px; }
+.bestiary .place-title h1 { font-size: clamp(2rem, 2.6vw, 2.8rem); }
+.bestiary .place-icon { width: 56px; height: 56px; }
+.bestiary .place-title .muted { max-width: 52ch; }
+/* Rank plate in the header. */
+.bst-trophies .place-aside .tr-rank { grid-template-columns: auto auto minmax(160px, 240px); gap: var(--b-s3); margin: 0; padding: var(--b-s2) var(--b-s4) var(--b-s2) var(--b-s2); transform: none; }
+.bst-trophies .place-aside .tr-rank-text strong { font-size: clamp(1.5rem, 2.2vw, 2rem); }
+/* Money chips and the Academy rank in the header: a tight block, no rules. */
+.place-aside .money-chips { display: grid; grid-template-columns: repeat(2, auto); gap: 2px var(--b-s5); margin: 0; padding: var(--b-s2) var(--b-s3); border: 0; list-style: none; background: var(--b-paper-2); border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
+.place-aside .money-chips li { padding: 0; background: none; }
+.bst-academy .place-aside .academy-rank { margin: 0; transform: none; }
+@media (max-width: 1000px) { .bestiary .place-header.has-aside { grid-template-columns: minmax(0, 1fr); } .bestiary .place-aside { justify-self: start; max-width: none; } }
+.bst-shop .panel.shop { padding-top: calc(var(--b-s5) + 10px); }
