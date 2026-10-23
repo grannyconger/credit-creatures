@@ -74,3 +74,27 @@ test("Home is the Cottage room: objects glow and lead places", async ({ page }) 
   await expect(page.locator("dialog.things-dialog[open]")).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test("the Dock holds owned pieces and puts them in the room", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  const KEY = "credit-life:saves/local-student";
+  await page.goto("/css/tokens.css");
+  await page.evaluate((k) => {
+    const s = JSON.parse(localStorage.getItem(k));
+    s.play.decorOwned = ["rug-gold"];
+    s.play.owned = ["topHat"];
+    localStorage.setItem(k, JSON.stringify(s));
+  }, KEY);
+  await enterGame(page);
+  await open(page, "hub");
+  await expect(page.locator(".dock-count")).toHaveText("2");
+  await page.click("#dock-btn");
+  await expect(page.locator(".dock-item")).toHaveCount(2);
+  await page.locator(".dock-item", { hasText: "Round gold rug" }).click();
+  await expect.poll(() => page.evaluate((k) => JSON.parse(localStorage.getItem(k)).play.cottage?.rug, KEY)).toBe("rug-gold");
+  await closePopups(page);
+  await page.locator(".dock-item", { hasText: "Top hat" }).click();
+  await expect.poll(() => page.evaluate((k) => JSON.parse(localStorage.getItem(k)).creature.accessories?.head, KEY)).toBe("topHat");
+  expect(errors).toEqual([]);
+});

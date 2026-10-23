@@ -5367,7 +5367,7 @@ main#app.app:has(.bestiary) {
 .bst-bottombar {
   position: sticky;
   bottom: 0;
-  z-index: 10;
+  z-index: 25;
   display: flex;
   align-items: center;
   gap: var(--b-s4);
@@ -5572,3 +5572,82 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; }
 .bst-home .room-caption .stage-text { color: var(--b-on-ground-soft); }
 .bst-home .room-caption .dream-name .ico-wrap { color: var(--b-gold); }
 .cottage-stage .room-object:hover, .cottage-stage .room-object:focus-visible { z-index: 6; }
+
+/* ===========================================================================
+   The Dock (slice 3): a tray above the bottom bar holding what you own.
+   =========================================================================== */
+.bst-bottombar .dock-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px 14px;
+  font-family: var(--b-body);
+  font-weight: 700;
+  font-size: var(--b-fs-ui);
+  color: var(--b-on-ground);
+  background: none;
+  border: 1.5px solid color-mix(in srgb, var(--b-on-ground) 35%, transparent);
+  border-radius: var(--b-r-tag);
+}
+.bst-bottombar .dock-btn[hidden] { display: none; }
+.bst-bottombar .dock-btn .ico-wrap, .bst-bottombar .dock-btn .ico { color: var(--b-gold); }
+.bst-bottombar .dock-btn[aria-expanded="true"] { border-style: dashed; border-color: var(--b-foxfire); color: var(--b-foxfire); }
+.bst-bottombar .dock-count:not(:empty) {
+  min-width: 22px;
+  padding: 0 5px;
+  font-size: var(--b-fs-tiny);
+  line-height: 22px;
+  text-align: center;
+  color: var(--b-on-rust);
+  background: var(--b-rust);
+  border-radius: var(--b-r-round);
+}
+.bst-bottombar .dock-btn.flash { animation: dock-flash 0.7s ease-out; }
+@keyframes dock-flash { 0% { transform: scale(1); } 30% { transform: scale(1.15) rotate(-3deg); box-shadow: 0 0 14px var(--b-foxfire); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .bst-bottombar .dock-btn.flash { animation: none; } }
+:root[data-motion="calm"] .bst-bottombar .dock-btn.flash { animation: none; }
+.bst-bottombar { flex-wrap: nowrap; }
+.dock {
+  position: absolute;
+  left: var(--b-s4);
+  right: var(--b-s4);
+  bottom: calc(100% + 2px);
+  z-index: 30;
+  padding: var(--b-s2) var(--b-s3) var(--b-s3);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-paper);
+  border: 1.5px solid var(--b-paper-edge);
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-lift);
+}
+.dock[hidden] { display: none; }
+.dock-tabs { display: flex; gap: var(--b-s1); }
+.dock-tabs button { padding: 4px 14px; font-weight: 700; color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-paper-edge); border-bottom: 0; border-radius: var(--b-r-tab); }
+.dock-tabs button[aria-selected="true"] { background: var(--b-paper-insert); border-color: var(--b-rust); text-decoration: underline wavy var(--b-rust); text-underline-offset: 4px; }
+.dock-tabs small { color: var(--b-ink-soft); }
+.dock-row { display: flex; align-items: center; gap: var(--b-s2); padding-top: var(--b-s2); min-height: 150px; }
+.dock-items { display: flex; flex: 1; gap: var(--b-s2); margin: 0; padding: 0; list-style: none; }
+.dock-items li { flex: 1; min-width: 0; }
+.dock-page { padding: 8px; color: var(--b-ink); background: none; border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
+.dock-page:disabled { opacity: 0.35; }
+.dock-item { display: grid; justify-items: center; gap: 2px; width: 100%; height: 100%; padding: var(--b-s2); text-align: center; color: var(--b-ink); background: var(--b-paper-insert); border: 1.5px solid var(--b-paper-edge); border-radius: var(--b-r-insert); }
+.dock-item:hover, .dock-item:focus-visible { border-color: var(--b-rust); transform: translateY(-2px); }
+.dock-item[aria-pressed="true"] { border: 2px dashed var(--b-plum); background: var(--b-plum-wash); }
+.dock-item[aria-pressed="true"]::before { content: "In use"; font-size: var(--b-fs-tiny); font-weight: 700; color: var(--b-plum); }
+.dock-item > span { display: block; width: 100%; max-width: 96px; height: 64px; }
+.dock-item > span svg { display: block; width: 100%; height: 100%; }
+.dock-item strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-ui); line-height: 1.1; }
+.dock-item small { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+.dock-bg { border-radius: var(--b-r-tag); overflow: hidden; display: grid !important; place-items: center; }
+.dock-empty { display: grid; justify-items: start; gap: var(--b-s2); margin: 0; flex: 1; }
+.dock-close { position: absolute; right: 10px; top: 6px; padding: 4px; color: var(--b-ink); background: none; border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
+
+/* Market shelves (slice 3). */
+.bst-shop .shop-tabs { display: flex; gap: var(--b-s1); margin: var(--b-s3) 0; }
+.bst-shop .shop-tabs button { padding: 6px 18px; font-weight: 700; color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-paper-edge); border-radius: var(--b-r-tab); }
+.bst-shop .shop-tabs button[aria-selected="true"] { background: var(--b-paper-insert); border-color: var(--b-rust); text-decoration: underline wavy var(--b-rust); text-underline-offset: 5px; }
+.bst-shop .shop-slot h2 { display: flex; align-items: center; gap: var(--b-s2); margin: var(--b-s4) 0 var(--b-s2); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-shop .shop-decor { display: block; width: 130px; height: 90px; }
+.bst-shop .shop-decor svg { display: block; width: 100%; height: 100%; }

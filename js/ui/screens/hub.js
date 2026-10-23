@@ -226,6 +226,10 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
   paint();
   refreshRelease();
   autoLessons();
+  // Putting a piece in the room from the Dock repaints the room.
+  const repaint = () => paint();
+  addEventListener("cc:decor", repaint);
+  return () => removeEventListener("cc:decor", repaint);
 }
 
 const PLACES_BY_ID = Object.fromEntries(PLACES.map((p) => [p.id, p]));

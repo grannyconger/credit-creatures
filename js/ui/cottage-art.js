@@ -2,7 +2,7 @@
 // only, so it goes through h(..., { html }). Every color is a Bestiary token
 // (never a raw color), so light, dark and dyslexia modes keep working.
 // One drawing per object, and a variant picks the palette. No student text here.
-import { DECOR_BY_ID } from "../data/cottage.js";
+import { DECOR_BY_ID, DEFAULT_COTTAGE } from "../data/cottage.js";
 
 const f = (c) => `style="fill:var(--b-${c})"`;
 const s = (c, w = 2) => `style="fill:none;stroke:var(--b-${c});stroke-width:${w};stroke-linecap:round;stroke-linejoin:round"`;
@@ -17,7 +17,7 @@ function variantOf(cottage, slot) {
 const WALL = { moss: "moss-3", cream: "paper-2", plum: "plum", dots: "paper-2", stripes: "paper-2" };
 const FLOOR = { oak: "peg", slate: "ink-soft", moss: "moss-stalk", checker: "paper-edge" };
 
-export function roomSvg(cottage) {
+export function roomSvg(cottage, crop = null) {
   const wall = variantOf(cottage, "wallpaper");
   const floor = variantOf(cottage, "floor");
   const rug = variantOf(cottage, "rug");
@@ -37,7 +37,17 @@ export function roomSvg(cottage) {
   body += artSvg(variantOf(cottage, "art"));
   body += lampSvg(variantOf(cottage, "lamp"));
   body += plantSvg(variantOf(cottage, "plant"));
+  if (crop) return svg(crop, body, "room-bg");
   return svg("0 0 800 520", body, "room-bg").replace('preserveAspectRatio="xMidYMid meet"', 'preserveAspectRatio="none"');
+}
+
+// A small picture of one piece, for the Dock and the Market. Window and shelf
+// pieces use their own drawings. The rest show a crop of the room.
+const CROP = { wallpaper: "0 0 800 520", floor: "0 0 800 520", rug: "180 360 440 160", art: "430 150 110 100", lamp: "556 200 90 170", plant: "670 335 110 120" };
+export function decorThumb(decor) {
+  const cottage = { ...DEFAULT_COTTAGE, [decor.slot]: decor.id };
+  if (decor.slot === "window" || decor.slot === "shelf") return OBJECT_ART[decor.slot](cottage);
+  return roomSvg(cottage, CROP[decor.slot]);
 }
 
 function artSvg(v) {

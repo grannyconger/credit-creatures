@@ -11,6 +11,9 @@ import { payWith, methodLabel } from "../pay-with.js";
 import { moneyChips } from "../wallet.js";
 import { firstVisitLesson } from "../guide.js";
 import { sfx } from "../sound.js";
+import { DECOR, SLOTS, ownedDecor, cottageOf } from "../../data/cottage.js";
+import { decorThumb } from "../cottage-art.js";
+import { flashDock } from "../dock.js";
 import { icon } from "../icons.js";
 
 const KIND = { head: "Head", neck: "Neck", face: "Face", held: "Held in paw", feet: "Feet", effect: "Magic effect", background: "Background" };
@@ -30,14 +33,27 @@ export function render(root, { game, go, track }) {
     game.persist("prologueMarket");
   }
 
+  // Two shelves: things for the creature (new stock each chapter) and things
+  // for the Cottage room (always on sale).
+  let tab = "creature";
+  const tabs = () =>
+    h(
+      "div.shop-tabs",
+      { role: "tablist", "aria-label": "Market shelves" },
+      [["creature", "For your creature"], ["home", "For your Cottage"]].map(([id, label]) =>
+        h("button", { type: "button", role: "tab", "aria-selected": id === tab ? "true" : "false", onclick: () => ((tab = id), track("shopTab", { tab: id }), paint()) }, label)
+      )
+    );
+
   function paint(buying = null) {
     const c = game.save.creature;
     fill(
       panel,
-      placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `Chapter ${chapter} stock`, title: "Market", subtitle: "Spend money on things for your creature. Time is paused while you shop. New stock every chapter.", practice: run.practice }),
+      placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `Chapter ${chapter} stock`, title: "Market", subtitle: "Spend money on things for your creature and your Cottage. Time is paused while you shop. The creature shelf has new stock every chapter.", practice: run.practice }),
       moneyChips(run.life, play),
-      buying ? checkout(buying, c) : h("div.shop-grid", stock.map((item) => card(item, c))),
-      h("p.note.center", "Wants are fun, but check your bills first. Things you buy show up in the creature editor and on your hub.")
+      buying ? null : tabs(),
+      buying ? checkout(buying, c) : tab === "home" ? homeShelf() : h("div.shop-grid", stock.map((item) => card(item, c))),
+      h("p.note.center", "Wants are fun, but check your bills first. Everything you buy goes into your Dock at the bottom of the screen.")
     );
   }
 
@@ -55,6 +71,35 @@ export function render(root, { game, go, track }) {
       owned
         ? h("p.good-text", "✓ You own this")
         : h("button", { type: "button", onclick: () => (track("shopView", { id: item.id }), paint(item)) }, "Buy")
+    );
+  }
+
+  // Cottage pieces by slot. Free starters aren't for sale.
+  function homeShelf() {
+    const own = ownedDecor(play);
+    const placed = cottageOf(play);
+    return h(
+      "div.shop-home",
+      SLOTS.map((slot) =>
+        h(
+          "section.shop-slot",
+          h("h2", icon(slot.icon, { size: 18 }), ` ${slot.label}`),
+          h(
+            "div.shop-grid",
+            DECOR.filter((d) => d.slot === slot.id && d.price > 0).map((d) =>
+              h(
+                "article.shop-item",
+                h("div.shop-preview", h("span.shop-decor", { html: decorThumb(d) })),
+                h("h3", d.name),
+                h("p.shop-price", h("span.bst-tag-hole", { "aria-hidden": "true" }), money(d.price)),
+                own.has(d.id)
+                  ? h("p.good-text", placed[d.slot] === d.id ? "✓ In your room" : "✓ You own this. It's in your Dock")
+                  : h("button", { type: "button", onclick: () => (track("shopView", { id: d.id }), paint(d)) }, "Buy")
+              )
+            )
+          )
+        )
+      )
     );
   }
 
@@ -78,11 +123,14 @@ export function render(root, { game, go, track }) {
           }
           run.life = r.life;
           burstFrom(document.querySelector(".checkout") , "dust", { n: 18 });
-          play.owned.push(item.id);
+          if (item.slot) (play.decorOwned ||= []).push(item.id);
+          else play.owned.push(item.id);
           track("shopBuy", { id: item.id, price: item.price, method: method.startsWith("card:") ? "card" : method, big: Boolean(item.big) });
           sfx.purchase();
           toast(`You bought the ${item.name.toLowerCase()} with ${methodLabel(method, run.life)}.`, "good");
           await run.persist("shop");
+          flashDock();
+          dispatchEvent(new CustomEvent("cc:decor"));
           paint();
           if (!run.practice) wear(item);
         },
@@ -93,6 +141,18 @@ export function render(root, { game, go, track }) {
 
   // Offer to put it on right away.
   function wear(item) {
+    if (item.slot) {
+      const put = h("button", { type: "button" }, "Put it in my room");
+      put.addEventListener("click", async () => {
+        play.cottage = { ...(play.cottage || {}), [item.slot]: item.id };
+        track("shopPlace", { id: item.id });
+        await game.persist("place");
+        dispatchEvent(new CustomEvent("cc:decor"));
+        paint();
+      });
+      panel.querySelector(".shop-home")?.before(h("div.callout.good.center", h("p", icon("sparkle", { size: 18 }), ` The ${item.name.toLowerCase()} is yours. It's in your Dock.`), h("div.row", put)));
+      return;
+    }
     const c = game.save.creature;
     const slot = item.kind === "background" ? "background" : item.kind;
     const btn = h("button", { type: "button" }, item.kind === "background" ? "Use it on my hub" : "Wear it now");
