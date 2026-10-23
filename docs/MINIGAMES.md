@@ -1,6 +1,6 @@
 # Minigames: what exists, what's next, and how each one plugs in
 
-The teacher's Oct 22 idea doc ("Personal Finance Mini Games: Build Specs", 27 games) is folded in here. Only games 1 to 7 and 11 were pasted. The rest (13, 15, 17 to 22, 24, 28, 30, 39 to 42, 45 to 47, 49) still need their specs. The doc was written by a chatbot without our project's context, so **these rules from it don't apply**: a separate game shell with stars and Easy/Medium/Hard menus, no real brands, and localStorage-only progress. Our games are Guild Hall jobs (the job board, the No timer toggle, the Shift over screen, `jobPay`), saved with the game, and real brand names are fine (CLAUDE.md).
+The teacher's Oct 22 idea doc ("Personal Finance Mini Games: Build Specs", 27 games, the full 17-page PDF arrived 2026-10-23) is folded in here. **The teacher's rule: educational tool first, engaging game second, and simple beats complex.** Nothing in the doc has to be built the way it's written. The doc was written by a chatbot without our project's context, so **these rules from it don't apply**: a separate game shell with stars and Easy/Medium/Hard menus, no real brands, and localStorage-only progress. Our games are Guild Hall jobs (the job board, the No timer toggle, the Shift over screen, `jobPay`), saved with the game, and real brand names are fine (CLAUDE.md).
 
 **What we keep from it:** money in integer cents, every number in `js/data/config.js`, seeded rounds, wrong answers never ending a game, a one-sentence why after every miss, 44px or bigger tap targets, keyboard support, and no color alone.
 
@@ -45,5 +45,95 @@ Added to each entry in `JOBS` (`js/data/minigames.js`) when the game is built or
 - Reuse the bills and coins from `money-art.js` and the keypad from `keypad.js`.
 - Faults to plan for: students entering cents in the dollars box. The keypad should say "dollars and cents" and show the slip format.
 
-## Ideas for uncovered standards (once the rest of the doc arrives)
-Taxes (F) and insurance (B) have no games yet. Paystub games (gross to net, F6), a W-4 or W-2 hunt (F4), sales tax at the register (F3) and a deductible-or-premium sort (B1) would fill the biggest gaps, and most could battle.
+## The rest of the doc (games 13 to 49), adapted
+
+**How to read this:** "Fits as" says where it lives in our game. A Guild Hall job is a timed shift for pay. A quest step is a Quest mode activity (later). A Skill Sim is one step of a combined pass/fail task. **Learning-first change** is what we'd change so the game teaches before it entertains.
+
+### Budgeting
+**13. Needs vs. Wants Sorter**: A2 (needs and wants), A4. Fits as a quest step early in Quest 1, and as a Guild Hall job. Battle: yes, clear cards only.
+- Keep the third bin, "Depends", and the persona flip (a car for a rural commuter or a city dweller). That's the real lesson: needs depend on your life.
+- Learning-first change: points for a *sound reason*, never a fixed answer, on gray-area cards, and the reasons come from the student's own creature's situation when possible. The doc's results-screen "discussion prompt" goes to the teacher page instead (Reteach list) for a class debate.
+- Fault to plan for: students arguing that a phone is a need. That's the point, so accept a well-reasoned "Depends".
+
+**15. Budget Fix-It**: A4, A2. Fits as a quest step or Skill Sim (Spending), not a timed job. Battle: no.
+- Keep the two meters (Stability and Fun) and the floors on fixed bills. It teaches the tradeoff without a single right answer, which is exactly the class's theme.
+- Learning-first change: each cut shows its consequence in plain words ("No more gym. Stress goes up.") before it's applied, so the student thinks first. Use the creature's own bills where possible.
+- Overlap: our game already has bills, AutoPay and a monthly budget. This game should read the same categories rather than a separate persona list.
+
+### Paychecks and taxes (fills standards F, which have nothing today)
+All rates are simplified teaching values in config, labeled "simplified for learning, not tax advice". Never ask for a real Social Security number.
+
+**17. Paystub Decoder**: F4, F6. Fits as a Guild Hall job ("Payroll clerk") and a Banking or Earning Skill Sim step. Battle: yes, one tap per round.
+- Same tap-the-part mechanic as Check Anatomy Hunt, so reuse that code.
+- Learning-first change: every right tap shows the line's plain meaning, and every wrong tap says what the tapped line actually is.
+
+**18. Gross to Net Estimator**: F6, F5. Fits as a quest step when the creature gets its first paycheck. Battle: no (it's a guess and a reveal).
+- Keep the waterfall reveal (gross stepping down to net). It's the clearest picture of where pay goes.
+- Learning-first change: the student estimates first, then sees each deduction with a one-line why. Scored by closeness, not stars.
+
+**19. W-4 Mini Form**: F4. Fits as a quest step (first job). Battle: no.
+- Learning-first change: keep it to a clearly labeled practice form, and show the result as "likely refund or likely owe, and why", the actual lesson.
+
+**20. Hourly vs. Salary**: F6, A2. Fits as a quest step or a Guild Hall job. Battle: yes, simple version (which pays more this week?).
+- Keep the reveal of the salaried job's effective hourly rate on long weeks.
+- Fault to plan for: overtime math. Show the formula on the first wrong answer.
+
+**21. Tax Bracket Bucket Fill**: F1, F2. Fits as an Academy lesson or quest step. Battle: no.
+- The myth buster ("Can a raise make your take-home smaller? No.") is the most valuable part, so lead with it.
+- Learning-first change: the buckets fill as the student drags income, with four round brackets so the math is doable by hand.
+
+### Credit and debt
+**22. Credit Score Factors**: D3. Fits as a quest step and a Credit Skill Sim step. Battle: yes, the sort rounds.
+- Overlap: the game already teaches the 5 factors live (My Score, Practice Desk factor checks). Use the *same* factor names, weights and wording from `js/engine/` so students never see two versions.
+- Keep the tricky cards (checking your own score doesn't hurt, and closing an old card can).
+
+**24. Loan Offer Compare (play as a Credit Advisor)**: D2, D6, D7. Fits as a Credit Skill Sim or quest step, not a timed job. Battle: no.
+- Overlap: the Garage deal sheet and `vehicleQuote` already compute payment, APR, interest and total. Reuse that math and the shared amortization helper the doc asks for (one helper in the engine, unit tested, for example $10,000 at 6% for 36 months is about $304.22).
+- Keep the role-play (you advise a client with a stated priority) and the trap offer (a low payment but a very long term). The amortization table (early payments are mostly interest) finally covers D6 and D7, which the game left out.
+
+### Saving and investing
+**28. Compound Interest Garden (the doc's flagship)**: G1, G3, G5. Fits as its own place on the map, or as a Cottage room tied to the dream. Battle: no.
+- Strong idea: deposits are seeds, interest is trees dropping seeds, and the ghost line shows starting 5 years later. "Time beats amount" is the lesson.
+- Learning-first change: start with the Early Eva vs. Late Leo prediction (level 4 in the doc), since it's the most memorable lesson, and keep the levels short.
+- Overlap: the doc makes the Garden the main menu and plants "seed money" from every game. Our map, dream and Sparkle Points already do that job. **Don't make it the hub.** Make it one place, and maybe let Subscription Audit and Gig Income Tracker show "what this could grow into".
+- Uses the compound-interest helper (monthly loop in cents, unit tested).
+
+**30. Risk/Return Sorter**: G2, G1. Fits as a quest step or Academy lesson. Battle: yes, the scenario-match rounds.
+- Keep the time-horizon scenarios ("car in 1 year" versus "retirement at 16"). That's the real skill.
+- Keep the "insured" tag and the "general ideas, not advice" note. No real funds.
+
+### Accounting (games 39 to 42)
+**These aren't in the SC Personal Finance standards** (only G1 touches assets and equity, through Ledger Sort). The teacher marked 42 "LOVE IT: build this one deep". **To decide with the teacher:** build these as an optional "Business" side path (a teen-run snack shack or T-shirt shop), or skip them for this course.
+- **39. Debit/Credit Tug-of-War**: the rope that centers when debits equal credits is a great visual. Battle: yes.
+- **40. Journal Entry Builder**: the most complex form in the doc. If built, it's a Skill Sim, not a job.
+- **41. Income Statement Sort**: the "Neither" bin (a loan isn't revenue, and profit isn't cash) is the lesson. Battle: yes.
+- **42. Balance Sheet Builder**: the balance scale extends Ledger Sort's assets, liabilities and equity. Story mode (5 business days) would make a strong Business Skill Sim.
+
+### Consumer smarts
+**45. Receipt Error Hunt**: A3, F3 (sales tax). Fits as a Guild Hall job ("Shimmer Market checker"). Battle: yes, one line per round.
+- Keep "Looks Good" for receipts with no errors, so students can't assume there's always a mistake. Apply the same rule to Fee Detective.
+
+**46. Subscription Audit**: A2, A3, A4. Fits as a quest step or job. Battle: no.
+- Keep the usage meters and the yearly savings reveal. Keep the annual plan that shows up once but recurs. That's a real trap.
+- Learning-first change: the "Regret" meter teaches that cutting things you use isn't saving. Frame it as matching spending to your values, the class's theme.
+
+**47. Price Per Use**: A3. Fits as a Guild Hall job beside Unit Price Showdown. Battle: yes, the simple pick.
+- Keep the break-even slider (the winner flips at the marked point) and the counter-examples (a costume worn once).
+
+**49. Gig Income Tracker**: A2, F6, A4. Fits as a quest step (side-hustle quest), not a timed job. Battle: no.
+- The "true hourly rate after gas, fees and travel time" reveal is the lesson.
+
+## Shared helpers to build once (in `js/engine/`, pure and tested)
+- Amortization schedule (games 24 and Garage): payment, rows, total interest, last-month fix to zero.
+- Compound growth (game 28): monthly loop in cents with year-end snapshots.
+- Simplified payroll (games 17, 18, 20): gross, the listed deductions, net. Rates in `CONFIG`, labeled as teaching values.
+- The fake document renderer (statement, receipt, paystub): one renderer for Fee Detective, Receipt Error Hunt, Paystub Decoder and Subscription Audit.
+
+## Suggested order (by standards gaps, learning value, then reuse)
+1. **Fee Detective** (C3, C5) and **Receipt Error Hunt** (A3, F3), which share the document renderer and tap-the-line mechanic.
+2. **Paystub Decoder** (F4, F6) and **Needs vs. Wants Sorter** (A2), quick and filling empty standards.
+3. **Credit Score Factors** (D3) and **Risk/Return Sorter** (G1, G2), sorters that are battle-ready.
+4. **Loan Offer Compare** with the amortization helper (D2, D6, D7).
+5. **Gross to Net**, **Hourly vs. Salary**, **Tax Brackets** and **W-4** as Quest mode steps once Quest mode exists.
+6. **Compound Interest Garden** as its own place.
+7. Accounting (39 to 42), only if the teacher wants a Business path.
