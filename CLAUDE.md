@@ -1,6 +1,6 @@
 # Credit Creatures
 
-A classroom game (formerly Credit Life) where students are the Guardian of Coin for a fantasy creature in the Kingdom of Coinhaven. Their money choices shape its credit life and decide whether its dream comes true. Home (`#/hub`) shows the creature, the next step and the places that need you. The illustrated kingdom map has its own page (`#/map`), opened from the top bar, and every place comes back to it. The top bar always has the chapter's progress, Home, Map, Wallet and Leaderboard. `SPEC.md` is the single source of truth. Read it before planning any phase.
+A classroom game (formerly Credit Life) where students are the Guardian of Coin for a fantasy creature in the Kingdom of Coinhaven. Their money choices shape its credit life and decide whether its dream comes true. Home (`#/hub`) shows the creature, the next step and the places that need you. The illustrated kingdom map has its own page (`#/map`), opened from the top bar, and every place comes back to it. The top bar always has the chapter's progress, Home, Map, Wallet and Leaderboard. `SPEC.md` is the single source of truth. Read it before planning any phase. The teacher's course standards (SC Personal Finance 5141, A to G) are in `docs/STANDARDS.md`. The game's "Std 1, 2, 3, 5" are D1, D2, D3 and D5.
 
 ## Resuming work ("keep going", "pick up where you left off")
 
