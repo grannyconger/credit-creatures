@@ -2,13 +2,13 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-23 (all screens in the bestiary look, design docs drafted. The teacher must publish firestore.rules for /admin)
+Last updated: 2026-10-23 (all screens in the bestiary look, dev environment set up with Playwright and GitHub Actions, side quest concepts ready for the teacher's review)
 
 ## Next step
 
 **Where things stand (end of 2026-10-22):** everything below is pushed and live. Awaiting the teacher's review: Phases 15, 16 and 17 (motion, effects, living creatures), the five new Chapter 1 jobs, and the Trophies redesign. Firestore rules were last changed for gifts, class delete and reset notes, and the teacher has published them.
 
-**Up next, in order:** (1) Every screen is now in the bestiary look (Lantern Alley, chapter end and Account settings were done 2026-10-23, awaiting the teacher's look). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) More minigames (Fee Detective first, plan in `docs/MINIGAMES.md`), developed together with the teacher, then Skill Paths and Skill Sims, which the teacher made the priority after the minigame build-outs. Quest and Battle modes are drafted in `docs/MODES.md`, still being discussed. (4) Done 2026-10-23: Home and the Cottage show the rank as the Trophies wax seal (`rankSeal`, exported from `js/ui/screens/trophies.js`) instead of an emoji. (5) Phone layout, on hold until the teacher's explicit OK.
+**Up next, in order:** (1) **Review the side quest specs with the teacher before building anything.** Start with the concepts in `docs/MINIGAMES.md` ("Concepts to review"): Scam or Legit, Hype Check, Rate Shock, Where'd My Paycheck Go, the Cottage Garden and Estimate It (open questions there). Then Fee Detective and Receipt Error Hunt. The teacher's rules: education first, fun a close second, no "meh" games, every game gets How to play, Vocab (hover tooltips) and IRL tabs with sourced stats. (2) After the minigame build-outs: Skill Paths and Skill Sims (Bank Reconciliation goes inside a Banking Sim). Quest and Battle modes are drafted in `docs/MODES.md`, still being discussed. (3) Side-quest naming and the reward split (quests earn XP, side quests earn Coins, Energy and Sparkle) need a planned balance change. (4) The `docs/tuning v1` review (pilot data, gitignored), when the teacher says so. (5) Phone layout, on hold until the teacher's explicit OK. Firebase stays on Spark until a usage bar passes about 50%, and always upgrade to Blaze before live battles.
 
 **Dev environment (2026-10-23, pushed):**
 - `CLAUDE.md` was rewritten shorter, with every rule kept. The 23-row phase history is gone (status lives here), and the design system moved to the `bestiary-design` skill.

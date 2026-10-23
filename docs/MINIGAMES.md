@@ -151,6 +151,21 @@ This game teaches the next generation to manage money in a complex world. That's
 - **Games to find for the biggest engagement:** A6 (scams), A5 (social media marketing), B4 (a trivia game of all-true, shocking stats about what changes insurance rates and costs), F6 (gross to net pay) and G1 (compound interest).
 - **Estimate It:** the teacher wants to know exactly how it works before it's built.
 
+## Naming, rewards and tech (teacher, 2026-10-23, later the same day)
+- **Every non-quest activity is a "side quest":** the minigames and arcade games, including today's Guild Hall jobs. Side quests are skill based.
+- **Quests earn XP** and are the most informative. **Side quests earn Coins (checking money), Energy and Sparkle Points.** Today's code still gives XP for shifts and right answers, so moving to this split is a planned balance change.
+- **Where'd My Paycheck Go** is a lesson only (taxes don't come out of the creature's pay). Later, a teacher switch can turn on real taxes for a class.
+- **Tech:** stay vanilla JS, DOM, SVG and CSS. No game engine (Phaser, Godot, Three.js).
+
+## Concepts to review with the teacher before building (2026-10-23)
+These are pitched concepts, not approved specs. The teacher wants to review each spec first.
+- **Scam or Legit?** (A6): a phone screen of texts, DMs, emails and payment requests patterned on the FTC's top scams. Swipe Scam or Legit, then tap the red flag for a bonus. About a third are legit.
+- **Hype Check** (A5): a feed of made-up influencer posts. Tap the trick (fake countdown, "only 2 left", hidden sponsorship, filtered before-and-after). The last card is buy or skip, against the creature's budget and dream.
+- **Rate Shock** (B4): trivia of all-true, sourced, surprising facts about what changes car insurance costs. Formats: "Which costs more to insure?" and higher or lower.
+- **Where'd My Paycheck Go?** (F6): guess the take-home from the creature's real shifts, watch the deductions drain it line by line, then a Paystub Decoder tap round. Lesson only.
+- **The Cottage Garden** (G1): plant seeds (account types bought at Shimmer Market) by moving money from checking. Trees grow and drop seeds (interest on interest). Weeds are fees, and a self-waterer is automatic saving. It opens with Early Eva vs. Late Leo. Needs engine work (a real savings-like account).
+- **Estimate It** (D2, F6, G1, A4): one money question with a dollar answer and 6 guesses. Each guess shows Higher or Lower plus a closeness word (Bullseye within 5% wins, Hot within 10%, Warm within 25%, else Cold). Clues after guesses 2 and 4, then the worked math. A first-guess score stops halving the range. A shared daily puzzle with a streak, plus practice. In battles, both players guess once and the closer guess hits harder. **Open:** the Bullseye range (5%, or 10% for beginners) and whether the calculator is off (recommended) or on.
+
 ## Every game gets a guide with three tabs (teacher, 2026-10-23)
 Each game has a guide the student can open anytime (before playing, or from the Shift over screen):
 1. **How to play:** the goal in one sentence, the steps, and one worked example.
