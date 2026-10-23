@@ -70,6 +70,7 @@ python3 -m http.server 8000
 ```
 Open http://localhost:8000/ (`localhost` is an authorized Firebase domain).
 Open http://localhost:8000/?local to play with no sign-in. It saves to localStorage (`js/db-local.js`) and the class code is `TEST01`. On the hub, a "release Chapter N" link stands in for the teacher's release button.
+The teacher page is http://localhost:8000/teacher/?local and the admin page (bugs, tuning, every class) is http://localhost:8000/admin/?local.
 
 ## Tests
 

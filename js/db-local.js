@@ -137,6 +137,27 @@ export async function listFeedback() {
   return (read("feedback") || []).map((f, i) => ({ id: `local-${i}`, ...f }));
 }
 
+// ---------- /admin on localhost ----------
+
+export async function listAllClasses() {
+  return listMyClasses();
+}
+
+export async function listAllSaves() {
+  return (await listClassSaves()).map((s) => ({ classId: LOCAL_CLASS.classId, teacherEmail: LOCAL_CLASS.teacherEmail, ...s }));
+}
+
+export async function listAllFeedback() {
+  return listFeedback();
+}
+
+export async function setFeedbackStatus(id, status) {
+  const all = read("feedback") || [];
+  const i = Number(String(id).replace("local-", ""));
+  if (all[i]) all[i].status = status;
+  write("feedback", all);
+}
+
 // ---------- social, with pretend classmates who answer right away ----------
 
 const HOURS = 60 * 60 * 1000;

@@ -7,6 +7,7 @@ import { ACHIEVEMENTS } from "../data/achievements.js";
 import { STANDARD_LABELS } from "../data/practice-questions.js";
 import { STALLS, alleyProgress } from "../data/alley.js";
 import { LESSON_ORDER } from "../data/lessons.js";
+import { QUESTION_TYPES } from "../data/practice-questions.js";
 
 const ACCOUNT_LABELS = {
   card: "Card",
@@ -400,4 +401,117 @@ export function gradeSummary(rows) {
     missingReflections: rows.filter((r) => r.reflections < r.chaptersDone).sort(byName).map((r) => ({ uid: r.uid, row: r, missing: r.chaptersDone - r.reflections })),
     noPractice: rows.filter((r) => r.accuracyAll == null && r.chaptersDone > 0).length,
   };
+}
+
+// ---------- Teacher page round 2 (2026-10-23) ----------
+
+const MIN = 60 * 1000;
+
+// The save watch: students who saved today but not in the last quietMinutes.
+// Longest quiet first. now is passed in so tests stay exact.
+export function quietStudents(rows, { now = Date.now(), quietMinutes = 8 } = {}) {
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  return rows
+    .filter((r) => r.lastPlayed != null && r.lastPlayed >= today.getTime() && now - r.lastPlayed >= quietMinutes * MIN)
+    .map((r) => ({ uid: r.uid, row: r, minutes: Math.floor((now - r.lastPlayed) / MIN) }))
+    .sort((a, b) => b.minutes - a.minutes || byName(a.row, b.row));
+}
+
+// A practice % as a word, so the standards grid never relies on color.
+export function standardBand(pct, { strong = 80, gettingThere = 60 } = {}) {
+  if (pct == null) return { key: "none", label: "No answers" };
+  if (pct >= strong) return { key: "strong", label: "Strong" };
+  if (pct >= gettingThere) return { key: "getting", label: "Getting there" };
+  return { key: "help", label: "Needs help" };
+}
+
+// What to reteach: the practice question types the class gets wrong most,
+// the decision cards where the most students made a rough choice, and the
+// Lantern Alley offers that fool the most students.
+export function reteach(saves, { minAnswers = 5, minStudents = 3, top = 5 } = {}) {
+  const plays = saves.map((s) => {
+    try {
+      return parseSave(s).play;
+    } catch {
+      return null;
+    }
+  }).filter(Boolean);
+  const types = {};
+  for (const p of plays) {
+    for (const [type, v] of Object.entries(p.desk?.byType || {})) {
+      const t = (types[type] ??= { type, right: 0, total: 0 });
+      t.right += v.right;
+      t.total += v.total;
+    }
+  }
+  const questions = Object.values(types)
+    .filter((t) => t.total >= minAnswers)
+    .map((t) => ({ type: t.type, label: QUESTION_TYPES[t.type]?.label || t.type, standard: QUESTION_TYPES[t.type]?.standard ?? null, answers: t.total, accuracy: pct(t.right, t.total) }))
+    .sort((a, b) => a.accuracy - b.accuracy)
+    .slice(0, top);
+
+  const cards = {};
+  for (const p of plays) {
+    // One vote per student per card: their latest choice.
+    const latest = {};
+    for (const d of decisionsOf(p)) if (d.quality && d.id) latest[d.id] = d;
+    for (const d of Object.values(latest)) {
+      const c = (cards[d.id] ??= { id: d.id, title: d.title || d.id, n: 0, rough: 0, roughChoices: {} });
+      c.n++;
+      if (d.quality === "bad") {
+        c.rough++;
+        c.roughChoices[d.label] = (c.roughChoices[d.label] || 0) + 1;
+      }
+    }
+  }
+  const decisions = Object.values(cards)
+    .filter((c) => c.n >= minStudents && c.rough > 0)
+    .map((c) => ({ id: c.id, title: c.title, students: c.n, roughPct: pct(c.rough, c.n), commonRough: Object.entries(c.roughChoices).sort((a, b) => b[1] - a[1])[0]?.[0] || "" }))
+    .sort((a, b) => b.roughPct - a.roughPct || b.students - a.students)
+    .slice(0, top);
+
+  const traps = classAlley(saves)
+    .filter((r) => r.trap && r.n >= minStudents && r.rightPct != null && r.rightPct < 100)
+    .slice(0, top)
+    .map((r) => ({ id: r.id, name: r.name, students: r.n, rightPct: r.rightPct }));
+  return { questions, decisions, traps };
+}
+
+// A student's sessions from their play log, newest first. batches are the
+// telemetry docs ({ sessionId, createdAt, month, chapter, events }).
+const COUNTS = {
+  months: ["monthTime"],
+  cards: ["cardChoice", "lifeCardChoice"],
+  shifts: ["minigame"],
+  questions: ["question", "lessonQuiz", "shiftAnswer"],
+  lessons: ["lessonStart"],
+  chapters: ["chapterDone"],
+  reflections: ["reflection"],
+  achievements: ["achievement"],
+};
+export function timeline(batches) {
+  const sessions = {};
+  for (const b of batches) {
+    if (b.practice) continue;
+    const at = lastPlayed(b.createdAt);
+    const id = b.sessionId || `t${at}`;
+    const s = (sessions[id] ??= { id, start: null, end: null, saves: 0, months: 0, cards: 0, shifts: 0, questions: 0, right: 0, lessons: 0, chapters: 0, reflections: 0, achievements: 0, chapter: b.chapter ?? null, monthsSeen: new Set() });
+    s.saves++;
+    const span = Math.max(0, ...((b.events || []).map((e) => e.t || 0)));
+    if (at != null) {
+      const begin = at - span * 1000;
+      s.start = s.start == null ? begin : Math.min(s.start, begin);
+      s.end = s.end == null ? at : Math.max(s.end, at);
+    }
+    if (b.month != null && b.month >= 0) s.monthsSeen.add(b.month);
+    s.chapter = Math.max(s.chapter ?? 0, b.chapter ?? 0) || s.chapter;
+    for (const e of b.events || []) {
+      for (const [k, types] of Object.entries(COUNTS)) if (types.includes(e.type)) s[k]++;
+      if (e.type === "question" && (e.correct || e.right)) s.right++;
+    }
+  }
+  return Object.values(sessions)
+    .map(({ monthsSeen, ...s }) => ({ ...s, minutes: s.start != null && s.end != null ? Math.max(1, Math.round((s.end - s.start) / MIN)) : null, gameMonths: [...monthsSeen].sort((a, b) => a - b) }))
+    .sort((a, b) => (b.start ?? 0) - (a.start ?? 0));
 }

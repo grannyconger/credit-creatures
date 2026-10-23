@@ -2,13 +2,32 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-23 (Friendship Plaza approved)
+Last updated: 2026-10-23 (/admin, teacher page round 2 and the Garage approved and pushed. The teacher must publish firestore.rules for /admin)
 
 ## Next step
 
 **Where things stand (end of 2026-10-22):** everything below is pushed and live. Awaiting the teacher's review: Phases 15, 16 and 17 (motion, effects, living creatures), the five new Chapter 1 jobs, and the Trophies redesign. Firestore rules were last changed for gifts, class delete and reset notes, and the teacher has published them.
 
-**Up next, in order:** (1) the remaining old-look screens, one at a time with approval: the Garage, Lantern Alley, chapter end, Account settings (the story intro and name step are done). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) Fee Detective, the next job idea. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
+**Up next, in order:** (1) the remaining old-look screens, one at a time with approval:  Lantern Alley, chapter end, Account settings (the story intro and name step are done). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) Fee Detective, the next job idea. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
+
+**/admin and teacher page round 2 (teacher request 2026-10-23, approved and pushed):**
+- **/admin** (`admin/index.html`, `js/admin/admin.js`, same plain look as the teacher page, `css/teacher.css`). Only `ADMIN_EMAIL` (bweaver@greermiddlecollege.org, in `js/firebase-config.js`) can open it. It has three tabs:
+  - All classes: every class from both teachers, with students, chapters open, median practice and chapters, needs-help count, and last activity.
+  - Bug reports: every class, each with a New, Fixing or Fixed status (stored as `status` on the feedback doc) and a filter.
+  - Tuning: one class or all, with the JSON export.
+  - New db functions: `listAllClasses`, `listAllSaves`, `listAllFeedback`, `setFeedbackStatus`, local versions in `db-local.js`.
+  - **Rules changed (`isAdmin()` in `firestore.rules`): the teacher must publish them.** Until then /admin can't load.
+- **Teacher page:** the Tuning and Bug reports tabs are gone (moved to /admin).
+  - **Save watch:** "Check who's saving" re-reads saves now and every 60 seconds until stopped. It lists students who saved today but not in the last 8 minutes (`quietStudents`, `CONFIG.teacher.quietMinutes` and `watchSeconds`), and Last played shows "Quiet N min".
+  - **Standards view:** a % plus a word and a shape per standard (`standardBand`, thresholds `CONFIG.teacher.strong` and `gettingThere`).
+  - **What to reteach:** the weakest practice question types, the decision cards with the most rough choices, and the traps missed most (`reteach`).
+  - **Student panel Timeline tab:** sessions by day from the play log (`timeline`), plus chapters from the save.
+  - **Print report** (one student) and **Print reports** (everyone shown): one page each with standards, things to talk about, reflections and Lantern Alley.
+  - **Projector mode** in the header: pacing, class totals and the top 10 creatures by XP, with no flags, emails, scores or names.
+  - Tests for the four new helpers in `tests/teacher.test.js` (201 pass). Checked with the 14-student demo (plus a demo play log in `credit-life:telemetry/demo0`): 1440 light and dark, 1280 dyslexia, the watch, standards, reteach, timeline, print layout, projector, /admin bugs (status change saved) and tuning, with no console errors.
+- **On hold (teacher, 2026-10-23):** Skill Paths (Banking and Credit as separate skill levels) and Skill Sims, after more minigames are built. They're the priority right after the minigame build-outs. The Cashier Rush tray change ("Change so far" pieces matching the drawer's money) is skipped for now.
+
+**The Garage in the bestiary look (2026-10-23, approved and pushed):** `js/ui/screens/garage.js`, `.bst-garage` at the end of `css/bestiary.css`. The three loan numbers (APR, Term, Total cost) hang on a brass plate with screws. The ride you own is a perforated registration slip with a Sell button. The lot is parking bays divided by painted dashed lines, each with the ride drawn in ink (new `rideSvg()` in `js/ui/bestiary-art.js`, replacing the emoji on the page), a painted gold price board, the shift bonus, and the deal sheet. The deal sheet (`js/ui/loan-picker.js`, shared with the Cottage's Fix up the house) is now styled for every bestiary page: term and down payment options are tick boxes (a tick, not only color), the four numbers are ledger lines, and the total is double ruled. The celebrate pop-up still shows the ride emoji. Telemetry unchanged. Checked: 1440 light and dark, 1280 dyslexia, the lot and an owned moped, with no console errors.
 
 **Friendship Plaza in the bestiary look (2026-10-23, approved and pushed):** `js/ui/screens/friends.js`, `.bst-plaza` at the end of `css/bestiary.css`. One sheet with bookmark ribbons hanging off its top edge for Friends, Groups and Gifts. The open ribbon hangs longest, is bold, and says "open". Classmates, friends and sent requests are calling cards with oval portraits. Friend requests are envelopes. Your group is a gathering posed for its portrait on moss, and group names are tags ("Start The Golden Lanterns"). Gifts are a two-column post: parcels tied with string plus the gift ledger, beside a shipping tag with a wax-seal "Send the gift". Emoji used as icons came out (group emoji no longer show, and money and item choices use drawn icons). History says "Sent to" and "From" in words. Students' preset gift messages keep their emoji. New naturalist margin notes. Telemetry unchanged. Checked: 1440 light and dark, 1280 dyslexia, accept a request, join a group, and the gifts tab, with no console errors.
 

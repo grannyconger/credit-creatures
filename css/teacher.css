@@ -543,3 +543,117 @@ dialog.t-drawer::backdrop { background: color-mix(in srgb, var(--b-shadow-ink) 4
 :root[data-reading="dyslexia"] .t-strip { grid-template-columns: minmax(0, 1fr) auto; }
 :root[data-reading="dyslexia"] .t-status { grid-column: 1 / -1; grid-row: 2; }
 :root[data-reading="dyslexia"] .t-brand span { font-style: normal; }
+
+/* ---- /admin (js/admin/admin.js) shares this look ----------------------- */
+.t-head-link { color: var(--b-on-ground); font-weight: 700; text-underline-offset: 3px; }
+.a-strip { grid-template-columns: minmax(0, 1fr) auto; }
+.t-code-small { font-family: var(--b-body); letter-spacing: 0.12em; }
+.a-bug { flex: 1; min-width: 0; }
+.a-status button { padding: 3px 12px !important; }
+
+/* ---- Round 2 (teacher request 2026-10-23) ------------------------------ */
+.t-roster-title { margin: var(--b-s5) 0 0; font-size: var(--b-fs-lead); }
+.t-strip-actions .t-btn[aria-pressed="true"] { color: var(--b-paper); background: var(--b-plum); border-color: var(--b-plum); }
+
+/* The save watch: a ruled band under the strip while it's on. */
+.t-watch {
+  margin-top: var(--b-s3);
+  padding: var(--b-s3) var(--b-s4);
+  background: var(--b-paper);
+  border-top: 2px solid var(--b-plum);
+  border-bottom: 2px solid var(--b-plum);
+}
+.t-watch p { margin: 0; }
+.t-watch-head .ico-wrap { display: inline-block; vertical-align: -3px; margin-right: var(--b-s2); }
+.t-watch-head .ico-wrap { color: var(--b-plum); }
+.t-watch-count { margin-top: var(--b-s2) !important; font-weight: 700; }
+.t-watch-list { list-style: none; margin: var(--b-s1) 0 var(--b-s2); padding: 0; display: flex; flex-wrap: wrap; gap: var(--b-s1) var(--b-s5); }
+.t-watch-list li { display: inline-flex; align-items: baseline; gap: var(--b-s2); }
+.t-watch .t-small { margin-top: var(--b-s2); }
+
+/* Standards: a % and a word in every cell, with a shape for the band too. */
+.t-band { display: inline-flex; align-items: baseline; gap: 6px; font-weight: 700; }
+.t-band small { font-weight: 400; font-size: var(--b-fs-tiny); }
+.t-band::before { content: ""; width: 9px; height: 9px; align-self: center; }
+.band-strong::before { background: var(--b-fern); border-radius: 50%; }
+.band-getting::before { background: var(--b-gold); transform: rotate(45deg); }
+.band-help { color: var(--b-rust-ink); }
+.band-help::before { background: var(--b-rust); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.band-none { color: var(--b-ink-soft); }
+.band-none::before { border: 1.5px solid var(--b-rule); border-radius: 50%; }
+
+/* What to reteach: three columns divided by rules. */
+.t-reteach-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--b-paper); border-radius: var(--b-r-sheet); }
+.t-reteach-col { padding: var(--b-s3) var(--b-s4); min-width: 0; }
+.t-reteach-col + .t-reteach-col { border-left: 1px solid var(--b-rule); }
+.t-reteach-col h4 { margin: 0 0 var(--b-s2); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.t-reteach-list { margin: 0; padding-left: 1.3em; }
+.t-reteach-list li { margin: 0 0 var(--b-s2); }
+.t-reteach-list li strong { display: block; }
+.t-reteach-list li span { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+.t-reteach-col > .t-muted { margin: 0; }
+
+/* Student panel extras */
+.t-side-actions { display: flex; flex-direction: column; gap: var(--b-s2); align-items: stretch; }
+.t-session { padding: var(--b-s2) 0 var(--b-s3); border-bottom: 1px dotted var(--b-rule); }
+.t-session p { margin: 2px 0 0; }
+.t-session-time { font-weight: 700; }
+
+/* Projector mode: big type, nothing private. */
+dialog.t-projector {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: var(--b-s5) clamp(24px, 4vw, 72px);
+  border: 0;
+  color: var(--b-ink);
+  background: var(--b-paper-2);
+  font-family: var(--b-body);
+  font-size: 1.4rem;
+}
+dialog.t-projector::backdrop { background: var(--b-ground); }
+.t-proj-head { display: flex; justify-content: space-between; align-items: center; gap: var(--b-s4); padding-bottom: var(--b-s3); border-bottom: 2px solid var(--b-ink); }
+.t-proj-head h1 { margin: 0; font-size: clamp(2.6rem, 4vw, 4rem); }
+.t-proj-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--b-s5); margin-top: var(--b-s4); }
+.t-proj-grid > section { background: var(--b-paper); padding: var(--b-s4); border-radius: var(--b-r-sheet); }
+.t-proj-grid h2 { margin: 0 0 var(--b-s3); font-size: 2rem; }
+.t-proj-grid .t-panel-col { padding: 0; }
+.t-proj-grid .t-bar { height: 48px; }
+.t-proj-grid .t-bar span,
+.t-proj-grid .t-legend { font-size: 1.1rem; }
+.t-proj-grid .t-big strong { font-size: 3rem; }
+.t-proj-grid .t-big span { font-size: 1rem; }
+.t-proj-board { grid-column: 1 / -1; }
+.t-proj-board ol { margin: 0; padding-left: 1.6em; columns: 2; column-gap: var(--b-s6); }
+.t-proj-board li { margin: 0 0 var(--b-s2); break-inside: avoid; }
+.t-proj-board li strong { font-family: var(--b-display); font-weight: 400; font-size: 1.8rem; margin-right: var(--b-s3); }
+.t-proj-board li span { color: var(--b-ink-soft); }
+
+/* Printable progress reports: only the reports print, one per page. */
+#t-print { display: none; }
+@media print {
+  body.t-printing > :not(#t-print) { display: none !important; }
+  /* Paper white and near-black ink from the tokens (the bills' ink is fixed dark). */
+  body.t-printing { background: var(--b-on-rust); color: var(--b-money-ink); font-size: 11pt; }
+  body.t-printing #t-print { display: block; }
+  .t-report { break-after: page; padding: 0; }
+  .t-report:last-child { break-after: auto; }
+  .t-report-head { display: flex; align-items: center; gap: 16px; border-bottom: 2px solid var(--b-money-ink); padding-bottom: 8px; }
+  .t-report-head h1 { margin: 0; font-size: 22pt; color: var(--b-money-ink); }
+  .t-report h2, .t-report h3 { color: var(--b-money-ink); }
+  .t-report-head p { margin: 2px 0 0; }
+  .t-report h2 { margin: 16px 0 6px; font-size: 14pt; border-bottom: 1px solid var(--b-money-ink); }
+  .t-report h3 { margin: 10px 0 2px; font-size: 11pt; }
+  .t-report .t-bigs { margin-top: 12px; gap: 8px 28px; }
+  .t-report .t-big strong { font-size: 18pt; }
+  .t-report .t-big span { color: var(--b-money-ink); }
+  .t-report .t-table { width: auto; }
+  .t-report .t-table th, .t-report .t-table td { border-bottom: 1px solid var(--b-rule); padding: 4px 12px 4px 0; }
+  .t-report-refl p { margin: 2px 0 0; }
+}
+@media (max-width: 1100px) { .t-reteach-cols { grid-template-columns: minmax(0, 1fr); } .t-reteach-col + .t-reteach-col { border-left: 0; border-top: 1px solid var(--b-rule); } .t-proj-grid { grid-template-columns: minmax(0, 1fr); } }
+
+:root[data-reading="dyslexia"] .t-strip-name { min-width: 14rem; }
+:root[data-reading="dyslexia"] .t-strip-name h1 { font-size: 1.7rem; }

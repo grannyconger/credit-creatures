@@ -6,13 +6,16 @@
 // summary of who needs help, pacing and grades, then a roster you switch
 // between three short views. Settings live in a drawer and each student opens
 // in a side panel with tabs. Bestiary colors and fonts, plain and quiet.
+// Round 2 (teacher request 2026-10-23): bugs and tuning moved to /admin. New:
+// the save watch, a Standards view, What to reteach, a student timeline,
+// printable progress reports and a projector mode.
 import { isConfigured } from "../firebase-config.js";
 import { h, add, fill, money, ageLabel } from "../ui/dom.js";
 import { icon } from "../ui/icons.js";
 import { creatureSvg } from "../ui/creature-art.js";
 import { reportTab } from "../ui/accounts/report-tab.js";
 import { scoreTab } from "../ui/accounts/score-tab.js";
-import { rosterRow, studentDetail, rosterCsv, tuning, tuningExport, classAlley, byName, FLAGS, LESSON_COUNT, parseEmails, needsHelp, pacing, gradeSummary } from "./analyze.js";
+import { rosterRow, studentDetail, rosterCsv, classAlley, byName, FLAGS, LESSON_COUNT, parseEmails, needsHelp, pacing, gradeSummary, quietStudents, standardBand, reteach, timeline } from "./analyze.js";
 import { STALLS } from "../data/alley.js";
 import { STANDARD_LABELS } from "../data/practice-questions.js";
 import { CONFIG } from "../data/config.js";
@@ -21,14 +24,14 @@ import { chapterInfo } from "../data/chapters.js";
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 const VIEW_KEY = "credit-creatures:teacherView";
 const root = document.getElementById("teacher");
-const state = { me: null, db: null, classes: [], classId: null, tab: "roster", view: savedView(), search: "", saves: [], rows: [], loaded: false, sort: ["lastName", 1], tuning: null, feedback: null, social: null, openUid: null, helpAll: false };
+const state = { me: null, db: null, classes: [], classId: null, view: savedView(), search: "", saves: [], rows: [], loaded: false, sort: ["lastName", 1], social: null, openUid: null, helpAll: false, watch: { on: false, timer: null, checkedAt: null, quiet: [] } };
 
 boot();
 
 function savedView() {
   try {
     const v = localStorage.getItem(VIEW_KEY);
-    return ["progress", "credit", "game"].includes(v) ? v : "progress";
+    return ["progress", "standards", "credit", "game"].includes(v) ? v : "progress";
   } catch {
     return "progress";
   }
@@ -101,7 +104,8 @@ const fullName = (r) => [r.firstName, r.lastName].filter(Boolean).join(" ") || r
 const listName = (r) => (r.lastName ? `${r.lastName}, ${r.firstName}` : fullName(r));
 
 function switchClass(id) {
-  Object.assign(state, { classId: id, tuning: null, feedback: null, social: null, saves: [], rows: [], loaded: false, search: "", helpAll: false });
+  stopWatch();
+  Object.assign(state, { classId: id, social: null, saves: [], rows: [], loaded: false, search: "", helpAll: false });
   paint();
   loadRoster();
 }
@@ -121,24 +125,9 @@ function paint() {
   fill(
     root,
     h("div", { id: "t-strip" }, classStrip(c)),
+    h("div", { id: "t-watch" }, watchBox()),
     h("div", { id: "t-summary" }, summary()),
-    h(
-      "nav.t-tabs",
-      { "aria-label": "Dashboard" },
-      [
-        ["roster", "people", "Roster", null],
-        ["tuning", "chart", "Tuning", null],
-        ["bugs", "bug", "Bug reports", state.feedback?.length || null],
-      ].map(([k, mark, label, count]) =>
-        h(
-          "button",
-          { type: "button", "aria-current": state.tab === k ? "page" : null, onclick: () => ((state.tab = k), paint()) },
-          icon(mark, { size: 18 }),
-          label,
-          count ? h("span.t-count", { "aria-label": `${count} reports` }, count) : null
-        )
-      )
-    ),
+    h("h2.t-roster-title", "Roster"),
     h("div", { id: "tab-body" }, tabBody())
   );
 }
@@ -146,6 +135,8 @@ function paint() {
 function paintHeader() {
   const who = document.getElementById("t-who");
   if (who) who.textContent = `${state.me.displayName || state.me.email}${LOCAL ? " (local test)" : ""}`;
+  const tools = document.getElementById("t-head-tools");
+  if (tools) fill(tools, cls() ? h("button.t-btn.on-ground", { type: "button", onclick: openProjector, title: "A big, student-safe view for the projector" }, icon("people", { size: 18 }), "Projector mode") : null);
   const slot = document.getElementById("t-picker");
   if (!slot) return;
   if (state.classes.length < 2) return fill(slot);
@@ -216,6 +207,12 @@ function classStrip(c) {
           `Release Chapter ${next}`
         )
       ),
+      h(
+        "button.t-btn",
+        { type: "button", "aria-pressed": String(state.watch.on), onclick: () => (state.watch.on ? stopWatch() : startWatch()), title: `Flags students with no save in the last ${CONFIG.teacher.quietMinutes} minutes` },
+        icon(state.watch.on ? "pause" : "save", { size: 18 }),
+        state.watch.on ? "Stop the save watch" : "Check who's saving"
+      ),
       h("button.t-btn", { type: "button", onclick: () => openSettings(c) }, icon("gear", { size: 18 }), "Class settings")
     )
   );
@@ -234,7 +231,6 @@ const nameLink = (r) => h("button.t-link", { type: "button", onclick: () => deta
 function helpPanel() {
   const list = needsHelp(state.rows, { inactiveDays: CONFIG.teacher.inactiveDays });
   const shown = state.helpAll ? list : list.slice(0, 5);
-  const bugs = state.feedback?.length || 0;
   return h(
     "div.t-panel-col.t-help",
     h("h2", "Needs help", list.length ? h("span.t-count", list.length) : null),
@@ -250,8 +246,7 @@ function helpPanel() {
           )
         )
       : h("p.t-ok", icon("check", { size: 18 }), "Nobody right now."),
-    list.length > 5 ? h("button.t-link", { type: "button", onclick: () => ((state.helpAll = !state.helpAll), repaintSummary()) }, state.helpAll ? "Show fewer" : `Show all ${list.length}`) : null,
-    bugs ? h("button.t-link.t-bugs-link", { type: "button", onclick: () => ((state.tab = "bugs"), paint()) }, icon("bug", { size: 16 }), plural(bugs, "bug report")) : null
+    list.length > 5 ? h("button.t-link", { type: "button", onclick: () => ((state.helpAll = !state.helpAll), repaintSummary()) }, state.helpAll ? "Show fewer" : `Show all ${list.length}`) : null
   );
 }
 
@@ -433,7 +428,7 @@ function deleteBox(c) {
     state.classes = state.classes.filter((x) => x.id !== c.id);
     if (state.classes[0]) switchClass(state.classes[0].id);
     else {
-      Object.assign(state, { classId: null, saves: [], rows: [], tuning: null, feedback: null, social: null });
+      Object.assign(state, { classId: null, saves: [], rows: [], social: null });
       paint();
     }
   });
@@ -449,12 +444,14 @@ function deleteBox(c) {
 
 // ---------- roster ----------
 
-async function loadRoster() {
-  state.loaded = false;
-  state.rows = [];
-  paintTab(h("p.t-muted", "Loading students..."));
-  repaintSummary();
-  loadFeedback();
+// quiet: reload without blanking the page first (the save watch does this every minute).
+async function loadRoster({ quiet = false } = {}) {
+  if (!quiet) {
+    state.loaded = false;
+    state.rows = [];
+    paintTab(h("p.t-muted", "Loading students..."));
+    repaintSummary();
+  }
   try {
     state.saves = await state.db.listClassSaves(state.me.email, state.classId);
   } catch (err) {
@@ -470,8 +467,12 @@ async function loadRoster() {
     }
   });
   state.loaded = true;
+  if (state.watch.on) checkQuiet(), repaintWatch();
   repaintSummary();
-  if (state.tab === "roster") paintTab(roster());
+  // Keep what the teacher is typing in the search box.
+  if (quiet && document.activeElement?.classList.contains("t-search")) {
+    document.getElementById("t-roster-table")?.replaceWith(roster().querySelector("#t-roster-table"));
+  } else paintTab(roster());
 }
 
 function paintTab(...kids) {
@@ -480,8 +481,6 @@ function paintTab(...kids) {
 }
 
 function tabBody() {
-  if (state.tab === "tuning") return tuningView();
-  if (state.tab === "bugs") return bugsView();
   return state.loaded ? roster() : h("p.t-muted", "Loading students...");
 }
 
@@ -517,7 +516,15 @@ const VIEWS = {
       { key: "chaptersDone", label: "Chapters done", num: true, cell: (r) => r.chaptersDone },
       { key: "reflections", label: "Reflections", num: true, cell: (r) => (r.chaptersDone ? `${r.reflections} of ${r.chaptersDone}` : r.reflections) },
       { key: "accuracyAll", label: "Practice", num: true, cell: (r) => pctCell(r.accuracyAll) },
-      { key: "lastPlayed", label: "Last played", cell: (r) => ago(r.lastPlayed) },
+      { key: "lastPlayed", label: "Last played", cell: lastCell },
+    ],
+  },
+  // Teacher request 2026-10-23: each standard as a % with a word.
+  standards: {
+    label: "Standards",
+    columns: [
+      ...Object.entries(STANDARD_LABELS).map(([std, label]) => ({ key: `std${std}`, label: label.replace(/^Std (\d): /, "$1. "), num: true, cell: (r) => bandCell(r.accuracy?.[std]) })),
+      { key: "accuracyAll", label: "All practice", num: true, cell: (r) => bandCell(r.accuracyAll) },
     ],
   },
   credit: {
@@ -544,6 +551,7 @@ const VIEWS = {
 
 function sortValue(r, key) {
   if (key === "flags") return r.flags.length;
+  if (key.startsWith("std")) return r.accuracy?.[key.slice(3)] ?? null;
   if (key === "accounts") return r.accountTypes?.length ?? 0;
   return r[key];
 }
@@ -631,9 +639,10 @@ function roster() {
       ),
       h("label.t-search-wrap", icon("search", { size: 16 }), search),
       h("span.t-muted", plural(state.rows.length, "student")),
-      h("div.t-row.t-toolbar-end", h("button.t-btn", { type: "button", onclick: loadRoster }, "Refresh"), h("button.t-btn", { type: "button", onclick: csv, title: "Every column, for your gradebook" }, "Download CSV"))
+      h("div.t-row.t-toolbar-end", h("button.t-btn", { type: "button", onclick: () => loadRoster() }, "Refresh"), h("button.t-btn", { type: "button", onclick: () => printReports(matching().map((r) => r.uid)), title: "One page per student, in the order shown" }, icon("report", { size: 18 }), "Print reports"), h("button.t-btn", { type: "button", onclick: csv, title: "Every column, for your gradebook" }, "Download CSV"))
     ),
     table(),
+    reteachPanel(),
     state.view === "game" ? alleyTable() : null
   );
 }
@@ -698,6 +707,7 @@ function detail(uid) {
     ["reflections", `Reflections (${d.reflections.length})`, () => reflectionsTab(d)],
     ["decisions", `Decisions (${d.decisions.length})`, () => decisionsTab(d)],
     ["credit", "Credit", () => creditTab(d)],
+    ["timeline", "Timeline", () => timelineTab(uid, d)],
     ["friends", "Friends", () => friendsTab(uid)],
   ];
   const panel = h("div.t-side-body", { role: "tabpanel" });
@@ -720,7 +730,7 @@ function detail(uid) {
         h("p.t-muted", [r.studentEmail, r.creatureName ? `Creature: ${r.creatureName}` : ""].filter(Boolean).join(". ")),
         h("p", [chapterCell(r), d.life ? ageLabel(d.life.ageMonths) : "", `${r.rank}, ${r.xp} XP`, `Last played ${ago(r.lastPlayed).toLowerCase()}`].filter(Boolean).join(". "))
       ),
-      h("button.t-btn", { type: "button", onclick: close }, "Close")
+      h("div.t-side-actions", h("button.t-btn", { type: "button", onclick: () => printReports([uid]) }, icon("report", { size: 18 }), "Print report"), h("button.t-btn", { type: "button", onclick: close }, "Close"))
     ),
     h("div.t-bigs.t-side-stats", stat("score", r.score ?? "None yet"), stat("practice", pctCell(r.accuracyAll)), stat("on time", pctCell(r.onTimePct)), stat("reflections", r.chaptersDone ? `${r.reflections} of ${r.chaptersDone}` : r.reflections)),
     r.flags.length
@@ -826,113 +836,221 @@ async function loadSocial(uid, box) {
   );
 }
 
-// ---------- tuning (docs/FEEDBACK.md section 3) ----------
+// ---------- the save watch (teacher request 2026-10-23) ----------
 
-function tuningView() {
-  if (!state.tuning) {
-    const reads = state.rows.length * 300;
-    return h(
-      "div.t-tuning",
-      h("p", "The Tuning tab reads students' play data: how long months take, how the class splits on each card, what's confusing, minigame pay, question accuracy and chapter ratings."),
-      h("p.t-muted", `This reads up to about ${reads.toLocaleString()} small records, which is fine within the free Firebase plan (50,000 reads a day).`),
-      h("div.t-row", h("button.t-btn", { type: "button", onclick: loadTuning }, "Load tuning data"))
-    );
-  }
-  const t = state.tuning;
-  const exportJson = () => {
-    const data = tuningExport({ className: cls().name, tuningData: t, rows: state.rows, saves: state.saves });
-    const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-    const a = h("a", { href: URL.createObjectURL(blob), download: `${cls().name.replace(/\W+/g, "-")}-tuning.json` });
-    document.body.append(a);
-    a.click();
-    a.remove();
-  };
-  const m = t.minutesPerMonth;
-  const stat = (label, value) => h("div.t-big", h("strong", String(value)), h("span", label));
-  const votes = (x) => `${x.up} liked, ${x.meh} okay, ${x.down} didn't`;
+// Checks now, then every watchSeconds, for students who saved today but not
+// in the last quietMinutes. Runs until the teacher stops it or leaves.
+function startWatch() {
+  state.watch.on = true;
+  repaintWatch();
+  loadRoster({ quiet: true });
+  state.watch.timer = setInterval(() => loadRoster({ quiet: true }), CONFIG.teacher.watchSeconds * 1000);
+}
+
+function stopWatch() {
+  clearInterval(state.watch.timer);
+  Object.assign(state.watch, { on: false, timer: null, checkedAt: null, quiet: [] });
+  repaintWatch();
+}
+
+function checkQuiet() {
+  state.watch.checkedAt = Date.now();
+  state.watch.quiet = quietStudents(state.rows, { quietMinutes: CONFIG.teacher.quietMinutes });
+}
+
+function repaintWatch() {
+  const box = document.getElementById("t-watch");
+  if (box) fill(box, watchBox());
+  const strip = document.getElementById("t-strip");
+  if (strip && cls()) fill(strip, classStrip(cls()));
+}
+
+function watchBox() {
+  const w = state.watch;
+  if (!w.on) return null;
+  const mins = CONFIG.teacher.quietMinutes;
+  const when = w.checkedAt ? new Date(w.checkedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "now";
   return h(
-    "div.t-tuning",
-    h("div.t-toolbar", h("span.t-muted", `${t.events.toLocaleString()} play events from ${plural(state.rows.length, "student")} (practice mode left out).`), h("div.t-row.t-toolbar-end", h("button.t-btn", { type: "button", onclick: loadTuning }, "Reload"), h("button.t-btn", { type: "button", onclick: exportJson, title: "No names or emails are included" }, "Export tuning data (JSON, no names)"))),
+    "section.t-watch",
+    { "aria-live": "polite", "aria-label": "Save watch" },
+    h("p.t-watch-head", icon("save", { size: 18 }), h("strong", "Save watch is on. "), `Checked ${when}. It checks again every minute.`),
+    !w.checkedAt
+      ? h("p.t-muted", "Checking...")
+      : w.quiet.length
+        ? h(
+            "div",
+            h("p.t-watch-count", `${plural(w.quiet.length, "student")} played today but ${w.quiet.length === 1 ? "hasn't" : "haven't"} saved in ${mins} minutes or more:`),
+            h("ul.t-watch-list", w.quiet.map((x) => h("li", nameLink(x.row), h("span.t-reason", icon("alert", { size: 15 }), `No save for ${x.minutes} minutes`))))
+          )
+        : h("p.t-ok", icon("check", { size: 18 }), `Everyone who played today has saved in the last ${mins} minutes.`),
+    h("p.t-muted.t-small", "The game saves after each choice, shift or answer, so a long quiet stretch usually means a student is stuck, reading, or off task. Students who haven't played today aren't counted.")
+  );
+}
+
+function lastCell(r) {
+  const q = state.watch.on && state.watch.quiet.find((x) => x.uid === r.uid);
+  return q ? h("span.t-reason", icon("alert", { size: 15 }), `Quiet ${q.minutes} min`) : ago(r.lastPlayed);
+}
+
+// ---------- Standards view ----------
+
+function bandCell(pct) {
+  const b = standardBand(pct, CONFIG.teacher);
+  return h("span.t-band", { class: `band-${b.key}` }, pct == null ? "" : `${pct}% `, h("small", b.label));
+}
+
+// ---------- What to reteach ----------
+
+function reteachPanel() {
+  const r = reteach(state.saves, { minAnswers: CONFIG.teacher.reteachMinAnswers, minStudents: CONFIG.teacher.reteachMinStudents });
+  const col = (title, items, empty, render) => h("div.t-reteach-col", h("h4", title), items.length ? h("ol.t-reteach-list", items.map(render)) : h("p.t-muted", empty));
+  return h(
+    "section.t-after.t-reteach",
+    h("h3", "What to reteach"),
+    h("p.t-muted", "Where the class struggles most right now, worst first. Good for tomorrow's mini-lesson."),
+    h(
+      "div.t-reteach-cols",
+      col("Practice questions", r.questions, "Not enough answers yet.", (q) => h("li", h("strong", q.label), h("span", `${q.accuracy}% right, ${plural(q.answers, "answer")}${q.standard ? `, Std ${q.standard}` : ""}`))),
+      col("Decision cards", r.decisions, "No card has tripped up the class yet.", (d) => h("li", h("strong", d.title), h("span", `${d.roughPct}% of ${plural(d.students, "student")} made a rough choice${d.commonRough ? `, most often "${d.commonRough}"` : ""}`))),
+      col("Lantern Alley traps", r.traps, "Lantern Alley opens in Chapter 5.", (t) => h("li", h("strong", t.name), h("span", `${t.rightPct}% of ${plural(t.students, "student")} spotted the trap`)))
+    )
+  );
+}
+
+// ---------- Timeline (in the student panel) ----------
+
+function timelineTab(uid, d) {
+  const box = h("div", h("p.t-muted", "Loading what they've done..."));
+  state.db
+    .listEvents(uid, 300)
+    .then((batches) => fill(box, timelineView(timeline(batches), d)))
+    .catch((err) => {
+      console.error(err);
+      fill(box, h("p.t-muted", "Couldn't load the play log. Check that the newest Firestore rules are published."), timelineView([], d));
+    });
+  return box;
+}
+
+function timelineView(sessions, d) {
+  const out = [];
+  if (sessions.length) {
+    let day = "";
+    for (const s of sessions) {
+      const label = s.start != null ? new Date(s.start).toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" }) : "Time not recorded";
+      if (label !== day) out.push(h("h3", label)), (day = label);
+      const time = s.start != null ? `${new Date(s.start).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} to ${new Date(s.end).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}, ${plural(s.minutes, "minute")}` : "";
+      const did = [
+        s.months && plural(s.months, "game month") + " finished",
+        s.cards && plural(s.cards, "card"),
+        s.shifts && plural(s.shifts, "shift"),
+        s.questions && `${plural(s.questions, "question")} (${s.right} right)`,
+        s.lessons && plural(s.lessons, "lesson"),
+        s.chapters && plural(s.chapters, "chapter") + " finished",
+        s.reflections && plural(s.reflections, "reflection"),
+        s.achievements && plural(s.achievements, "achievement"),
+      ].filter(Boolean);
+      out.push(
+        h(
+          "article.t-session",
+          h("p.t-session-time", time || "A session", s.chapter ? h("span.t-muted", ` Chapter ${s.chapter}${s.gameMonths.length ? `, game month ${s.gameMonths[0]}${s.gameMonths.length > 1 ? ` to ${s.gameMonths[s.gameMonths.length - 1]}` : ""}` : ""}`) : null),
+          h("p", did.length ? did.join(". ") + "." : "Looked around without making a choice."),
+          h("p.t-muted.t-small", `${plural(s.saves, "save")}.`)
+        )
+      );
+    }
+  } else out.push(h("p.t-muted", "No play log yet."));
+  // What the save itself remembers, by chapter.
+  const chapters = d.play?.history || [];
+  if (chapters.length) {
+    out.push(h("h3", "Chapters"), h("dl.t-lines", chapters.flatMap((c) => [h("dt", `Chapter ${c.chapter}: ${c.title || ""}`), h("dd", `${(c.decisions || []).length} cards. ${c.reflection ? "Reflection written" : "No reflection"}`)])));
+  }
+  return out;
+}
+
+// ---------- Printable progress reports ----------
+
+// One page per student, for conferences and meetings. The rest of the page
+// is hidden while printing (css/teacher.css @media print).
+function printReports(uids) {
+  document.getElementById("t-print")?.remove();
+  const area = h("div", { id: "t-print" }, uids.map((uid) => report(uid)).filter(Boolean));
+  document.body.append(area);
+  document.body.classList.add("t-printing");
+  const done = () => {
+    document.body.classList.remove("t-printing");
+    area.remove();
+    removeEventListener("afterprint", done);
+  };
+  addEventListener("afterprint", done);
+  window.print();
+}
+
+function report(uid) {
+  const raw = state.saves.find((s) => s.uid === uid);
+  if (!raw) return null;
+  const d = studentDetail(raw);
+  const r = d.row;
+  const c = cls();
+  return h(
+    "article.t-report",
+    h(
+      "header.t-report-head",
+      d.creature ? h("div.t-report-art", { "aria-hidden": "true", html: creatureSvg(d.creature, { size: 72, label: "" }) }) : null,
+      h("div", h("h1", fullName(r)), h("p", [c?.name, `Creature: ${r.creatureName || "none yet"}`, `Report printed ${new Date().toLocaleDateString()}`].filter(Boolean).join(". ")))
+    ),
     h(
       "div.t-bigs",
-      stat("minutes per game month", m.median == null ? "No data" : `${m.median} (target ${m.targetLow} to ${m.targetHigh})`),
-      stat("months measured", m.n),
-      stat("answers past the XP cap", t.xpCapHits)
+      h("div.t-big", h("strong", r.chaptersDone), h("span", "chapters done")),
+      h("div.t-big", h("strong", r.chaptersDone ? `${r.reflections} of ${r.chaptersDone}` : r.reflections), h("span", "reflections")),
+      h("div.t-big", h("strong", pctCell(r.accuracyAll)), h("span", "practice accuracy")),
+      h("div.t-big", h("strong", r.score ?? "None yet"), h("span", "credit score")),
+      h("div.t-big", h("strong", pctCell(r.onTimePct)), h("span", "payments on time"))
     ),
-    table("Decision cards", ["Card", "Times", "Choices", "Top choice", "Seconds", "Ratings", "Confusing"], t.cards.map((c) => [c.id, c.n, Object.entries(c.choices).map(([k, v]) => `${k} ${v}`).join(", "), `${Math.round(c.topShare * 100)}%${c.lopsided ? " (lopsided)" : ""}`, c.medianSeconds, votes(c), c.confusing || 0])),
-    table("Minigames", ["Game", "Shifts", "Median pay", "Median right", "No-timer shifts", "Ratings"], t.games.map((g) => [g.game, g.n, money(g.medianPay || 0), g.medianRight, g.untimed, votes(g)])),
-    table("Practice Desk questions", ["Type", "Answers", "Accuracy", "Median seconds"], t.questions.map((q) => [q.type, q.n, `${q.accuracy}%`, q.medianSeconds])),
-    table("Chapter ratings", ["Chapter", "Ratings", "Fun (1 to 5)", "Clear (1 to 5)"], t.ratings.map((r) => [r.chapter, r.n, r.fun, r.clear])),
-    table("Class scores", ["Range", "Students"], t.scoreBands.map((b) => [`${b.lo} to ${b.hi}`, b.n])),
-    table("Errors students hit", ["Message", "Times"], t.errors.map((e) => [e.message, e.n]))
+    h("h2", "Standards"),
+    h("table.t-table", h("tbody", Object.entries(STANDARD_LABELS).map(([std, label]) => {
+      const b = standardBand(r.accuracy[std], CONFIG.teacher);
+      return h("tr", h("th", { scope: "row" }, label), h("td.num", pctCell(r.accuracy[std])), h("td", b.label));
+    }))),
+    r.flags.length ? [h("h2", "Things to talk about"), h("ul", r.flags.map((f) => h("li", FLAGS[f].label)))] : null,
+    h("h2", "Reflections"),
+    d.reflections.length ? d.reflections.map((x) => h("div.t-report-refl", h("h3", `Chapter ${x.chapter}: ${x.title}`), h("p", x.text))) : h("p", "No reflections yet."),
+    r.alleyChecked ? [h("h2", "Lantern Alley"), h("p", `Called ${r.alleyRight} of ${r.alleyChecked} offers right (trap or fair deal).`)] : null
   );
 }
 
-function table(title, heads, rows) {
-  return h("section.t-after", h("h3", title), rows.length ? h("div.t-table-wrap", h("table.t-table", h("thead", h("tr", heads.map((x) => h("th", x)))), h("tbody", rows.map((r) => h("tr", r.map((c) => h("td", String(c ?? "–")))))))) : h("p.t-muted", "No data yet."));
-}
+// ---------- Projector mode ----------
 
-async function loadTuning() {
-  paintTab(h("p.t-muted", "Loading play data..."));
-  try {
-    const batches = (await Promise.all(state.rows.map((r) => state.db.listEvents(r.uid, 300).catch(() => [])))).flat();
-    state.tuning = tuning(batches, state.rows);
-  } catch (err) {
-    console.error(err);
-    return paintTab(h("p.t-error", "Could not load play data. Check that the newest Firestore rules are published."));
-  }
-  paintTab(tuningView());
-}
-
-// ---------- bug reports ----------
-
-function bugsView() {
-  if (!state.feedback) return h("p.t-muted", "Loading bug reports...");
-  if (!state.feedback.length) return h("p.t-ok", icon("check", { size: 18 }), "No bug reports.");
-  const names = Object.fromEntries(state.rows.map((r) => [r.uid, fullName(r)]));
-  return h(
-    "ul.t-bugs",
-    state.feedback
-      .slice()
-      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
-      .map((f) =>
-        h(
-          "li",
-          icon("bug", { size: 18 }),
-          h(
-            "div",
-            h("p.t-muted.t-small", `${names[f.uid] || "A student"}. Screen: ${f.screen || "?"}. Month ${f.month ?? "?"}.`),
-            h("p", f.note || "(no note)"),
-            h("button.t-link", { type: "button", onclick: () => download(`bug-${f.id}.json`, f) }, "Download for Claude (seed and last actions)")
+// A big view that's safe to show the class: pacing, the leaderboard by
+// creature name, and what the class has done together. No flags, emails,
+// scores or names of students who need help.
+function openProjector() {
+  if (!cls()) return;
+  const dialog = h("dialog.t-projector", { "aria-label": "Projector mode" });
+  dialog.addEventListener("close", () => dialog.remove());
+  const c = cls();
+  const rows = state.rows;
+  const top = rows.slice().sort((a, b) => (b.xp ?? 0) - (a.xp ?? 0)).filter((r) => r.creatureName).slice(0, 10);
+  const total = (k) => rows.reduce((n, r) => n + (r[k] || 0), 0);
+  add(
+    dialog,
+    h("header.t-proj-head", h("h1", c.name), h("button.t-btn", { type: "button", onclick: () => dialog.close() }, "Exit projector mode")),
+    h(
+      "div.t-proj-grid",
+      h("section", pacingPanel()),
+      h(
+        "section.t-proj-wins",
+        h("h2", "What the class has done"),
+        h("div.t-bigs", h("div.t-big", h("strong", total("chaptersDone")), h("span", "chapters finished")), h("div.t-big", h("strong", total("reflections")), h("span", "reflections written")), h("div.t-big", h("strong", total("lessons")), h("span", "lessons read")), h("div.t-big", h("strong", total("achievements")), h("span", "achievements earned")))
+      ),
+      c.leaderboard === false
+        ? null
+        : h(
+            "section.t-proj-board",
+            h("h2", "Top creatures by XP"),
+            h("ol", top.map((r) => h("li", h("strong", r.creatureName), h("span", `${r.rank}, ${r.xp} XP`))))
           )
-        )
-      )
+    )
   );
-}
-
-async function loadFeedback() {
-  const id = state.classId;
-  try {
-    const all = await state.db.listFeedback(state.me.email);
-    if (id !== state.classId) return;
-    state.feedback = all.filter((f) => !f.classId || f.classId === state.classId);
-  } catch (err) {
-    console.error(err);
-    state.feedback = [];
-  }
-  repaintSummary();
-  const tabs = document.querySelector(".t-tabs");
-  if (tabs) {
-    const bugTab = tabs.lastElementChild;
-    bugTab.querySelector(".t-count")?.remove();
-    if (state.feedback.length) bugTab.append(h("span.t-count", { "aria-label": `${state.feedback.length} reports` }, state.feedback.length));
-  }
-  if (state.tab === "bugs") paintTab(bugsView());
-}
-
-function download(name, data) {
-  const a = h("a", { href: URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })), download: name });
-  document.body.append(a);
-  a.click();
-  a.remove();
+  document.body.append(dialog);
+  dialog.showModal();
 }

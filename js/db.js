@@ -295,6 +295,29 @@ export async function listFeedback(teacherEmail) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
+// ---------- /admin (2026-10-23): every class, both teachers ----------
+// Firestore rules let only the admin email make these reads.
+
+export async function listAllClasses() {
+  const snap = await getDocs(collection(db, "classes"));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function listAllSaves() {
+  const snap = await getDocs(collection(db, "saves"));
+  return snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
+}
+
+export async function listAllFeedback(max = 300) {
+  const snap = await getDocs(query(collection(db, "feedback"), limit(max)));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+// status: "new", "fixing" or "fixed". The rules allow changing only this field.
+export async function setFeedbackStatus(id, status) {
+  await updateDoc(doc(db, "feedback", id), { status });
+}
+
 export async function listMyClasses(teacherEmail) {
   const q = query(collection(db, "classes"), where("teacherEmail", "==", teacherEmail.toLowerCase()));
   const snap = await getDocs(q);

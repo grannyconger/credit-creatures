@@ -168,3 +168,57 @@ test("gradeSummary gives medians and who owes a reflection", () => {
   assert.deepEqual(g.missingReflections.map((x) => [x.uid, x.missing]), [["a", 1]]);
   assert.equal(g.noPractice, 1);
 });
+
+// ---------- Teacher page round 2 (2026-10-23) ----------
+
+test("quietStudents flags students who saved today but not lately", () => {
+  const now = new Date(2026, 9, 23, 10, 30).getTime();
+  const min = 60000;
+  const out = T.quietStudents(
+    [
+      row({ uid: "busy", lastPlayed: now - 2 * min }),
+      row({ uid: "quiet", lastPlayed: now - 9 * min }),
+      row({ uid: "quieter", lastPlayed: now - 30 * min }),
+      row({ uid: "absent", lastPlayed: now - 26 * 60 * min }),
+      row({ uid: "never" }),
+    ],
+    { now, quietMinutes: 8 }
+  );
+  assert.deepEqual(out.map((x) => [x.uid, x.minutes]), [["quieter", 30], ["quiet", 9]]);
+});
+
+test("standardBand gives a word for every percent", () => {
+  assert.equal(T.standardBand(null).label, "No answers");
+  assert.equal(T.standardBand(85).label, "Strong");
+  assert.equal(T.standardBand(80).label, "Strong");
+  assert.equal(T.standardBand(65).label, "Getting there");
+  assert.equal(T.standardBand(40).label, "Needs help");
+});
+
+test("reteach finds weak question types and rough card choices", () => {
+  const mk = (uid, right, rough) => {
+    const play = P.newPlay();
+    for (let i = 0; i < 4; i++) P.recordAnswer(play, { type: "runningBalance", standard: 2, correct: i < right });
+    play.history.push({ chapter: 1, title: "Ch 1", decisions: [{ id: "paydayLoan", title: "Payday loan", label: rough ? "Take it" : "Skip it", quality: rough ? "bad" : "good" }] });
+    return { uid, play };
+  };
+  const r = T.reteach([mk("a", 1, true), mk("b", 2, true), mk("c", 4, false)], { minAnswers: 5, minStudents: 3 });
+  assert.equal(r.questions[0].label, "Running balance");
+  assert.equal(r.questions[0].accuracy, 58);
+  assert.deepEqual(r.decisions.map((d) => [d.id, d.roughPct, d.commonRough]), [["paydayLoan", 67, "Take it"]]);
+});
+
+test("timeline groups play logs into sessions", () => {
+  const t0 = Date.parse("2026-10-23T14:00:00Z");
+  const out = T.timeline([
+    { sessionId: "s1", createdAt: { seconds: (t0 + 5 * 60000) / 1000 }, month: 2, chapter: 1, events: [{ t: 0, type: "cardChoice" }, { t: 300, type: "minigame" }] },
+    { sessionId: "s1", createdAt: { seconds: (t0 + 20 * 60000) / 1000 }, month: 3, chapter: 1, events: [{ t: 1200, type: "question", correct: true }, { t: 1200, type: "monthTime" }] },
+    { sessionId: "s0", createdAt: { seconds: (t0 - 86400000) / 1000 }, month: 1, chapter: 1, events: [{ t: 60, type: "lessonStart" }] },
+    { sessionId: "p", practice: true, createdAt: { seconds: t0 / 1000 }, events: [{ t: 1, type: "cardChoice" }] },
+  ]);
+  assert.equal(out.length, 2);
+  assert.equal(out[0].id, "s1");
+  assert.equal(out[0].minutes, 20);
+  assert.deepEqual([out[0].cards, out[0].shifts, out[0].questions, out[0].right, out[0].months, out[0].saves], [1, 1, 1, 1, 1, 2]);
+  assert.deepEqual(out[0].gameMonths, [2, 3]);
+});

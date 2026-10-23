@@ -17,4 +17,8 @@ export const TEACHER_EMAILS = [
   "brobinson@greermiddlecollege.org",
 ];
 
+// The only person who can open /admin (bug reports, tuning, every class).
+// Firestore rules (isAdmin) are the real gate.
+export const ADMIN_EMAIL = "bweaver@greermiddlecollege.org";
+
 export const isConfigured = !firebaseConfig.apiKey.startsWith("PASTE_");
