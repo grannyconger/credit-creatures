@@ -12,15 +12,17 @@ import { cottageOf } from "../data/cottage.js";
 const PLACE = Object.fromEntries(PLACES.map((p) => [p.id, p]));
 
 // onPick(object, place): the screen decides what each click does.
-export function cottageRoom({ creature, ageMonths, play, status, onPick, onCreature }) {
-  const cottage = cottageOf(play);
-  const stage = h("div.cottage-stage", h("div.room-wall", { html: roomSvg(cottage), "aria-hidden": "true" }));
+export function cottageRoom({ creature, ageMonths, play, status, onPick, onCreature, preview = null, chips = null }) {
+  // preview: a piece being tried on (never saved). chips: slot buttons for Decorate mode.
+  const cottage = { ...cottageOf(play), ...(preview ? { [preview.slot]: preview.id } : {}) };
+  const editing = Boolean(chips);
+  const stage = h("div.cottage-stage", { class: editing ? "editing" : "" }, h("div.room-wall", { html: roomSvg(cottage), "aria-hidden": "true" }));
   stage.append(
     h("button.room-creature", { type: "button", "aria-label": `Open ${creature.name}'s cottage`, style: { left: `${CREATURE_SPOT.x}%`, top: `${CREATURE_SPOT.y}%`, width: `${CREATURE_SPOT.w}%` }, onclick: onCreature, html: creatureSvg(creature, { size: 200, ageMonths, label: "" }) })
   );
   for (const o of ROOM_OBJECTS) {
     const pl = o.place ? PLACE[o.place] : null;
-    const st = pl ? status[pl.id] : null;
+    const st = o.status ? status[o.status] : pl ? status[pl.id] : null;
     const locked = st?.tone === "locked";
     const needs = st && ["action", "warn"].includes(st.tone);
     const note = locked ? st.text : needs ? st.text : o.hint;
@@ -32,6 +34,7 @@ export function cottageRoom({ creature, ageMonths, play, status, onPick, onCreat
           "data-object": o.id,
           class: `${locked ? "locked" : ""} ${needs ? "needs" : ""}`,
           "aria-disabled": locked ? "true" : null,
+          disabled: editing,
           "aria-label": `${o.label}. ${note}.`,
           style: { left: `${o.x}%`, top: `${o.y}%`, width: `${o.w}%`, height: `${o.h}%` },
           onclick: () => onPick(o, pl),
@@ -42,5 +45,6 @@ export function cottageRoom({ creature, ageMonths, play, status, onPick, onCreat
       )
     );
   }
+  if (chips) stage.append(...chips);
   return stage;
 }

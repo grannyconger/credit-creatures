@@ -5,6 +5,7 @@ import { DREAMS, dreamProgress } from "./data/dreams.js";
 import * as P from "./play.js";
 import { hasFeature, opensText, prologueStep, stageOf } from "./progression.js";
 import { alleyProgress } from "./data/alley.js";
+import { pickState } from "./daily.js";
 
 // The one next thing to do in the prologue (coach panel and chapter box).
 export const PROLOGUE_TEXT = {
@@ -87,6 +88,9 @@ export function placeStatus({ life, play, creature, classInfo }) {
     const open = hasFeature(play, pl.feature, life) || (pl.id === "vault" && prologueStep(play)?.place === "vault");
     if (!open) out[pl.id] = { text: opensText(pl.feature), tone: "locked" };
   }
+
+  // Daily Pick is not a place on the map, but it has a status like one.
+  out.daily = pickState(play).done ? { text: "Come back tomorrow", tone: "calm" } : { text: "Pick a box!", tone: "action" };
 
   const dream = creature?.dream ? dreamProgress(life, creature.dream, play) : null;
   if (!creature?.dream) out.cottage = { text: "Pick your creature's dream", tone: "action" };

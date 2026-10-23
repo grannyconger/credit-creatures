@@ -2,7 +2,7 @@
 // Add ?local to a localhost URL to play with browser storage and no sign-in.
 import { isConfigured, SCHOOL_DOMAIN } from "./firebase-config.js";
 import { createGame, STEPS, EDITABLE, HUB_SCREENS } from "./game.js";
-import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge } from "./telemetry.js";
+import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge, onTrack } from "./telemetry.js";
 import { mountBugButton } from "./ui/bug-button.js";
 import { sfx, setClassMuted, soundOn, classIsMuted } from "./ui/sound.js";
 import { PLACES } from "./places.js";
@@ -12,7 +12,7 @@ import { CONFIG } from "./data/config.js";
 import { canPlay } from "./play.js";
 import { moneyChips, walletStrip } from "./ui/wallet.js";
 import { creatureSvg } from "./ui/creature-art.js";
-import { h, clear, ageLabel } from "./ui/dom.js";
+import { h, clear, ageLabel, money, toast } from "./ui/dom.js";
 import { firstSettings, openSettings, saveSettings } from "./ui/settings-dialog.js";
 import { applySettings, loadLocalSettings } from "./ui/settings.js";
 import { icon, drawIconsFor } from "./ui/icons.js";
@@ -40,8 +40,11 @@ import * as garage from "./ui/screens/garage.js";
 import * as records from "./ui/screens/records.js";
 import * as alley from "./ui/screens/alley.js";
 import * as map from "./ui/screens/map.js";
+import * as daily from "./ui/screens/daily.js";
 import { initShell, paintShell } from "./ui/shell.js";
 import { initDock, paintDockButton } from "./ui/dock.js";
+import { claimLogin } from "./daily.js";
+import { onEvent as challengeEvent } from "./challenges.js";
 import { watchSentences } from "./ui/sentences.js";
 import { publishSpringTokens, motionOn } from "./ui/motion/spring.js";
 import { installBoops } from "./ui/motion/boop.js";
@@ -50,7 +53,7 @@ import { installGaze } from "./ui/motion/gaze.js";
 
 // The leaderboard opens straight from the top bar (teacher request 2026-10-22).
 const leaderboard = { render: (root, ctx) => trophies.render(root, { ...ctx, startTab: "board" }) };
-const SCREENS = { map, leaderboard, profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley, settings: settingsScreen };
+const SCREENS = { map, leaderboard, profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley, daily, settings: settingsScreen };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 
@@ -60,6 +63,32 @@ const who = document.getElementById("who");
 let game = null;
 let cleanup = null;
 initShell({ getGame: () => game, go: (step) => (location.hash = `#/${step}`), track });
+// Daily challenges listen to play events (js/challenges.js).
+onTrack((type, data) => {
+  if (!game || game.step !== "hub" || game.practice || !game.run?.life) return;
+  const r = challengeEvent(game.run.play, game.run.life, type, data);
+  if (!r.finished.length) return;
+  game.run.life = r.life;
+  for (const c of r.finished) toast(`Challenge done: ${c.text}.`, "good");
+  if (r.bonus) toast(`All three challenges done! You earned ${money(r.bonus)}.`, "good");
+  game.run.persist("challenge");
+  paintShell(game);
+});
+
+// The first time in the kingdom each visit: the login streak and its coins.
+async function dailyLogin() {
+  if (game.practice) return;
+  const run = game.run;
+  const r = claimLogin(run.play, run.life);
+  if (!r) return;
+  run.life = r.life;
+  track("loginClaim", { streak: r.streak, coins: r.total, lost: r.lostStreak });
+  await run.persist("login");
+  updateWho();
+  const start = r.lostStreak ? `Your ${r.lostStreak}-day streak ended, so a new one starts today. ` : "";
+  toast(`${start}Day ${r.streak} streak! You earned ${money(r.coins)} for signing in${r.milestone ? `, plus a ${money(r.milestone)} streak bonus` : ""}.`, "good");
+}
+
 initDock({ getGame: () => game, go: (step) => (location.hash = `#/${step}`), track });
 // Set once the student is in the game this tab, so a refresh skips the title.
 const ENTERED = "credit-creatures:entered";
@@ -360,6 +389,10 @@ function updateWho() {
   paintNav();
   paintShell(game);
   paintDockButton(game);
+  if (game.step === "hub" && !game.dailyChecked) {
+    game.dailyChecked = true;
+    dailyLogin();
+  }
   const c = game.save.creature;
   clear(who);
   who.hidden = !c;

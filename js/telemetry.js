@@ -25,6 +25,13 @@ export function initTelemetry({ sink, context }) {
   if (context) state.context = context;
 }
 
+// Other parts of the game can listen to events, for example the daily
+// challenges (js/challenges.js). A listener that throws never breaks play.
+const listeners = [];
+export function onTrack(fn) {
+  listeners.push(fn);
+}
+
 export function track(type, data = {}) {
   // The event's own fields go last, so data can never overwrite its type.
   const e = { ...flat(data), t: Math.round((Date.now() - state.sessionStart) / 1000), type, screen: state.screen };
@@ -32,6 +39,13 @@ export function track(type, data = {}) {
   if (state.queue.length > MAX_QUEUE) state.queue.shift();
   state.recent.push(e);
   if (state.recent.length > RECENT) state.recent.shift();
+  for (const fn of listeners) {
+    try {
+      fn(type, data);
+    } catch (err) {
+      console.warn("track listener", err);
+    }
+  }
 }
 
 // Logs how long the last screen was open, then starts timing the new one.

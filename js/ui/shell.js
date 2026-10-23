@@ -6,6 +6,8 @@ import { icon } from "./icons.js";
 import { PLACES, placeStatus } from "../places.js";
 import { hasFeature, prologueStep } from "../progression.js";
 import { openPlace } from "./screens/map.js";
+import { ensureDaily } from "../daily.js";
+import { progress } from "../challenges.js";
 
 const status = document.getElementById("status");
 const bottombar = document.getElementById("bottombar");
@@ -23,6 +25,7 @@ const SHORTCUTS = [
 
 // Places that aren't on PLACES but belong in Things To Do.
 const EXTRAS = [
+  { id: "daily", name: "Daily Pick", kind: "Free prizes every day", icon: "chest", route: "daily" },
   { id: "map", name: "Map", kind: "The whole kingdom", icon: "compass", route: "map" },
   { id: "leaderboard", name: "Leaderboard", kind: "How the class is doing", icon: "trophy", route: "leaderboard" },
   { id: "trophies", name: "Trophies", kind: "Ranks and achievements", icon: "star", route: "trophies" },
@@ -59,19 +62,22 @@ export function paintShell(game) {
   const inKingdom = game?.step === "hub";
   bottombar.hidden = !inKingdom;
   status.hidden = !inKingdom;
-  if (!inKingdom) return;
+  if (!inKingdom) return void (pill.hidden = true);
   const { play, life } = game.run;
   const here = location.hash.replace(/^#\/?/, "") || "hub";
 
   clear(status);
+  const streak = ensureDaily(play).streak;
   for (const [ico, label, value] of [
     ["coins", "Coins", money(life.checking)],
     ["sparkle", "Sparkle", String(play.sparkle?.total || 0)],
     ["star", "XP", String(play.xp || 0)],
-  ]) {
+    streak ? ["flame", "Streak", `${streak} day${streak === 1 ? "" : "s"}`] : null,
+  ].filter(Boolean)) {
     status.append(h("li", icon(ico, { size: 20 }), h("small", label), h("strong", value)));
   }
 
+  paintChallenges(game);
   const st = currentStatus(game);
   clear(shortcuts);
   for (const s of SHORTCUTS) {
@@ -85,6 +91,27 @@ export function paintShell(game) {
       )
     );
   }
+}
+
+// Today's three challenges: a small pill above the bottom bar that opens a list.
+const pill = document.getElementById("challenges");
+let pillOpen = false;
+function paintChallenges(game) {
+  pill.hidden = !(game?.step === "hub");
+  if (pill.hidden) return;
+  const p = progress(game.run.play, game.run.life);
+  clear(pill);
+  pill.append(
+    ...[h("button.challenge-toggle", { type: "button", "aria-expanded": pillOpen ? "true" : "false", onclick: () => ((pillOpen = !pillOpen), paintChallenges(game)) }, icon("check", { size: 18 }), h("span", ` Today ${p.done}/${p.total}`), icon(pillOpen ? "down" : "up", { size: 16 })),
+    pillOpen
+      ? h(
+          "div.challenge-list",
+          h("h2", "Today's challenges"),
+          h("ul", p.rows.map((r) => h("li", { class: r.done ? "done" : "" }, icon(r.done ? "check" : "next", { size: 14 }), ` ${r.text}`, r.done ? h("span.sr-only", " (done)") : null))),
+          h("p", p.bonus ? "All done. Bonus earned!" : "Finish all three for a coin bonus.")
+        )
+      : null].filter(Boolean)
+  );
 }
 
 // A grid of big tiles, one per place. Locked places stay visible with a lock
@@ -121,7 +148,7 @@ export function openThingsToDo() {
     });
   });
   const extras = EXTRAS.filter((x) => !(x.id === "leaderboard" && game.classInfo?.leaderboard === false) && !(x.id === "trophies" && !hasFeature(play, "academy", life))).map((x) =>
-    tile(x, false, "", () => {
+    tile(x, false, st[x.id]?.text || "", () => {
       track("thingsToDoPick", { place: x.id, locked: false });
       close();
       go(x.route);

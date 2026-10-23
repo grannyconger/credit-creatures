@@ -5651,3 +5651,124 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; }
 .bst-shop .shop-slot h2 { display: flex; align-items: center; gap: var(--b-s2); margin: var(--b-s4) 0 var(--b-s2); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
 .bst-shop .shop-decor { display: block; width: 130px; height: 90px; }
 .bst-shop .shop-decor svg { display: block; width: 100%; height: 100%; }
+
+/* ===========================================================================
+   Daily Pick, the streak and today's challenges (slice 4).
+   =========================================================================== */
+.challenges { position: relative; }
+.challenges[hidden] { display: none; }
+.challenge-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-family: var(--b-body);
+  color: var(--b-on-ground);
+  background: none;
+  border: 1.5px solid color-mix(in srgb, var(--b-on-ground) 35%, transparent);
+  border-radius: var(--b-r-tag);
+}
+.challenge-toggle .ico-wrap { color: var(--b-gold); }
+.challenge-toggle[aria-expanded="true"] { border-style: dashed; border-color: var(--b-foxfire); color: var(--b-foxfire); }
+.challenge-list { position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 30; width: 280px; padding: var(--b-s3); font-family: var(--b-body); color: var(--b-ink); background: var(--b-fibers), var(--b-paper); border: 1.5px solid var(--b-paper-edge); border-radius: var(--b-r-paper); box-shadow: var(--b-shadow-lift); }
+.challenge-list h2 { margin: 0 0 var(--b-s2); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.challenge-list ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.challenge-list li.done { color: var(--b-ink-soft); text-decoration: line-through; }
+.challenge-list p { margin: var(--b-s2) 0 0; font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+
+.bst-daily .daily-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr); gap: var(--b-s4); margin-top: var(--b-s4); align-items: start; }
+.bst-daily .daily-boxes { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--b-s3); }
+.bst-daily .daily-box {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--b-s1);
+  min-height: 220px;
+  padding: var(--b-s3);
+  text-align: center;
+  font-family: var(--b-body);
+  color: var(--b-ink);
+  background: var(--b-paper-insert);
+  border: 2px solid var(--b-paper-edge);
+  border-radius: var(--b-r-insert);
+  box-shadow: var(--b-shadow-card);
+}
+button.daily-box { cursor: pointer; }
+button.daily-box .ico-wrap { color: var(--b-plum); transition: transform var(--b-quick); }
+button.daily-box:hover, button.daily-box:focus-visible { border-color: var(--b-rust); box-shadow: 0 0 0 3px color-mix(in srgb, var(--b-foxfire) 55%, transparent), var(--b-shadow-card); }
+button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { transform: translateY(-4px) rotate(-3deg); }
+.bst-daily .daily-box strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-daily .daily-box small { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); }
+.bst-daily .daily-box.open { opacity: 0.8; border-style: dashed; }
+.bst-daily .daily-box.open.mine { opacity: 1; border-style: solid; border-color: var(--b-plum); background: var(--b-plum-wash); animation: daily-reveal 0.6s ease-out; }
+.bst-daily .daily-box.open.mine .ico-wrap { color: var(--b-plum); }
+.bst-daily .daily-prize { font-family: var(--b-hand); font-size: var(--b-fs-hand); }
+@keyframes daily-reveal { 0% { transform: scale(0.85) rotate(-2deg); } 60% { transform: scale(1.05); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .bst-daily .daily-box.open.mine { animation: none; } button.daily-box:hover .ico-wrap { transform: none; } }
+:root[data-motion="calm"] .bst-daily .daily-box.open.mine { animation: none; }
+.bst-daily .daily-clock { margin: var(--b-s3) 0 0; text-align: center; color: var(--b-ink-soft); }
+.bst-daily .daily-side { display: grid; gap: var(--b-s3); }
+.bst-daily .daily-streak, .bst-daily .daily-tasks { padding: var(--b-s3); background: var(--b-paper-insert); border: 1.5px solid var(--b-paper-edge); border-radius: var(--b-r-insert); }
+.bst-daily .daily-side h2 { display: flex; align-items: center; gap: var(--b-s2); margin: 0 0 var(--b-s2); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-daily .daily-streak h2 .ico-wrap { color: var(--b-rust); }
+.bst-daily .streak-pips { display: flex; gap: 6px; margin: 0 0 var(--b-s2); padding: 0; list-style: none; }
+.bst-daily .streak-pips li { display: grid; place-items: center; width: 30px; height: 30px; font-size: var(--b-fs-tiny); color: var(--b-ink-soft); border: 1.5px dashed var(--b-rule); border-radius: 50%; }
+.bst-daily .streak-pips li.done { color: var(--b-on-rust); background: var(--b-rust); border: 1.5px solid var(--b-seal-deep); }
+.bst-daily .daily-tasks ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.bst-daily .daily-tasks li.done { color: var(--b-ink-soft); text-decoration: line-through; }
+.shop-price s { color: var(--b-ink-soft); }
+.shop-price small { color: var(--b-rust-ink); font-weight: 700; }
+
+.bst-daily .panel.daily {
+  position: relative;
+  max-width: 1120px;
+  margin: var(--b-s4) auto 0;
+  padding: var(--b-s5) var(--b-s6) var(--b-s5);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+
+/* ===========================================================================
+   Decorate mode (slice 5): a chip on each slot, and a tray of pieces.
+   =========================================================================== */
+.cottage-stage.editing .room-object, .cottage-stage.editing .room-creature { opacity: 0.55; pointer-events: none; }
+.cottage-stage .slot-chip {
+  position: absolute;
+  z-index: 8;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  transform: translate(-50%, -50%);
+  font-family: var(--b-body);
+  font-weight: 700;
+  font-size: var(--b-fs-tiny);
+  color: var(--b-ink);
+  background: var(--b-paper);
+  border: 2px dashed var(--b-plum);
+  border-radius: var(--b-r-round);
+  box-shadow: var(--b-shadow-card);
+}
+.cottage-stage .slot-chip:hover, .cottage-stage .slot-chip:focus-visible { background: var(--b-foxfire); border-style: solid; }
+.cottage-stage .slot-chip[aria-pressed="true"] { color: var(--b-on-rust); background: var(--b-rust); border: 2px solid var(--b-seal-deep); }
+.bst-home .decorate-btn { justify-self: start; }
+.bst-home .decorate-btn[aria-pressed="true"] { border-style: dashed; }
+.bst-home .decor-help { margin: 0; color: var(--b-on-ground-soft); }
+.piece-tray { padding: var(--b-s3); color: var(--b-ink); background: var(--b-fibers), var(--b-paper); border: 1.5px solid var(--b-paper-edge); border-radius: var(--b-r-paper); box-shadow: var(--b-shadow-card); }
+.piece-head { display: flex; align-items: center; justify-content: space-between; }
+.piece-head h2 { display: flex; align-items: center; gap: var(--b-s2); margin: 0; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.piece-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--b-s2); margin: var(--b-s2) 0 0; padding: 0; list-style: none; }
+.piece { display: grid; justify-items: center; gap: 2px; width: 100%; height: 100%; padding: var(--b-s2); text-align: center; color: var(--b-ink); background: var(--b-paper-insert); border: 1.5px solid var(--b-paper-edge); border-radius: var(--b-r-insert); }
+.piece:hover, .piece:focus-visible { border-color: var(--b-rust); }
+.piece[aria-pressed="true"] { border: 2px dashed var(--b-plum); background: var(--b-plum-wash); }
+.piece-art { display: block; width: 100%; max-width: 100px; height: 56px; }
+.piece-art svg { display: block; width: 100%; height: 100%; }
+.piece strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-ui); line-height: 1.1; }
+.piece small { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+.piece-preview { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-s2); margin: var(--b-s2) 0 0; color: var(--b-plum); }

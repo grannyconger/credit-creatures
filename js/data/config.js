@@ -34,6 +34,30 @@ export const CONFIG = {
   teacher: { inactiveDays: 5, readyShare: 0.75, quietMinutes: 8, watchSeconds: 60, heartbeatMinutes: 2, strong: 80, gettingThere: 60, reteachMinAnswers: 5, reteachMinStudents: 3 },
   social: { giftHours: 20, giftsPerWindow: 4, giftMin: 5, giftMax: 50, groupMax: 6 },
 
+  // Daily Pick and the login streak (docs/UI-REBUILD.md slice 4). A day is the
+  // student's local calendar day, so both reset at midnight. login: coins for
+  // signing in, base plus perDay for each day of the streak up to maxBonus,
+  // and one-time milestone coins on those streak days. boxes: how many closed
+  // boxes to choose from. prizes: what a box can hold, by weight. coins prizes
+  // roll an amount in range. A coupon takes pct off the next Market buy.
+  // decor prizes pick a Cottage piece up to maxPrice. A prize you can't use
+  // (Sparkle past its cap, a piece you already own) turns into coins.
+  daily: {
+    login: { base: 5, perDay: 1, maxBonus: 10, milestones: { 3: 10, 7: 25, 14: 50, 30: 100 } },
+    boxes: 3,
+    prizes: [
+      { kind: "coins", tier: "small", weight: 38, range: [5, 15] },
+      { kind: "coins", tier: "nice", weight: 24, range: [20, 40] },
+      { kind: "coins", tier: "jackpot", weight: 5, range: [75, 120] },
+      { kind: "sparkle", weight: 12, amount: 1 },
+      { kind: "coupon", weight: 11, pct: 20 },
+      { kind: "decor", weight: 10, maxPrice: 40 },
+    ],
+    sparkleFallback: 10,
+    // Three challenges a day. Finish all three for challengeBonus coins.
+    challengeBonus: 10,
+  },
+
   // The month loop after Chapter 1 (SPEC §8).
   play: {
     raiseBonus: 10,

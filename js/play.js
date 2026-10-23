@@ -60,6 +60,9 @@ export function ensurePlay(play) {
   // The Cottage room (js/data/cottage.js): pieces bought and what each slot wears.
   play.decorOwned ??= [];
   play.cottage ??= null;
+  // Daily Pick, the login streak and a coupon from it (js/daily.js).
+  play.daily ??= { lastLogin: null, streak: 0, best: 0, pickDay: null, pick: null };
+  play.coupon ??= null;
   play.records ??= { highestScore: null, longestOnTime: 0 };
   Object.assign(play.desk, { finished: play.desk.finished ?? 0, perfect: play.desk.perfect ?? 0, streak: play.desk.streak ?? 0, bestStreak: play.desk.bestStreak ?? 0 });
   return play;

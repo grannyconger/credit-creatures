@@ -14,6 +14,7 @@ import { sfx } from "../sound.js";
 import { DECOR, SLOTS, ownedDecor, cottageOf } from "../../data/cottage.js";
 import { decorThumb } from "../cottage-art.js";
 import { flashDock } from "../dock.js";
+import { couponPrice } from "../../daily.js";
 import { icon } from "../icons.js";
 
 const KIND = { head: "Head", neck: "Neck", face: "Face", held: "Held in paw", feet: "Feet", effect: "Magic effect", background: "Background" };
@@ -57,6 +58,12 @@ export function render(root, { game, go, track }) {
     );
   }
 
+  // The price tag. A Daily Pick coupon crosses out the old price.
+  function priceTag(price) {
+    const now = couponPrice(play, price);
+    return h("p.shop-price", h("span.bst-tag-hole", { "aria-hidden": "true" }), now < price ? [h("s", { "aria-label": `was ${money(price)}` }, money(price)), " ", h("strong", money(now)), h("small", ` ${play.coupon.pct}% off`)] : money(price));
+  }
+
   function card(item, c) {
     const owned = play.owned.includes(item.id);
     const preview = item.kind === "background" ? h("div.shop-bg", { class: `bg-${item.id}` }, h("span", { html: creatureSvg(c, { size: 90 }) })) : h("span", { html: creatureSvg({ ...c, accessories: { ...c.accessories, [item.kind]: item.id } }, { size: 110 }) });
@@ -67,7 +74,7 @@ export function render(root, { game, go, track }) {
       h("div.shop-preview", preview),
       h("h3", item.name),
       h("p.muted.tight", KIND[item.kind]),
-      h("p.shop-price", h("span.bst-tag-hole", { "aria-hidden": "true" }), money(item.price)),
+      priceTag(item.price),
       owned
         ? h("p.good-text", "✓ You own this")
         : h("button", { type: "button", onclick: () => (track("shopView", { id: item.id }), paint(item)) }, "Buy")
@@ -91,7 +98,7 @@ export function render(root, { game, go, track }) {
                 "article.shop-item",
                 h("div.shop-preview", h("span.shop-decor", { html: decorThumb(d) })),
                 h("h3", d.name),
-                h("p.shop-price", h("span.bst-tag-hole", { "aria-hidden": "true" }), money(d.price)),
+                priceTag(d.price),
                 own.has(d.id)
                   ? h("p.good-text", placed[d.slot] === d.id ? "✓ In your room" : "✓ You own this. It's in your Dock")
                   : h("button", { type: "button", onclick: () => (track("shopView", { id: d.id }), paint(d)) }, "Buy")
@@ -104,28 +111,30 @@ export function render(root, { game, go, track }) {
   }
 
   function checkout(item, c) {
-    const methods = item.price >= BNPL_MIN ? ["debit", "card", "bnpl"] : ["debit", "card"];
-    const box = h("div.checkout", h("h2", `${item.name}: ${money(item.price)}`));
+    const price = couponPrice(play, item.price);
+    const methods = price >= BNPL_MIN ? ["debit", "card", "bnpl"] : ["debit", "card"];
+    const box = h("div.checkout", h("h2", `${item.name}: ${money(price)}${price < item.price ? ` (was ${money(item.price)})` : ""}`));
     if (item.big) add(box, h("p.callout.warn", "This is a big purchase. Putting it on a card can push your utilization way up, and BNPL payments come out of checking at the next End Months."));
     add(
       box,
       payWith({
         life: run.life,
-        cost: { amount: item.price, item: item.name, methods, merchant: "Market" },
+        cost: { amount: price, item: item.name, methods, merchant: "Market" },
         allowed: payMethods(play, run.life),
         piggy: !hasFeature(play, "debit"),
         onBack: () => paint(),
         onPick: async (method) => {
-          const r = resolveChoice(run.life, { cost: { amount: item.price, item: `shop: ${item.name}`, merchant: "Market" } }, method);
+          const r = resolveChoice(run.life, { cost: { amount: price, item: `shop: ${item.name}`, merchant: "Market" } }, method);
           if (!r.ok) {
             toast(r.message, "bad");
             return paint(item);
           }
           run.life = r.life;
           burstFrom(document.querySelector(".checkout") , "dust", { n: 18 });
+          if (price < item.price) play.coupon = null;
           if (item.slot) (play.decorOwned ||= []).push(item.id);
           else play.owned.push(item.id);
-          track("shopBuy", { id: item.id, price: item.price, method: method.startsWith("card:") ? "card" : method, big: Boolean(item.big) });
+          track("shopBuy", { id: item.id, price, method: method.startsWith("card:") ? "card" : method, big: Boolean(item.big) });
           sfx.purchase();
           toast(`You bought the ${item.name.toLowerCase()} with ${methodLabel(method, run.life)}.`, "good");
           await run.persist("shop");

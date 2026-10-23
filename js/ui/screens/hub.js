@@ -17,6 +17,8 @@ import { openPlace, startChapter as beginChapter } from "./map.js";
 import { sealSvg } from "../bestiary-art.js";
 import { cottageRoom } from "../cottage-room.js";
 import { openThingsToDo } from "../shell.js";
+import { slotChips, pieceTray } from "../decorate.js";
+import { DECOR_BY_ID, cottageOf } from "../../data/cottage.js";
 import { rankSeal } from "./trophies.js";
 import { rankFor } from "../../progress.js";
 import { celebrate } from "../celebrate.js";
@@ -34,6 +36,41 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
   root.append(h("div.bestiary.bst-hub.bst-home", panel));
   const seal = (label, onclick, extra = {}) =>
     h("button.bst-seal-btn", { type: "button", onclick, ...extra }, h("span.bst-seal-wax", { html: sealSvg({ seed: 23, size: 72, letter: (c.name || "C").charAt(0).toUpperCase() }) }), h("span.bst-seal-text", label));
+
+  // Decorate mode: slot chips on the room, a tray of pieces under it.
+  let decorating = false;
+  let slot = null;
+  let preview = null;
+
+  function roomBlock(status) {
+    const cottage = cottageOf(play);
+    const chips = decorating ? slotChips({ cottage, current: slot, onSlot: (id) => ((slot = id), (preview = null), track("decorSlot", { slot: id }), paint()) }) : null;
+    return h(
+      "div.home-room",
+      cottageRoom({ creature: c, ageMonths: life.ageMonths, play, status, onPick: pickObject(status), onCreature: () => go("cottage"), preview: preview ? DECOR_BY_ID[preview] : null, chips }),
+      decorating && slot
+        ? pieceTray({
+            play,
+            slot,
+            cottage,
+            preview,
+            onClose: () => ((slot = null), (preview = null), paint()),
+            onPreview: (d) => ((preview = d.id), track("decorPreview", { id: d.id }), paint()),
+            onMarket: () => go("shop"),
+            onUse: async (d) => {
+              play.cottage = { ...(play.cottage || {}), [d.slot]: d.id };
+              preview = null;
+              track("decorApply", { id: d.id });
+              await game.persist("decorate");
+              dispatchEvent(new CustomEvent("cc:decor"));
+            },
+          })
+        : decorating
+          ? h("p.bst-hub-note.decor-help", "Pick a spot on the room to change it. You can preview pieces you haven't bought yet.")
+          : null,
+      roomCaption()
+    );
+  }
 
   function paint(checking = false) {
     const status = placeStatus({ life, play, creature: c, classInfo: game.classInfo });
@@ -61,7 +98,7 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
         : null,
       h(
         "div.home-layout",
-        h("div.home-room", cottageRoom({ creature: c, ageMonths: life.ageMonths, play, status, onPick: pickObject(status), onCreature: () => go("cottage") }), roomCaption()),
+        roomBlock(status),
         h("div.home-main", chapterCard(status, checking), needsYou(status), stageOf(play) === 0 ? null : h("p.bst-hub-note.home-help", HUB_HELP))
       ),
       run.practice ? null : recapBox(play, track),
@@ -141,8 +178,17 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
       h("p.muted.tight.rank-line", `${ageLabel(life.ageMonths)} · `, rankSeal(r.level, 30), ` ${r.title} · ${play.xp} XP`),
       dream
         ? h("div.dream-mini", h("span.dream-name", icon(dream.mark || "dream", { size: 16 }), " Dream: ", h("strong", dream.title)), play.dreamDone ? h("span.good-text", " Done!") : meters(prog))
-        : h("button.small", { type: "button", onclick: () => go("dream") }, "Pick your creature's dream")
+        : h("button.small", { type: "button", onclick: () => go("dream") }, "Pick your creature's dream"),
+      run.practice ? null : h("button.small.secondary.decorate-btn", { type: "button", "aria-pressed": decorating ? "true" : "false", onclick: toggleDecorate }, icon("palette", { size: 16 }), decorating ? " Done decorating" : " Decorate your room")
     );
+  }
+
+  function toggleDecorate() {
+    decorating = !decorating;
+    slot = null;
+    preview = null;
+    track("decorateToggle", { on: decorating });
+    paint();
   }
 
   // The prologue: Sage's quest box instead of a chapter.

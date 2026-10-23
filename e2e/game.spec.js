@@ -33,7 +33,7 @@ test("a new student goes from the title to Home", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-const SCREENS = ["hub", "map", "month", "guild", "accounts", "records", "shop", "academy", "cottage", "garage", "alley", "friends", "trophies", "leaderboard", "settings"];
+const SCREENS = ["hub", "map", "month", "guild", "accounts", "records", "shop", "academy", "cottage", "garage", "alley", "friends", "trophies", "leaderboard", "settings", "daily"];
 
 test("every screen opens without an error", async ({ page }) => {
   const errors = watchErrors(page);
@@ -49,7 +49,8 @@ test("the shell: status chips, shortcuts and Things To Do", async ({ page }) => 
   const errors = watchErrors(page);
   await seededStudent(page);
   await open(page, "hub");
-  await expect(page.locator("#status li")).toHaveCount(3);
+  await expect(page.locator("#status li").first()).toBeVisible();
+  expect(await page.locator("#status li").count()).toBeGreaterThanOrEqual(3);
   await expect(page.locator("#shortcuts button")).toHaveCount(3);
   await page.keyboard.press("t");
   await expect(page.locator("dialog.things-dialog[open]")).toBeVisible();
@@ -64,7 +65,7 @@ test("Home is the Cottage room: objects glow and lead places", async ({ page }) 
   const errors = watchErrors(page);
   await seededStudent(page);
   await open(page, "hub");
-  await expect(page.locator(".room-object")).toHaveCount(9);
+  await expect(page.locator(".room-object")).toHaveCount(10);
   await page.hover('[data-object="window"]');
   await expect(page.locator('[data-object="window"] .room-tag')).toBeVisible();
   await page.click('[data-object="window"]');
@@ -96,5 +97,48 @@ test("the Dock holds owned pieces and puts them in the room", async ({ page }) =
   await closePopups(page);
   await page.locator(".dock-item", { hasText: "Top hat" }).click();
   await expect.poll(() => page.evaluate((k) => JSON.parse(localStorage.getItem(k)).creature.accessories?.head, KEY)).toBe("topHat");
+  expect(errors).toEqual([]);
+});
+
+test("Daily Pick: one box a day, a streak, and challenges", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await open(page, "hub");
+  await expect(page.locator("#status li", { hasText: "Streak" })).toBeVisible();
+  await page.click('[data-object="chest"]');
+  await expect(page).toHaveURL(/#\/daily$/);
+  await expect(page.locator("button.daily-box")).toHaveCount(3);
+  await page.locator("button.daily-box").nth(0).click();
+  await expect(page.locator("button.daily-box")).toHaveCount(0);
+  await expect(page.locator(".daily-box.open.mine")).toHaveCount(1);
+  await page.reload();
+  await page.waitForTimeout(1200);
+  await open(page, "daily");
+  await expect(page.locator("button.daily-box")).toHaveCount(0);
+  await expect(page.locator(".daily-box.open.mine")).toHaveCount(1);
+  expect(errors).toEqual([]);
+});
+
+test("Decorate: change a slot, preview an unowned piece, and it saves", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  const KEY = "credit-life:saves/local-student";
+  await page.goto("/css/tokens.css");
+  await page.evaluate((k) => {
+    const s = JSON.parse(localStorage.getItem(k));
+    s.play.decorOwned = ["rug-gold"];
+    localStorage.setItem(k, JSON.stringify(s));
+  }, KEY);
+  await enterGame(page);
+  await open(page, "hub");
+  await closePopups(page);
+  await page.click(".decorate-btn");
+  await expect(page.locator(".slot-chip")).toHaveCount(8);
+  await page.click('.slot-chip[data-slot="rug"]');
+  await page.locator(".piece", { hasText: "Plum oval rug" }).click();
+  await expect(page.locator(".piece-preview")).toContainText("costs $40");
+  expect(await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).play.cottage?.rug ?? null, KEY)).toBe(null);
+  await page.locator(".piece", { hasText: "Round gold rug" }).click();
+  await expect.poll(() => page.evaluate((k) => JSON.parse(localStorage.getItem(k)).play.cottage?.rug, KEY)).toBe("rug-gold");
   expect(errors).toEqual([]);
 });

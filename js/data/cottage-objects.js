@@ -12,6 +12,7 @@ export const ROOM_OBJECTS = [
   { id: "arcade", label: "Arcade cabinet", hint: "Work a shift for coins", art: "arcade", place: "guild", x: 3, y: 44, w: 12, h: 36 },
   { id: "desk", label: "Study desk", hint: "Lessons and practice", art: "desk", place: "academy", x: 17, y: 52, w: 20, h: 28 },
   { id: "jar", label: "Coin jar", hint: "Open your wallet", art: "jar", act: "wallet", x: 21, y: 44, w: 6, h: 10 },
+  { id: "chest", label: "Daily Pick chest", hint: "Free prizes, new every day", art: "chest", status: "daily", route: "daily", x: 45, y: 76, w: 12, h: 16 },
   { id: "bills", label: "Bills table", hint: "Pay bills and move money", art: "bills", place: "vault", tab: "wallet", x: 64, y: 62, w: 16, h: 22 },
 ];
 
