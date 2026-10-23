@@ -10,6 +10,14 @@ Last updated: 2026-10-23 (all screens in the bestiary look, design docs drafted.
 
 **Up next, in order:** (1) Every screen is now in the bestiary look (Lantern Alley, chapter end and Account settings were done 2026-10-23, awaiting the teacher's look). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) More minigames (Fee Detective first, plan in `docs/MINIGAMES.md`), developed together with the teacher, then Skill Paths and Skill Sims, which the teacher made the priority after the minigame build-outs. Quest and Battle modes are drafted in `docs/MODES.md`, still being discussed. (4) Done 2026-10-23: Home and the Cottage show the rank as the Trophies wax seal (`rankSeal`, exported from `js/ui/screens/trophies.js`) instead of an emoji. (5) Phone layout, on hold until the teacher's explicit OK.
 
+**Dev environment (2026-10-23, pushed):**
+- `CLAUDE.md` was rewritten shorter, with every rule kept. The 23-row phase history is gone (status lives here), and the design system moved to the `bestiary-design` skill.
+- New skills: `.claude/skills/test-game/SKILL.md` (`/test-game`, tests proportional to the change) and `.claude/skills/bestiary-design/SKILL.md`.
+- Playwright 1.56.1 is a dev dependency. Locally it uses the installed Google Chrome (the Playwright browser download is blocked here), and on CI it uses Playwright's Chromium.
+- `npm run e2e` runs 5 smoke tests in `e2e/` (new student to Home, every screen, the teacher page, projector fit, admin), all failing on any page error, console error or failed local request. `node e2e/shot.js <route> [--dark] [--dyslexia] [--width N] [--full]` takes a screenshot.
+- `.github/workflows/e2e.yml` (runs `npm test` and `npm run e2e` on every push) is written but **not pushed yet**: the gh login lacks the `workflow` scope. The teacher runs `gh auth refresh -h github.com -s workflow`, then it can be committed.
+- `.claude/settings.json` sets Sonnet as the default model and allows the routine test commands.
+
 **Design docs (2026-10-23, drafts, nothing built):** `docs/MODES.md` records the teacher's Quest and Battle mode answers, feasibility, a first turn-math and ability proposal, edge cases, and open questions. The teacher wants to keep talking before anything is built. `docs/MINIGAMES.md` folds the Oct 22 idea doc into our Guild Hall job structure: the per-game data (skill, standards, battle, simStep, hints), the built games tagged, and simplified plans plus likely faults for Fee Detective, Bank Reconciliation Match and Deposit Slip Filler.
 
 **The last old-look screens (2026-10-23, pushed while the teacher was away, not yet reviewed):**

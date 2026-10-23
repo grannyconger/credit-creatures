@@ -8,6 +8,10 @@
     "test": "node --test",
     "sim": "node scripts/sim-report.js",
     "tuning-report": "node scripts/tuning-report.js",
-    "replay": "node scripts/replay.js"
+    "replay": "node scripts/replay.js",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
   }
 }

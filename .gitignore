@@ -16,3 +16,10 @@ PRODUCT.md
 
 # Student playtest exports and bug reports. Never commit student data.
 docs/tuning v1/
+
+# Playwright end-to-end test output
+test-results/
+playwright-report/
+
+# Claude Code personal settings
+.claude/settings.local.json
