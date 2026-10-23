@@ -7,8 +7,8 @@
 .arc-sign-font, .arc-title, .arc-hall-title, .arc-cab-marquee strong, .arc-play, .arc-stamp { font-family: "Arial Black", "Trebuchet MS", Impact, system-ui, sans-serif; }
 
 /* ---- The hall ---- */
-.bestiary.arc-world { background: radial-gradient(circle at 20% 10%, var(--arc-floor-2), transparent 55%), radial-gradient(circle at 85% 90%, var(--arc-floor-2), transparent 50%), var(--arc-floor); color: var(--arc-ink); }
-.bestiary.arc-world::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.35; background-image: radial-gradient(var(--arc-panel-edge) 1.5px, transparent 1.6px); background-size: 34px 34px; }
+/* The hall sits on the same moss ground as the rest of the bestiary (teacher request 2026-10-23). Only the cabinets and signs glow. */
+.bestiary.arc-world { color: var(--arc-ink); }
 .arc-world .panel.guild { background: none; box-shadow: none; padding: var(--b-s2) var(--b-s4) 0; max-width: 1280px; animation: none; transform: none; }
 .arc-hall-head { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: var(--b-s3) var(--b-s5); padding-bottom: var(--b-s3); }
 .arc-back { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font: 700 1rem "Trebuchet MS", system-ui, sans-serif; color: var(--arc-ink); background: var(--arc-panel); border: 2px solid var(--arc-panel-edge); border-radius: var(--b-r-round); }
