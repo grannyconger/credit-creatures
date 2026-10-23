@@ -1,6 +1,9 @@
 // Friends, friend groups and gifts (Phase 8). Classmates only, picked from
 // the class leaderboard list. No free text: group names and gift messages are
-// presets. Firestore rules enforce the class, friendship and the 40-hour gift limit.
+// presets. Firestore rules enforce the class, friendship and the gift limit.
+// A page of the Mossy Bestiary (2026-10-23): classmates are calling cards,
+// requests are envelopes, a group is a gathering posed for its portrait, and
+// gifts are parcels tied with string. The tabs are bookmark ribbons.
 import { h, add, fill, money, toast } from "../dom.js";
 import { coinsFly } from "../fx.js";
 import { sfx } from "../sound.js";
@@ -8,6 +11,7 @@ import { firstVisitLesson } from "../guide.js";
 import { placeHeader } from "../place-header.js";
 import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
+import { sealSvg, mossSvg, stringSvg } from "../bestiary-art.js";
 import { fullName } from "../../data/creatures.js";
 import { SHOP_BY_ID } from "../../data/shop.js";
 import { GIFT_MESSAGES } from "../../data/social.js";
@@ -21,7 +25,7 @@ export function render(root, { game, go, track, refreshWho }) {
   const me = game.user.uid;
   const classId = game.profile.classId;
   const panel = h("section.panel.friends");
-  root.append(panel);
+  root.append(h("div.bestiary.bst-plaza", panel));
   const data = { directory: [], requests: [], groups: [], gifts: { incoming: [], outgoing: [] }, giftLimit: null, loaded: false };
 
   const header = () => placeHeader({ go, iconName: "plaza", kicker: "Your class", title: "Friendship Plaza", subtitle: "Only classmates can see you here. Nobody sees your money, score or report." });
@@ -80,11 +84,20 @@ export function render(root, { game, go, track, refreshWho }) {
     const d = who(uid);
     return S.withPerson(d?.creatureName || name || "Classmate", d?.person || person);
   };
-  const avatar = (d, size = 48) => h("span.fr-avatar", { html: d ? creatureSvg(d.look || { species: d.species, palette: d.palette, accessories: {} }, { size, label: "" }) : "" });
-  const person = (uid, name, extra, personName = "") => {
+  const avatar = (d, size = 48) => h("span.fr-avatar", { "aria-hidden": "true", html: d ? creatureSvg(d.look || { species: d.species, palette: d.palette, accessories: {} }, { size, label: "" }) : "" });
+  // A calling card: an oval portrait, the name, rank and XP, and what you can do.
+  const person = (uid, name, extra, personName = "", kind = "") => {
     const d = who(uid);
-    return h("div.fr-person", avatar(d), h("span.fr-name", h("strong", labelOf(uid, name, personName)), h("small", d ? `${d.rank} · ${d.xp} XP` : "")), h("span.fr-actions", extra));
+    return h(
+      "li.fr-card",
+      { class: kind || null },
+      h("span.fr-oval", avatar(d, 64)),
+      h("span.fr-name", h("strong", labelOf(uid, name, personName)), h("small", d ? `${d.rank}. ${d.xp} XP` : "")),
+      extra ? h("span.fr-actions", extra) : null
+    );
   };
+  const cards = (items) => h("ul.fr-cards", items);
+  const note = (text) => h("p.bst-margin.fr-note", text);
 
   function paint() {
     const st = S.friendState(data.requests, me);
@@ -98,15 +111,16 @@ export function render(root, { game, go, track, refreshWho }) {
       panel,
       header(),
       h(
-        "nav.acct-tabs",
+        "nav.fr-ribbons",
         { "aria-label": "Friends" },
         tabs.map(([k, ico, label, n]) =>
           h(
-            "button",
-            { type: "button", "aria-current": tab === k ? "page" : null, onclick: () => ((tab = k), track("friendsTab", { tab: k }), paint()) },
-            icon(ico),
-            ` ${label}`,
-            n ? h("span.count-badge", { "aria-label": `${n} new` }, String(n)) : null
+            "button.fr-ribbon",
+            { type: "button", "data-tab": k, "aria-current": tab === k ? "page" : null, onclick: () => ((tab = k), track("friendsTab", { tab: k }), paint()) },
+            icon(ico, { size: 20 }),
+            h("span.fr-ribbon-label", label),
+            tab === k ? h("small.fr-open", "open") : null,
+            n ? h("span.fr-new", `${n} new`) : null
           )
         )
       ),
@@ -124,9 +138,9 @@ export function render(root, { game, go, track, refreshWho }) {
       "div",
       st.incoming.length
         ? h(
-            "section",
+            "section.fr-letters",
             h("h3", "Friend requests for you"),
-            st.incoming.map((r) =>
+            cards(st.incoming.map((r) =>
               person(
                 r.uid,
                 r.name,
@@ -135,48 +149,51 @@ export function render(root, { game, go, track, refreshWho }) {
                   h("button.small", { type: "button", onclick: () => act(() => game.db.answerFriendRequest(classId, r.requestId, "accepted"), "friendAccept", {}, "You're friends now!") }, "Accept"),
                   h("button.small.secondary", { type: "button", onclick: () => act(() => game.db.answerFriendRequest(classId, r.requestId, "declined"), "friendDecline", {}) }, "No thanks")
                 ),
-                r.person
+                r.person,
+                "letter"
               )
-            )
+            ))
           )
         : null,
       h("h3", `Your friends (${st.friends.length})`),
       st.friends.length
-        ? st.friends.map((f) =>
+        ? cards(st.friends.map((f) =>
             person(
               f.uid,
               f.name,
               h("button.small.secondary", { type: "button", onclick: () => confirm(`Unfriend ${labelOf(f.uid, f.name, f.person)}?`) && act(() => game.db.removeFriendRequest(classId, f.requestId), "unfriend", {}) }, "Unfriend"),
-              f.person
+              f.person,
+              "friend"
             )
-          )
-        : h("p.muted", "No friends yet. Add a classmate below."),
+          ))
+        : note("No friends yet. A creature with no friends just has more shelf space. Add a classmate below."),
       st.outgoing.length
         ? h(
             "section",
             h("h3", "Requests you sent"),
-            st.outgoing.map((o) =>
+            cards(st.outgoing.map((o) =>
               person(
                 o.uid,
                 o.name,
                 o.status === "declined"
                   ? h("span", h("small.muted", "Declined "), h("button.small.secondary", { type: "button", onclick: () => act(() => game.db.removeFriendRequest(classId, o.requestId), "friendCancel", {}) }, "Remove"))
                   : h("span", h("small.muted", "Waiting "), h("button.small.secondary", { type: "button", onclick: () => act(() => game.db.removeFriendRequest(classId, o.requestId), "friendCancel", {}) }, "Cancel")),
-                o.person
+                o.person,
+                "sent"
               )
-            )
+            ))
           )
         : null,
       h("h3", "Classmates"),
       classmates.length
-        ? classmates.map((d) =>
+        ? cards(classmates.map((d) =>
             person(
               d.uid,
               d.creatureName,
               h("button.small", { type: "button", onclick: () => act(() => game.db.sendFriendRequest(classId, me, d.uid, myName.slice(0, 41), d.creatureName.slice(0, 41), { fromPerson: myPerson, toPerson: (d.person || "").slice(0, 100) }), "friendRequest", {}, "Request sent!") }, "Add friend")
             )
-          )
-        : h("p.muted", "Classmates show up here once they've played a bit.")
+          ))
+        : note("Classmates show up here once they've played a bit.")
     );
   }
 
@@ -191,11 +208,16 @@ export function render(root, { game, go, track, refreshWho }) {
     if (mine) {
       add(
         box,
+        // Your group, posed for its portrait on a strip of moss.
         h(
-          "section.fr-group.mine",
-          h("h2", `${mine.icon} ${mine.name}`),
-          h("p", `${mine.members.length} of ${max} members · Group XP: ${groupXp(mine)}`),
-          mine.members.map((uid) => person(uid, "Classmate", uid === me ? h("small.muted", "You") : null)),
+          "section.fr-gathering",
+          h("h2", mine.name),
+          h("p.fr-gathering-sub", `${mine.members.length} of ${max} members. Group XP: ${groupXp(mine)}`),
+          h(
+            "ul.fr-portrait",
+            mine.members.map((uid) => h("li", avatar(who(uid), 96), h("span", labelOf(uid)), uid === me ? h("small", "You") : null))
+          ),
+          h("span.fr-portrait-moss", { "aria-hidden": "true", html: mossSvg({ seed: 44, width: 600, height: 44 }) }),
           h(
             "div.row",
             h("button.secondary", { type: "button", onclick: () => confirm(`Leave ${mine.name}?`) && act(() => game.db.leaveGroup(classId, mine.id, me, mine.members.length === 1), "groupLeave", {}) }, "Leave the group")
@@ -207,13 +229,13 @@ export function render(root, { game, go, track, refreshWho }) {
       add(
         box,
         h(
-          "section.fr-group",
+          "section.fr-start",
           h("h3", "Start a group"),
-          h("p.muted.tight", `Pick a name. Up to ${max} classmates can join.`),
+          note(`Naturalists call a group of creatures a gathering. Pick a name and up to ${max} classmates can gather.`),
           h(
-            "div.chip-group",
+            "div.fr-names",
             choices.map((c) =>
-              h("button.chip", { type: "button", onclick: () => act(() => game.db.createGroup(classId, me, c.name, c.icon), "groupCreate", { name: c.name }, `You started ${c.name}!`) }, `${c.icon} ${c.name}`)
+              h("button.fr-name-choice", { type: "button", onclick: () => act(() => game.db.createGroup(classId, me, c.name, c.icon), "groupCreate", { name: c.name }, `You started ${c.name}!`) }, `Start ${c.name}`)
             )
           )
         )
@@ -223,21 +245,21 @@ export function render(root, { game, go, track, refreshWho }) {
       box,
       h("h3", mine ? "Other groups" : "Join a group"),
       others.length
-        ? others.map((g) =>
+        ? h("div.fr-groups", others.map((g) =>
             h(
               "section.fr-group",
-              h("div.bill-head", h("strong", `${g.icon} ${g.name}`), h("small.muted", `${g.members.length} of ${max} · ${groupXp(g)} XP`)),
+              h("div.fr-group-head", h("strong", g.name), h("small", `${g.members.length} of ${max} members. ${groupXp(g)} XP`)),
               h("div.fr-avatars", g.members.map((uid) => avatar(who(uid), 36))),
               h("p.tight.fr-members", g.members.map((uid) => labelOf(uid)).join(", ")),
               mine
                 ? null
                 : h(
                     "div.row",
-                    h("button.small", { type: "button", disabled: g.members.length >= max, onclick: () => act(() => game.db.joinGroup(classId, g.id, me), "groupJoin", {}, `You joined ${g.name}!`) }, g.members.length >= max ? "Full" : "Join")
+                    h("button.small", { type: "button", disabled: g.members.length >= max, onclick: () => act(() => game.db.joinGroup(classId, g.id, me), "groupJoin", {}, `You joined ${g.name}!`) }, g.members.length >= max ? "Full" : `Join ${g.name}`)
                   )
             )
-          )
-        : h("p.muted", "No other groups yet.")
+          ))
+        : note("No other groups yet.")
     );
     return box;
   }
@@ -252,15 +274,18 @@ export function render(root, { game, go, track, refreshWho }) {
     };
     const fromOf = (g) => labelOf(g.from, g.fromName, g.fromPerson);
     const unclaimed = data.gifts.incoming.filter((g) => !g.claimed);
-    const box = h(
-      "div",
+    // Two columns: what came in the post (and the ledger) beside the tag for sending.
+    const incoming = h(
+      "div.fr-post-in",
       h("h3", "Gifts for you"),
       unclaimed.length
-        ? unclaimed.map((g) =>
+        ? h("ul.fr-parcels", unclaimed.map((g, i) =>
+            // A parcel in brown paper, tied with string, with a tag saying who it's from.
             h(
-              "div.fr-gift",
-              h("span.fr-gift-icon", { "aria-hidden": "true" }, "🎁"),
-              h("div", h("strong", `From ${fromOf(g)}`), h("p.tight", GIFT_MESSAGES[g.message] || ""), h("small", g.kind === "money" ? money(g.amount) : `${SHOP_BY_ID[g.itemId]?.icon || ""} ${SHOP_BY_ID[g.itemId]?.name || "An item"}`)),
+              "li.fr-parcel",
+              { style: `--i: ${i}` },
+              h("span.fr-parcel-box", { "aria-hidden": "true" }, icon("gift", { size: 34 })),
+              h("div", h("strong", `From ${fromOf(g)}`), h("p.tight", GIFT_MESSAGES[g.message] || ""), h("small", g.kind === "money" ? `Inside: ${money(g.amount)}` : `Inside: ${SHOP_BY_ID[g.itemId]?.name || "an item"}`)),
               h(
                 "button",
                 {
@@ -288,32 +313,33 @@ export function render(root, { game, go, track, refreshWho }) {
                     await load();
                   },
                 },
-                "Open"
+                "Open it"
               )
             )
-          )
-        : h("p.muted", "No new gifts.")
+          ))
+        : note("No new gifts. The post comes when it comes.")
     );
-
-    add(box, h("h3", "Send a gift"));
+    const outgoing = h("div.fr-post-out", h("h3", "Send a gift"));
+    const box = h("div.fr-post", incoming, outgoing);
     if (!st.friends.length) {
-      add(box, h("p.muted", "Make a friend first. Gifts go only to friends."));
+      add(outgoing, note("Make a friend first. Gifts go only to friends."));
     } else if (!win.left) {
-      add(box, h("p.callout", icon("calendar", { size: 16 }), ` You sent all ${CONFIG.social.giftsPerWindow} gifts. You can send more in ${S.waitText(win.waitMs)}.`));
+      add(outgoing, h("p.callout", icon("calendar", { size: 16 }), ` You sent all ${CONFIG.social.giftsPerWindow} gifts. You can send more in ${S.waitText(win.waitMs)}.`));
     } else {
-      add(box, h("p.note.tight", giftsLeftText(win)), giftForm(st, nameOf, win));
+      add(outgoing, giftForm(st, nameOf, win));
     }
 
     const sent = data.gifts.outgoing.slice().sort((a, b) => (b.sentAt || 0) - (a.sentAt || 0));
     const got = data.gifts.incoming.filter((g) => g.claimed);
     if (sent.length || got.length) {
       add(
-        box,
+        incoming,
         h("h3", "Gift history"),
+        // The post ledger: one ruled line per gift, sent or received, said in words.
         h(
-          "ul.plain",
-          sent.map((g) => h("li", `📤 To ${nameOf(g.to)}: ${g.kind === "money" ? money(g.amount) : SHOP_BY_ID[g.itemId]?.name || "an item"}${g.claimed ? " (opened)" : ""}`)),
-          got.map((g) => h("li", `📥 From ${fromOf(g)}: ${g.kind === "money" ? money(g.amount) : SHOP_BY_ID[g.itemId]?.name || "an item"}`))
+          "dl.fr-ledger",
+          sent.flatMap((g) => [h("dt", `Sent to ${nameOf(g.to)}${g.claimed ? ", opened" : ""}`), h("dd", g.kind === "money" ? money(g.amount) : SHOP_BY_ID[g.itemId]?.name || "an item")]),
+          got.flatMap((g) => [h("dt", `From ${fromOf(g)}`), h("dd", g.kind === "money" ? money(g.amount) : SHOP_BY_ID[g.itemId]?.name || "an item")])
         )
       );
     }
@@ -326,21 +352,21 @@ export function render(root, { game, go, track, refreshWho }) {
     let kind = "money";
     const amount = h("input", { type: "number", id: "gift-amount", min: s.giftMin, max: s.giftMax, step: 1, value: 10 });
     const owned = play.owned.map((id) => SHOP_BY_ID[id]).filter(Boolean);
-    const item = h("select", { id: "gift-item" }, owned.map((i) => h("option", { value: i.id }, `${i.icon} ${i.name}`)));
+    const item = h("select", { id: "gift-item" }, owned.map((i) => h("option", { value: i.id }, i.name)));
     const msg = h("select", { id: "gift-msg" }, GIFT_MESSAGES.map((m, i) => h("option", { value: i }, m)));
     const err = h("p.error", { role: "alert" });
-    const kindRow = h("div.chip-group", { role: "group", "aria-label": "Gift type" });
+    const kindRow = h("div.fr-kinds", { role: "group", "aria-label": "Gift type" });
     const what = h("div");
     const paintKind = () => {
       fill(
         kindRow,
-        h("button.chip", { type: "button", "aria-pressed": String(kind === "money"), onclick: () => ((kind = "money"), paintKind()) }, "💵 Money"),
-        h("button.chip", { type: "button", "aria-pressed": String(kind === "item"), disabled: !owned.length, onclick: () => ((kind = "item"), paintKind()) }, owned.length ? "🛍️ A shop item" : "🛍️ A shop item (you don't own any)")
+        h("button.fr-kind", { type: "button", "aria-pressed": String(kind === "money"), onclick: () => ((kind = "money"), paintKind()) }, icon("coins", { size: 18 }), "Money", kind === "money" ? h("small", "chosen") : null),
+        h("button.fr-kind", { type: "button", "aria-pressed": String(kind === "item"), disabled: !owned.length, onclick: () => ((kind = "item"), paintKind()) }, icon("shop", { size: 18 }), owned.length ? "A shop item" : "A shop item (you don't own any)", kind === "item" ? h("small", "chosen") : null)
       );
       fill(what, kind === "money" ? h("div", h("label", { for: "gift-amount" }, `Amount ($${s.giftMin} to $${s.giftMax}, from checking: ${money(game.life.checking)})`), amount) : h("div", h("label", { for: "gift-item" }, "Item (it leaves your closet)"), item));
     };
     paintKind();
-    const send = h("button.big", { type: "button" }, "Send gift");
+    const send = h("button.bst-seal-btn", { type: "button" }, h("span.bst-seal-wax", { html: sealSvg({ seed: 53, size: 76, letter: "G" }) }), h("span.bst-seal-text", "Send the gift"));
     send.addEventListener("click", async () => {
       err.textContent = "";
       const to = friend.value;
@@ -365,22 +391,26 @@ export function render(root, { game, go, track, refreshWho }) {
       }
       game.life = S.applySentGift({ life: game.life, play, creature: game.save.creature, gift, toName: nameOf(to) });
       track("giftSend", { kind, amount: gift.amount || 0, item: gift.itemId || "" });
-      toast("Gift sent! 🎁", "good");
+      toast("Gift sent. It's on its way.", "good");
       refreshWho();
       await game.persist("giftSend");
       await load();
     });
+    // A shipping tag, tied on with string.
     return h(
       "section.fr-send",
+      h("span.fr-send-string", { "aria-hidden": "true", html: stringSvg() }),
+      h("p.fr-send-left", giftsLeftText(win)),
       h("label", { for: "gift-to" }, "To"),
       friend,
-      h("p.tight", h("strong", "What")),
+      h("p.fr-send-what", "What"),
       kindRow,
       what,
       h("label", { for: "gift-msg" }, "Message"),
       msg,
       err,
-      h("div.row", send)
+      h("div.bst-actions", send),
+      note("Gifts come out of your checking. Generous is good. Broke is less good.")
     );
   }
 

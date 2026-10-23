@@ -4430,3 +4430,333 @@ main#app.app:has(.bestiary) {
   .bst-name-slip { margin-top: 0; }
   .bst-name-row { grid-template-columns: 1fr; }
 }
+
+/* ===========================================================================
+   Friendship Plaza (js/ui/screens/friends.js): one sheet with bookmark
+   ribbons hanging from its top edge. Classmates are calling cards with oval
+   portraits, requests are envelopes, your group poses for a portrait on
+   moss, and gifts are parcels in brown paper tied with string.
+   =========================================================================== */
+.bst-plaza .panel.friends {
+  position: relative;
+  max-width: 1120px;
+  margin: var(--b-s5) auto 0;
+  padding: var(--b-s6) var(--b-s6) var(--b-s6);
+  color: var(--b-ink);
+  background:
+    radial-gradient(34px 26px at 8% 88%, var(--b-foxing), transparent 70%),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  transform: rotate(-0.25deg);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-plaza h3 {
+  margin: var(--b-s5) 0 var(--b-s3);
+  font-size: var(--b-fs-lead);
+}
+.bst-plaza .fr-note { margin: var(--b-s2) 0; max-width: 46ch; }
+
+/* Bookmark ribbons: they hang off the top edge, and the open one hangs
+   longest and says so with weight. */
+.bst-plaza .fr-ribbons {
+  position: absolute;
+  top: -8px;
+  right: var(--b-s6);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--b-s2);
+}
+.bst-plaza .fr-ribbon {
+  --rb: var(--b-plum);
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: 104px;
+  padding: var(--b-s3) var(--b-s2) 26px;
+  font-family: var(--b-body);
+  font-weight: 400;
+  font-size: var(--b-fs-ui);
+  color: var(--b-on-rust);
+  background: var(--b-grain), var(--rb);
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 16px), 0 100%);
+  box-shadow: none;
+  filter: drop-shadow(0 6px 6px color-mix(in srgb, var(--b-shadow-ink) 35%, transparent));
+  cursor: pointer;
+  transition: padding var(--b-settle) var(--ease-bouncy);
+}
+/* Plum turns light in dark mode, so its words take the paper color. */
+.bst-plaza .fr-ribbon[data-tab="friends"] { color: var(--b-paper); }
+.bst-plaza .fr-ribbon[data-tab="groups"] { --rb: var(--b-moss-3); }
+.bst-plaza .fr-ribbon[data-tab="gifts"] { --rb: var(--b-rust); }
+.bst-plaza .fr-ribbon:hover { padding-bottom: 32px; }
+.bst-plaza .fr-ribbon[aria-current="page"] {
+  padding-bottom: 46px;
+  font-weight: 700;
+}
+.bst-plaza .fr-open { font-family: var(--b-hand); font-size: var(--b-fs-hand); line-height: 1; }
+.bst-plaza .fr-ribbon:focus-visible { outline-offset: 2px; }
+.bst-plaza .fr-new {
+  padding: 0 8px;
+  font-size: var(--b-fs-tiny);
+  font-weight: 700;
+  color: var(--b-money-ink);
+  background: var(--b-gold);
+  border-radius: var(--b-r-round);
+}
+/* The header leaves room for the ribbons. */
+.bst-plaza .place-header { padding-right: 360px; }
+
+/* Calling cards: small stiff cards, each set down at its own angle. */
+.bst-plaza .fr-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--b-s4) var(--b-s4);
+}
+.bst-plaza .fr-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--b-s1) var(--b-s3);
+  padding: var(--b-s3) var(--b-s4);
+  background: var(--b-fibers), var(--b-paper-insert);
+  border-radius: var(--b-r-sheet);
+  outline: 1px solid var(--b-rule);
+  outline-offset: -6px;
+  box-shadow: var(--b-shadow-card);
+}
+.bst-plaza .fr-card:nth-child(3n + 1) { transform: rotate(-0.8deg); }
+.bst-plaza .fr-card:nth-child(3n + 2) { transform: rotate(0.6deg); }
+.bst-plaza .fr-card:nth-child(3n) { transform: rotate(-0.3deg); }
+.bst-plaza .fr-oval {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 92px;
+  overflow: hidden;
+  background: radial-gradient(60% 55% at 50% 45%, var(--b-paper), var(--b-paper-2));
+  border: 3px double var(--b-rule);
+  border-radius: 50%;
+}
+.bst-plaza .fr-oval svg { display: block; }
+.bst-plaza .fr-name { display: grid; min-width: 0; }
+.bst-plaza .fr-name strong {
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-title);
+  line-height: 1.15;
+}
+.bst-plaza .fr-name small { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); }
+.bst-plaza .fr-actions { display: flex; flex-wrap: wrap; gap: var(--b-s2); align-items: center; }
+.bst-plaza .fr-actions small { color: var(--b-ink-soft); }
+.bst-plaza .fr-card button.small:not(.secondary) {
+  padding: 5px 14px;
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-ui);
+  color: var(--b-on-rust);
+  background: var(--b-grain), var(--b-rust);
+  border: 0;
+  border-radius: var(--b-r-tag);
+}
+.bst-plaza .fr-card button.small.secondary { padding: 4px 12px; font-size: var(--b-fs-tiny); }
+
+/* A friend request arrives in an envelope: a flap across the top. */
+.bst-plaza .fr-card.letter {
+  padding-top: var(--b-s5);
+  background:
+    linear-gradient(to bottom right, transparent 49.5%, var(--b-rule) 50%, transparent 51%) top left / 50% 26px no-repeat,
+    linear-gradient(to bottom left, transparent 49.5%, var(--b-rule) 50%, transparent 51%) top right / 50% 26px no-repeat,
+    var(--b-fibers), var(--b-paper-insert);
+}
+.bst-plaza .fr-letters h3 { color: var(--b-plum); }
+
+/* Your group, posed for its portrait. */
+.bst-plaza .fr-gathering {
+  position: relative;
+  margin-top: var(--b-s3);
+  padding: var(--b-s4) var(--b-s5) 0;
+  text-align: center;
+  background: radial-gradient(70% 70% at 50% 40%, var(--b-paper), var(--b-paper-2));
+  border: 4px double var(--b-rule);
+  border-radius: var(--b-r-sheet);
+  overflow: hidden;
+}
+.bst-plaza .fr-gathering h2 { margin: 0; font-size: clamp(2rem, 2.8vw, 2.8rem); }
+.bst-plaza .fr-gathering-sub { margin: var(--b-s1) 0 0; font-style: italic; color: var(--b-ink-soft); }
+.bst-plaza .fr-portrait {
+  position: relative;
+  z-index: 1;
+  list-style: none;
+  margin: var(--b-s4) 0 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--b-s2) var(--b-s4);
+}
+.bst-plaza .fr-portrait li { display: grid; justify-items: center; max-width: 130px; }
+.bst-plaza .fr-portrait li:nth-child(even) { translate: 0 8px; }
+.bst-plaza .fr-portrait li > span:nth-child(2) { font-family: var(--b-display); line-height: 1.15; }
+.bst-plaza .fr-portrait small { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-plum); }
+.bst-plaza .fr-portrait-moss { display: block; margin: -6px 0 0; line-height: 0; }
+.bst-plaza .fr-portrait-moss svg { width: 100%; height: 44px; }
+.bst-plaza .fr-gathering .row { justify-content: flex-end; padding: var(--b-s3) 0; }
+
+.bst-plaza .fr-names { display: flex; flex-wrap: wrap; gap: var(--b-s3); }
+.bst-plaza .fr-name-choice {
+  padding: var(--b-s2) var(--b-s4);
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-title);
+  color: var(--b-ink);
+  background: var(--b-paper-insert);
+  border: 1.5px dashed var(--b-rule);
+  border-radius: var(--b-r-tag);
+  box-shadow: none;
+}
+.bst-plaza .fr-name-choice:hover { border-style: solid; border-color: var(--b-plum); color: var(--b-plum); }
+
+.bst-plaza .fr-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--b-s4);
+}
+.bst-plaza .fr-group {
+  margin: 0;
+  padding: var(--b-s3) var(--b-s4);
+  background: var(--b-paper-insert);
+  border: 0;
+  border-top: 3px double var(--b-rule);
+  border-bottom: 3px double var(--b-rule);
+  border-radius: 0;
+}
+.bst-plaza .fr-group-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--b-s3); }
+.bst-plaza .fr-group-head strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-plaza .fr-group-head small { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); }
+.bst-plaza .fr-avatars { display: flex; gap: var(--b-s1); margin: var(--b-s2) 0; }
+.bst-plaza .fr-members { color: var(--b-ink-soft); font-size: var(--b-small); }
+
+/* Parcels: brown paper with the string crossed over it. */
+.bst-plaza .fr-parcels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--b-s4);
+}
+.bst-plaza .fr-parcel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--b-s2) var(--b-s3);
+  align-items: center;
+  padding: var(--b-s3) var(--b-s4);
+  background: var(--b-fibers), var(--b-paper-2);
+  border-radius: var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(calc((var(--i) - 1) * 0.7deg));
+}
+.bst-plaza .fr-parcel-box {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  color: var(--b-rust-ink);
+  background:
+    linear-gradient(var(--b-string), var(--b-string)) center / 3px 100% no-repeat,
+    linear-gradient(var(--b-string), var(--b-string)) center / 100% 3px no-repeat,
+    var(--b-paper-edge);
+  border-radius: var(--b-r-sheet);
+}
+.bst-plaza .fr-parcel-box .ico-wrap { background: var(--b-paper-edge); border-radius: var(--b-r-round); padding: 4px; line-height: 0; }
+.bst-plaza .fr-parcel strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-plaza .fr-parcel p { margin: 0; }
+.bst-plaza .fr-parcel small { color: var(--b-ink-soft); font-weight: 700; }
+.bst-plaza .fr-parcel > button { grid-column: 1 / -1; justify-self: end; }
+
+/* The post: parcels and the ledger on the left, the shipping tag on the right. */
+.bst-plaza .fr-post {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--b-s6);
+  align-items: start;
+}
+.bst-plaza .fr-post .fr-parcels { grid-template-columns: minmax(0, 1fr); }
+.bst-plaza .fr-post-out .fr-send { margin-top: var(--b-s5); }
+
+/* The shipping tag for sending a gift. */
+.bst-plaza .fr-send {
+  position: relative;
+  max-width: 560px;
+  margin-top: var(--b-s4);
+  padding: var(--b-s5) var(--b-s5) var(--b-s4);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper-insert);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  outline: 1px solid var(--b-rule);
+  outline-offset: -10px;
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(0.8deg);
+}
+.bst-plaza .fr-send-string { position: absolute; top: -30px; left: 30px; line-height: 0; }
+.bst-plaza .fr-send-left { margin: 0 0 var(--b-s2); font-style: italic; color: var(--b-ink-soft); }
+.bst-plaza .fr-send label,
+.bst-plaza .fr-send-what { display: block; margin: var(--b-s3) 0 var(--b-s1); font-weight: 700; color: var(--b-ink-soft); }
+.bst-plaza .fr-send select,
+.bst-plaza .fr-send input {
+  width: 100%;
+  max-width: none;
+  padding: var(--b-s2) 0;
+  font: inherit;
+  color: var(--b-ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px dashed var(--b-rule);
+  border-radius: 0;
+}
+.bst-plaza .fr-send select:focus,
+.bst-plaza .fr-send input:focus { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; border-bottom-style: solid; }
+.bst-plaza .fr-kinds { display: flex; flex-wrap: wrap; gap: var(--b-s2); }
+.bst-plaza .fr-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--b-s2);
+  padding: var(--b-s2) var(--b-s3);
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-ink);
+  background: none;
+  border: 1.5px solid var(--b-rule);
+  border-radius: var(--b-r-tag);
+}
+.bst-plaza .fr-kind[aria-pressed="true"] { color: var(--b-plum); border-color: var(--b-plum); background: var(--b-plum-wash); }
+.bst-plaza .fr-kind small { font-family: var(--b-hand); font-weight: 400; font-size: var(--b-fs-hand); }
+.bst-plaza .fr-send .bst-actions { margin-top: var(--b-s3); }
+.bst-plaza .fr-send .fr-note { margin-top: var(--b-s3); }
+
+/* The post ledger. */
+.bst-plaza .fr-ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  max-width: 640px;
+  margin: 0;
+}
+.bst-plaza .fr-ledger dt,
+.bst-plaza .fr-ledger dd { margin: 0; padding: var(--b-s2) 0; border-bottom: 1px solid var(--b-rule); }
+.bst-plaza .fr-ledger dd { text-align: right; font-weight: 700; font-variant-numeric: lining-nums tabular-nums; padding-left: var(--b-s4); }
+
+:root[data-reading="dyslexia"] :is(.bst-plaza .fr-card, .bst-plaza .fr-parcel, .bst-plaza .fr-send, .bst-plaza .fr-portrait li) { transform: none; translate: none; }
+:root[data-reading="dyslexia"] .bst-plaza :is(.fr-gathering-sub, .fr-send-left) { font-style: normal; }
+:root[data-reading="dyslexia"] .bst-plaza .fr-ribbon { width: 128px; }
+@media (max-width: 1000px) { .bst-plaza .fr-post { grid-template-columns: minmax(0, 1fr); } .bst-plaza .place-header { padding-right: 0; padding-top: 120px; } }
+:root[data-reading="dyslexia"] .bst-plaza .place-header { padding-right: 420px; }

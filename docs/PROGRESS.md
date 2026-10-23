@@ -2,13 +2,15 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-23 (teacher dashboard overhaul approved)
+Last updated: 2026-10-23 (Friendship Plaza approved)
 
 ## Next step
 
 **Where things stand (end of 2026-10-22):** everything below is pushed and live. Awaiting the teacher's review: Phases 15, 16 and 17 (motion, effects, living creatures), the five new Chapter 1 jobs, and the Trophies redesign. Firestore rules were last changed for gifts, class delete and reset notes, and the teacher has published them.
 
-**Up next, in order:** (1) the remaining old-look screens, one at a time with approval: Friendship Plaza, the Garage, Lantern Alley, chapter end, Account settings (the story intro and name step are done). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) Fee Detective, the next job idea. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
+**Up next, in order:** (1) the remaining old-look screens, one at a time with approval: the Garage, Lantern Alley, chapter end, Account settings (the story intro and name step are done). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) Fee Detective, the next job idea. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
+
+**Friendship Plaza in the bestiary look (2026-10-23, approved and pushed):** `js/ui/screens/friends.js`, `.bst-plaza` at the end of `css/bestiary.css`. One sheet with bookmark ribbons hanging off its top edge for Friends, Groups and Gifts. The open ribbon hangs longest, is bold, and says "open". Classmates, friends and sent requests are calling cards with oval portraits. Friend requests are envelopes. Your group is a gathering posed for its portrait on moss, and group names are tags ("Start The Golden Lanterns"). Gifts are a two-column post: parcels tied with string plus the gift ledger, beside a shipping tag with a wax-seal "Send the gift". Emoji used as icons came out (group emoji no longer show, and money and item choices use drawn icons). History says "Sent to" and "From" in words. Students' preset gift messages keep their emoji. New naturalist margin notes. Telemetry unchanged. Checked: 1440 light and dark, 1280 dyslexia, accept a request, join a group, and the gifts tab, with no console errors.
 
 **Teacher dashboard overhaul (teacher request 2026-10-23, approved and pushed):** "too much info at once" and "generic AI style". The teacher chose: at a glance, who needs help, grades and pacing. The look is "plain and quiet" (bestiary colors and fonts through `.bst-scope` on the body, no textures or tilts). The roster has views you switch between. New `css/teacher.css`, and `teacher/index.html` has a moss header with a class picker. `js/teacher/dashboard.js` is restructured:
 - A class strip: name, join code, status words, one rust "Release Chapter N" button, and "Class settings".
