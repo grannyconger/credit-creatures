@@ -2,11 +2,15 @@
 // Read the fine print, call it a trap or a fair deal, then see the real cost.
 // Each stall pays bonus XP once, for a right call. Accuracy counts toward
 // Standard 5 at the Academy, like a Practice Desk answer.
+// A page of the Mossy Bestiary (2026-10-23): the alley at night. Each stall is
+// a painted sign hanging from an iron bracket under a lantern. The fine print
+// is a paper tag tucked under the sign, and the verdict is stamped on it.
 import { h, fill } from "../dom.js";
 import { burstFrom } from "../motion/particles.js";
 import { icon } from "../icons.js";
 import { placeHeader } from "../place-header.js";
 import { firstVisitLesson } from "../guide.js";
+import { inkStampSvg, stringSvg } from "../bestiary-art.js";
 import { sfx } from "../sound.js";
 import { STALLS, alleyProgress } from "../../data/alley.js";
 import { CONFIG } from "../../data/config.js";
@@ -17,7 +21,7 @@ export function render(root, { game, go, track, refreshWho }) {
   const play = run.play;
   play.alley ??= { checked: {} };
   const panel = h("section.panel.place-screen.alley");
-  root.append(panel);
+  root.append(h("div.bestiary.bst-alley", panel));
   // Which stalls had their fine print opened, and when each one was shown.
   const opened = new Set();
   const shownAt = Date.now();
@@ -29,12 +33,15 @@ export function render(root, { game, go, track, refreshWho }) {
     fill(
       panel,
       placeHeader({ go, iconName: "lantern", title: "Lantern Alley", subtitle: "Bright signs, small print. Read every offer before you decide.", practice: run.practice }),
+      // A notice nailed to the alley wall.
       h(
-        "section.callout.lesson-box",
-        h("p.tight", h("strong", "Before you say yes to any offer, find three things:")),
-        h("ul.tight", h("li", h("strong", "The total cost"), ": every payment and fee added up."), h("li", h("strong", "The APR"), ": the yearly cost, so you can compare."), h("li", h("strong", "What you lose"), " if you can't pay on time."))
+        "section.al-notice",
+        h("span.al-notice-string", { "aria-hidden": "true", html: stringSvg() }),
+        h("h2", "Before you say yes to any offer, find three things"),
+        h("ol", h("li", h("strong", "The total cost"), ": every payment and fee added up."), h("li", h("strong", "The APR"), ": the yearly cost, so you can compare."), h("li", h("strong", "What you lose"), " if you can't pay on time."))
       ),
-      h("p.alley-score", icon("check", { size: 16 }), ` ${prog.checked} of ${prog.total} stalls checked`, prog.checked ? `, ${prog.right} called right` : ""),
+      h("p.alley-score", icon("lantern", { size: 18 }), ` ${prog.checked} of ${prog.total} stalls checked`, prog.checked ? `, ${prog.right} called right` : ""),
+      h("p.bst-margin.al-margin", "The brightest signs usually have the smallest print. This is not a coincidence."),
       h("div.stall-grid", STALLS.map(stallCard))
     );
   }
@@ -43,18 +50,23 @@ export function render(root, { game, go, track, refreshWho }) {
     const done = play.alley.checked[s.id];
     const isOpen = open === s.id;
     const card = h(`article.stall${done ? ".checked" : ""}${isOpen ? ".open" : ""}`, { "data-stall": s.id });
-    const head = h("div.stall-head", h("span.stall-art", { "aria-hidden": "true" }, s.icon), h("div", h("h3", s.name), h("p.stall-pitch", s.pitch)));
+    // The bracket and lantern, then the painted sign itself.
+    const head = h(
+      "div.stall-head",
+      h("span.al-bracket", { "aria-hidden": "true" }, h("span.al-lantern", icon("lantern", { size: 26 }))),
+      h("div.al-sign", h("span.stall-art", { "aria-hidden": "true" }, icon(s.mark || "lantern", { size: 30 })), h("div", h("h3", s.name), h("p.stall-pitch", s.pitch)))
+    );
     if (done && !isOpen) {
       return fill(
         card,
         head,
-        h("p.stall-verdict", { class: s.trap ? "bad-text" : "good-text" }, icon(s.trap ? "alert" : "check", { size: 16 }), s.trap ? " Trap" : " Fair deal", done.right ? " (you called it)" : " (you missed this one)"),
+        h("div.al-tag.done", h("span.al-stamp", { class: s.trap ? "trap" : "fair", "aria-hidden": "true", html: inkStampSvg(s.trap ? "TRAP" : "FAIR DEAL", { seed: s.id.length }) }), h("p.stall-verdict", icon(s.trap ? "alert" : "check", { size: 16 }), s.trap ? " Trap" : " Fair deal", done.right ? ", and you called it" : ", and you missed this one")),
         h("button.secondary.small", { type: "button", onclick: () => ((open = s.id), paint()) }, "See the math again")
       );
     }
     if (!isOpen) return fill(card, head, h("button.small", { type: "button", onclick: () => ((open = s.id), paint()) }, "Look closer"));
 
-    const fine = h("div.fine-print", { hidden: !opened.has(s.id) }, h("p.step-label", "The fine print"), h("ul.tight", s.fine.map((f) => h("li", f))));
+    const fine = h("div.fine-print.al-tag", { hidden: !opened.has(s.id) }, h("p.al-tag-title", "The fine print"), h("ul.tight", s.fine.map((f) => h("li", f))));
     const readBtn = opened.has(s.id)
       ? null
       : h(
@@ -77,9 +89,9 @@ export function render(root, { game, go, track, refreshWho }) {
       head,
       readBtn,
       fine,
-      h("p.tight", h("strong", "Trap or fair deal?")),
+      h("p.al-ask", "Trap or fair deal?"),
       h(
-        "div.row",
+        "div.row.al-calls",
         h("button", { type: "button", "data-sound": "none", onclick: () => decide(s, true) }, icon("alert", { size: 16 }), " It's a trap"),
         h("button", { type: "button", "data-sound": "none", onclick: () => decide(s, false) }, icon("check", { size: 16 }), " Fair deal")
       ),
@@ -91,10 +103,11 @@ export function render(root, { game, go, track, refreshWho }) {
 
   function reveal(s, done) {
     return h(
-      "div.stall-reveal",
-      h("p.stall-verdict", { class: done.right ? "good-text" : "bad-text" }, icon(done.right ? "check" : "alert", { size: 16 }), done.right ? " You called it! " : " Not quite. ", s.trap ? "This is a trap." : "This is a fair deal."),
+      "div.stall-reveal.al-tag",
+      h("span.al-stamp", { class: s.trap ? "trap" : "fair", "aria-hidden": "true", html: inkStampSvg(s.trap ? "TRAP" : "FAIR DEAL", { seed: s.id.length }) }),
+      h("p.stall-verdict", icon(done.right ? "check" : "alert", { size: 16 }), done.right ? " You called it. " : " Not quite. ", s.trap ? "This is a trap." : "This is a fair deal."),
       done.xp ? h("p.sparkle-line", `+${done.xp} XP`) : null,
-      h("p.step-label", "The real cost"),
+      h("p.al-tag-title", "The real cost"),
       h("ol.tight.stall-math", s.math.map((m) => h("li", m))),
       h("p.tight", h("strong", "Look for: "), s.clue),
       h("p.tight", h("strong", s.trap ? "Do this instead: " : "Why it works: "), s.better)

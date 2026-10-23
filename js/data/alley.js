@@ -18,11 +18,13 @@ const cuInterest = Math.round(cuPay * cu.months - cu.amount);
 const money = (n) => `$${n.toLocaleString("en-US")}`;
 
 // trap: true for a trap, false for a fair deal.
+// mark: a drawn icon from js/ui/icons.js (the bestiary page uses it, 2026-10-23).
 // pitch: the big sign. fine: the fine print. math: the real cost, step by step.
 // clue: the one thing to look for next time. better: what to do instead.
 export const STALLS = [
   {
     id: "payday",
+    mark: "coins",
     icon: "💸",
     name: "Quick Coin Cash",
     pitch: "$300 cash today! No credit check! Pay us back on payday.",
@@ -34,6 +36,7 @@ export const STALLS = [
   },
   {
     id: "creditUnion",
+    mark: "vault",
     icon: "🏛️",
     name: "Coinhaven Credit Union",
     pitch: `Small loans for members: ${money(cu.amount)} for ${cu.months} months.`,
@@ -45,6 +48,7 @@ export const STALLS = [
   },
   {
     id: "titleLoan",
+    mark: "car",
     icon: "🛻",
     name: "Wagon Title Loans",
     pitch: "$1,000 for your wagon's title. Keep driving it!",
@@ -56,6 +60,7 @@ export const STALLS = [
   },
   {
     id: "securedCard",
+    mark: "card",
     icon: "🛡️",
     name: "Starter Secured Card",
     pitch: "Build credit with a $200 deposit. Get it back when you upgrade.",
@@ -67,6 +72,7 @@ export const STALLS = [
   },
   {
     id: "rentToOwn",
+    mark: "shop",
     icon: "🎮",
     name: "Rent-a-Wonder",
     pitch: "New game console for just $25 a week! No credit needed!",
@@ -78,6 +84,7 @@ export const STALLS = [
   },
   {
     id: "settlement",
+    mark: "receipt",
     icon: "📢",
     name: "Debt Be Gone",
     pitch: "Cut your credit card debt in HALF! Stop paying your cards and pay us instead.",
@@ -89,6 +96,7 @@ export const STALLS = [
   },
   {
     id: "freeReport",
+    mark: "report",
     icon: "📜",
     name: "Hall of Records: Free Report",
     pitch: "See your credit report from all three bureaus. Free, every week.",
@@ -100,6 +108,7 @@ export const STALLS = [
   },
   {
     id: "creditRepair",
+    mark: "sparkle",
     icon: "🪄",
     name: "Magic Credit Fixers",
     pitch: "We erase late payments from your report! Only $99 a month.",
@@ -111,6 +120,7 @@ export const STALLS = [
   },
   {
     id: "deferredInterest",
+    mark: "calendar",
     icon: "🛋️",
     name: "Comfy Couch Barn",
     pitch: "No interest if paid in full in 12 months!*",
@@ -122,6 +132,7 @@ export const STALLS = [
   },
   {
     id: "pawn",
+    mark: "briefcase",
     icon: "🎸",
     name: "Gold Tooth Pawn",
     pitch: "Instant $100 for your guitar! Pick it up any time!",

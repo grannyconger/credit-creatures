@@ -4977,3 +4977,164 @@ main#app.app:has(.bestiary) {
 :root[data-reading="dyslexia"] :is(.bst-garage .gr-slip, .bst-garage .gr-board, .bst-garage .gr-margin) { transform: none; }
 :root[data-reading="dyslexia"] .bst-garage .gr-plate-note { font-style: normal; }
 @media (max-width: 1000px) { .bst-garage .gr-lot { grid-template-columns: minmax(0, 1fr); } .bst-garage .gr-bay:nth-child(odd) { border-right: 0; } .bst-garage .gr-plate-three { grid-template-columns: minmax(0, 1fr); } .bst-garage .gr-plate-three div + div { border-left: 0; border-top: 1px solid var(--b-gold-ink); padding-top: var(--b-s2); margin-top: var(--b-s2); } }
+
+/* ===========================================================================
+   Lantern Alley (js/ui/screens/alley.js): the street at night, on the dark
+   ground itself. Stalls are painted signs hanging from iron brackets under
+   lanterns. The fine print is a paper tag tucked under the sign, and the
+   verdict is an ink stamp on it. A notice is nailed to the wall up top.
+   =========================================================================== */
+.bst-alley {
+  background:
+    radial-gradient(50% 40% at 20% 0%, color-mix(in srgb, var(--b-foxfire) 10%, transparent), transparent 70%),
+    radial-gradient(40% 35% at 85% 10%, color-mix(in srgb, var(--b-gold) 8%, transparent), transparent 70%),
+    var(--b-grain), var(--b-ground-deep);
+}
+.bst-alley .panel.alley {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--b-s4) 0 0;
+  color: var(--b-on-ground);
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.bst-alley .place-title h1,
+.bst-alley h2,
+.bst-alley h3 { color: var(--b-on-ground); }
+.bst-alley .place-title .muted { color: var(--b-on-ground-soft); }
+.bst-alley .place-kicker { color: var(--b-foxfire); }
+.bst-alley .place-icon { color: var(--b-foxfire); background: var(--b-ground); border-color: var(--b-foxfire); }
+
+/* The notice nailed to the wall. */
+.bst-alley .al-notice {
+  position: relative;
+  max-width: 640px;
+  margin: var(--b-s5) 0 0 var(--b-s5);
+  padding: var(--b-s4) var(--b-s5);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  transform: rotate(-1.2deg);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-alley .al-notice h2 { margin: 0; color: var(--b-ink); font-size: var(--b-fs-lead); }
+.bst-alley .al-notice ol { margin: var(--b-s2) 0 0; padding-left: 1.4em; }
+.bst-alley .al-notice li { margin: var(--b-s1) 0; }
+.bst-alley .al-notice-string { position: absolute; top: -30px; right: 40px; line-height: 0; }
+.bst-alley .alley-score { display: flex; align-items: center; gap: var(--b-s2); margin: var(--b-s5) 0 0; font-weight: 700; color: var(--b-on-ground); }
+.bst-alley .alley-score .ico-wrap { color: var(--b-foxfire); }
+.bst-alley .al-margin { margin: var(--b-s1) 0 0; color: var(--b-on-ground-soft); max-width: 50ch; }
+
+/* The stalls: signs hanging in a row of three, each a little crooked. */
+.bst-alley .stall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--b-s6) var(--b-s5);
+  margin-top: var(--b-s5);
+  align-items: start;
+}
+.bst-alley .stall {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--b-s3);
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.bst-alley .stall.open { grid-column: 1 / -1; box-shadow: none; }
+.bst-alley .stall-head { display: block; }
+/* The iron bracket with a lantern hanging from it. */
+.bst-alley .al-bracket {
+  display: block;
+  position: relative;
+  height: 40px;
+  margin-left: 24px;
+  border-top: 4px solid var(--b-ink);
+  border-left: 4px solid var(--b-ink);
+  width: 70%;
+  border-top-left-radius: 8px;
+}
+.bst-alley .al-lantern {
+  position: absolute;
+  right: 12px;
+  top: 2px;
+  color: var(--b-gold);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--b-gold) 70%, transparent));
+  animation: bst-flicker 3.2s ease-in-out infinite;
+}
+@keyframes bst-flicker { 0%, 100% { opacity: 1; } 45% { opacity: 0.82; } 50% { opacity: 0.95; } 70% { opacity: 0.86; } }
+/* The painted sign: loud gold lettering on dark wood, like the offers. */
+.bst-alley .al-sign {
+  display: flex;
+  gap: var(--b-s3);
+  align-items: flex-start;
+  padding: var(--b-s3) var(--b-s4);
+  color: var(--b-ink);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 3px solid var(--b-ink);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-alley .stall:nth-child(3n + 1) .al-sign { transform: rotate(-1.4deg); }
+.bst-alley .stall:nth-child(3n + 2) .al-sign { transform: rotate(1.1deg); }
+.bst-alley .stall:nth-child(3n) .al-sign { transform: rotate(-0.5deg); }
+.bst-alley .stall.open .al-sign { transform: none; }
+.bst-alley .stall-art { color: var(--b-rust-ink); line-height: 0; flex: none; margin-top: 2px; }
+.bst-alley .al-sign h3 { margin: 0; color: var(--b-ink); font-size: var(--b-fs-title); }
+.bst-alley .stall-pitch { margin: var(--b-s1) 0 0; font-family: var(--b-display); font-size: var(--b-fs-ui); line-height: 1.25; color: var(--b-ink); }
+.bst-alley .stall > button { align-self: flex-start; margin-left: var(--b-s4); }
+.bst-alley .stall.checked:not(.open) .al-sign { opacity: 0.9; }
+.bst-alley .stall.checked:not(.open) { background: none; }
+.bst-alley .stall button.small:not(.secondary) {
+  padding: 6px 16px;
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-ui);
+  color: var(--b-on-rust);
+  background: var(--b-grain), var(--b-rust);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+
+/* Paper tags tucked under the sign: fine print, the verdict, the math. */
+.bst-alley .al-tag {
+  position: relative;
+  margin: 0 var(--b-s3);
+  padding: var(--b-s3) var(--b-s4);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-paper-insert);
+  border-radius: var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-alley .al-tag[hidden] { display: none; }
+.bst-alley .al-tag-title { margin: 0 0 var(--b-s1); font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-ink); }
+.bst-alley .al-tag ul,
+.bst-alley .stall-math { margin: var(--b-s1) 0; padding-left: 1.3em; }
+.bst-alley .al-tag p { margin: var(--b-s2) 0 0; }
+.bst-alley .al-tag.done { padding-right: 130px; min-height: 64px; }
+.bst-alley .stall-verdict { display: flex; align-items: center; gap: var(--b-s1); font-weight: 700; margin: 0; }
+.bst-alley .stall-reveal { padding-right: 190px; }
+/* The stamp: rust for a trap, moss for a fair deal, always with the word. */
+.bst-alley .al-stamp { position: absolute; top: var(--b-s2); right: var(--b-s3); line-height: 0; transform: rotate(-9deg); opacity: 0.9; animation: bst-stamp 0.5s var(--ease-bouncy) both; }
+.bst-alley .al-tag.done .al-stamp svg { width: 110px; height: auto; }
+.bst-alley .stall-reveal .al-stamp svg { width: 170px; height: auto; }
+.bst-alley .al-stamp.trap { color: var(--b-rust-ink); }
+.bst-alley .al-stamp.fair { color: var(--b-fern); }
+.bst-alley .sparkle-line { color: var(--b-gold-ink); font-weight: 700; }
+.bst-alley .al-ask { margin: var(--b-s2) 0 0 var(--b-s4); font-family: var(--b-display); font-size: var(--b-fs-lead); color: var(--b-on-ground); }
+.bst-alley .al-calls { margin-left: var(--b-s4); }
+.bst-alley .stall-close { align-self: flex-start; }
+.bst-alley button.secondary,
+.bst-alley button.small.secondary { color: var(--b-on-ground); border-color: var(--b-on-ground-soft); }
+.bst-alley button.secondary:hover { background: color-mix(in srgb, var(--b-on-ground) 10%, transparent); }
+
+:root[data-reading="dyslexia"] .bst-alley :is(.al-notice, .al-sign, .al-stamp) { transform: none !important; }
+:root[data-motion="calm"] .bst-alley .al-lantern { animation: none; }
+@media (max-width: 900px) { .bst-alley .al-tag.done, .bst-alley .stall-reveal { padding-right: var(--b-s4); padding-top: 70px; } .bst-alley .al-notice { margin-left: 0; } }
