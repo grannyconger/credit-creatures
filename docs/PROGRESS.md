@@ -15,7 +15,7 @@ Last updated: 2026-10-23 (all screens in the bestiary look, design docs drafted.
 - New skills: `.claude/skills/test-game/SKILL.md` (`/test-game`, tests proportional to the change) and `.claude/skills/bestiary-design/SKILL.md`.
 - Playwright 1.56.1 is a dev dependency. Locally it uses the installed Google Chrome (the Playwright browser download is blocked here), and on CI it uses Playwright's Chromium.
 - `npm run e2e` runs 5 smoke tests in `e2e/` (new student to Home, every screen, the teacher page, projector fit, admin), all failing on any page error, console error or failed local request. `node e2e/shot.js <route> [--dark] [--dyslexia] [--width N] [--full]` takes a screenshot.
-- `.github/workflows/e2e.yml` (runs `npm test` and `npm run e2e` on every push) is written but **not pushed yet**: the gh login lacks the `workflow` scope. The teacher runs `gh auth refresh -h github.com -s workflow`, then it can be committed.
+- `.github/workflows/e2e.yml` runs `npm test` and `npm run e2e` on every push (results in the repo's Actions tab).
 - `.claude/settings.json` sets Sonnet as the default model and allows the routine test commands.
 
 **Design docs (2026-10-23, drafts, nothing built):** `docs/MODES.md` records the teacher's Quest and Battle mode answers, feasibility, a first turn-math and ability proposal, edge cases, and open questions. The teacher wants to keep talking before anything is built. `docs/MINIGAMES.md` folds the Oct 22 idea doc into our Guild Hall job structure: the per-game data (skill, standards, battle, simStep, hints), the built games tagged, and simplified plans plus likely faults for Fee Detective, Bank Reconciliation Match and Deposit Slip Filler.

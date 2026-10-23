@@ -42,7 +42,7 @@ A classroom personal-finance game. Each student is the Guardian of Coin for a fa
 - `npm test`: engine unit tests plus the 1,000-life simulation, under 1 second. Run it after any JS change.
 - `npm run e2e`: Playwright smoke tests in `e2e/` (new student to Home, every screen, the teacher page, projector, admin). Use the `test-game` skill to decide what to run.
 - `npm run sim`, `npm run tuning-report -- pilot-data/<file>.json`, `npm run replay -- pilot-data/<file>.json --set k=v`: tuning tools.
-- Deploy: push to `main` on `grannyconger/credit-creatures` (gh is logged in). GitHub Pages serves https://www.coachw.club/credit-creatures/ within a couple of minutes. A GitHub Actions check (`.github/workflows/e2e.yml`) runs both on every push once the gh login has the `workflow` scope. Firebase project: `credit-life-38e4a` (`docs/setup-firebase.md`).
+- Deploy: push to `main` on `grannyconger/credit-creatures` (gh is logged in). GitHub Pages serves https://www.coachw.club/credit-creatures/ within a couple of minutes. A GitHub Actions check (`.github/workflows/e2e.yml`) runs both on every push. Firebase project: `credit-life-38e4a` (`docs/setup-firebase.md`).
 
 ## Working efficiently
 - Default to Sonnet. Switch to Opus (`/model opus`) only for hard design or architecture problems or tricky debugging.
