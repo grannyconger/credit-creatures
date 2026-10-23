@@ -20,7 +20,7 @@ function checkText(s, where) {
 function sampleLives() {
   const lives = {};
   lives.fresh = lifeWith({ seed: "fresh", checking: 600 });
-  lives.subscribed = E.addBill(lifeWith({ seed: "sub", checking: 300 }), "MonsterTunes", 10).life;
+  lives.subscribed = E.addBill(lifeWith({ seed: "sub", checking: 300 }), "Botify", 10).life;
   lives.smallLoan = E.openPurchaseLoan(lifeWith({ seed: "sl", checking: 700 }), { item: "bike", price: 300, termMonths: 6 }).life;
   lives.broke = lifeWith({ seed: "broke", checking: 60 });
   lives.broke = E.moveToSavings(E.receiveCash(lives.broke, 300, "gift").life, 250).life;
@@ -68,7 +68,7 @@ function sampleLives() {
   const big = withCard(lifeWith({ seed: "bigbal", checking: 900 }), { limit: 1000, annualFee: 39 });
   lives.bigBalance = E.cardPurchase(big.life, big.id, 450, "laptop").life;
   let payday = lifeWith({ seed: "payday", checking: 100 });
-  payday = E.receiveCash(payday, 300, "Quick Cash payday loan").life;
+  payday = E.receiveCash(payday, 300, "Check Into Dash payday loan").life;
   payday = E.addBill(payday, "Payday loan payback", 345, 1).life;
   lives.paydayDue = E.debitPurchase(payday, 250, "rent").life;
   // Phase 13: out on their own, with a roommate and a car, or alone and insured.

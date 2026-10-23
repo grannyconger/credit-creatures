@@ -36,7 +36,7 @@ test("check words accept small differences but not wrong amounts", () => {
   assert.ok(!M.wordsMatch("forty-seven", 4725));
   assert.ok(!M.wordsMatch("forty-six and 25/100", 4725));
   assert.ok(M.amountMatch("$47.25", 4725) && M.amountMatch("47.25", 4725) && !M.amountMatch("47.52", 4725));
-  const g = M.gradeCheck({ date: "April 12", payee: "thornbury dental", amount: "47.25", words: "Forty-seven and 25/100", memo: "acct 7718", signed: true }, { dateText: "April 12", payee: "Thornbury Dental", cents: 4725, memo: "Acct 7718" });
+  const g = M.gradeCheck({ date: "April 12", payee: "gaspen dental", amount: "47.25", words: "Forty-seven and 25/100", memo: "acct 7718", signed: true }, { dateText: "April 12", payee: "Gaspen Dental", cents: 4725, memo: "Acct 7718" });
   assert.deepEqual(Object.values(g), [true, true, true, true, true, true]);
 });
 

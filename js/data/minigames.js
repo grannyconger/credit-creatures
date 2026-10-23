@@ -72,11 +72,11 @@ export const JOBS = {
 
 // Fictional places to spend and ways to get paid.
 export const SPENDS = [
-  "Glimmer Grocers", "Moonbeam Cafe", "Pixel Pines Games", "Toadstool Taxi", "Featherfoot Shoes", "Copperkettle Diner",
-  "Lanternlight Books", "Thistle Phone Co.", "Bramble Bus Pass", "Sprocket Bike Shop", "Puddle Pet Supply", "Sunnyside Laundry",
+  "Trader Zoe's", "Starducks", "Gamestomp", "Tuber", "Foot Rocker", "Benny's Diner",
+  "Barnes & Noodle", "Verizoom", "Greybound Bus Pass", "Wreck Bike Shop", "Wetco Pet Supply", "Pride Laundry",
 ];
-export const EARNINGS = ["Paycheck from the Arcade", "Birthday money from Grandma", "Refund from Featherfoot Shoes", "Tutoring pay", "Sold an old game"];
-export const CHECK_PAYEES = ["Maple Lane Rentals", "Coinhaven Water Works", "Dr. Fernsby's Office", "Willowbrook Music School", "Hilltop Soccer Club"];
+export const EARNINGS = ["Paycheck from the Arcade", "Birthday money from Grandma", "Refund from Foot Rocker", "Tutoring pay", "Sold an old game"];
+export const CHECK_PAYEES = ["Pillow Rentals", "Gulligan Water Co.", "Dr. Fernsby's Office", "Guitar Renter Music School", "Hilltop Soccer Club"];
 
 // ---------- Check Anatomy Hunt ----------
 
@@ -110,16 +110,16 @@ export const DRAWER_FLOATS = [2500, 5000, 7500, 10000];
 // Fictional products. price in cents, qty in the unit shown. kind groups the
 // ones that compare fairly (same thing, different packs or brands).
 export const PRODUCTS = [
-  { kind: "cereal", name: "Moonberry Crunch", unit: "oz", sizes: [[12, 349], [18, 459], [32, 849]] },
-  { kind: "cereal", name: "Honey Hoot O's", unit: "oz", sizes: [[10, 299], [20, 529]] },
-  { kind: "juice", name: "Sunpeak Apple Juice", unit: "fl oz", sizes: [[32, 299], [64, 549], [96, 899]] },
-  { kind: "juice", name: "Glimmer Grape Juice", unit: "fl oz", sizes: [[48, 429], [128, 1099]] },
-  { kind: "soap", name: "Bubblefern Dish Soap", unit: "fl oz", sizes: [[16, 249], [28, 399], [40, 649]] },
-  { kind: "pencils", name: "Sprout Pencils", unit: "pencils", sizes: [[12, 299], [24, 499], [48, 1099]] },
-  { kind: "pencils", name: "Inkwell Pencils", unit: "pencils", sizes: [[10, 199], [30, 649]] },
-  { kind: "kibble", name: "Puddle Pup Kibble", unit: "lb", sizes: [[4, 899], [15, 2799], [30, 5999]] },
-  { kind: "chips", name: "Toadstool Chips", unit: "oz", sizes: [[8, 329], [16, 529], [32, 1149]] },
-  { kind: "water", name: "Crystalspring Water", unit: "bottles", sizes: [[12, 449], [24, 799], [35, 1299]] },
+  { kind: "cereal", name: "Cap'n Munch", unit: "oz", sizes: [[12, 349], [18, 459], [32, 849]] },
+  { kind: "cereal", name: "Honey Nut Cheeri-Goes", unit: "oz", sizes: [[10, 299], [20, 529]] },
+  { kind: "juice", name: "Scott's Apple Juice", unit: "fl oz", sizes: [[32, 299], [64, 549], [96, 899]] },
+  { kind: "juice", name: "Kelch's Grape Juice", unit: "fl oz", sizes: [[48, 429], [128, 1099]] },
+  { kind: "soap", name: "Yawn Dish Soap", unit: "fl oz", sizes: [[16, 249], [28, 399], [40, 649]] },
+  { kind: "pencils", name: "Pixon Pencils", unit: "pencils", sizes: [[12, 299], [24, 499], [48, 1099]] },
+  { kind: "pencils", name: "Paper Skate Pencils", unit: "pencils", sizes: [[10, 199], [30, 649]] },
+  { kind: "kibble", name: "Pedi-Free Kibble", unit: "lb", sizes: [[4, 899], [15, 2799], [30, 5999]] },
+  { kind: "chips", name: "Pay's Chips", unit: "oz", sizes: [[8, 329], [16, 529], [32, 1149]] },
+  { kind: "water", name: "Roland Spring Water", unit: "bottles", sizes: [[12, 449], [24, 799], [35, 1299]] },
 ];
 export const UNIT_TIPS = [
   "Bigger is not always cheaper. Check the price per unit.",
@@ -188,11 +188,11 @@ export const CASHIER_ITEMS = [
 // ---------- Check Writer ----------
 
 export const CHECK_BILLS = [
-  { payee: "Hollow Oak Outfitters", memo: "Acct 4471", what: "winter coat on layaway" },
-  { payee: "Market Village Water Co.", memo: "Acct 2093", what: "water bill" },
-  { payee: "Thornbury Dental", memo: "Acct 7718", what: "teeth cleaning" },
-  { payee: "Moonstone Lanes", memo: "Party 12", what: "bowling party" },
-  { payee: "Glimmer Bay Rentals", memo: "Unit 3B", what: "beach cabin deposit" },
+  { payee: "The North Pace", memo: "Acct 4471", what: "winter coat on layaway" },
+  { payee: "Gulligan Water Co.", memo: "Acct 2093", what: "water bill" },
+  { payee: "Gaspen Dental", memo: "Acct 7718", what: "teeth cleaning" },
+  { payee: "Bowl Hero Lanes", memo: "Party 12", what: "bowling party" },
+  { payee: "Hairbnb", memo: "Unit 3B", what: "beach cabin deposit" },
   { payee: "Lantern Lane Library", memo: "Card 5521", what: "lost book fee" },
 ];
 

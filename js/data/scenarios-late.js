@@ -69,8 +69,8 @@ export const LATE_SCENARIOS = [
       const good = life.score != null && life.score >= 650;
       return [
         good
-          ? { key: "noDeposit", label: "Sign up, no deposit", steps: [["recordInquiry", "Coinhaven Power", false], ["addBill", "Power", 30]], outcome: `Your ${life.score} score skipped the $100 deposit. Good credit saves money in places you might not expect.`, quality: "good", factor: { key: "payment", dir: "up" } }
-          : { key: "deposit", label: "Pay the $100 deposit and sign up", disabled: notEnough(life, 100), steps: [["recordInquiry", "Coinhaven Power", false], ["debitPurchase", 100, "power deposit"], ["addBill", "Power", 30]], outcome: "The lights are on. A higher score would have skipped that $100 deposit. Many companies check credit, not just lenders.", quality: "ok" },
+          ? { key: "noDeposit", label: "Sign up, no deposit", steps: [["recordInquiry", "Luke Energy", false], ["addBill", "Power", 30]], outcome: `Your ${life.score} score skipped the $100 deposit. Good credit saves money in places you might not expect.`, quality: "good", factor: { key: "payment", dir: "up" } }
+          : { key: "deposit", label: "Pay the $100 deposit and sign up", disabled: notEnough(life, 100), steps: [["recordInquiry", "Luke Energy", false], ["debitPurchase", 100, "power deposit"], ["addBill", "Power", 30]], outcome: "The lights are on. A higher score would have skipped that $100 deposit. Many companies check credit, not just lenders.", quality: "ok" },
         { key: "roommate", label: "Put it in my roommate's name and pay them half", disabled: hasBill(life, "Rent (shared)") ? null : "You don't have a roommate.", steps: [["addBill", "Power (half)", 15]], outcome: "Your roommate signed up. You pay them $15 a month. If they miss a payment, it's their credit that takes the hit, so trust matters.", quality: "ok" },
       ];
     },
@@ -343,7 +343,7 @@ export const LATE_SCENARIOS = [
       {
         key: "prequal",
         label: "Get pre-qualified (a soft check)",
-        steps: [["recordInquiry", "Coinhaven Home Loans pre-qualification", false]],
+        steps: [["recordInquiry", "Pocket Mortgage pre-qualification", false]],
         outcome: life.score == null ? "No score yet, so no estimate. Keep building your history." : life.score >= 740 ? `With ${life.score}, you'd get the best rates. Save a down payment and you're ready.` : life.score >= 620 ? `With ${life.score}, you'd likely be approved, but at a higher rate. A higher score could save thousands.` : `At ${life.score}, lenders would say not yet. On-time payments and low balances will get you there.`,
         quality: "good",
         math: "On a $200,000 home loan, 6% costs about $1,200 a month. 8% costs about $1,470. That's about $97,000 more over 30 years.",

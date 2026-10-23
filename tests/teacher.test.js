@@ -46,7 +46,7 @@ test("an edited save is flagged because it no longer matches its log", () => {
 
 test("payday loans, maxed cards and many inquiries are flagged", () => {
   let { life, id } = playedLife();
-  life = E.receiveCash(life, 300, "Quick Cash payday loan").life;
+  life = E.receiveCash(life, 300, "Check Into Dash payday loan").life;
   life = E.cardPurchase(life, id, 290, "trip").life;
   for (const s of ["A", "B", "C"]) life = E.recordInquiry(life, `${s} store card`).life;
   const row = T.rosterRow(saveDoc(life, P.newPlay()));

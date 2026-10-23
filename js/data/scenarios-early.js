@@ -6,6 +6,8 @@ import { CONFIG } from "./config.js";
 import { dollars, quotePurchaseLoan, amortizedPayment } from "../engine/index.js";
 
 const hasBill = (life, name) => life.bills.some((b) => b.name === name);
+// The music subscription was called MonsterTunes in older saves, and is Botify now.
+const subName = (life) => (hasBill(life, "MonsterTunes") ? "MonsterTunes" : "Botify");
 const autoTotal = (life) => life.bills.reduce((s, b) => s + b.amount, 0);
 const openLoans = (life) => life.accounts.filter((a) => a.owner === "self" && a.kind === "installment" && a.status === "open" && a.balance > 0);
 
@@ -51,7 +53,7 @@ export const EARLY_SCENARIOS = [
     choices: () => [
       { key: "deposit", label: "Deposit it with the Vault app", steps: [["receiveCash", 50, "Grandma's check"]], outcome: "You snapped a photo of the check and the $50 went into checking. Free and easy.", quality: "good" },
       { key: "split", label: "Deposit it and move half to savings", steps: [["receiveCash", 50, "Grandma's check"], ["moveToSavings", 25]], outcome: "$25 to spend and $25 saved. Paying yourself first is a great habit.", quality: "good" },
-      { key: "cash", label: "Cash it at the Quick Check store", steps: [["receiveCash", 44, "check cashed at Quick Check"]], outcome: "Quick Check kept $6 as a fee. Your own bank cashes checks for free.", quality: "bad" },
+      { key: "cash", label: "Cash it at the Space Cash Express store", steps: [["receiveCash", 44, "check cashed at Quick Check"]], outcome: "Quick Check kept $6 as a fee. Your own bank cashes checks for free.", quality: "bad" },
     ],
   },
   {
@@ -101,10 +103,10 @@ export const EARLY_SCENARIOS = [
     minChapter: 1,
     maxChapter: 3,
     needs: ["debit"],
-    fits: (life) => !hasBill(life, "MonsterTunes"),
-    text: () => ["MonsterTunes offers a free 7-day music trial. You have to enter your debit card. After 7 days it charges $10 every month until you cancel."],
+    fits: (life) => !hasBill(life, "MonsterTunes") && !hasBill(life, "Botify"),
+    text: () => ["Botify offers a free 7-day music trial. You have to enter your debit card. After 7 days it charges $10 every month until you cancel."],
     choices: () => [
-      { key: "forget", label: "Start the trial", steps: [["addBill", "MonsterTunes", 10]], outcome: "Free music! But a $10 charge now comes out of checking every month. Watch your bills list at the Vault.", quality: "ok" },
+      { key: "forget", label: "Start the trial", steps: [["addBill", "Botify", 10]], outcome: "Free music! But a $10 charge now comes out of checking every month. Watch your bills list at the Vault.", quality: "ok" },
       { key: "skip", label: "No thanks", outcome: "No new monthly charge. Free trials are built so people forget to cancel.", quality: "good" },
     ],
   },
@@ -117,10 +119,10 @@ export const EARLY_SCENARIOS = [
     minChapter: 1,
     needs: ["debit"],
     priority: 1,
-    fits: (life) => hasBill(life, "MonsterTunes"),
-    text: () => ["Looking at your bills at the Vault, you spot $10 to MonsterTunes every month. You haven't opened the app in weeks."],
-    choices: () => [
-      { key: "cancel", label: "Cancel it", steps: [["removeBill", "MonsterTunes"]], outcome: "Canceled. That's $120 a year back in your pocket.", quality: "good" },
+    fits: (life) => hasBill(life, "MonsterTunes") || hasBill(life, "Botify"),
+    text: (life) => [`Looking at your bills at the Vault, you spot $10 to ${subName(life)} every month. You haven't opened the app in weeks.`],
+    choices: (life) => [
+      { key: "cancel", label: "Cancel it", steps: [["removeBill", subName(life)]], outcome: "Canceled. That's $120 a year back in your pocket.", quality: "good" },
       { key: "keep", label: "Keep it", outcome: "$10 keeps coming out every month. Small monthly charges are easy to forget.", quality: "ok" },
     ],
   },
@@ -190,7 +192,7 @@ export const EARLY_SCENARIOS = [
       const q12 = quotePurchaseLoan(life, { price: 600, termMonths: 12, apr: 0.12 });
       const q36 = quotePurchaseLoan(life, { price: 600, termMonths: 36, apr: 0.22 });
       return [
-        "Comfy Corner sells a $600 couch. You can pay now, or take a store loan and pay monthly.",
+        "Cashley Furniture sells a $600 couch. You can pay now, or take a store loan and pay monthly.",
         `12 months at 12% APR: ${dollars(q12.payment)} a month, ${dollars(q12.totalInterest)} in interest. 36 months at 22% APR: ${dollars(q36.payment)} a month, ${dollars(q36.totalInterest)} in interest.`,
       ];
     },

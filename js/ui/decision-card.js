@@ -82,8 +82,8 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
             buttons.forEach((b) => {
               const on = b === e.currentTarget;
               b.setAttribute("aria-pressed", String(on));
-              b.querySelector(".dc-chosen")?.remove();
-              if (on) b.append(h("small.dc-chosen", "Chosen"));
+              b.querySelector(".pick-tag")?.remove();
+              if (on) b.prepend(h("span.pick-tag", icon("check", { size: 14 }), " Your pick"));
             });
             submit.disabled = false;
           },
@@ -103,7 +103,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
     });
     fill(
       body,
-      h("div.dc-choices", { role: "group", "aria-label": "Your choices" }, buttons),
+      h("div.dc-choices", { role: "group", "aria-label": "Your choices", style: { "--cols": choices.length } }, buttons),
       h("div.dc-submit-row", h("small.dc-submit-hint", "Tap a choice, then lock it in."), submit),
       error ? h("p.error", { role: "alert" }, error) : null
     );
@@ -143,40 +143,69 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
     let reaction = "";
     let confusing = false;
     const factor = c.factor && !r.denied ? h("p.factor-chip", { class: c.factor.dir }, `${FACTOR_ICONS[c.factor.key]} ${FACTOR_LABELS[c.factor.key]} ${c.factor.dir === "up" ? "▲ goes up" : "▼ goes down"}`) : null;
-    const reactRow = h(
-      "div.reactions",
-      { role: "group", "aria-label": "How was this card?" },
-      REACTIONS.map(([key, emoji, label]) =>
-        h(
-          "button.reaction",
-          {
-            type: "button",
-            "aria-label": label,
-            "aria-pressed": "false",
-            onclick: (e) => {
-              reaction = key;
-              reactRow.querySelectorAll(".reaction").forEach((b) => b.setAttribute("aria-pressed", String(b === e.currentTarget)));
-            },
-          },
-          emoji
-        )
-      ),
-      h(
-        "button.chip.confusing",
-        {
-          type: "button",
-          "aria-pressed": "false",
-          onclick: (e) => {
-            confusing = !confusing;
-            e.currentTarget.setAttribute("aria-pressed", String(confusing));
-          },
-        },
-        "This was confusing"
-      )
-    );
+    // Life cards ask one new question: did this make sense? (teacher request
+    // 2026-10-23). It's recorded as clarity, apart from the old thumbs.
+    let clarity = "";
+    const reactRow =
+      kind === "life"
+        ? h(
+            "div.reactions.clarity-row",
+            { role: "group", "aria-label": "Did this card make sense?" },
+            [
+              ["clear", "Makes sense", "check"],
+              ["confusing", "That was confusing", "info"],
+            ].map(([key, label, ico]) =>
+              h(
+                "button.chip.clarity-btn",
+                {
+                  type: "button",
+                  "data-clarity": key,
+                  "aria-pressed": "false",
+                  onclick: (e) => {
+                    clarity = clarity === key ? "" : key;
+                    confusing = clarity === "confusing";
+                    reactRow.querySelectorAll(".clarity-btn").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.clarity === clarity)));
+                  },
+                },
+                icon(ico, { size: 16 }),
+                ` ${label}`
+              )
+            )
+          )
+        : h(
+            "div.reactions",
+            { role: "group", "aria-label": "How was this card?" },
+            REACTIONS.map(([key, emoji, label]) =>
+              h(
+                "button.reaction",
+                {
+                  type: "button",
+                  "aria-label": label,
+                  "aria-pressed": "false",
+                  onclick: (e) => {
+                    reaction = key;
+                    reactRow.querySelectorAll(".reaction").forEach((b) => b.setAttribute("aria-pressed", String(b === e.currentTarget)));
+                  },
+                },
+                emoji
+              )
+            ),
+            h(
+              "button.chip.confusing",
+              {
+                type: "button",
+                "aria-pressed": "false",
+                onclick: (e) => {
+                  confusing = !confusing;
+                  e.currentTarget.setAttribute("aria-pressed", String(confusing));
+                },
+              },
+              "This was confusing"
+            )
+          );
     const cont = h(
       "button.big.bst-seal-btn",
-      { type: "button", onclick: () => onContinue({ reaction, confusing }) },
+      { type: "button", onclick: () => onContinue({ reaction, confusing, clarity }) },
       h("span.bst-seal-wax", { html: sealSvg({ seed: 31, size: 72 }) }),
       h("span.bst-seal-text", "Continue")
     );
@@ -254,8 +283,8 @@ function tradeoffPanel(rows, life) {
   };
   return h(
     "section.dc-tradeoffs",
-    h("h3", icon("chart", { size: 22 }), " Side by side: what each choice would do"),
-    h("p.muted.tight", "Every choice starts from the same place. Here's where each one leaves your numbers."),
+    h("h3", icon("chart", { size: 22 }), " Tradeoffs"),
+    h("p.muted.tight", "Every choice starts from the same place. Here's where each one leaves your numbers. The one you picked is outlined."),
     h(
       "div.trade-grid",
       { style: { "--cols": rows.length } },
@@ -263,7 +292,7 @@ function tradeoffPanel(rows, life) {
         h(
           "article.trade-col",
           { class: `col-${(i % 4) + 1} ${r.chosen ? "chosen" : ""} ${r.start ? "start" : ""} ${r.ok ? "" : "off"}` },
-          h("header", r.chosen ? h("span.trade-tag", icon("check", { size: 14 }), " You picked this") : null, h("strong", r.label)),
+          h("header", r.chosen ? h("span.pick-tag", icon("check", { size: 14 }), " Your pick") : null, h("strong", r.label)),
           r.ok
             ? [
                 row(r, "checking", "Coins in checking", money0),

@@ -270,7 +270,7 @@ export function tuning(batches, rows = []) {
   const cards = {};
   for (const e of [...of("cardChoice"), ...of("lifeCardChoice")]) {
     if (!e.ok) continue;
-    const c = (cards[e.id] ??= { id: e.id, n: 0, choices: {}, seconds: [], up: 0, meh: 0, down: 0, confusing: 0 });
+    const c = (cards[e.id] ??= { id: e.id, n: 0, choices: {}, seconds: [], up: 0, meh: 0, down: 0, confusing: 0, clear: 0 });
     c.n++;
     c.choices[e.choice] = (c.choices[e.choice] || 0) + 1;
     c.seconds.push(e.seconds);
@@ -280,11 +280,13 @@ export function tuning(batches, rows = []) {
     if (!c) continue;
     if (e.reaction) c[e.reaction]++;
     if (e.confusing) c.confusing++;
+    // New 2026-10-23: life cards ask "Makes sense" or "That was confusing".
+    if (e.clarity === "clear") c.clear++;
   }
   const cardRows = Object.values(cards)
     .map((c) => {
       const top = Math.max(...Object.values(c.choices));
-      return { id: c.id, n: c.n, choices: c.choices, medianSeconds: median(c.seconds), topShare: c.n ? top / c.n : 0, lopsided: c.n >= 5 && top / c.n >= 0.8, up: c.up, meh: c.meh, down: c.down, confusing: c.confusing };
+      return { id: c.id, n: c.n, choices: c.choices, medianSeconds: median(c.seconds), topShare: c.n ? top / c.n : 0, lopsided: c.n >= 5 && top / c.n >= 0.8, up: c.up, meh: c.meh, down: c.down, confusing: c.confusing, clear: c.clear };
     })
     .sort((a, b) => b.confusing - a.confusing || b.n - a.n);
 

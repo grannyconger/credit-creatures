@@ -6130,7 +6130,7 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .trade-col.off { background: var(--b-paper-2); border-style: dashed; }
 .trade-col header { display: grid; gap: 2px; color: var(--b-ink); }
 .trade-col header strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); line-height: 1.1; }
-.trade-tag { display: inline-flex; align-items: center; gap: 4px; width: max-content; padding: 1px 10px; font-weight: 700; font-size: var(--b-fs-tiny); color: #fff; background: var(--col-hue); border-radius: var(--b-r-round); }
+.trade-tag-unused { display: inline-flex; align-items: center; gap: 4px; width: max-content; padding: 1px 10px; font-weight: 700; font-size: var(--b-fs-tiny); color: #fff; background: var(--col-hue); border-radius: var(--b-r-round); }
 .trade-metric { display: grid; gap: 2px; padding-top: var(--b-s2); border-top: 1px dashed var(--b-rule); color: var(--b-ink); }
 .trade-metric small { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); }
 .trade-metric strong { font-family: var(--b-display); font-weight: 400; font-size: clamp(1.5rem, 2.2vw, 2rem); font-variant-numeric: lining-nums tabular-nums; line-height: 1.05; }
@@ -6158,3 +6158,48 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .bst-records .gauge-block .gauge-words { display: grid; gap: var(--b-s1); }
 .bst-records .gauge-block .big-score { margin: 0; }
 @media (max-width: 1000px) { .bst-alley .al-top, .bst-records .gauge-block { grid-template-columns: minmax(0, 1fr); } }
+
+/* ===========================================================================
+   Life and decision cards, round two (teacher request 2026-10-23): the choices
+   are the same cards the Tradeoffs show next. A picked choice is outlined in
+   plum with a "Your pick" tag, and the same card is outlined the same way in
+   Tradeoffs. Nothing else is colored, so the pick is the only thing that stands out.
+   =========================================================================== */
+.bst-month .decision-card .dc-choices, .trade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--b-s3); }
+.bst-month .decision-card .dc-choice, .trade-col {
+  position: relative;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--b-s1);
+  min-height: 150px;
+  padding: var(--b-s3);
+  text-align: left;
+  color: var(--b-ink);
+  background: var(--b-paper);
+  border: 2px solid var(--b-paper-edge);
+  border-top: 8px solid var(--b-rule);
+  border-radius: var(--b-r-insert);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-month .decision-card .dc-choice::before { display: none; }
+.bst-month .decision-card .dc-choice:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--b-plum); border-top-color: var(--b-plum); }
+.bst-month .decision-card .dc-choice:disabled { background: var(--b-paper-2); }
+.bst-month .decision-card .dc-choice[aria-pressed="true"], .trade-col.chosen { border-color: var(--b-plum); border-top-color: var(--b-plum); outline: 4px solid var(--b-plum); outline-offset: 2px; background: color-mix(in srgb, var(--b-plum) 10%, var(--b-paper)); box-shadow: var(--b-shadow-card); }
+.bst-month .decision-card .dc-choice[aria-pressed="true"]::before { display: none; }
+.trade-col, .trade-col.col-2, .trade-col.col-3, .trade-col.col-4 { --col-hue: var(--b-rule); }
+.trade-col.start { background: var(--b-paper-2); border-style: dashed; }
+.pick-tag { display: inline-flex; align-items: center; gap: 4px; width: max-content; margin: 0 0 2px; padding: 1px 12px; font-weight: 800; font-size: var(--b-fs-tiny); letter-spacing: 0.04em; text-transform: uppercase; color: var(--b-on-plum); background: var(--b-plum); border-radius: var(--b-r-round); }
+.bst-month .decision-card .dc-choice strong, .trade-col header strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); line-height: 1.1; }
+.trade-bar span { background: var(--b-ink-soft); }
+.trade-bar span.better { background: var(--b-right); }
+.trade-bar span.worse { background: var(--b-rust); }
+.trade-col.chosen .trade-bar span.same { background: var(--b-plum); }
+.clarity-row { display: flex; gap: var(--b-s3); justify-content: center; flex-wrap: wrap; }
+.clarity-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 52px; padding: 8px 22px; font-size: var(--b-fs-ui); font-weight: 700; color: var(--b-ink); background: var(--b-paper-2); border: 2px solid var(--b-paper-edge); border-radius: var(--b-r-tag); }
+.clarity-btn:hover { border-color: var(--b-plum); }
+.clarity-btn[aria-pressed="true"] { color: var(--b-on-plum); background: var(--b-plum); border-color: var(--b-plum); }
+@media (prefers-reduced-motion: reduce) { .bst-month .decision-card .dc-choice:hover:not(:disabled) { transform: none; } }
+.trade-col { justify-items: stretch; }
+.trade-col .pick-tag { justify-self: start; }
+.trade-col header { justify-items: start; }

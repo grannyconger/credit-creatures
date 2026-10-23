@@ -304,7 +304,7 @@ export const SCENARIOS = [
     title: "20% off today?",
     fits: (life) => life.checking >= 130,
     text: () => [
-      "You're buying a $120 winter coat at Hollow Oak Outfitters. The cashier says: \"Open our store card and save 20% today!\"",
+      "You're buying a $120 winter coat at The North Pace. The cashier says: \"Open our store card and save 20% today!\"",
       "The store card has a 30% APR. Opening it means a hard inquiry.",
     ],
     choices: (life) => {
@@ -313,7 +313,7 @@ export const SCENARIOS = [
         {
           key: "open",
           label: "Open the store card and save $24",
-          steps: [["recordInquiry", "Hollow Oak store card"], ["debitPurchase", 96, "winter coat (store card, paid off)"]],
+          steps: [["recordInquiry", "North Pace store card"], ["debitPurchase", 96, "winter coat (store card, paid off)"]],
           disabled: short(life, 96),
           outcome: "You saved $24 and paid the store card off on the first bill. The hard inquiry stays on your report for 2 years.",
           quality: "ok",
@@ -472,14 +472,14 @@ export const SCENARIOS = [
     weight: 1.5,
     fits: (life) => life.checking < 150,
     text: () => [
-      "Checking is low and your bills come out at the end of the month. A Quick Cash store offers a payday loan: $300 now, pay back $345 in two weeks. No credit check!",
+      "Checking is low and your bills come out at the end of the month. A Check Into Dash store offers a payday loan: $300 now, pay back $345 in two weeks. No credit check!",
       "Greenville Federal Credit Union offers a small loan instead: $300, paid back over 3 months.",
     ],
     choices: (life) => [
       {
         key: "payday",
         label: "Take the payday loan",
-        steps: [["receiveCash", 300, "Quick Cash payday loan"], ["addBill", "Payday loan payback", 345, 1]],
+        steps: [["receiveCash", 300, "Check Into Dash payday loan"], ["addBill", "Payday loan payback", 345, 1]],
         outcome: "You have $300 now. $345 comes out of checking at End Month. If it bounces, it stays and you pay overdraft fees.",
         quality: "bad",
         math: "$45 fee on $300 for 2 weeks. As a yearly rate, that's about 391% APR. (45 ÷ 300 × 26 two-week periods = 3.9)",
@@ -650,7 +650,7 @@ export const SCENARIOS = [
       {
         key: "three",
         label: "Open all three",
-        steps: [["recordInquiry", "Hollow Oak store card"], ["recordInquiry", "Market store card"], ["recordInquiry", "Lantern Lane store card"]],
+        steps: [["recordInquiry", "North Pace store card"], ["recordInquiry", "Barget store card"], ["recordInquiry", "Barnes & Noodle store card"]],
         outcome: "You saved a little at each store, but you added 3 hard inquiries in one week.",
         quality: "bad",
         factor: { key: "newCredit", dir: "down" },
@@ -658,7 +658,7 @@ export const SCENARIOS = [
       {
         key: "one",
         label: "Just one, at my favorite store",
-        steps: [["recordInquiry", "Hollow Oak store card"]],
+        steps: [["recordInquiry", "North Pace store card"]],
         outcome: "One hard inquiry. It counts against your score for a year, then fades.",
         quality: "ok",
         factor: { key: "newCredit", dir: "down" },
@@ -717,7 +717,7 @@ export const SCENARIOS = [
     fits: () => true,
     text: (life) => {
       const cost = 25 + (life.month % 4) * 10;
-      return [`Friends are going to Moonstone Lanes for bowling and snacks. It costs about ${dollars(cost)}.`];
+      return [`Friends are going to Bowl Hero Lanes for bowling and snacks. It costs about ${dollars(cost)}.`];
     },
     choices: (life) => {
       const cost = 25 + (life.month % 4) * 10;
@@ -944,7 +944,7 @@ export const SCENARIOS = [
     once: false,
     fits: (life) => life.bills.some((b) => b.name === "Payday loan payback") && life.checking < 345,
     text: () => [
-      "Your $345 payday loan payback comes out at End Month, and checking won't cover it. Quick Cash offers to \"roll it over\": pay just the $45 fee now and owe $345 again in two weeks.",
+      "Your $345 payday loan payback comes out at End Month, and checking won't cover it. Check Into Dash offers to \"roll it over\": pay just the $45 fee now and owe $345 again in two weeks.",
     ],
     choices: (life) => [
       {
@@ -961,7 +961,7 @@ export const SCENARIOS = [
         label: "Pay it from savings",
         steps: [["moveToChecking", Math.min(345, life.savings)]],
         disabled: life.savings < 345 - life.checking ? "Not enough in savings." : null,
-        outcome: "Done with Quick Cash. Rebuild your savings next.",
+        outcome: "Done with Check Into Dash. Rebuild your savings next.",
         quality: "good",
       },
       {

@@ -188,8 +188,8 @@ export function render(root, { game, go, track, refreshWho }) {
           },
         };
       },
-      onContinue: ({ reaction, confusing }) => {
-        if (reaction || confusing) track("cardReaction", { id: def.id, reaction, confusing });
+      onContinue: ({ reaction, confusing, clarity }) => {
+        if (reaction || confusing || clarity) track("cardReaction", { id: def.id, reaction, confusing, clarity: clarity || "" });
         view = null;
         paint();
         panel.querySelector(".month-main button, .month-main a")?.focus();

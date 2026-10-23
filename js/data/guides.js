@@ -16,7 +16,7 @@ export const GUIDES = {
         "Press the button when you're done. If a statement has no fees, say so. That happens, and it's good news.",
         "For each fee you found, pick the best way to avoid it.",
       ],
-      example: "You see OVERDRAFT FEE for $35. That's a fee. A purchase at Moonbeam Cafe isn't, because you chose it. Interest earned isn't either, because the bank pays you.",
+      example: "You see OVERDRAFT FEE for $35. That's a fee. A purchase at Starducks isn't, because you chose it. Interest earned isn't either, because the bank pays you.",
     },
     vocab: [
       { term: "fee", def: "Money a bank charges you for a service or a slip-up.", example: "The bank charged a $3 fee for using another bank's ATM." },
