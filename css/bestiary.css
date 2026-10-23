@@ -5138,3 +5138,129 @@ main#app.app:has(.bestiary) {
 :root[data-reading="dyslexia"] .bst-alley :is(.al-notice, .al-sign, .al-stamp) { transform: none !important; }
 :root[data-motion="calm"] .bst-alley .al-lantern { animation: none; }
 @media (max-width: 900px) { .bst-alley .al-tag.done, .bst-alley .stall-reveal { padding-right: var(--b-s4); padding-top: 70px; } .bst-alley .al-notice { margin-left: 0; } }
+
+/* ===========================================================================
+   The chapter report (js/ui/screens/chapter-end.js): a report sheet with the
+   creature's portrait, the numbers as a ruled record and two field
+   observations, then the reflection on a lined notebook page that overlaps
+   the report's bottom edge.
+   =========================================================================== */
+.bst-chapter-end .panel.chapter-end {
+  position: relative;
+  z-index: 2;
+  max-width: 1040px;
+  margin: var(--b-s4) auto 0;
+  padding: var(--b-s5) var(--b-s6) var(--b-s6);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  transform: rotate(-0.3deg);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-chapter-end .ce-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--b-s5); align-items: center; }
+.bst-chapter-end .ce-portrait {
+  margin: 0;
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 176px;
+  overflow: hidden;
+  background: radial-gradient(60% 55% at 50% 45%, var(--b-paper), var(--b-paper-2));
+  border: 4px double var(--b-rule);
+  border-radius: 50%;
+}
+.bst-chapter-end .ce-head h1 { margin: 0; font-size: clamp(2.3rem, 3.4vw, 3.4rem); line-height: 1; }
+.bst-chapter-end .ce-kicker { margin: var(--b-s2) 0 0; }
+.bst-chapter-end .ce-record {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--b-s6);
+  margin: var(--b-s5) 0 0;
+}
+.bst-chapter-end .ce-line { display: flex; justify-content: space-between; align-items: baseline; gap: var(--b-s3); padding: var(--b-s2) 0; border-bottom: 1px solid var(--b-rule); }
+.bst-chapter-end .ce-line dt { color: var(--b-ink-soft); }
+.bst-chapter-end .ce-line dd { margin: 0; font-family: var(--b-display); font-size: var(--b-fs-title); font-variant-numeric: lining-nums; text-align: right; }
+.bst-chapter-end .ce-line dd small { font-family: var(--b-body); font-size: var(--b-fs-tiny); }
+.bst-chapter-end .ce-line.up dd small { color: var(--b-ink); }
+.bst-chapter-end .ce-line.down dd small { color: var(--b-rust-ink); font-weight: 700; }
+.bst-chapter-end .ce-moments { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-s4); margin-top: var(--b-s5); }
+.bst-chapter-end .ce-moment { padding: var(--b-s3) var(--b-s4); background: var(--b-paper-insert); border-top: 3px solid var(--b-rule); }
+.bst-chapter-end .ce-moment.good { border-top-color: var(--b-fern); }
+.bst-chapter-end .ce-moment.bad { border-top-color: var(--b-rust); }
+.bst-chapter-end .ce-moment h3 { display: flex; align-items: center; gap: var(--b-s2); margin: 0; font-size: var(--b-fs-title); }
+.bst-chapter-end .ce-moment.good h3 .ico-wrap { color: var(--b-fern); }
+.bst-chapter-end .ce-moment.bad h3 .ico-wrap { color: var(--b-rust-ink); }
+.bst-chapter-end .ce-moment p { margin: var(--b-s2) 0 0; }
+.bst-chapter-end .ce-outcome { color: var(--b-ink-soft); font-size: var(--b-small); }
+.bst-chapter-end .dream-card { margin-top: var(--b-s5); padding: var(--b-s3) var(--b-s4); background: var(--b-paper-insert); border-radius: var(--b-r-sheet); }
+.bst-chapter-end .dream-card h3 { display: flex; align-items: center; gap: var(--b-s2); margin: 0 0 var(--b-s2); font-size: var(--b-fs-title); }
+.bst-chapter-end .dream-card h3 .ico-wrap { color: var(--b-rust-ink); }
+.bst-chapter-end details.months { margin-top: var(--b-s4); }
+.bst-chapter-end details.months summary { cursor: pointer; font-weight: 700; color: var(--b-plum); }
+.bst-chapter-end .practice { display: flex; align-items: center; gap: var(--b-s2); }
+
+/* The field notebook: lined paper with a red margin, tucked under the report. */
+.bst-chapter-end .ce-notebook {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+  margin: calc(-1 * var(--b-s4)) auto 0;
+  padding: calc(var(--b-s6) + var(--b-s3)) var(--b-s6) var(--b-s5) calc(var(--b-s6) + var(--b-s4));
+  color: var(--b-ink);
+  background:
+    linear-gradient(90deg, transparent 52px, color-mix(in srgb, var(--b-rust) 55%, transparent) 52px 54px, transparent 54px),
+    repeating-linear-gradient(transparent 0 31px, color-mix(in srgb, var(--b-rule) 55%, transparent) 31px 32px),
+    var(--b-paper-insert);
+  border: 0;
+  border-top: 0;
+  border-radius: 0 0 var(--b-r-sheet) var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(0.6deg);
+}
+.bst-chapter-end .ce-notebook h2 { margin: 0; font-size: var(--b-fs-lead); }
+.bst-chapter-end .ce-notebook label { display: block; margin: var(--b-s3) 0 var(--b-s1); font-weight: 700; }
+.bst-chapter-end .ce-notebook .note { color: var(--b-ink-soft); font-size: var(--b-small); }
+.bst-chapter-end .ce-notebook textarea {
+  width: 100%;
+  min-height: 128px;
+  padding: 4px 0;
+  font-family: var(--b-hand);
+  font-size: var(--b-fs-lead);
+  line-height: 32px;
+  color: var(--b-ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px dashed var(--b-rule);
+  border-radius: 0;
+  resize: vertical;
+}
+.bst-chapter-end .ce-notebook textarea:focus { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
+.bst-chapter-end .rating-set { border: 0; padding: 0; margin: var(--b-s4) 0 0; }
+.bst-chapter-end .rating-set legend { font-weight: 700; margin-bottom: var(--b-s2); }
+.bst-chapter-end .rating { display: flex; flex-wrap: wrap; gap: var(--b-s2); }
+.bst-chapter-end .rating-option {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 96px;
+  padding: var(--b-s2) var(--b-s3);
+  font-family: var(--b-body);
+  color: var(--b-ink);
+  background: var(--b-paper);
+  border: 1.5px solid var(--b-rule);
+  border-radius: var(--b-r-tag);
+  box-shadow: none;
+}
+.bst-chapter-end .rating-option strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.bst-chapter-end .rating-option small { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+/* Chosen: plum, a ring and the word "chosen" under the number. */
+.bst-chapter-end .rating-option[aria-checked="true"] { color: var(--b-plum); background: var(--b-plum-wash); border-color: var(--b-plum); box-shadow: inset 0 0 0 1.5px var(--b-plum); }
+.bst-chapter-end .rating-option[aria-checked="true"] small::after { content: " (chosen)"; }
+.bst-chapter-end .ce-notebook .bst-error { margin-top: var(--b-s3); }
+.bst-chapter-end .ce-notebook .bst-actions { margin-top: var(--b-s3); }
+
+:root[data-reading="dyslexia"] .bst-chapter-end :is(.panel.chapter-end, .ce-notebook) { transform: none; }
+:root[data-reading="dyslexia"] .bst-chapter-end .ce-notebook textarea { font-size: var(--b-text); line-height: 1.7; }
+@media (max-width: 900px) { .bst-chapter-end :is(.ce-record, .ce-moments) { grid-template-columns: minmax(0, 1fr); } }
