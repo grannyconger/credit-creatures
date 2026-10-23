@@ -5476,7 +5476,7 @@ main#app.app:has(.bestiary) {
   .thing-tile:hover, .bst-bottombar .things-btn:hover { transform: none; }
 }
 /* The bug button rides above the bottom bar so it never covers the creature. */
-body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; }
+body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right: 16px; }
 
 /* ===========================================================================
    Home as the Creature Cottage room (docs/UI-REBUILD.md slice 2). The room is
@@ -5772,3 +5772,26 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .piece strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-ui); line-height: 1.1; }
 .piece small { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
 .piece-preview { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-s2); margin: var(--b-s2) 0 0; color: var(--b-plum); }
+
+/* ===========================================================================
+   The top and bottom bars are their own color (teacher request 2026-10-23):
+   high contrast against the page ground in both themes. The bar rules above
+   read the ground tokens, so inside the bars those tokens point at the bar's.
+   =========================================================================== */
+.bst-topbar, .bst-bottombar {
+  --b-on-ground: var(--b-on-bar);
+  --b-on-ground-soft: var(--b-on-bar-soft);
+  --b-gold: var(--b-bar-accent);
+  --b-foxfire: var(--b-bar-hot);
+  --b-ground-deep: var(--b-bar);
+  background: var(--b-grain), var(--b-bar);
+  color: var(--b-on-bar);
+}
+.bst-topbar { border-bottom: 3px solid var(--b-bar-edge); }
+.bst-bottombar { border-top: 3px solid var(--b-bar-edge); }
+.bst-topbar::after, .bst-bottombar::before { display: none; }
+/* The chapter chip and Save and exit sit on the bar like tags, so they get a border. */
+.bst-topbar .chapter-chip, .bst-topbar #sign-out { border: 1.5px solid var(--b-on-bar-soft); background: var(--b-paper); color: var(--b-ink); }
+.bst-topbar .status-chips li, .bst-bottombar .shortcuts button, .bst-bottombar .dock-btn, .challenge-toggle { border-color: var(--b-on-bar-soft); }
+.bst-bottombar .things-btn { color: var(--b-on-rust); border-color: var(--b-seal-deep); }
+.bst-bottombar .who-art { border-color: var(--b-bar-accent); }

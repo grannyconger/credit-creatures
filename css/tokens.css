@@ -208,6 +208,16 @@
   --b-ground-deep: #1e3127;
   --b-on-ground: #dce2cc;
   --b-on-ground-soft: #b9c6ad;
+  /* Bars: the top and bottom bars are their own color, never the ground's.
+     Light: a pale sheet with ink text (ink on bar 13:1). Dark: lifted moss
+     with pale text (on bar 5:1). Accent and hot are the gold and foxfire
+     that stay readable on each. */
+  --b-bar: #e7ebd6;
+  --b-on-bar: #1b2420;
+  --b-on-bar-soft: #34402f;
+  --b-bar-edge: #7a5d1c;
+  --b-bar-accent: #7a5410;
+  --b-bar-hot: #93401f;
   /* Paper: grey-green herbarium sheets, not cream */
   --b-paper: #d9dec8;
   --b-paper-2: #cbd2b8;
@@ -363,6 +373,12 @@
     --b-ground-deep: #0a110d;
     --b-on-ground: #dce2cc;
     --b-on-ground-soft: #a9b5a0;
+    --b-bar: #4c7355;
+    --b-on-bar: #f4f7e8;
+    --b-on-bar-soft: #e8efd9;
+    --b-bar-edge: #f0c766;
+    --b-bar-accent: #f0c766;
+    --b-bar-hot: #d6ee5a;
     --b-paper: #1f2b24;
     --b-paper-2: #26342c;
     --b-paper-edge: #3a4b40;
@@ -412,6 +428,12 @@
   --b-ground-deep: #0a110d;
   --b-on-ground: #dce2cc;
   --b-on-ground-soft: #a9b5a0;
+  --b-bar: #4c7355;
+  --b-on-bar: #f4f7e8;
+  --b-on-bar-soft: #e8efd9;
+  --b-bar-edge: #f0c766;
+  --b-bar-accent: #f0c766;
+  --b-bar-hot: #d6ee5a;
   --b-paper: #1f2b24;
   --b-paper-2: #26342c;
   --b-paper-edge: #3a4b40;
