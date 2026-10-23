@@ -2,13 +2,22 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-23 (story intro and name step in the bestiary look)
+Last updated: 2026-10-23 (teacher dashboard overhaul approved)
 
 ## Next step
 
 **Where things stand (end of 2026-10-22):** everything below is pushed and live. Awaiting the teacher's review: Phases 15, 16 and 17 (motion, effects, living creatures), the five new Chapter 1 jobs, and the Trophies redesign. Firestore rules were last changed for gifts, class delete and reset notes, and the teacher has published them.
 
 **Up next, in order:** (1) the remaining old-look screens, one at a time with approval: Friendship Plaza, the Garage, Lantern Alley, chapter end, Account settings (the story intro and name step are done). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) Fee Detective, the next job idea. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
+
+**Teacher dashboard overhaul (teacher request 2026-10-23, approved and pushed):** "too much info at once" and "generic AI style". The teacher chose: at a glance, who needs help, grades and pacing. The look is "plain and quiet" (bestiary colors and fonts through `.bst-scope` on the body, no textures or tilts). The roster has views you switch between. New `css/teacher.css`, and `teacher/index.html` has a moss header with a class picker. `js/teacher/dashboard.js` is restructured:
+- A class strip: name, join code, status words, one rust "Release Chapter N" button, and "Class settings".
+- A settings drawer with the toggles, another class, and a "Careful" section for start over and delete.
+- Three summary columns: Needs help (flags plus `CONFIG.teacher.inactiveDays`, and a bug count), Pacing (a bar with numbers and a legend, plus a "ready for Chapter N" hint at `CONFIG.teacher.readyShare`), and Grades (class medians, and who owes a reflection).
+- A roster with Progress, Credit and Game views (about 6 columns each, remembered per browser), search, and a CSV that still has every column. The Lantern Alley class table shows under Game.
+- A student side panel with tabs: Overview, Reflections, Decisions, Credit, Friends.
+
+New pure functions in `js/teacher/analyze.js`: `lastPlayed`, `needsHelp`, `pacing` and `gradeSummary`, tested in `tests/teacher.test.js`. `FLAGS` gained `short` and `mark`. New `bug` and `search` icons. The old dashboard rules were removed from `css/app.css`. `db-local.js` now stamps `updatedAt` and reads extra pretend saves from the `teacherDemo` localStorage key, for previews. No rules change. Checked with a 14-student demo class: 1440 light and dark, 1280 dyslexia, 1024, views, sort, search, the side panel and its tabs, the settings drawer pause toggle, and no console errors. 197 tests pass.
 
 **The story intro, name step and loading note (2026-10-23, approved and pushed):** the opening story (`js/ui/screens/intro.js`, `.bst-preface`) is now the field guide's preface. Each panel is one leaf with a picture plate taped in so it hangs off the leaf's edge, a caption ("Plate I. The Kingdom of Coinhaven") and a naturalist's margin note. Beat icons are drawn icons in pencil rings (`mark` in `js/data/story.js` replaces the emoji), the job list is paper tags, and "Page 1 of 3" sits at the foot. "Turn the page" swings the next leaf in, and the last page has a wax-seal "Meet your creature". The name step (`js/ui/screens/profile.js`, `.bst-name`) is the guide's bookplate ("This field guide belongs to"), with the names written on ruled lines, a seal "Write my name in" ("Save name" when editing), and a taped slip saying who sees the name. The "Loading" placeholders in `index.html` and `enterGame` are a hand note on the moss. Telemetry unchanged (`intro`, `profileSaved`). Checked: 1440 light and dark, 1280 dyslexia, the empty-name error, a full click-through from the intro to `#/creature` with no console errors. 193 tests pass.
 

@@ -19,13 +19,15 @@ const ACCOUNT_LABELS = {
   bnpl: "BNPL",
 };
 
+// icon is kept for the CSV and older views. mark is a drawn icon name from
+// js/ui/icons.js for the dashboard (2026-10-23).
 export const FLAGS = {
-  payday: { icon: "💵", label: "Took a payday loan" },
-  titleLoan: { icon: "🛻", label: "Took a title loan" },
-  collections: { icon: "🚨", label: "An account went to collections" },
-  maxed: { icon: "📈", label: "A card is 90% or more used" },
-  inquiries: { icon: "🔎", label: "3 or more hard inquiries this year" },
-  mismatch: { icon: "⚠️", label: "Numbers don't match the activity log" },
+  payday: { short: "Payday loan", icon: "💵", mark: "coins", label: "Took a payday loan" },
+  titleLoan: { short: "Title loan", icon: "🛻", mark: "car", label: "Took a title loan" },
+  collections: { short: "Collections", icon: "🚨", mark: "alert", label: "An account went to collections" },
+  maxed: { short: "Maxed card", icon: "📈", mark: "card", label: "A card is 90% or more used" },
+  inquiries: { short: "Many inquiries", icon: "🔎", mark: "report", label: "3 or more hard inquiries this year" },
+  mismatch: { short: "Log mismatch", icon: "⚠️", mark: "info", label: "Numbers don't match the activity log" },
 };
 
 // Save doc from Firestore -> { life, play, creature, ... }.
@@ -95,6 +97,7 @@ export function rosterRow(raw) {
     // Phase 10 saves show "prologue" until the bank account opens.
     step: play?.progression === 2 && play.prologue && !play.prologue.done ? "prologue" : raw.step || "",
     updatedAt: raw.updatedAt || null,
+    lastPlayed: lastPlayed(raw.updatedAt),
     xp: play?.xp ?? 0,
     rank: rankFor(play?.xp ?? 0).title,
     score: life?.score ?? null,
@@ -337,4 +340,64 @@ const SCHOOL = /^[^@\s]+@greermiddlecollege\.org$/;
 export function parseEmails(text) {
   const all = String(text).toLowerCase().split(/[\s,;]+/).filter(Boolean);
   return { good: [...new Set(all.filter((e) => SCHOOL.test(e)))], bad: all.filter((e) => !SCHOOL.test(e)) };
+}
+
+// ---------- The dashboard's summary (2026-10-23) ----------
+
+// When a save was last written, in ms: a Firestore Timestamp ({ seconds }),
+// a number or a date string. null when it's missing.
+export function lastPlayed(updatedAt) {
+  if (updatedAt == null) return null;
+  if (typeof updatedAt === "number") return Number.isFinite(updatedAt) ? updatedAt : null;
+  if (typeof updatedAt.toMillis === "function") return updatedAt.toMillis();
+  if (typeof updatedAt.seconds === "number") return updatedAt.seconds * 1000;
+  const t = Date.parse(updatedAt);
+  return Number.isNaN(t) ? null : t;
+}
+
+const DAY = 24 * 60 * 60 * 1000;
+
+// Students who need a look: flags from the save, or no play in a while.
+// Most reasons first, then by name.
+export function needsHelp(rows, { now = Date.now(), inactiveDays = 5 } = {}) {
+  return rows
+    .map((r) => {
+      const reasons = r.flags.map((f) => ({ kind: f, mark: FLAGS[f].mark, label: FLAGS[f].label }));
+      if (r.lastPlayed != null) {
+        const days = Math.floor((now - r.lastPlayed) / DAY);
+        if (days >= inactiveDays) reasons.push({ kind: "inactive", mark: "calendar", label: `Hasn't played in ${days} days` });
+      }
+      return { uid: r.uid, row: r, reasons };
+    })
+    .filter((x) => x.reasons.length)
+    .sort((a, b) => b.reasons.length - a.reasons.length || byName(a.row, b.row));
+}
+
+// Where the class is against the open chapter. finished: done with it.
+// working: in it now. behind: still in an earlier chapter. prologue: before
+// the bank opens. setup: hasn't finished making a creature and joining.
+export function pacing(rows, releasedChapter = 1, readyShare = 0.75) {
+  const out = { finished: 0, working: 0, behind: 0, prologue: 0, setup: 0, total: rows.length, ready: false };
+  for (const r of rows) {
+    if (r.step === "prologue") out.prologue++;
+    else if (!["hub", "done"].includes(r.step) && !r.chaptersDone) out.setup++;
+    else if (r.chaptersDone >= releasedChapter) out.finished++;
+    else if (r.chapter >= releasedChapter) out.working++;
+    else out.behind++;
+  }
+  out.ready = out.total > 0 && out.finished / out.total >= readyShare;
+  return out;
+}
+
+// What the grade is built on (SPEC §20): practice accuracy, chapters and
+// reflections. Medians for the class, and who owes a reflection.
+export function gradeSummary(rows) {
+  const mid = (xs) => median(xs.filter((x) => x != null));
+  return {
+    practice: mid(rows.map((r) => r.accuracyAll)),
+    chapters: mid(rows.map((r) => r.chaptersDone)),
+    reflections: mid(rows.map((r) => r.reflections)),
+    missingReflections: rows.filter((r) => r.reflections < r.chaptersDone).sort(byName).map((r) => ({ uid: r.uid, row: r, missing: r.chaptersDone - r.reflections })),
+    noPractice: rows.filter((r) => r.accuracyAll == null && r.chaptersDone > 0).length,
+  };
 }

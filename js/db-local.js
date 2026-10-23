@@ -62,7 +62,7 @@ export async function loadSave(uid) {
 }
 
 export async function writeSave(uid, save, summary) {
-  write(`saves/${uid}`, { ...JSON.parse(JSON.stringify(save)), summary });
+  write(`saves/${uid}`, { ...JSON.parse(JSON.stringify(save)), summary, updatedAt: Date.now() });
 }
 
 export async function flushTelemetry(uid, batchDoc, rollup) {
@@ -115,10 +115,13 @@ export async function updateClass(classId, fields) {
   for (const [k, v] of Object.entries(fields)) if (keys[k]) write(keys[k], v);
 }
 
+// "teacherDemo" can hold extra pretend saves, so the dashboard can be tried
+// with a full class on localhost.
 export async function listClassSaves() {
   const s = read(`saves/${LOCAL_USER.uid}`);
-  if (!s) return [];
-  return [{ uid: LOCAL_USER.uid, ...s.summary, creature: s.creature, play: s.play, onboarding: s.onboarding, lifeJson: s.life ? JSON.stringify(s.life) : "" }];
+  const demo = read("teacherDemo") || [];
+  if (!s) return demo;
+  return [{ uid: LOCAL_USER.uid, ...s.summary, creature: s.creature, play: s.play, onboarding: s.onboarding, updatedAt: s.updatedAt, lifeJson: s.life ? JSON.stringify(s.life) : "" }, ...demo];
 }
 
 export async function deleteStudentSave(uid) {

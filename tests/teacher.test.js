@@ -114,3 +114,57 @@ test("pasted reset emails keep school addresses only, once each", async () => {
   assert.deepEqual(r.bad, ["me@gmail.com"]);
   assert.deepEqual(parseEmails("   ").good, []);
 });
+
+// ---------- The dashboard's summary (2026-10-23) ----------
+
+const row = (o) => ({ uid: o.uid || "u", firstName: "A", lastName: o.uid || "u", step: "hub", chapter: 1, chaptersDone: 0, reflections: 0, accuracyAll: null, flags: [], lastPlayed: null, ...o });
+
+test("lastPlayed reads Firestore timestamps, numbers and dates", () => {
+  assert.equal(T.lastPlayed({ seconds: 100 }), 100000);
+  assert.equal(T.lastPlayed({ toMillis: () => 5 }), 5);
+  assert.equal(T.lastPlayed(42), 42);
+  assert.equal(T.lastPlayed("2026-10-01T00:00:00Z"), Date.parse("2026-10-01T00:00:00Z"));
+  assert.equal(T.lastPlayed(null), null);
+  assert.equal(T.lastPlayed("not a date"), null);
+});
+
+test("needsHelp lists flagged and inactive students, most reasons first", () => {
+  const now = Date.parse("2026-10-23T12:00:00Z");
+  const day = 86400000;
+  const out = T.needsHelp(
+    [
+      row({ uid: "fine", lastPlayed: now - day }),
+      row({ uid: "quiet", lastPlayed: now - 6 * day }),
+      row({ uid: "both", flags: ["payday"], lastPlayed: now - 9 * day }),
+      row({ uid: "never" }),
+    ],
+    { now, inactiveDays: 5 }
+  );
+  assert.deepEqual(out.map((x) => x.uid), ["both", "quiet"]);
+  assert.equal(out[0].reasons[0].label, "Took a payday loan");
+  assert.equal(out[1].reasons[0].label, "Hasn't played in 6 days");
+});
+
+test("pacing sorts the class against the open chapter", () => {
+  const p = T.pacing(
+    [
+      row({ uid: "a", chaptersDone: 2, chapter: 3 }),
+      row({ uid: "b", chaptersDone: 1, chapter: 2 }),
+      row({ uid: "c", chaptersDone: 0, chapter: 1 }),
+      row({ uid: "d", step: "prologue" }),
+      row({ uid: "e", step: "creature" }),
+    ],
+    2,
+    0.75
+  );
+  assert.deepEqual(p, { finished: 1, working: 1, behind: 1, prologue: 1, setup: 1, total: 5, ready: false });
+  assert.equal(T.pacing([row({ chaptersDone: 1 })], 1).ready, true);
+});
+
+test("gradeSummary gives medians and who owes a reflection", () => {
+  const g = T.gradeSummary([row({ uid: "a", chaptersDone: 2, reflections: 1, accuracyAll: 80 }), row({ uid: "b", chaptersDone: 1, reflections: 1, accuracyAll: 60 }), row({ uid: "c", chaptersDone: 1, reflections: 1 })]);
+  assert.equal(g.practice, 60);
+  assert.equal(g.chapters, 1);
+  assert.deepEqual(g.missingReflections.map((x) => [x.uid, x.missing]), [["a", 1]]);
+  assert.equal(g.noPractice, 1);
+});

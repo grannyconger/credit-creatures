@@ -7,10 +7,11 @@
   <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="../img/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
-  <meta name="theme-color" content="#5b3fc4">
+  <meta name="theme-color" content="#2f4a3a">
   <link rel="stylesheet" href="../css/tokens.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/teacher.css">
   <script>
     // Apply the saved appearance and reading mode before the page draws (js/ui/settings.js).
     try {
@@ -20,19 +21,16 @@
     } catch {}
   </script>
 </head>
-<body>
-  <main class="app teacher-page">
-    <section class="panel">
-      <header class="acct-head">
-        <div>
-          <h1>📣 Teacher Dashboard</h1>
-          <p class="tagline">Credit Creatures classroom controls.</p>
-        </div>
-        <button id="sign-out" class="secondary" type="button" hidden>Sign out</button>
-      </header>
-      <div id="teacher" aria-live="polite"><p class="muted">Loading...</p></div>
-    </section>
-  </main>
+<body class="bst-scope t-page">
+  <header class="t-head">
+    <p class="t-brand"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V9l3 2V7l4-3 4 3v4l3-2v12"/><path d="M10 21v-5a2 2 0 0 1 4 0v5"/></svg> Credit Creatures <span>Teacher</span></p>
+    <span id="t-picker" class="t-picker"></span>
+    <span class="t-head-end">
+      <span id="t-who" class="t-who"></span>
+      <button id="sign-out" class="t-btn on-ground" type="button" hidden>Sign out</button>
+    </span>
+  </header>
+  <main id="teacher" class="t-dash" aria-live="polite"><p class="t-muted">Loading...</p></main>
   <script type="module" src="../js/teacher/dashboard.js"></script>
 </body>
 </html>

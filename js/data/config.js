@@ -24,6 +24,10 @@ export const CONFIG = {
   // giftsPerWindow, giftMin, giftMax and groupMax, so change both places
   // together. Gifts (teacher request 2026-10-22): up to giftsPerWindow in a
   // giftHours window that starts with the first gift, then the count resets.
+  // Teacher dashboard (2026-10-23): a student shows under "Needs help" after
+  // inactiveDays without playing, and the dashboard says the class is ready
+  // for the next chapter once readyShare of it has finished the open one.
+  teacher: { inactiveDays: 5, readyShare: 0.75 },
   social: { giftHours: 20, giftsPerWindow: 4, giftMin: 5, giftMax: 50, groupMax: 6 },
 
   // The month loop after Chapter 1 (SPEC §8).
