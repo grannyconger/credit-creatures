@@ -5487,7 +5487,7 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
    =========================================================================== */
 .bst-home .home-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); gap: var(--b-s4); align-items: start; }
 .bst-home .home-room { display: grid; gap: var(--b-s3); }
-.cottage-stage {
+.home-stage {
   position: relative;
   aspect-ratio: 800 / 520;
   overflow: hidden;
@@ -5496,11 +5496,11 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
   box-shadow: var(--b-shadow-page);
   background: var(--b-ground-deep);
 }
-.cottage-stage .room-wall, .cottage-stage .room-wall svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.cottage-stage .room-creature { position: absolute; padding: 0; background: none; border: 0; z-index: 2; aspect-ratio: 1; cursor: pointer; }
-.cottage-stage .room-creature svg { width: 100%; height: 100%; display: block; }
-.cottage-stage .room-creature:hover, .cottage-stage .room-creature:focus-visible { filter: drop-shadow(0 0 10px var(--b-foxfire)); }
-.cottage-stage .room-object {
+.home-stage .room-wall, .home-stage .room-wall svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.home-stage .room-creature { position: absolute; padding: 0; background: none; border: 0; z-index: 2; aspect-ratio: 1; cursor: pointer; }
+.home-stage .room-creature svg { width: 100%; height: 100%; display: block; }
+.home-stage .room-creature:hover, .home-stage .room-creature:focus-visible { filter: drop-shadow(0 0 10px var(--b-foxfire)); }
+.home-stage .room-object {
   position: absolute;
   z-index: 1;
   padding: 0;
@@ -5509,15 +5509,15 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
   border-radius: var(--b-r-tag);
   cursor: pointer;
 }
-.cottage-stage .room-object[data-object="jar"] { z-index: 3; }
-.cottage-stage .room-object-art, .cottage-stage .room-object-art svg { display: block; width: 100%; height: 100%; }
-.cottage-stage .room-object-art svg { transition: filter var(--b-quick), transform var(--b-quick); }
+.home-stage .room-object[data-object="jar"] { z-index: 3; }
+.home-stage .room-object-art, .home-stage .room-object-art svg { display: block; width: 100%; height: 100%; }
+.home-stage .room-object-art svg { transition: filter var(--b-quick), transform var(--b-quick); }
 /* The glow, and a dashed ring so it never relies on the glow alone. */
-.cottage-stage .room-object:hover .room-object-art svg,
-.cottage-stage .room-object:focus-visible .room-object-art svg { filter: drop-shadow(0 0 8px var(--b-foxfire)) drop-shadow(0 0 3px var(--b-foxfire)); transform: translateY(-2px); }
-.cottage-stage .room-object:focus-visible, .cottage-stage .room-creature:focus-visible { outline: 2.5px dashed var(--b-foxfire); outline-offset: 2px; }
-.cottage-stage .room-object.locked .room-object-art { opacity: 0.55; filter: grayscale(0.7); }
-.cottage-stage .room-tag {
+.home-stage .room-object:hover .room-object-art svg,
+.home-stage .room-object:focus-visible .room-object-art svg { filter: drop-shadow(0 0 8px var(--b-foxfire)) drop-shadow(0 0 3px var(--b-foxfire)); transform: translateY(-2px); }
+.home-stage .room-object:focus-visible, .home-stage .room-creature:focus-visible { outline: 2.5px dashed var(--b-foxfire); outline-offset: 2px; }
+.home-stage .room-object.locked .room-object-art { opacity: 0.55; filter: grayscale(0.7); }
+.home-stage .room-tag {
   position: absolute;
   left: 50%;
   bottom: 100%;
@@ -5536,13 +5536,13 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
   box-shadow: var(--b-shadow-card);
   pointer-events: none;
 }
-.cottage-stage .room-tag strong { display: block; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-ui); }
-.cottage-stage .room-tag small { display: block; font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
-.cottage-stage .room-object:hover .room-tag, .cottage-stage .room-object:focus-visible .room-tag { display: block; }
+.home-stage .room-tag strong { display: block; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-ui); }
+.home-stage .room-tag small { display: block; font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+.home-stage .room-object:hover .room-tag, .home-stage .room-object:focus-visible .room-tag { display: block; }
 /* Objects near the top of the room put their tag below so it stays on screen. */
-.cottage-stage .room-object[data-object="window"] .room-tag, .cottage-stage .room-object[data-object="poster"] .room-tag, .cottage-stage .room-object[data-object="shelf"] .room-tag, .cottage-stage .room-object[data-object="door"] .room-tag { bottom: auto; top: 100%; }
-.cottage-stage .room-object[data-object="door"] .room-tag { left: auto; right: 0; transform: none; }
-.cottage-stage .room-badge {
+.home-stage .room-object[data-object="window"] .room-tag, .home-stage .room-object[data-object="poster"] .room-tag, .home-stage .room-object[data-object="shelf"] .room-tag, .home-stage .room-object[data-object="door"] .room-tag { bottom: auto; top: 100%; }
+.home-stage .room-object[data-object="door"] .room-tag { left: auto; right: 0; transform: none; }
+.home-stage .room-badge {
   position: absolute;
   right: -4px;
   top: -4px;
@@ -5558,12 +5558,12 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
   border: 2px solid var(--b-paper);
   border-radius: var(--b-r-round);
 }
-.cottage-stage .room-object.needs .room-object-art svg { animation: room-nudge 2.6s ease-in-out infinite; }
+.home-stage .room-object.needs .room-object-art svg { animation: room-nudge 2.6s ease-in-out infinite; }
 @keyframes room-nudge { 0%, 85%, 100% { transform: none; } 92% { transform: translateY(-3px); } }
-:root[data-motion="calm"] .cottage-stage .room-object.needs .room-object-art svg { animation: none; }
+:root[data-motion="calm"] .home-stage .room-object.needs .room-object-art svg { animation: none; }
 @media (prefers-reduced-motion: reduce) {
-  .cottage-stage .room-object.needs .room-object-art svg { animation: none; }
-  .cottage-stage .room-object:hover .room-object-art svg, .cottage-stage .room-object:focus-visible .room-object-art svg { transform: none; }
+  .home-stage .room-object.needs .room-object-art svg { animation: none; }
+  .home-stage .room-object:hover .room-object-art svg, .home-stage .room-object:focus-visible .room-object-art svg { transform: none; }
 }
 .bst-home .room-caption h1 { margin: 0; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-on-ground); }
 .bst-home .room-caption { color: var(--b-on-ground); }
@@ -5573,7 +5573,7 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
 .bst-home .room-caption .stage-seg > span { background: var(--b-gold); }
 .bst-home .room-caption .stage-text { color: var(--b-on-ground-soft); }
 .bst-home .room-caption .dream-name .ico-wrap { color: var(--b-gold); }
-.cottage-stage .room-object:hover, .cottage-stage .room-object:focus-visible { z-index: 6; }
+.home-stage .room-object:hover, .home-stage .room-object:focus-visible { z-index: 6; }
 
 /* ===========================================================================
    The Dock (slice 3): a tray above the bottom bar holding what you own.
@@ -5739,8 +5739,8 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 /* ===========================================================================
    Decorate mode (slice 5): a chip on each slot, and a tray of pieces.
    =========================================================================== */
-.cottage-stage.editing .room-object, .cottage-stage.editing .room-creature { opacity: 0.55; pointer-events: none; }
-.cottage-stage .slot-chip {
+.home-stage.editing .room-object, .home-stage.editing .room-creature { opacity: 0.55; pointer-events: none; }
+.home-stage .slot-chip {
   position: absolute;
   z-index: 8;
   display: inline-flex;
@@ -5757,8 +5757,8 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
   border-radius: var(--b-r-round);
   box-shadow: var(--b-shadow-card);
 }
-.cottage-stage .slot-chip:hover, .cottage-stage .slot-chip:focus-visible { background: var(--b-foxfire); border-style: solid; }
-.cottage-stage .slot-chip[aria-pressed="true"] { color: var(--b-on-rust); background: var(--b-rust); border: 2px solid var(--b-seal-deep); }
+.home-stage .slot-chip:hover, .home-stage .slot-chip:focus-visible { background: var(--b-foxfire); border-style: solid; }
+.home-stage .slot-chip[aria-pressed="true"] { color: var(--b-on-rust); background: var(--b-rust); border: 2px solid var(--b-seal-deep); }
 .bst-home .decorate-btn { justify-self: start; }
 .bst-home .decorate-btn[aria-pressed="true"] { border-style: dashed; }
 .bst-home .decor-help { margin: 0; color: var(--b-on-ground-soft); }
@@ -5954,3 +5954,16 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .bst-guild .cashier .cash-left .cash-amt.change { background: var(--b-paper); box-shadow: var(--b-shadow-card); }
 .bst-guild .panel.playing .job-board > h3 { display: none; }
 .bst-guild .cashier .cash-tray { min-height: 226px; }
+/* Fee Detective fits one screen: slim rows, and the action button stays in view above the bottom bar. */
+.bst-guild .fees button.fd-line { min-height: 38px; padding: 3px 8px; }
+.bst-guild .fees .fd-line { padding: 3px 8px; }
+.bst-guild .fees .fd-head { padding-bottom: var(--b-s1); }
+.bst-guild .fees .fd-paper { padding: var(--b-s2) var(--b-s4); }
+.bst-guild .fees .fd-stage { gap: var(--b-s2); }
+.bst-guild .fees .fd-actions { position: sticky; bottom: 92px; z-index: 6; justify-content: center; padding: var(--b-s2) 0; }
+.bst-guild .fees .mg-bar { margin: 0; padding: 0; min-height: 0; }
+.bst-guild .fees .fd-prompt { margin: 0; max-width: none; }
+.bst-guild .fees button.fd-line, .bst-guild .fees .fd-line { min-height: 34px; padding: 2px 8px; }
+.bst-guild .fees .fd-stage { margin-top: var(--b-s1); }
+.bst-academy .dc-choice.right::before { content: "✓ "; }
+.bst-academy .dc-choice.wrong::before { content: "✗ "; }

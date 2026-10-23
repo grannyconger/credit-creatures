@@ -25,7 +25,7 @@ export function render(root, { game, go, track, refreshWho }) {
   function paint() {
     board?.stop();
     board = null;
-    fill(panel, placeHeader({ go, iconName: "guild", title: "Arcade", subtitle: "Pick a job and work a shift. Pay depends on how well you do, and goes up with experience.", practice: run.practice }), moneyChips(run.life, play));
+    fill(panel, placeHeader({ go, iconName: "guild", title: "Arcade", subtitle: "Pick a job and work a shift. Pay depends on how well you do, and goes up with experience.", practice: run.practice, aside: moneyChips(run.life, play) }));
     const prologue = play.prologue && !play.prologue.done;
     if (prologue && P.shiftsLeft(play) <= 0) {
       add(panel, h("p.callout", icon("piggy", { size: 18 }), " Your piggy bank is filling up nicely. That's all the shifts for now. Check what Sage says to do next."), h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back home")));

@@ -44,7 +44,7 @@ export function feeDetective({ seed, timed, onDone, track }) {
     marked.clear();
     flash.textContent = "";
     flash.className = "mg-flash";
-    fill(prompt, h("small", `Statement ${k + 1} of ${statements.length}`), h("strong", "Mark every fee. If there are none, say so."));
+    fill(prompt, h("strong", `Statement ${k + 1} of ${statements.length}: mark every fee. If there are none, say so.`));
     const submit = h("button.big", { type: "button", "data-sound": "none", onclick: () => grade() });
     const label = () => (submit.textContent = marked.size ? `That's all the fees (${marked.size} marked)` : "No fees this month");
     const rows = st.lines.map((l) =>
@@ -75,7 +75,7 @@ export function feeDetective({ seed, timed, onDone, track }) {
       )
     );
     label();
-    fill(stage, statement(st, rows), h("div.row", submit));
+    fill(stage, statement(st, rows), h("div.row.fd-actions", submit));
     paintScore();
   }
 
@@ -137,7 +137,7 @@ export function feeDetective({ seed, timed, onDone, track }) {
     (missed || falseTaps ? sfx.error : sfx.correct)();
     track("feeGrade", { statement: k, fees: st.fees.length, found: found.length, missed, falseTaps });
     paintScore();
-    fill(stage, statement(st, rows), h("div.row", h("button.big", { type: "button", "data-autofocus": "", onclick: () => avoid(found.map((l) => l.fee), 0) }, found.length ? "Next: how to avoid them" : "Next")));
+    fill(stage, statement(st, rows), h("div.row.fd-actions", h("button.big", { type: "button", "data-autofocus": "", onclick: () => avoid(found.map((l) => l.fee), 0) }, found.length ? "Next: how to avoid them" : "Next")));
     stage.querySelector("button")?.focus();
   }
 
@@ -167,7 +167,7 @@ export function feeDetective({ seed, timed, onDone, track }) {
       track("feeAvoid", { fee, right: o.right });
       paintScore();
       const go = h("button.big", { type: "button", "data-autofocus": "", onclick: () => avoid(list, i + 1) }, "Next");
-      stage.append(h("div.row", go));
+      stage.append(h("div.row.fd-actions", go));
       go.focus();
     }
     fill(stage, h("div.fd-options", buttons));
@@ -188,7 +188,7 @@ export function feeDetective({ seed, timed, onDone, track }) {
           ? [h("h3", "What these fees cost"), h("p", `These fees cost you ${fmt(per)} a month. That's ${fmt(per * 12)} a year.`), h("p.muted", "Every dollar here is money you could keep.")]
           : [h("h3", "A fee-free month"), h("p", "Nothing to pay in fees. Keeping it that way saves real money over a year.")]
       ),
-      h("div.row", h("button.big", { type: "button", "data-autofocus": "", onclick: next }, k + 1 >= statements.length ? "Finish the shift" : "Next statement"))
+      h("div.row.fd-actions", h("button.big", { type: "button", "data-autofocus": "", onclick: next }, k + 1 >= statements.length ? "Finish the shift" : "Next statement"))
     );
     stage.querySelector("button")?.focus();
   }

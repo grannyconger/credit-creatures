@@ -16,7 +16,7 @@ export function cottageRoom({ creature, ageMonths, play, status, onPick, onCreat
   // preview: a piece being tried on (never saved). chips: slot buttons for Decorate mode.
   const cottage = { ...cottageOf(play), ...(preview ? { [preview.slot]: preview.id } : {}) };
   const editing = Boolean(chips);
-  const stage = h("div.cottage-stage", { class: editing ? "editing" : "" }, h("div.room-wall", { html: roomSvg(cottage), "aria-hidden": "true" }));
+  const stage = h("div.home-stage", { class: editing ? "editing" : "" }, h("div.room-wall", { html: roomSvg(cottage), "aria-hidden": "true" }));
   stage.append(
     h("button.room-creature", { type: "button", "aria-label": `Open ${creature.name}'s cottage`, style: { left: `${CREATURE_SPOT.x}%`, top: `${CREATURE_SPOT.y}%`, width: `${CREATURE_SPOT.w}%` }, onclick: onCreature, html: creatureSvg(creature, { size: 200, ageMonths, label: "" }) })
   );

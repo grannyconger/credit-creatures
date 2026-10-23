@@ -65,12 +65,14 @@ test("Home is the Cottage room: objects glow and lead places", async ({ page }) 
   const errors = watchErrors(page);
   await seededStudent(page);
   await open(page, "hub");
+  await closePopups(page);
   await expect(page.locator(".room-object")).toHaveCount(10);
   await page.hover('[data-object="window"]');
   await expect(page.locator('[data-object="window"] .room-tag')).toBeVisible();
   await page.click('[data-object="window"]');
   await expect(page).toHaveURL(/#\/map$/);
   await open(page, "hub");
+  await closePopups(page);
   await page.click('[data-object="door"]');
   await expect(page.locator("dialog.things-dialog[open]")).toBeVisible();
   expect(errors).toEqual([]);
@@ -140,5 +142,26 @@ test("Decorate: change a slot, preview an unowned piece, and it saves", async ({
   expect(await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).play.cottage?.rug ?? null, KEY)).toBe(null);
   await page.locator(".piece", { hasText: "Round gold rug" }).click();
   await expect.poll(() => page.evaluate((k) => JSON.parse(localStorage.getItem(k)).play.cottage?.rug, KEY)).toBe("rug-gold");
+  expect(errors).toEqual([]);
+});
+
+test("Fee Detective: a whole shift plays through and pays", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await open(page, "hub");
+  await closePopups(page);
+  await page.click(".bst-seal-btn");
+  await page.waitForTimeout(600);
+  await closePopups(page);
+  await open(page, "guild");
+  await closePopups(page);
+  await page.locator(".job-card", { hasText: "Fee Detective" }).click();
+  for (let i = 0; i < 60 && !(await page.locator(".bst-seal-btn", { hasText: "Collect" }).count()); i++) {
+    const option = page.locator(".fd-option:not([disabled])").first();
+    if (await option.count()) await option.click();
+    else await page.locator(".fd-stage button.big").first().click();
+    await closePopups(page);
+  }
+  await expect(page.locator(".bst-seal-btn", { hasText: "Collect" })).toBeVisible();
   expect(errors).toEqual([]);
 });
