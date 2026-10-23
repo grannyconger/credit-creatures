@@ -17,10 +17,10 @@ export function pieceFace(c) {
 }
 
 // A button for one bill or coin. extra: more attributes and children.
-export function pieceButton(c, { onclick, ariaLabel, key, scale = 1 } = {}) {
+export function pieceButton(c, { onclick, ariaLabel, key, scale = 1, quiet = false } = {}) {
   return h(
     "button.cash-piece",
-    { type: "button", class: pieceClass(c), style: c < 100 ? coinSize(c, scale) : null, onclick, "aria-label": ariaLabel || `${label(c)}${c < 100 ? `, a ${COIN[c][0]}` : ""}`, "aria-keyshortcuts": key || null },
+    { type: "button", class: pieceClass(c), "data-sound": quiet ? "none" : null, "data-boop": quiet ? "none" : null, style: c < 100 ? coinSize(c, scale) : null, onclick, "aria-label": ariaLabel || `${label(c)}${c < 100 ? `, a ${COIN[c][0]}` : ""}`, "aria-keyshortcuts": key || null },
     ...pieceFace(c),
     key ? h("kbd.cash-key", { "aria-hidden": "true" }, key) : null
   );

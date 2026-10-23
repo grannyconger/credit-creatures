@@ -21,7 +21,7 @@ test("a new game starts with only a piggy bank and three places", () => {
   assert.deepEqual(G.moneyChipKeys(play, null), ["piggy"]);
   for (const f of ["piggy", "guild", "market", "cottage", "cashier"]) assert.ok(G.hasFeature(play, f), f);
   for (const f of ["checking", "vault", "townhall", "loans", "card", "score", "checks", "ledger"]) assert.ok(!G.hasFeature(play, f), f);
-  assert.deepEqual(G.openJobs(play), ["cashier"]);
+  assert.deepEqual(G.openJobs(play), ["cashier", "checks", "overdraft"], "the prologue is exactly these three jobs");
   assert.equal(P.canPlay(play, 5), false, "no chapter until the prologue is done");
   assert.equal(G.opensText("garage"), "Opens in Chapter 2");
 });
@@ -185,4 +185,20 @@ test("the roster sorts by last name, then first name, with the Google name as a 
   assert.deepEqual([rows[1].firstName, rows[1].lastName], ["Amy", "Brown"], "older students fall back to Google");
   assert.deepEqual(rows.slice().sort(byName).map((r) => r.uid), ["c", "b", "a"]);
   assert.ok(rosterCsv(rows).startsWith("Last name,First name,"));
+});
+
+test("the prologue allows exactly 3 shifts, one each of cashier, checks and overdraft", () => {
+  const play = phased();
+  assert.deepEqual(G.openJobs(play), G.PROLOGUE_JOBS);
+  let life = E.createLife({ seed: "pro", ageMonths: CONFIG.onboarding.startAgeMonths });
+  for (const job of G.PROLOGUE_JOBS) {
+    const r = P.workShift(play, life, 60, `work shift: ${job}`, job);
+    assert.ok(r.ok, job);
+    life = r.life;
+  }
+  assert.deepEqual(play.prologue.worked, ["cashier", "checks", "overdraft"]);
+  assert.equal(P.shiftsLeft(play), 0);
+  assert.equal(P.workShift(play, life, 60, "one more", "cashier").ok, false, "no fourth shift");
+  play.prologue.welcomed = true;
+  assert.equal(G.prologueStep(play).id, "market", "the shift steps are done");
 });

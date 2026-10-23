@@ -17,9 +17,11 @@ import { registerBalancer } from "./minigames/register-balancer.js";
 import { checkHunt } from "./minigames/check-hunt.js";
 import { countDrawer } from "./minigames/count-drawer.js";
 import { unitPriceShowdown } from "./minigames/unit-price.js";
+import { feeDetective } from "./minigames/fee-detective.js";
+import { hasGuide, openGameGuide } from "./game-guide.js";
 
 // The games that only need the shared options (seed, timed, onDone, track).
-const GAMES = { ledger: ledgerSort, cashier: cashierRush, overdraft: spotOverdraft, register: registerBalancer, checkhunt: checkHunt, drawer: countDrawer, unitprice: unitPriceShowdown };
+const GAMES = { ledger: ledgerSort, cashier: cashierRush, overdraft: spotOverdraft, register: registerBalancer, checkhunt: checkHunt, drawer: countDrawer, unitprice: unitPriceShowdown, fees: feeDetective };
 
 const REACTIONS = [
   ["up", "👍", "I liked this job"],
@@ -64,17 +66,21 @@ export function jobBoard({ game, run, track, save, onCollected }) {
           .map(([key, job]) => {
           const xp = experienceBonus(play, key) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
           const stats = play.jobs[key];
-          return h(
+          const worked = Boolean(play.prologue && !play.prologue.done && (play.prologue.worked || []).includes(key));
+          const guide = hasGuide(key) ? h("button.job-guide.small.secondary", { type: "button", onclick: () => openGameGuide(key, { track }) }, icon("scroll", { size: 14 }), " Guide") : null;
+          const card = h(
             "button.job-card",
-            { type: "button", onclick: () => start(key) },
+            { type: "button", disabled: worked, onclick: () => start(key) },
             h("span.job-icon", { "aria-hidden": "true" }, job.mark ? icon(job.mark, { size: 30 }) : job.icon),
             h("strong", job.title),
             h("small", job.job),
             h("span", job.skill),
             h("span.job-pay", `Pays ${money(j.pay.min + xp)} to ${money(j.pay.max + xp)}`),
-            stats ? h("small", `${stats.shifts} shift${stats.shifts === 1 ? "" : "s"} worked. Best: ${stats.best}.`) : h("small", "New job!"),
+            worked ? h("small.good-text", "Worked. Done for now.") : null,
+            stats && !worked ? h("small", `${stats.shifts} shift${stats.shifts === 1 ? "" : "s"} worked. Best: ${stats.best}.`) : worked ? null : h("small", "New job!"),
             xp ? h("small.good-text", `+${money(xp)} for experience`) : null
           );
+          return h("div.job-slot", card, guide);
         })
       ),
       lockedJobs(),
@@ -83,9 +89,13 @@ export function jobBoard({ game, run, track, save, onCollected }) {
   }
 
   function start(key) {
+    if (play.prologue && !play.prologue.done && (play.prologue.worked || []).includes(key)) return;
     const shifts = play.active ? play.active.month.shifts : `p${play.prologue?.shifts ?? 0}`;
     const seed = `${run.life.seed}:job:${run.life.month}:${shifts}`;
     track("minigameStart", { game: key, timed });
+    // While a shift runs, the page header and money fold away so the game fits one screen.
+    el.closest(".panel")?.classList.add("playing");
+    window.scrollTo(0, 0);
     // A minigame can only end a shift once.
     let ended = false;
     const done = (result) => {
@@ -95,19 +105,20 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     };
     const opts = { seed, timed, onDone: done, track };
     running = key === "checks" ? checkWriter({ ...opts, life: run.life, creature: game.save.creature, payFor: (right) => jobPay(play, "checks", { right }) }) : GAMES[key](opts);
-    fill(el, h("h3", icon(JOBS[key].mark || "guild", { size: 24 }), ` ${JOBS[key].title}`), running);
+    fill(el, h("h3", icon(JOBS[key].mark || "guild", { size: 24 }), ` ${JOBS[key].title} `, hasGuide(key) ? h("button.small.secondary.job-guide", { type: "button", onclick: () => openGameGuide(key, { track }) }, "Guide") : null), running);
     // A minigame can say where the keyboard starts (Cashier Rush: Give change).
     (el.querySelector("[data-autofocus]") || el.querySelector("button"))?.focus();
   }
 
   function finish(key, result) {
     running = null;
+    el.closest(".panel")?.classList.remove("playing");
     const pay = jobPay(play, key, result);
     let reaction = "";
     // The pay is banked and saved the moment the shift ends (bug fix
     // 2026-10-22: leaving before Collect lost the whole shift). Collect is
     // just the coins and the reaction now.
-    const r = P.workShift(play, run.life, pay, `work shift: ${JOBS[key].title}`);
+    const r = P.workShift(play, run.life, pay, `work shift: ${JOBS[key].title}`, key);
     if (r.ok) {
       run.life = r.life;
       recordShift(play, key, { right: result.right, pay });
@@ -154,6 +165,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     fill(
       el,
       h("h3", icon(JOBS[key].mark || "guild", { size: 24 }), " Shift over!"),
+      hasGuide(key) ? h("p.center", h("button.small.secondary", { type: "button", onclick: () => openGameGuide(key, { track, tab: "irl" }) }, icon("scroll", { size: 14 }), " Read the guide")) : null,
       h("div.big-number", money(pay)),
       h("p.center", `${result.right} right${result.wrong ? `, ${result.wrong} missed` : ""}.`),
       result.depositOnly ? h("p.callout.good", "Smart: \"For deposit only\" means nobody else can cash your check.") : null,
@@ -169,6 +181,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
   board();
   // The month screen calls this when it repaints, so a running timer stops cleanly.
   el.stop = () => {
+    el.closest(".panel")?.classList.remove("playing");
     running?.stop?.();
     logShift?.();
   };

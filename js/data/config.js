@@ -83,6 +83,9 @@ export const CONFIG = {
       checkhunt: { seconds: 120, rightMs: 1300, wrongMs: 2600, perRight: 8 },
       drawer: { drawers: 2, seconds: 240, perRight: 4 },
       unitprice: { rounds: 10, seconds: 120, perRight: 8 },
+      // Fee Detective: statements per shift (one has no fees), lines on each,
+      // and a pause after each reveal. perRight is dollars per right answer.
+      fees: { statements: 3, lines: 13, seconds: 240, perRight: 4, noFeePoints: 2, revealMs: 1600 },
     },
     monthRecordsKept: 6,
   },
@@ -93,8 +96,9 @@ export const CONFIG = {
     cardAgeMonths: 18 * 12,
     tutorialMonths: 2,
     tutorialShift: { base: 20, perCorrect: 15 },
-    // Phase 10 prologue: shifts before the bank opens (3 are needed, up to this many allowed).
-    prologueShifts: 5,
+    // Phase 10 prologue: exactly 3 shifts before the bank opens, one each of
+    // Cashier Rush, Check Writer and Spot the Overdraft (teacher request 2026-10-23).
+    prologueShifts: 3,
     // Monthly part-time pay during the time skip, and the share of it spent.
     teenIncome: [80, 160],
     teenSpendShare: [0.45, 0.8],

@@ -26,7 +26,7 @@ Added to each entry in `JOBS` (`js/data/minigames.js`) when the game is built or
 | Unit Price Showdown | 11 | spending | A3 | Yes, one pick per round | Pick the better buy |
 
 ## Next to build (specs survive)
-**6. Fee Detective** (banking, C3 and C5, Battle: yes for single-line rounds)
+**6. Fee Detective** (BUILT 2026-10-23, see PROGRESS.md) (banking, C3 and C5, Battle: yes for single-line rounds)
 - Goal: tap every fee on a monthly statement, then say how each could have been avoided.
 - Keep simple: 12 to 15 lines in Chapter 1 (the doc said 20 to 25, too long for a shift), 3 or 4 fees, and decoys (purchases, a deposit, interest earned).
 - After the hunt: one avoid-it question per fee found, and "These fees cost you $X a month, $Y a year."

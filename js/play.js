@@ -188,11 +188,14 @@ export function shiftsLeft(play) {
 }
 
 // Pay comes from the minigame (js/progress.js jobPay). It goes into checking as income.
-export function workShift(play, life, pay, source = "work shift") {
+// job: which game was played. The prologue lets each of its three jobs be worked once.
+export function workShift(play, life, pay, source = "work shift", job = null) {
   if (shiftsLeft(play) <= 0) return { life, ok: false, message: "No shifts left this month." };
   const r = earn(life, pay, source);
-  if (play.prologue && !play.prologue.done) play.prologue.shifts++;
-  else play.active.month.shifts++;
+  if (play.prologue && !play.prologue.done) {
+    play.prologue.shifts++;
+    if (job) (play.prologue.worked ||= []).push(job);
+  } else play.active.month.shifts++;
   return { ...r, pay };
 }
 

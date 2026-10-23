@@ -52,6 +52,13 @@ export const JOBS = {
     job: "Closing shift at Market",
     skill: "Count the cash drawer and find out if it's over or short.",
   },
+  fees: {
+    mark: "statement",
+    icon: "🕵️",
+    title: "Fee Detective",
+    job: "Statement auditor at the Vault",
+    skill: "Tap every fee on a bank statement, then say how to avoid each one.",
+  },
   unitprice: {
     mark: "market",
     icon: "⚖️",
@@ -263,3 +270,55 @@ export function gradeCheck(answers, { dateText, payee, cents, memo }) {
 }
 
 export const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+// ---------- Fee Detective ----------
+
+// The fees a checking statement can hold. line is how the bank prints it.
+// amounts are in cents. avoid is the right answer to "how could you avoid
+// this?", wrong are two answers that sound okay but don't work.
+export const FEE_KINDS = {
+  maintenance: {
+    line: "MONTHLY MAINTENANCE FEE",
+    amounts: [500, 800, 1000, 1200],
+    why: "A maintenance fee is what some banks charge just for having the account.",
+    avoid: "Keep the minimum balance or set up direct deposit. Many banks drop the fee then.",
+    wrong: ["Close and reopen the account every month.", "Pay your bills with checks so it doesn't count."],
+  },
+  overdraft: {
+    line: "OVERDRAFT FEE",
+    amounts: [3500],
+    why: "An overdraft fee is charged when a purchase is bigger than your balance and the bank pays it anyway.",
+    avoid: "Check your balance before you buy, and turn on low-balance alerts.",
+    wrong: ["Buy it anyway and hope the bank forgets.", "Only shop on weekends."],
+  },
+  atm: {
+    line: "OUT-OF-NETWORK ATM FEE",
+    amounts: [300, 350, 400, 450],
+    why: "You pay this when you use an ATM that doesn't belong to your bank.",
+    avoid: "Use your own bank's ATMs, or ask for cash back at a store.",
+    wrong: ["Take out cash in smaller amounts, more often.", "Use the ATM at night."],
+  },
+  paper: {
+    line: "PAPER STATEMENT FEE",
+    amounts: [200, 300, 500],
+    why: "Some banks charge you for mailing a paper statement.",
+    avoid: "Switch to free online statements.",
+    wrong: ["Throw the paper statements away.", "Ask the bank to send two copies."],
+  },
+  inactive: {
+    line: "ACCOUNT INACTIVITY FEE",
+    amounts: [500, 1000],
+    why: "A bank may charge this when an account sits unused for months.",
+    avoid: "Make a deposit or a debit card purchase every few months.",
+    wrong: ["Never touch the account.", "Check your balance more often."],
+  },
+};
+
+// Lines that are not fees, and what to say if a student taps one.
+export const FEE_DECOYS = {
+  purchase: "That's a purchase you chose to make. It's not a fee.",
+  deposit: "That's money coming in. A fee is money going out.",
+  transfer: "Moving your own money to savings isn't a fee. It's still yours.",
+  interest: "Interest earned is money the bank pays you. It's the opposite of a fee.",
+};
+export const FEE_TRANSFERS = ["Transfer to savings", "Transfer from savings"];

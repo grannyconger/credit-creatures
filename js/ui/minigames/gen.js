@@ -2,7 +2,7 @@
 // Pure and seeded (rng from createRng), so the same seed deals the same
 // shift, and every one is tested in Node (tests/jobs.test.js). Money is in
 // whole cents everywhere and only turns into dollars on screen.
-import { SPENDS, EARNINGS, CHECK_PAYEES, CHECK_PARTS, CHECK_FLAWS, DRAWER_FLOATS, PRODUCTS, MONTH_NAMES, DENOMINATIONS, amountInWords } from "../../data/minigames.js";
+import { FEE_KINDS, FEE_TRANSFERS, SPENDS, EARNINGS, CHECK_PAYEES, CHECK_PARTS, CHECK_FLAWS, DRAWER_FLOATS, PRODUCTS, MONTH_NAMES, DENOMINATIONS, amountInWords } from "../../data/minigames.js";
 
 export const fmt = (cents) => `${cents < 0 ? "-" : ""}$${(Math.abs(cents) / 100).toFixed(2)}`;
 const cents = (rng, lo, hi, step = 1) => Math.round(rng.int(Math.ceil(lo / step), Math.floor(hi / step)) * step);
@@ -209,4 +209,49 @@ export function unitText(opt) {
   const per = unitPrice(opt) / 10000;
   const unit = opt.baseUnit.replace(/s$/, "");
   return `$${per.toFixed(per < 0.1 ? 3 : 2)} per ${unit}`;
+}
+
+// ---------- Fee Detective ----------
+
+// One monthly statement: lines with a date, a name and an amount in cents
+// (negative is money out). fees lists the fee lines by index. A statement
+// with none is a real answer ("No fees this month"). Fees never repeat on a
+// statement, and the decoys include a transfer and interest earned.
+export function feeStatement(rng, { feeCount = 3, lines = 13, month = 9 } = {}) {
+  const kinds = shuffle(rng, Object.keys(FEE_KINDS)).slice(0, feeCount);
+  const rows = kinds.map((fee) => ({ type: "fee", fee, text: FEE_KINDS[fee].line, amount: -rng.pick(FEE_KINDS[fee].amounts) }));
+  const decoys = [
+    { type: "interest", text: "INTEREST EARNED", amount: rng.int(1, 9) },
+    { type: "transfer", text: rng.pick(FEE_TRANSFERS), amount: (rng.chance(0.5) ? -1 : 1) * cents(rng, 2000, 8000, 500) },
+  ];
+  const extra = lines - rows.length - decoys.length;
+  const deposits = rng.int(2, 3);
+  for (let i = 0; i < extra; i++) {
+    if (i < deposits) decoys.push({ type: "deposit", text: rng.pick(EARNINGS).toUpperCase(), amount: cents(rng, 1500, 9000, 25) });
+    else decoys.push({ type: "purchase", text: rng.pick(SPENDS).toUpperCase(), amount: -cents(rng, 299, 4999) });
+  }
+  const all = shuffle(rng, [...rows, ...decoys]).map((r, i) => ({ ...r, day: 0, id: i }));
+  // Dates run forward down the page.
+  const days = Array.from({ length: all.length }, () => rng.int(1, 28)).sort((a, b) => a - b);
+  all.forEach((r, i) => (r.day = days[i]));
+  const feeLines = all.filter((r) => r.type === "fee");
+  const total = feeLines.reduce((sum, r) => sum - r.amount, 0);
+  return { month, lines: all, fees: feeLines.map((r) => r.id), total };
+}
+
+// A shift: `statements` of them, and exactly one has no fees. The others
+// have 3 and 4. Returns the statements and the most points a student can earn.
+export function feeStatements(rng, { statements = 3, lines = 13, noFeePoints = 2 } = {}) {
+  const plan = shuffle(rng, [3, 4, 0, 3, 4].slice(0, Math.max(1, statements)));
+  if (!plan.includes(0)) plan[0] = 0;
+  const list = plan.map((feeCount, i) => ({ ...feeStatement(rng, { feeCount, lines, month: (9 + i) % 12 }), noFee: feeCount === 0 }));
+  const most = list.reduce((sum, st) => sum + (st.noFee ? noFeePoints : st.fees.length * 2), 0);
+  return { statements: list, most };
+}
+
+// "Choose how to avoid it": the right answer and two that don't work, shuffled.
+export function avoidOptions(rng, fee) {
+  const k = FEE_KINDS[fee];
+  const opts = shuffle(rng, [{ text: k.avoid, right: true }, ...k.wrong.map((text) => ({ text, right: false }))]);
+  return opts;
 }

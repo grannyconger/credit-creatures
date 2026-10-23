@@ -279,7 +279,7 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
 }
 
 const PLACES_BY_ID = Object.fromEntries(PLACES.map((p) => [p.id, p]));
-const PROLOGUE_LABELS = { welcome: "Meet Sage", firstShift: "Work a shift", moreShifts: "Work 3 shifts", market: "Visit the Market", cottage: "Visit your Cottage", bank: "Open a bank account" };
+const PROLOGUE_LABELS = { welcome: "Meet Sage", firstShift: "Work a shift", moreShifts: "Work all 3 jobs once", market: "Visit the Market", cottage: "Visit your Cottage", bank: "Open a bank account" };
 
 // The dream's 3 stages as a track, plus the current stage's goals. Never
 // color alone: the words say which stage and how many goals are met.

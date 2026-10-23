@@ -212,6 +212,10 @@
      Light: a pale sheet with ink text (ink on bar 13:1). Dark: lifted moss
      with pale text (on bar 5:1). Accent and hot are the gold and foxfire
      that stay readable on each. */
+  /* A right answer: fill, the text on it, and green text on paper. */
+  --b-right: #3b5e33;
+  --b-on-right: #f3f6e8;
+  --b-good-ink: #3b5e33;
   --b-bar: #e7ebd6;
   --b-on-bar: #1b2420;
   --b-on-bar-soft: #34402f;
@@ -373,7 +377,13 @@
     --b-ground-deep: #0a110d;
     --b-on-ground: #dce2cc;
     --b-on-ground-soft: #a9b5a0;
-    --b-bar: #4c7355;
+    --b-right: #9fcf84;
+    --b-on-right: #0e1a10;
+    --b-good-ink: #9fcf84;
+    --b-right: #9fcf84;
+  --b-on-right: #0e1a10;
+  --b-good-ink: #9fcf84;
+  --b-bar: #4c7355;
     --b-on-bar: #f4f7e8;
     --b-on-bar-soft: #e8efd9;
     --b-bar-edge: #f0c766;

@@ -29,6 +29,7 @@ export const FEATURES = {
   checkhunt: { at: 1 },
   drawer: { at: 1 },
   unitprice: { at: 1 },
+  fees: { at: 1 },
   loans: { at: 2 },
   garage: { at: 2 },
   homeLoan: { at: 2 },
@@ -93,7 +94,8 @@ export function payMethods(play, life) {
 
 // The jobs at the Arcade so far.
 export function openJobs(play) {
-  return ["cashier", "checks", "overdraft", "register", "checkhunt", "drawer", "unitprice", "ledger"].filter((j) => hasFeature(play, j));
+  if (play.prologue && !play.prologue.done) return PROLOGUE_JOBS;
+  return ["cashier", "checks", "overdraft", "register", "checkhunt", "drawer", "unitprice", "fees", "ledger"].filter((j) => hasFeature(play, j));
 }
 
 // One celebration per stage, shown when the stage starts.
@@ -155,8 +157,11 @@ export const PROLOGUE_STEPS = [
   { id: "bank", place: "vault", check: (s) => s.bankOpened },
 ];
 
+// The three shifts of the prologue, one of each, in any order.
+export const PROLOGUE_JOBS = ["cashier", "checks", "overdraft"];
+
 export function newPrologue() {
-  return { done: false, welcomed: false, shifts: 0, marketVisited: false, cottageVisited: false, bankOpened: false };
+  return { done: false, welcomed: false, shifts: 0, worked: [], marketVisited: false, cottageVisited: false, bankOpened: false };
 }
 
 export function prologueStep(play) {

@@ -110,3 +110,40 @@ test("the five new jobs open in Chapter 1 and pay inside the usual range", () =>
     assert.equal(jobPay(play, key, { right: 0, wrong: most }), CONFIG.play.jobs.pay.min);
   }
 });
+
+test("Fee Detective: every statement is fair, one has no fees, and a perfect shift pays inside the range", () => {
+  const c = CONFIG.play.jobs.fees;
+  for (const s of seeds) {
+    const { statements, most } = G.feeStatements(E.createRng(s), { statements: c.statements, lines: c.lines, noFeePoints: c.noFeePoints });
+    assert.equal(statements.length, c.statements);
+    assert.equal(statements.filter((st) => st.noFee).length, 1, `${s}: exactly one fee-free statement`);
+    for (const st of statements) {
+      assert.equal(st.lines.length, c.lines);
+      assert.ok(st.noFee ? st.fees.length === 0 : st.fees.length >= 3 && st.fees.length <= 4, s);
+      assert.ok(st.lines.every((l) => Number.isInteger(l.amount)), "whole cents");
+      for (const l of st.lines) {
+        if (l.type === "fee") assert.ok(l.amount < 0 && st.fees.includes(l.id));
+        else assert.ok(!st.fees.includes(l.id));
+      }
+      assert.equal(new Set(st.lines.filter((l) => l.type === "fee").map((l) => l.fee)).size, st.fees.length, "no repeated fee kinds");
+      assert.ok(st.lines.some((l) => l.type === "interest") && st.lines.some((l) => l.type === "transfer"), "has tricky decoys");
+      assert.deepEqual(st.lines.map((l) => l.day), [...st.lines.map((l) => l.day)].sort((a, b) => a - b), "dates run forward");
+      assert.equal(st.total, st.lines.filter((l) => l.type === "fee").reduce((n, l) => n - l.amount, 0));
+    }
+    const top = jobPay(P.newPlay(), "fees", { right: most, wrong: 0 });
+    assert.ok(top >= 100 && top <= CONFIG.play.jobs.pay.max, `${s}: perfect pays ${top}`);
+  }
+  assert.equal(jobPay(P.newPlay(), "fees", { right: 0, wrong: 20 }), CONFIG.play.jobs.pay.min);
+  assert.equal(unlockStage("fees"), 1);
+  assert.ok(JOBS.fees.title);
+});
+
+test("Fee Detective: same seed deals the same shift, and each avoid question has one right answer", () => {
+  const a = G.feeStatements(E.createRng("same"));
+  assert.deepEqual(a, G.feeStatements(E.createRng("same")));
+  for (const fee of ["maintenance", "overdraft", "atm", "paper", "inactive"]) {
+    const opts = G.avoidOptions(E.createRng(fee), fee);
+    assert.equal(opts.length, 3);
+    assert.equal(opts.filter((o) => o.right).length, 1);
+  }
+});

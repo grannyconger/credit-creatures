@@ -16,6 +16,12 @@ import { label, pieceButton } from "./money-art.js";
 
 const fmt = (cents) => `$${(cents / 100).toFixed(2)}`;
 
+// The drawer, in the order it's laid out: coins on top (quarter, dime, nickel,
+// penny), then bills ($10, $5, $1). There is no $20 bill, because change never
+// reaches $20 (teacher request 2026-10-23). Number keys follow this order.
+const ORDER = [25, 10, 5, 1, 1000, 500, 100];
+const SCALE = 1.0;
+
 export function cashierRush({ seed, timed, onDone, track }) {
   const cfg = CONFIG.play.jobs.cashier;
   const rng = createRng(seed);
@@ -38,17 +44,18 @@ export function cashierRush({ seed, timed, onDone, track }) {
   const clock = h("span.mg-clock", { role: "timer" });
   const score = h("span.mg-score");
   const ticket = h("div.cash-ticket");
-  const tray = h("div.cash-tray", { "aria-live": "polite" });
+  const tray = h("div.cash-tray");
+  const changeBox = h("div.cash-amt.change", { "aria-live": "polite" });
   const flash = h("p.mg-flash", { role: "status" });
   const hintBox = h("div.cash-hint");
   // A cash drawer: bills in one row, coins in the other, in fixed slots that
   // never move, so hands learn where each is. Each slot has a number key.
-  const piece = (c, i) => pieceButton(c, { onclick: () => addPiece(c), ariaLabel: `Add ${label(c)}`, key: String(i + 1) });
+  const piece = (c) => pieceButton(c, { onclick: () => addPiece(c), ariaLabel: `Add ${label(c)}`, key: String(ORDER.indexOf(c) + 1), scale: SCALE });
   const money = h(
     "div.cash-money.cash-drawer",
-    { role: "group", "aria-label": "Bills and coins" },
-    h("div.drawer-row.bills", DENOMINATIONS.filter((c) => c >= 100).map((c) => piece(c, DENOMINATIONS.indexOf(c)))),
-    h("div.drawer-row.coins", DENOMINATIONS.filter((c) => c < 100).map((c) => piece(c, DENOMINATIONS.indexOf(c))))
+    { role: "group", "aria-label": "Coins and bills" },
+    h("div.drawer-row.coins", ORDER.filter((c) => c < 100).map(piece)),
+    h("div.drawer-row.bills", ORDER.filter((c) => c >= 100).map(piece))
   );
   const giveBtn = h("button.big", { type: "button", "data-sound": "none", "data-autofocus": "", "aria-keyshortcuts": "Enter", onclick: () => give() }, "Give change");
   const undo = () => busy || ((given = given.slice(0, -1)), paintTray());
@@ -69,28 +76,20 @@ export function cashierRush({ seed, timed, onDone, track }) {
     }
   }
 
+  // Left: the sale and the change counted so far. Middle: the drawer. The
+  // Give change button sits bottom and centered, with Undo and Clear to its left.
   const el = h(
     "div.minigame.cashier",
     h("div.mg-bar", clock, score, calcBtn),
+    h("div.cash-counter", h("div.cash-left", ticket, changeBox, timed ? null : hintBox), h("div.cash-right", money, tray), calcSlot),
     h(
-      "div.cash-counter",
-      h(
-        "div.cash-main",
-        ticket,
-        timed ? null : hintBox,
-        money,
-        tray,
-        h(
-          "div.row.cash-actions",
-          h("button.secondary", { type: "button", "aria-keyshortcuts": "Backspace", onclick: undo }, "Undo"),
-          h("button.secondary", { type: "button", "aria-keyshortcuts": "Escape", onclick: clear }, "Clear"),
-          giveBtn
-        ),
-        flash,
-        h("p.cash-keys-help", "Keys: 1 to 8 add money, Enter gives change, Backspace undoes, Esc clears. Tap money in the tray to take it back.")
-      ),
-      calcSlot
-    )
+      "div.cash-actions",
+      h("div.cash-actions-left", h("button.secondary", { type: "button", "aria-keyshortcuts": "Backspace", onclick: undo }, "Undo"), h("button.secondary", { type: "button", "aria-keyshortcuts": "Escape", onclick: clear }, "Clear")),
+      giveBtn,
+      h("span")
+    ),
+    flash,
+    h("p.cash-keys-help", "Keys: 1 to 7 add money, Enter gives change, Backspace undoes, Esc clears. Tap money in the tray to take it back.")
   );
 
   // No-timer mode only: a hint that shows how a cashier counts up from the
@@ -114,22 +113,25 @@ export function cashierRush({ seed, timed, onDone, track }) {
     const paid = [500, 1000, 2000, 5000].find((b) => b > price);
     customer = { item: CASHIER_ITEMS[Math.floor(rng.next() * CASHIER_ITEMS.length)], price, paid };
     given = [];
-    fill(ticket, h("p", `A customer buys ${customer.item} for `, h("strong", fmt(price)), "."), h("p", "They hand you ", h("strong", fmt(paid)), ". Count back the change."));
+    fill(
+      ticket,
+      h("p.cash-item", `A customer buys ${customer.item}.`),
+      h("div.cash-amounts", h("div.cash-amt.price", h("small", "Charged"), h("strong", fmt(price))), h("div.cash-amt.paid", h("small", "They hand you"), h("strong", fmt(paid)))),
+      h("p.cash-ask", "Count back the change.")
+    );
     paintHint();
     paintTray();
   }
 
   function paintTray() {
     const sum = given.reduce((a, b) => a + b, 0);
+    // The same bills and coins as the drawer, at the same size and color.
+    fill(changeBox, h("small", "Your change so far"), h("strong", fmt(sum)));
     fill(
       tray,
-      h("span", "Change so far: ", h("strong", fmt(sum))),
-      h(
-        "span.tray-pieces",
-        given.map((c, i) =>
-          h("button.tray-piece", { type: "button", "data-sound": "none", "data-boop": "none", class: c >= 100 ? "bill" : "coin", "aria-label": `Take back ${label(c)}`, title: "Tap to take it back", onclick: () => takeBack(i) }, label(c))
-        )
-      )
+      given.length
+        ? h("div.tray-pieces", given.map((c, i) => pieceButton(c, { onclick: () => takeBack(i), ariaLabel: `Take back ${label(c)}`, scale: SCALE, quiet: true })))
+        : h("p.tray-empty", "Tap coins and bills to count out the change.")
     );
     score.textContent = `✓ ${right}   ✗ ${wrong}`;
   }
@@ -193,11 +195,11 @@ export function cashierRush({ seed, timed, onDone, track }) {
   function onKey(e) {
     if (over || e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.("input, textarea, select, .calc, dialog")) return;
     const n = Number(e.key);
-    if (Number.isInteger(n) && n >= 1 && n <= DENOMINATIONS.length) {
+    if (Number.isInteger(n) && n >= 1 && n <= ORDER.length) {
       e.preventDefault();
       keyUses++;
-      addPiece(DENOMINATIONS[n - 1]);
-      // The drawer's slots are in the same order as DENOMINATIONS.
+      addPiece(ORDER[n - 1]);
+      // The drawer's slots are in the same order as ORDER.
       const btn = money.querySelectorAll(".cash-piece")[n - 1];
       btn?.classList.add("pressed");
       setTimeout(() => btn?.classList.remove("pressed"), 90);
