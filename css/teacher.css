@@ -599,37 +599,73 @@ dialog.t-drawer::backdrop { background: color-mix(in srgb, var(--b-shadow-ink) 4
 .t-session p { margin: 2px 0 0; }
 .t-session-time { font-weight: 700; }
 
-/* Projector mode: big type, nothing private. */
+/* Projector mode: big type, nothing private, and everything fits on one
+   screen with no scrolling (teacher request 2026-10-23). Sizes come from the
+   window's height and width (the smaller of the two), so it fits a 1280 by
+   720 projector as well as a 1920 by 1080 one. */
 dialog.t-projector {
+  --u: min(1vh, 0.6vw);
   width: 100vw;
   height: 100vh;
   max-width: none;
   max-height: none;
   margin: 0;
-  padding: var(--b-s5) clamp(24px, 4vw, 72px);
+  padding: calc(var(--u) * 3) calc(var(--u) * 5);
   border: 0;
+  overflow: hidden;
   color: var(--b-ink);
   background: var(--b-paper-2);
   font-family: var(--b-body);
-  font-size: 1.4rem;
+  font-size: calc(var(--u) * 2.4);
 }
+dialog.t-projector[open] { display: flex; flex-direction: column; gap: calc(var(--u) * 2); }
 dialog.t-projector::backdrop { background: var(--b-ground); }
-.t-proj-head { display: flex; justify-content: space-between; align-items: center; gap: var(--b-s4); padding-bottom: var(--b-s3); border-bottom: 2px solid var(--b-ink); }
-.t-proj-head h1 { margin: 0; font-size: clamp(2.6rem, 4vw, 4rem); }
-.t-proj-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--b-s5); margin-top: var(--b-s4); }
-.t-proj-grid > section { background: var(--b-paper); padding: var(--b-s4); border-radius: var(--b-r-sheet); }
-.t-proj-grid h2 { margin: 0 0 var(--b-s3); font-size: 2rem; }
+.t-proj-head { flex: none; display: flex; justify-content: space-between; align-items: center; gap: var(--b-s4); padding-bottom: calc(var(--u) * 1.2); border-bottom: 2px solid var(--b-ink); }
+.t-proj-head h1 { margin: 0; font-size: calc(var(--u) * 6); line-height: 1; }
+.t-proj-head .t-btn { font-size: calc(var(--u) * 1.8); }
+.t-proj-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: calc(var(--u) * 2.4);
+}
+.t-proj-grid > section { min-height: 0; overflow: hidden; background: var(--b-paper); padding: calc(var(--u) * 2.4) calc(var(--u) * 3); border-radius: var(--b-r-sheet); }
+.t-proj-grid h2 { margin: 0 0 calc(var(--u) * 1.4); font-size: calc(var(--u) * 3.8); line-height: 1.05; }
 .t-proj-grid .t-panel-col { padding: 0; }
-.t-proj-grid .t-bar { height: 48px; }
+.t-proj-grid .t-panel-col h2 { font-size: calc(var(--u) * 3.8); }
+.t-proj-grid .t-pace-title { font-size: calc(var(--u) * 2.4); margin-bottom: var(--u); }
+.t-proj-grid .t-bar { height: calc(var(--u) * 5.5); }
 .t-proj-grid .t-bar span,
-.t-proj-grid .t-legend { font-size: 1.1rem; }
-.t-proj-grid .t-big strong { font-size: 3rem; }
-.t-proj-grid .t-big span { font-size: 1rem; }
-.t-proj-board { grid-column: 1 / -1; }
-.t-proj-board ol { margin: 0; padding-left: 1.6em; columns: 2; column-gap: var(--b-s6); }
-.t-proj-board li { margin: 0 0 var(--b-s2); break-inside: avoid; }
-.t-proj-board li strong { font-family: var(--b-display); font-weight: 400; font-size: 1.8rem; margin-right: var(--b-s3); }
-.t-proj-board li span { color: var(--b-ink-soft); }
+.t-proj-grid .t-legend { font-size: calc(var(--u) * 2); }
+.t-proj-grid .t-swatch { width: calc(var(--u) * 1.6); height: calc(var(--u) * 1.6); }
+.t-proj-grid .t-ready,
+.t-proj-grid .t-pace > .t-muted { margin-top: calc(var(--u) * 1.4); font-size: calc(var(--u) * 2.3); }
+.t-proj-grid .t-bigs { gap: calc(var(--u) * 1.4) calc(var(--u) * 4); }
+.t-proj-grid .t-big strong { font-size: calc(var(--u) * 6.5); }
+.t-proj-grid .t-big span { font-size: calc(var(--u) * 1.9); }
+.t-proj-board { grid-column: 1 / -1; display: flex; flex-direction: column; }
+.t-proj-board ol {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: calc(var(--u) * 8);
+  align-items: center;
+}
+.t-proj-board li { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* The place number is written in, since overflow would clip a list marker. */
+.t-proj-place { display: inline-block; min-width: 2.2em; font-weight: 400; font-size: calc(var(--u) * 2.4); color: var(--b-ink-soft); }
+.t-proj-board li strong { font-family: var(--b-display); font-weight: 400; font-size: calc(var(--u) * 3.8); margin-right: calc(var(--u) * 1.6); }
+.t-proj-board li span { color: var(--b-ink-soft); font-size: calc(var(--u) * 2.4); }
+/* With the leaderboard off, the two panels share the whole height. */
+.t-proj-grid:not(:has(.t-proj-board)) { grid-template-rows: minmax(0, 1fr); }
 
 /* Printable progress reports: only the reports print, one per page. */
 #t-print { display: none; }
@@ -653,7 +689,7 @@ dialog.t-projector::backdrop { background: var(--b-ground); }
   .t-report .t-table th, .t-report .t-table td { border-bottom: 1px solid var(--b-rule); padding: 4px 12px 4px 0; }
   .t-report-refl p { margin: 2px 0 0; }
 }
-@media (max-width: 1100px) { .t-reteach-cols { grid-template-columns: minmax(0, 1fr); } .t-reteach-col + .t-reteach-col { border-left: 0; border-top: 1px solid var(--b-rule); } .t-proj-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 1100px) { .t-reteach-cols { grid-template-columns: minmax(0, 1fr); } .t-reteach-col + .t-reteach-col { border-left: 0; border-top: 1px solid var(--b-rule); } }
 
 :root[data-reading="dyslexia"] .t-strip-name { min-width: 14rem; }
 :root[data-reading="dyslexia"] .t-strip-name h1 { font-size: 1.7rem; }

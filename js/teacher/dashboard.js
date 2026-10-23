@@ -1047,7 +1047,7 @@ function openProjector() {
         : h(
             "section.t-proj-board",
             h("h2", "Top creatures by XP"),
-            h("ol", top.map((r) => h("li", h("strong", r.creatureName), h("span", `${r.rank}, ${r.xp} XP`))))
+            h("ol", top.map((r, i) => h("li", h("b.t-proj-place", { "aria-hidden": "true" }, `${i + 1}.`), h("strong", r.creatureName), h("span", `${r.rank}, ${r.xp} XP`))))
           )
     )
   );
