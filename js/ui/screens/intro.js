@@ -1,8 +1,12 @@
 // The opening story: three panels that tell students their job before they
 // meet their creature (teacher request 2026-10-20: make the purpose clear).
+// A page of the Mossy Bestiary (2026-10-23): the field guide's preface. Each
+// panel is a leaf with a picture plate taped in at its edge, and Next turns
+// the page.
 import { h, fill } from "../dom.js";
 import { icon } from "../icons.js";
 import { creatureSvg } from "../creature-art.js";
+import { sealSvg, tapeSvg, fernSvg, mossSvg, inkRingSvg } from "../bestiary-art.js";
 import { INTRO_PANELS } from "../../data/story.js";
 import { DREAMS } from "../../data/dreams.js";
 
@@ -13,15 +17,39 @@ const CRITTERS = [
 ];
 
 function art(scene) {
-  if (scene === "kingdom") return h("div.intro-art", h("span.intro-castle", icon("castle", { size: 96 })), h("div.intro-row", CRITTERS.slice(0, 3).map((c) => h("span", { html: creatureSvg(c, { size: 90, label: "" }) }))));
-  if (scene === "guardian") return h("div.intro-art", h("div.intro-row", h("span", { html: creatureSvg({ species: "lanternFox", palette: "rose", eyes: "sparkle", accessories: {} }, { size: 150, label: "" }) }), h("span.intro-coins", icon("coins", { size: 64 }))));
-  return h("div.intro-art", h("div.intro-row.dreams", Object.values(DREAMS).map((d) => h("span.intro-dream", h("span", d.icon), h("small", d.title)))));
+  if (scene === "kingdom")
+    return h(
+      "div.bst-pref-art.is-kingdom",
+      h("span.bst-pref-castle", icon("castle", { size: 96 })),
+      h("div.bst-pref-row", CRITTERS.map((c) => h("span", { html: creatureSvg(c, { size: 92, label: "" }) }))),
+      h("span.bst-pref-moss", { html: mossSvg({ seed: 71, width: 340, height: 40 }) })
+    );
+  if (scene === "guardian")
+    return h(
+      "div.bst-pref-art.is-guardian",
+      h("span.bst-pref-fox", { html: creatureSvg({ species: "lanternFox", palette: "rose", eyes: "sparkle", accessories: {} }, { size: 180, label: "" }) }),
+      h("span.bst-pref-coins", icon("coins", { size: 56 })),
+      h("span.bst-pref-moss", { html: mossSvg({ seed: 73, width: 340, height: 40 }) })
+    );
+  return h(
+    "ul.bst-pref-art.is-dreams",
+    Object.entries(DREAMS).map(([id, d]) => h("li", { style: `--dr: var(--dr-${id})` }, icon(d.mark || "dream", { size: 40 }), h("span", d.title)))
+  );
 }
 
 export function render(root, { advance, track }) {
   let k = 0;
-  const panel = h("section.panel.intro");
-  root.append(panel);
+  const page = h("div.bst-pref-page");
+  root.append(
+    h(
+      "div.bestiary.bst-preface",
+      h("div.bst-decor", { "aria-hidden": "true" },
+        h("span.bst-fern-left", { html: fernSvg({ seed: 81, curl: 0.38, width: 150, height: 280 }) }),
+        h("span.bst-fern-right", { html: fernSvg({ seed: 87, curl: -0.3, leaves: 11, width: 130, height: 240 }) })
+      ),
+      page
+    )
+  );
   const started = Date.now();
 
   const finish = async () => {
@@ -29,38 +57,56 @@ export function render(root, { advance, track }) {
     await advance("profile");
   };
 
-  function paint() {
+  function paint(dir = 1) {
     const p = INTRO_PANELS[k];
     const last = k === INTRO_PANELS.length - 1;
+    const forward = last
+      ? h("button.bst-seal-btn", { type: "button", onclick: finish }, h("span.bst-seal-wax", { html: sealSvg({ seed: 43, size: 84, letter: "C" }) }), h("span.bst-seal-text", "Meet your creature"))
+      : h("button", { type: "button", onclick: () => ((k += 1), paint(1)) }, "Turn the page");
+    // A fresh leaf each time, so the page-turn plays again.
     fill(
-      panel,
-      art(p.scene),
+      page,
       h(
-        "div.intro-body",
-        h("p.step-label", `${k + 1} of ${INTRO_PANELS.length}`),
-        h("h1", p.title),
-        // One beat per line, appearing one after another.
+        "article.bst-leaf",
+        { class: dir < 0 ? "back" : null, "aria-labelledby": "bst-pref-title" },
         h(
-          "ul.intro-beats",
-          p.beats.map((b, i) =>
+          "figure.bst-pref-plate",
+          { "aria-hidden": "true" },
+          h("span.bst-pref-tape.one", { html: tapeSvg(k * 3 + 1) }),
+          h("span.bst-pref-tape.two", { html: tapeSvg(k * 3 + 2) }),
+          h("div.bst-pref-frame", art(p.scene)),
+          h("figcaption", p.plate)
+        ),
+        h(
+          "div.bst-pref-words",
+          h("h1", { id: "bst-pref-title" }, p.title),
+          // One beat per line, appearing one after another.
+          h(
+            "ul.bst-pref-beats",
+            p.beats.map((b, i) =>
+              h(
+                "li",
+                { style: `--i: ${i}` },
+                h("span.bst-pref-mark", { "aria-hidden": "true" }, h("span.bst-pref-ring", { html: inkRingSvg(k * 5 + i) }), icon(b.mark, { size: 24 })),
+                h("div", h("p", b.text), b.chips ? h("ul.bst-pref-tags", b.chips.map((c) => h("li", c))) : null)
+              )
+            )
+          ),
+          h("p.bst-margin.bst-pref-note", p.note),
+          h(
+            "div.bst-pref-foot",
+            h("p.bst-folio", `Page ${k + 1} of ${INTRO_PANELS.length}`),
             h(
-              "li",
-              { style: `--i: ${i}` },
-              h("span.intro-beat-icon", { "aria-hidden": "true" }, b.icon),
-              h("div", h("p", b.text), b.chips ? h("ul.intro-chips", b.chips.map((c) => h("li", c))) : null)
+              "div.bst-actions",
+              // No skipping (teacher request 2026-10-21): every student reads the story.
+              k > 0 ? h("button.secondary", { type: "button", onclick: () => ((k -= 1), paint(-1)) }, "Back") : null,
+              forward
             )
           )
-        ),
-        h("div.dots", { "aria-hidden": "true" }, INTRO_PANELS.map((_, i) => h("span", { class: i === k ? "on" : "" }))),
-        h(
-          "div.row",
-          // No skipping (teacher request 2026-10-21): every student reads the story.
-          k > 0 ? h("button.secondary", { type: "button", onclick: () => ((k -= 1), paint()) }, "Back") : null,
-          h("button.big", { type: "button", onclick: () => (last ? finish() : ((k += 1), paint())) }, last ? "Meet your creature" : "Next")
         )
       )
     );
-    panel.querySelector("button.big").focus();
+    forward.focus({ preventScroll: true });
   }
   paint();
 }

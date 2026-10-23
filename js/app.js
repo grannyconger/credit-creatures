@@ -106,7 +106,7 @@ async function enterGame(user) {
   try {
     sessionStorage.setItem(ENTERED, "1");
   } catch {}
-  root.replaceChildren(h("section.panel.center", h("p", "Loading your creature...")));
+  root.replaceChildren(h("div.bestiary.bst-loading", h("p.bst-margin", { role: "status" }, "Finding your page in the field guide...")));
   game = createGame(user, db);
   game.local = LOCAL;
   try {

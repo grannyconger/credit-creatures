@@ -2,13 +2,15 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-22 (way-finding, readability, Phases 16 and 17, five new jobs, Trophies)
+Last updated: 2026-10-23 (story intro and name step in the bestiary look)
 
 ## Next step
 
 **Where things stand (end of 2026-10-22):** everything below is pushed and live. Awaiting the teacher's review: Phases 15, 16 and 17 (motion, effects, living creatures), the five new Chapter 1 jobs, and the Trophies redesign. Firestore rules were last changed for gifts, class delete and reset notes, and the teacher has published them.
 
-**Up next, in order:** (1) the remaining old-look screens, one at a time with approval: Friendship Plaza, the Garage, Lantern Alley, chapter end, Account settings, the story intro and name step. (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) Fee Detective, the next job idea. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
+**Up next, in order:** (1) the remaining old-look screens, one at a time with approval: Friendship Plaza, the Garage, Lantern Alley, chapter end, Account settings (the story intro and name step are done). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) Fee Detective, the next job idea. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
+
+**The story intro, name step and loading note (2026-10-23, approved and pushed):** the opening story (`js/ui/screens/intro.js`, `.bst-preface`) is now the field guide's preface. Each panel is one leaf with a picture plate taped in so it hangs off the leaf's edge, a caption ("Plate I. The Kingdom of Coinhaven") and a naturalist's margin note. Beat icons are drawn icons in pencil rings (`mark` in `js/data/story.js` replaces the emoji), the job list is paper tags, and "Page 1 of 3" sits at the foot. "Turn the page" swings the next leaf in, and the last page has a wax-seal "Meet your creature". The name step (`js/ui/screens/profile.js`, `.bst-name`) is the guide's bookplate ("This field guide belongs to"), with the names written on ruled lines, a seal "Write my name in" ("Save name" when editing), and a taped slip saying who sees the name. The "Loading" placeholders in `index.html` and `enterGame` are a hand note on the moss. Telemetry unchanged (`intro`, `profileSaved`). Checked: 1440 light and dark, 1280 dyslexia, the empty-name error, a full click-through from the intro to `#/creature` with no console errors. 193 tests pass.
 
 **Trophies and the Leaderboard (2026-10-22, pushed, awaiting review):** now in the bestiary look (`js/ui/screens/trophies.js`, `.bst-trophies` in `css/bestiary.css`). The rank is a wax seal with a Roman numeral and an XP vine. Achievements are medals pinned in cases, with a drawn icon per category (`CATEGORY_MARK`) instead of emoji. Earned, locked and hidden are said in words. Records are ledger lines, plus a rank ladder ("You are here", "Reached", "Ahead"). The leaderboard is the guild's ledger with 1st, 2nd and 3rd ribbons and "That's you". The XP vine is shared with the Cottage. Rank emoji still show on Home and in the Cottage.
 

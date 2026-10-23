@@ -4076,3 +4076,357 @@ main#app.app:has(.bestiary) {
   .bst-trophies .tr-rank .xp-bar-wrap { grid-column: 1 / -1; }
   .bst-trophies .tr-records { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ===========================================================================
+   The preface (the opening story, js/ui/screens/intro.js): one leaf of the
+   field guide at a time, with a picture plate taped in so it hangs off the
+   leaf's left edge. Turning the page swings the new leaf in from the spine.
+   =========================================================================== */
+.bst-pref-page {
+  position: relative;
+  z-index: 2;
+  max-width: 1160px;
+  margin: var(--b-s4) auto 0;
+  perspective: 1800px;
+}
+.bst-leaf {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: var(--b-s6);
+  align-items: center;
+  margin-left: var(--b-s6);
+  padding: var(--b-s6) var(--b-s6) var(--b-s5) 0;
+  background:
+    radial-gradient(34px 26px at 92% 12%, var(--b-foxing), transparent 70%),
+    radial-gradient(22px 18px at 40% 92%, var(--b-foxing), transparent 70%),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  transform-origin: 0 50%;
+  animation: bst-leaf-turn 0.7s var(--ease-gentle) both;
+}
+.bst-leaf.back { animation-name: bst-leaf-back; }
+@keyframes bst-leaf-turn {
+  from { opacity: 0; transform: rotateY(-24deg) rotate(-1deg); }
+  to { opacity: 1; transform: rotate(0.3deg); }
+}
+@keyframes bst-leaf-back {
+  from { opacity: 0; transform: translateX(-24px) rotate(-1.4deg); }
+  to { opacity: 1; transform: rotate(0.3deg); }
+}
+
+/* The plate breaks out past the leaf's left edge on purpose. */
+.bst-pref-plate {
+  position: relative;
+  margin: 0 0 0 calc(-1 * var(--b-s6));
+  padding: var(--b-s3) var(--b-s3) var(--b-s2);
+  background: var(--b-fibers), var(--b-paper-insert);
+  border-radius: var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(-2.4deg);
+}
+.bst-pref-tape { position: absolute; line-height: 0; z-index: 2; }
+.bst-pref-tape.one { top: -8px; left: 18px; rotate: -24deg; }
+.bst-pref-tape.two { top: -6px; right: 14px; rotate: 18deg; }
+.bst-pref-frame {
+  border: 4px double var(--b-rule);
+  border-radius: var(--b-r-sheet);
+  padding: var(--b-s4) var(--b-s3) var(--b-s2);
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(70% 60% at 50% 45%, var(--b-paper), var(--b-paper-2));
+}
+.bst-pref-plate figcaption {
+  margin-top: var(--b-s2);
+  font-family: var(--b-display);
+  font-style: italic;
+  font-size: var(--b-small);
+  text-align: center;
+  color: var(--b-ink-soft);
+}
+
+/* The three pictures. */
+.bst-pref-art { display: grid; justify-items: center; line-height: 0; }
+.bst-pref-art svg { overflow: visible; }
+.bst-pref-castle { color: var(--b-ink-soft); }
+.bst-pref-row { display: flex; align-items: flex-end; gap: var(--b-s2); margin-top: var(--b-s2); }
+.bst-pref-row > span:nth-child(2) { translate: 0 6px; }
+.bst-pref-row > span:nth-child(2) .cc-body { animation-delay: -1.3s; }
+.bst-pref-row > span:nth-child(3) .cc-body { animation-delay: -2.6s; }
+.bst-pref-moss { margin-top: -14px; }
+.bst-pref-moss svg { width: 100%; max-width: 340px; height: auto; }
+.bst-pref-art.is-guardian { position: relative; }
+.bst-pref-coins {
+  position: absolute;
+  right: -6px;
+  bottom: 36px;
+  color: var(--b-gold-ink);
+  rotate: 12deg;
+}
+.bst-pref-art .cc-body { animation: bst-breathe 4.2s ease-in-out infinite; }
+.bst-pref-art.is-dreams {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--b-s4) var(--b-s5);
+  line-height: var(--b-leading);
+}
+.bst-pref-art.is-dreams li {
+  display: grid;
+  justify-items: center;
+  gap: var(--b-s1);
+  color: var(--dr);
+  font-family: var(--b-display);
+  font-size: var(--b-fs-ui);
+  text-align: center;
+}
+.bst-pref-art.is-dreams li:nth-child(odd) { rotate: -3deg; }
+.bst-pref-art.is-dreams li:nth-child(even) { rotate: 2deg; translate: 0 10px; }
+.bst-pref-art.is-dreams li span:last-child { color: var(--b-ink); max-width: 12ch; }
+
+/* The words. */
+.bst-pref-words h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 3.4vw, 3.6rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+.bst-pref-beats {
+  list-style: none;
+  margin: var(--b-s4) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--b-s3);
+}
+.bst-pref-beats > li {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: var(--b-s3);
+  align-items: start;
+  animation: bst-beat-in 0.5s var(--ease-gentle) both;
+  animation-delay: calc(0.35s + var(--i, 0) * 0.32s);
+}
+@keyframes bst-beat-in {
+  from { opacity: 0; translate: 10px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+.bst-pref-beats p { margin: 0; max-width: 46ch; text-wrap: pretty; }
+/* Each beat's icon, circled in the margin in pencil. */
+.bst-pref-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 40px;
+  color: var(--b-ink);
+}
+.bst-pref-ring {
+  position: absolute;
+  inset: -2px -4px;
+  color: var(--b-plum);
+  line-height: 0;
+}
+.bst-pref-ring svg { width: 100%; height: 100%; }
+/* The list of jobs is written on little paper tags. */
+.bst-pref-tags {
+  list-style: none;
+  margin: var(--b-s2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--b-s2);
+}
+.bst-pref-tags li {
+  padding: 3px 12px 4px;
+  font-size: var(--b-fs-ui);
+  font-weight: 700;
+  background: var(--b-grain), var(--b-paper-2);
+  border: 1.5px solid var(--b-paper-edge);
+  border-radius: var(--b-r-tag);
+}
+.bst-pref-tags li:nth-child(odd) { rotate: -1.5deg; }
+.bst-pref-tags li:nth-child(even) { rotate: 1.2deg; }
+.bst-pref-note {
+  margin: var(--b-s4) 0 0 64px;
+  max-width: 46ch;
+  transform: rotate(-1.5deg);
+}
+.bst-pref-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--b-s3);
+  margin-top: var(--b-s5);
+  padding-top: var(--b-s3);
+  border-top: 1px solid var(--b-rule);
+}
+.bst-folio {
+  margin: 0;
+  font-family: var(--b-display);
+  font-style: italic;
+  color: var(--b-ink-soft);
+}
+.bst-pref-foot .bst-actions { gap: var(--b-s3); }
+
+/* ===========================================================================
+   The name step (js/ui/screens/profile.js): the field guide's bookplate,
+   with the name written on ruled lines, and a slip tucked beside it that
+   says who sees the name.
+   =========================================================================== */
+.bst-name-spread {
+  position: relative;
+  z-index: 2;
+  max-width: 1080px;
+  margin: var(--b-s5) auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr);
+  grid-template-areas: "plate slip" "plate margin";
+  gap: var(--b-s4) var(--b-s6);
+  align-items: start;
+}
+.bst-bookplate {
+  grid-area: plate;
+  position: relative;
+  padding: var(--b-s6) var(--b-s6) var(--b-s5);
+  background:
+    radial-gradient(30px 24px at 90% 86%, var(--b-foxing), transparent 70%),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 5px double var(--b-rule);
+  border-radius: var(--b-r-sheet);
+  outline: 1px solid var(--b-rule);
+  outline-offset: -16px;
+  box-shadow: var(--b-shadow-page);
+  transform: rotate(-1.2deg);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-bookplate-fern {
+  position: absolute;
+  top: -40px;
+  right: 28px;
+  line-height: 0;
+  color: var(--b-moss-3);
+  rotate: 28deg;
+  filter: drop-shadow(1px 2px 1px color-mix(in srgb, var(--b-shadow-ink) 25%, transparent));
+}
+.bst-bookplate-belongs {
+  margin: 0;
+  font-family: var(--b-display);
+  font-style: italic;
+  font-size: var(--b-fs-title);
+  color: var(--b-ink-soft);
+}
+.bst-bookplate h1 {
+  margin: var(--b-s1) 0 0;
+  font-size: clamp(2.5rem, 3.6vw, 3.8rem);
+  line-height: 0.98;
+}
+.bst-bookplate-sub { margin: var(--b-s3) 0 0; max-width: 46ch; }
+.bst-name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--b-s5);
+  margin-top: var(--b-s5);
+}
+.bst-name-field { display: grid; gap: var(--b-s1); }
+.bst-name-field label {
+  font-weight: 700;
+  font-size: var(--b-small);
+  color: var(--b-ink-soft);
+}
+.bestiary input.bst-name-input {
+  width: 100%;
+  padding: var(--b-s1) 0 var(--b-s2);
+  font-family: var(--b-body);
+  font-weight: 700;
+  font-size: clamp(1.7rem, 2.2vw, 2.2rem);
+  color: var(--b-ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px dashed var(--b-rule);
+  border-radius: 0;
+  box-shadow: none;
+}
+.bestiary input.bst-name-input:focus {
+  outline: 2.5px dashed var(--b-plum);
+  outline-offset: 6px;
+  border-bottom-style: solid;
+  box-shadow: none;
+}
+.bst-bookplate .bst-error { margin-top: var(--b-s3); }
+.bst-bookplate .bst-actions { margin-top: var(--b-s2); }
+.bst-bookplate .bst-next { text-align: right; }
+
+.bst-name-slip {
+  grid-area: slip;
+  position: relative;
+  margin-top: var(--b-s6);
+  padding: var(--b-s5) var(--b-s4) var(--b-s4);
+  background: var(--b-fibers), var(--b-paper-insert);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(2.6deg);
+  animation: bst-page-in 0.6s var(--ease-gentle) 0.12s both;
+}
+.bst-name-tape {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  translate: -50% 0;
+  rotate: -6deg;
+  line-height: 0;
+}
+.bst-name-slip h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--b-s2);
+  margin: 0;
+  font-size: var(--b-fs-title);
+}
+.bst-name-slip h2 .ico-wrap { color: var(--b-plum); }
+.bst-name-slip ul { margin: var(--b-s2) 0 0; padding-left: 1.2em; }
+.bst-name-slip li { margin: var(--b-s1) 0; }
+.bst-name-slip p { margin: var(--b-s3) 0 0; font-style: italic; color: var(--b-ink-soft); }
+.bst-name-margin {
+  grid-area: margin;
+  margin: 0 0 0 var(--b-s3);
+  max-width: 30ch;
+  color: var(--b-on-ground);
+  transform: rotate(-2deg);
+}
+
+/* ---- Loading: a quiet note on the moss while the save comes in ---------- */
+.bst-loading {
+  display: grid;
+  place-items: center;
+}
+.bst-loading .bst-margin {
+  margin: 0;
+  font-size: var(--b-fs-lead);
+  color: var(--b-on-ground);
+  animation: bst-loading 1.8s ease-in-out infinite alternate;
+}
+@keyframes bst-loading {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+
+/* Dyslexia mode: nothing tilts and the words get more room. */
+:root[data-reading="dyslexia"] :is(.bst-leaf, .bst-pref-plate, .bst-pref-note, .bst-bookplate, .bst-name-slip, .bst-name-margin, .bst-pref-tags li, .bst-pref-art.is-dreams li) { transform: none; rotate: none; }
+:root[data-reading="dyslexia"] .bst-pref-words h1,
+:root[data-reading="dyslexia"] .bst-bookplate h1 { font-size: clamp(2.1rem, 2.6vw, 2.9rem); line-height: 1.15; }
+:root[data-reading="dyslexia"] .bst-name-row { grid-template-columns: 1fr; }
+:root[data-reading="dyslexia"] :is(.bst-folio, .bst-pref-plate figcaption, .bst-bookplate-belongs, .bst-name-slip p) { font-style: normal; }
+
+/* Narrow windows: the plate stacks above the words. Phone layout waits for
+   the teacher's OK, so this only keeps things from overlapping. */
+@media (max-width: 900px) {
+  .bst-leaf { grid-template-columns: minmax(0, 1fr); margin-left: 0; padding: var(--b-s5); }
+  .bst-pref-plate { margin: 0; }
+  .bst-name-spread { grid-template-columns: minmax(0, 1fr); grid-template-areas: "plate" "slip" "margin"; }
+  .bst-name-slip { margin-top: 0; }
+  .bst-name-row { grid-template-columns: 1fr; }
+}
