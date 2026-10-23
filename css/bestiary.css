@@ -4760,3 +4760,220 @@ main#app.app:has(.bestiary) {
 :root[data-reading="dyslexia"] .bst-plaza .fr-ribbon { width: 128px; }
 @media (max-width: 1000px) { .bst-plaza .fr-post { grid-template-columns: minmax(0, 1fr); } .bst-plaza .place-header { padding-right: 0; padding-top: 120px; } }
 :root[data-reading="dyslexia"] .bst-plaza .place-header { padding-right: 420px; }
+
+/* ===========================================================================
+   The Garage (js/ui/screens/garage.js): a brass plate with the three loan
+   numbers, the ride you own as a registration slip, and the lot as parking
+   bays divided by painted lines. Rides are drawn in ink (rideSvg).
+   =========================================================================== */
+.bst-garage .panel.garage {
+  position: relative;
+  max-width: 1160px;
+  margin: var(--b-s4) auto 0;
+  padding: var(--b-s6);
+  color: var(--b-ink);
+  background:
+    radial-gradient(30px 24px at 90% 10%, var(--b-foxing), transparent 70%),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  transform: rotate(0.2deg);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-garage .money-chips {
+  display: flex; flex-wrap: wrap; gap: var(--b-s2) var(--b-s5); margin: var(--b-s3) 0 0; padding: var(--b-s3) 0; list-style: none;
+  border-top: 1px dashed var(--b-rule); border-bottom: 1px dashed var(--b-rule);
+}
+.bst-garage .money-chips li { display: flex; align-items: baseline; gap: var(--b-s2); padding: 0; background: none; }
+.bst-garage .money-chips li > .ico-wrap { color: var(--b-gold-ink); align-self: center; }
+.bst-garage .money-chips small { font-size: var(--b-small); color: var(--b-ink-soft); }
+.bst-garage .money-chips strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-ink); font-variant-numeric: lining-nums tabular-nums; }
+
+/* The brass plate: a gold-edged sign with a screw in each corner. */
+.bst-garage .gr-plate {
+  position: relative;
+  margin: var(--b-s5) 0 0;
+  padding: var(--b-s4) var(--b-s5);
+  background:
+    radial-gradient(circle at 14px 14px, var(--b-pin-edge) 0 3px, var(--b-pin) 3.5px 5px, transparent 5.5px),
+    radial-gradient(circle at calc(100% - 14px) 14px, var(--b-pin-edge) 0 3px, var(--b-pin) 3.5px 5px, transparent 5.5px),
+    radial-gradient(circle at 14px calc(100% - 14px), var(--b-pin-edge) 0 3px, var(--b-pin) 3.5px 5px, transparent 5.5px),
+    radial-gradient(circle at calc(100% - 14px) calc(100% - 14px), var(--b-pin-edge) 0 3px, var(--b-pin) 3.5px 5px, transparent 5.5px),
+    var(--b-paper-insert);
+  border: 3px solid var(--b-gold);
+  outline: 1px solid var(--b-gold-ink);
+  outline-offset: -9px;
+  border-radius: var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-garage .gr-plate h2 { margin: 0; font-size: var(--b-fs-lead); text-align: center; }
+.bst-garage .gr-plate-three {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: var(--b-s3) 0 0;
+}
+.bst-garage .gr-plate-three div { padding: 0 var(--b-s4); text-align: center; }
+.bst-garage .gr-plate-three div + div { border-left: 1px solid var(--b-gold-ink); }
+.bst-garage .gr-plate-three dt { font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-gold-ink); }
+.bst-garage .gr-plate-three dd { margin: var(--b-s1) 0 0; }
+.bst-garage .gr-plate-note { margin: var(--b-s3) auto 0; max-width: 70ch; text-align: center; font-style: italic; color: var(--b-ink-soft); }
+
+/* The registration slip for the ride you own: perforated down its left side. */
+.bst-garage .gr-slip {
+  display: flex;
+  align-items: center;
+  gap: var(--b-s5);
+  margin: var(--b-s5) 0 0;
+  padding: var(--b-s4) var(--b-s5) var(--b-s4) var(--b-s6);
+  background:
+    radial-gradient(circle at 14px 50%, var(--b-paper) 0 4px, transparent 4.5px) 0 0 / 28px 16px repeat-y,
+    var(--b-fibers), var(--b-paper-insert);
+  border-left: 2px dashed var(--b-rule);
+  border-radius: var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(-0.6deg);
+}
+.bst-garage .gr-slip-art { color: var(--b-ink); line-height: 0; flex: none; }
+.bst-garage .gr-slip-kicker { margin: 0; font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-plum); }
+.bst-garage .gr-slip h2 { margin: 0; font-size: clamp(1.8rem, 2.4vw, 2.4rem); }
+.bst-garage .gr-slip p { margin: var(--b-s1) 0 0; }
+.bst-garage .gr-slip .good-text { color: var(--b-ink); font-weight: 700; }
+.bst-garage .gr-slip .row { margin-top: var(--b-s3); }
+
+/* The lot: two bays to a row, divided by painted lines like a car park. */
+.bst-garage .gr-lot-title { margin: var(--b-s6) 0 0; font-size: var(--b-fs-lead); }
+.bst-garage .gr-lot {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: var(--b-s3);
+  border-top: 4px dashed var(--b-rule);
+}
+.bst-garage .gr-bay {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--b-s5) var(--b-s5) var(--b-s5);
+  border-bottom: 4px dashed var(--b-rule);
+}
+.bst-garage .gr-bay:nth-child(odd) { border-right: 4px dashed var(--b-rule); }
+.bst-garage .gr-art {
+  align-self: center;
+  margin: var(--b-s2) 0;
+  color: var(--b-ink);
+  line-height: 0;
+}
+.bst-garage .bst-ride .wheel { fill: var(--b-paper-2); }
+.bst-garage .bst-ride .shine { stroke: var(--b-gold-ink); stroke-width: 2; }
+.bst-garage .gr-bay h3 { margin: var(--b-s2) 0 0; font-size: var(--b-fs-lead); }
+/* The price is painted on a little board leaning in the bay's corner. */
+.bst-garage .gr-board {
+  position: absolute;
+  top: var(--b-s4);
+  right: var(--b-s4);
+  padding: var(--b-s1) var(--b-s3);
+  font-family: var(--b-display);
+  font-size: var(--b-fs-lead);
+  font-variant-numeric: lining-nums;
+  /* A painted board looks the same in dark mode, so its ink is fixed dark. */
+  color: var(--b-money-ink);
+  background: var(--b-grain), var(--b-gold);
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+  transform: rotate(4deg);
+}
+.bst-garage .gr-bay:nth-child(even) .gr-board { transform: rotate(-3deg); }
+.bst-garage .gr-bonus { margin: var(--b-s1) 0 0; }
+.bst-garage .gr-bonus strong { color: var(--b-gold-ink); }
+.bst-garage .gr-about { margin: var(--b-s1) 0 0; color: var(--b-ink-soft); }
+.bst-garage .gr-taken { margin: var(--b-s3) 0 0; font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-plum); }
+.bst-garage .gr-bay.is-mine .gr-art { color: var(--b-plum); }
+.bst-garage .gr-margin { margin: var(--b-s4) 0 0 auto; max-width: 40ch; text-align: right; transform: rotate(-1deg); }
+
+/* ---- The deal sheet (js/ui/loan-picker.js), in the Garage and the Cottage */
+.bestiary .loan-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--b-s2);
+  margin-top: var(--b-s3);
+  padding-top: var(--b-s3);
+  border-top: 1px solid var(--b-rule);
+}
+.bestiary .loan-or {
+  margin: var(--b-s1) 0 0;
+  font-family: var(--b-hand);
+  font-size: var(--b-fs-hand);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--b-plum);
+}
+.bestiary .loan-picker .chip-group { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-s2); }
+.bestiary .loan-picker .chip-label { flex-basis: 100%; font-weight: 700; font-size: var(--b-small); color: var(--b-ink-soft); }
+/* Options are boxes to tick on the form: a tick, not only a color. */
+.bestiary .loan-picker .chip {
+  padding: 4px 12px 4px 30px;
+  position: relative;
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-ink);
+  background: none;
+  border: 1.5px solid var(--b-rule);
+  border-radius: var(--b-r-tag);
+}
+.bestiary .loan-picker .chip::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  width: 13px;
+  height: 13px;
+  translate: 0 -50%;
+  border: 1.5px solid var(--b-ink-soft);
+  border-radius: 2px;
+}
+.bestiary .loan-picker .chip[aria-pressed="true"] { color: var(--b-plum); border-color: var(--b-plum); background: var(--b-plum-wash); }
+.bestiary .loan-picker .chip[aria-pressed="true"]::before {
+  content: "✓";
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--b-paper);
+  background: var(--b-plum);
+  border-color: var(--b-plum);
+}
+.bestiary .loan-picker .chip:disabled { opacity: 0.45; }
+/* The four numbers are ledger lines, and the total is double ruled. */
+.bestiary .loan-numbers {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 var(--b-s4);
+  margin: var(--b-s2) 0 0;
+}
+.bestiary .loan-numbers div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--b-s2);
+  padding: var(--b-s1) 0;
+  background: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--b-rule);
+}
+.bestiary .loan-numbers dt { font-size: var(--b-small); color: var(--b-ink-soft); }
+.bestiary .loan-numbers dd { margin: 0; font-weight: 700; font-variant-numeric: lining-nums tabular-nums; }
+.bestiary .loan-numbers .total {
+  background: none;
+  box-shadow: none;
+  border-bottom: 4px double var(--b-ink);
+}
+.bestiary .loan-numbers .total dt { color: var(--b-ink); font-weight: 700; }
+.bestiary .loan-numbers .total dd { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bestiary .loan-picker .warn-text { margin: 0; font-weight: 700; color: var(--b-rust-ink); }
+.bestiary .loan-picker .row { justify-content: flex-start; }
+.bestiary .loan-picker .note { color: var(--b-ink-soft); }
+
+:root[data-reading="dyslexia"] :is(.bst-garage .gr-slip, .bst-garage .gr-board, .bst-garage .gr-margin) { transform: none; }
+:root[data-reading="dyslexia"] .bst-garage .gr-plate-note { font-style: normal; }
+@media (max-width: 1000px) { .bst-garage .gr-lot { grid-template-columns: minmax(0, 1fr); } .bst-garage .gr-bay:nth-child(odd) { border-right: 0; } .bst-garage .gr-plate-three { grid-template-columns: minmax(0, 1fr); } .bst-garage .gr-plate-three div + div { border-left: 0; border-top: 1px solid var(--b-gold-ink); padding-top: var(--b-s2); margin-top: var(--b-s2); } }

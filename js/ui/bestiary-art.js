@@ -222,3 +222,17 @@ export function lineSvg() {
     <path d="M0 8 Q500 44 1000 8" fill="none" stroke="var(--b-string)" stroke-width="2.2" vector-effect="non-scaling-stroke"/>
   </svg>`;
 }
+
+// The Garage's rides, drawn in ink (2026-10-23), in place of emoji. Lines in
+// currentColor, with the wheels filled in the paper color so they read as
+// solid. id is a ride id from js/data/garage.js.
+const RIDES = {
+  bike: '<circle class="wheel" cx="38" cy="62" r="20"/><circle class="wheel" cx="122" cy="62" r="20"/><path d="M38 62 L76 62 L66 30 Z M76 62 L108 32 L66 30 M108 32 L122 62"/><path d="M58 26 h16 M108 32 L104 20 M98 20 h12"/><circle cx="76" cy="62" r="4"/>',
+  moped: '<circle class="wheel" cx="36" cy="66" r="14"/><circle class="wheel" cx="126" cy="66" r="14"/><path d="M18 60 C18 46 34 40 54 44 L96 46 C100 40 104 34 108 28 M52 66 H98 C98 56 100 50 104 44 M108 28 L126 66"/><path d="M50 40 C56 32 72 32 78 40 M102 20 h14 M108 28 L106 20"/><circle cx="114" cy="34" r="3"/>',
+  car: '<path d="M14 64 V52 C14 46 20 44 28 44 L46 42 L62 26 H104 L122 42 L140 46 C146 47 148 52 148 58 V64 M14 64 H30 M60 64 H104 M132 64 H148"/><path d="M58 42 L68 30 H84 V42 Z M90 30 H102 L114 42 H90 Z M88 46 V60"/><circle class="wheel" cx="45" cy="66" r="13"/><circle class="wheel" cx="118" cy="66" r="13"/>',
+  newCar: '<path d="M8 62 V54 C8 50 14 48 22 48 L56 44 C66 34 80 30 96 30 C112 30 124 36 132 44 L150 48 C154 49 156 53 156 58 V62 M8 62 H28 M58 62 H110 M140 62 H156"/><path d="M64 44 C72 36 84 34 96 34 C106 34 114 38 120 44 Z M8 48 L4 40 H18"/><path class="shine" d="M122 10 v10 M117 15 h10 M142 20 v7 M138.5 23.5 h7"/><circle class="wheel" cx="43" cy="64" r="13"/><circle class="wheel" cx="125" cy="64" r="13"/>',
+};
+export function rideSvg(id, { width = 160 } = {}) {
+  const body = RIDES[id] || RIDES.car;
+  return `<svg class="bst-ride" viewBox="0 0 160 90" width="${width}" height="${Math.round((width * 90) / 160)}" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${body}</svg>`;
+}
