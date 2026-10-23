@@ -15,6 +15,7 @@ import { placeStatus, nextStep, PLACES, PROLOGUE_TEXT } from "../../places.js";
 import { moneyChips } from "../wallet.js";
 import { openPlace, startChapter as beginChapter } from "./map.js";
 import { sealSvg } from "../bestiary-art.js";
+import { rankSeal } from "./trophies.js";
 import { rankFor } from "../../progress.js";
 import { celebrate } from "../celebrate.js";
 import { runLesson } from "../guide.js";
@@ -144,7 +145,8 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
         "div.guardian-text",
         h("h1", fullName(c)),
         h("p.bst-hub-note", "in the care of its Guardian of Coin (you)"),
-        h("p.muted.tight", `${ageLabel(life.ageMonths)} · ${r.icon} ${r.title} · ${play.xp} XP`),
+        // The rank as the same small wax seal Trophies uses (2026-10-23), not an emoji.
+        h("p.muted.tight.rank-line", `${ageLabel(life.ageMonths)} · `, rankSeal(r.level, 30), ` ${r.title} · ${play.xp} XP`),
         dream
           ? h("div.dream-mini", h("span.dream-name", icon(dream.mark || "dream", { size: 16 }), " Dream: ", h("strong", dream.title)), play.dreamDone ? h("span.good-text", " Done!") : meters(prog))
           : h("button.small", { type: "button", onclick: () => go("dream") }, "Pick your creature's dream"),

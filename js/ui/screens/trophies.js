@@ -27,7 +27,7 @@ let tab = "badges";
 
 // The rank as a wax seal with its level in Roman numerals.
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII"];
-const rankSeal = (level, size = 64) => h("span.tr-seal", { "aria-hidden": "true", html: sealSvg({ seed: 40 + level, size, letter: ROMAN[level - 1] || String(level) }) });
+export const rankSeal = (level, size = 64) => h("span.tr-seal", { "aria-hidden": "true", html: sealSvg({ seed: 40 + level, size, letter: ROMAN[level - 1] || String(level) }) });
 
 export function render(root, { game, go, track, startTab }) {
   const play = game.play;

@@ -5331,3 +5331,8 @@ main#app.app:has(.bestiary) {
 :is(.bestiary, .bst-scope) .settings-row .chip[aria-pressed="true"]::before { border: 4.5px solid var(--b-plum); }
 :root[data-reading="dyslexia"] .bst-settings :is(.settings-section, .set-margin) { transform: none !important; }
 @media (max-width: 900px) { .bst-settings .panel.account-settings { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "look" "account" "creature" "margin"; } }
+
+/* The rank seal inline on Home and in the Cottage (2026-10-23). */
+.rank-line { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; }
+.rank-line .tr-seal { display: inline-block; line-height: 0; }
+.rank-line .tr-seal svg { display: block; }

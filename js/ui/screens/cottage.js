@@ -17,7 +17,7 @@ import { ACHIEVEMENTS } from "../../data/achievements.js";
 import { HOME_UPGRADES, homeQuote, homeSteps } from "../../data/garage.js";
 import { loanPicker } from "../loan-picker.js";
 import { resolveChoice } from "../../engine/index.js";
-import { xpBar } from "./trophies.js";
+import { xpBar, rankSeal } from "./trophies.js";
 import { meters } from "./hub.js";
 import { burstFrom, centerOf } from "../motion/particles.js";
 
@@ -51,7 +51,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
           { class: c.background && c.background !== "none" ? `creature-stage bg-${c.background}` : "" },
           h("button.cottage-pet", { type: "button", "data-sound": "none", "data-boop": "none", "aria-label": `Pet ${c.name}`, title: `Pet ${c.name}`, onclick: pet, html: creatureSvg(c, { size: 200, ageMonths: life?.ageMonths || 0 }) }),
           h("h2", fullName(c)),
-          h("p.muted.tight", `${life ? ageLabel(life.ageMonths) : ""} · ${r.icon} ${r.title}`),
+          h("p.muted.tight.rank-line", `${life ? ageLabel(life.ageMonths) : ""} · `, rankSeal(r.level, 30), ` ${r.title}`),
           xpBar(play.xp)
         ),
         roomsNav(rooms(dream, prog, homeOpen))
