@@ -1,6 +1,8 @@
 // Account settings (teacher request 2026-10-21: settings were hard to find).
 // Opened from the gear in the top bar. Look, reading and sound, who's signed
 // in, and the ways to leave.
+// A page of the Mossy Bestiary (2026-10-23): the inside back cover, with
+// three index cards: how the book reads, whose book it is, and the creature.
 import { h } from "../dom.js";
 import { icon } from "../icons.js";
 import { placeHeader } from "../place-header.js";
@@ -13,6 +15,8 @@ export function render(root, { game, go, track, saveAndExit, saveAndSignOut }) {
   track("settingsPage", {});
   root.append(
     h(
+      "div.bestiary.bst-settings",
+      h(
       "section.panel.place-screen.account-settings",
       placeHeader({ go, iconName: "gear", kicker: "Your account", title: "Account settings", subtitle: "How the game looks and sounds, and your sign-in." }),
       h(
@@ -44,6 +48,8 @@ export function render(root, { game, go, track, saveAndExit, saveAndSignOut }) {
         h("h2", icon("cottage", { size: 20 }), " Your creature"),
         h("p.note.tight", "Change your creature's look and see its dream at your Cottage."),
         h("div.row", h("button.secondary", { type: "button", onclick: () => go("cottage") }, "Go to your Cottage"))
+      ),
+      h("p.bst-margin.set-margin", "Dark mode is easier on the eyes at night. The creatures are nocturnal anyway.")
       )
     )
   );

@@ -5264,3 +5264,70 @@ main#app.app:has(.bestiary) {
 :root[data-reading="dyslexia"] .bst-chapter-end :is(.panel.chapter-end, .ce-notebook) { transform: none; }
 :root[data-reading="dyslexia"] .bst-chapter-end .ce-notebook textarea { font-size: var(--b-text); line-height: 1.7; }
 @media (max-width: 900px) { .bst-chapter-end :is(.ce-record, .ce-moments) { grid-template-columns: minmax(0, 1fr); } }
+
+/* ===========================================================================
+   Account settings (js/ui/screens/settings.js): the guide's inside back
+   cover, with three index cards, each with a red header rule and blue lines.
+   The switches are tick tags, shared with the first-time settings pop-up.
+   =========================================================================== */
+.bst-settings .panel.account-settings {
+  position: relative;
+  max-width: 1080px;
+  margin: var(--b-s4) auto 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-areas: "head head" "look account" "look creature" "margin margin";
+  gap: var(--b-s5) var(--b-s6);
+  align-items: start;
+}
+.bst-settings .place-header { grid-area: head; }
+.bst-settings .place-title h1,
+.bst-settings .place-title .muted { color: var(--b-on-ground); }
+.bst-settings .place-kicker { color: var(--b-foxfire); }
+.bst-settings .place-icon { color: var(--b-foxfire); background: var(--b-ground); border-color: var(--b-foxfire); }
+.bst-settings .settings-section {
+  margin: 0;
+  padding: var(--b-s4) var(--b-s5) var(--b-s5);
+  color: var(--b-ink);
+  background:
+    linear-gradient(color-mix(in srgb, var(--b-rust) 60%, transparent), color-mix(in srgb, var(--b-rust) 60%, transparent)) 0 64px / 100% 2px no-repeat,
+    repeating-linear-gradient(transparent 0 29px, color-mix(in srgb, var(--b-rule) 45%, transparent) 29px 30px) 0 66px / 100% calc(100% - 66px) no-repeat,
+    var(--b-paper-insert);
+  border: 0;
+  border-radius: var(--b-r-sheet);
+  box-shadow: var(--b-shadow-card);
+}
+.bst-settings .settings-section:nth-of-type(1) { grid-area: look; transform: rotate(-0.8deg); }
+.bst-settings .settings-section:nth-of-type(2) { grid-area: account; transform: rotate(0.9deg); }
+.bst-settings .settings-section:nth-of-type(3) { grid-area: creature; transform: rotate(-0.4deg); }
+.bst-settings .settings-section h2 { display: flex; align-items: center; gap: var(--b-s2); height: 40px; margin: 0 0 var(--b-s4); font-size: var(--b-fs-lead); color: var(--b-ink); }
+.bst-settings .settings-section h2 .ico-wrap { color: var(--b-plum); }
+.bst-settings .settings-section p { margin: var(--b-s2) 0; }
+.bst-settings .settings-section .note { color: var(--b-ink-soft); }
+.bst-settings .settings-section button.link { color: var(--b-plum); font-weight: 700; padding: 0 4px; }
+.bst-settings .set-margin { grid-area: margin; color: var(--b-on-ground-soft); max-width: 50ch; transform: rotate(-1deg); }
+
+/* Tick tags for every setting, here and in the first-time pop-up. */
+.bestiary .settings-row,
+.bst-scope .settings-row { display: flex; flex-direction: column; gap: var(--b-s3); }
+:is(.bestiary, .bst-scope) .settings-row .chip-group { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-s2); }
+:is(.bestiary, .bst-scope) .settings-row .chip-label { flex-basis: 100%; font-weight: 700; color: var(--b-ink-soft); }
+:is(.bestiary, .bst-scope) .settings-row .chip {
+  position: relative;
+  padding: 5px 14px 5px 32px;
+  font-family: var(--b-body);
+  font-weight: 700;
+  color: var(--b-ink);
+  background: var(--b-paper);
+  border: 1.5px solid var(--b-rule);
+  border-radius: var(--b-r-tag);
+}
+:is(.bestiary, .bst-scope) .settings-row .chip::before { content: ""; box-sizing: border-box; position: absolute; left: 10px; top: 50%; width: 14px; height: 14px; translate: 0 -50%; border: 1.5px solid var(--b-ink-soft); border-radius: 50%; }
+:is(.bestiary, .bst-scope) .settings-row .chip[aria-pressed="true"] { color: var(--b-plum); border-color: var(--b-plum); background: var(--b-plum-wash); }
+:is(.bestiary, .bst-scope) .settings-row .chip[aria-pressed="true"]::before { border: 4.5px solid var(--b-plum); }
+:root[data-reading="dyslexia"] .bst-settings :is(.settings-section, .set-margin) { transform: none !important; }
+@media (max-width: 900px) { .bst-settings .panel.account-settings { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "look" "account" "creature" "margin"; } }

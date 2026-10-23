@@ -3,6 +3,7 @@
 import { h, fill } from "./dom.js";
 import { applySettings, loadLocalSettings, APPEARANCE_LABELS, READING_LABELS, SOUND_LABELS, MOTION_LABELS } from "./settings.js";
 import { sfx, classIsMuted } from "./sound.js";
+import { icon } from "./icons.js";
 
 export function settingsControls({ current = loadLocalSettings(), onChange = () => {} } = {}) {
   const box = h("div.settings-row");
@@ -35,7 +36,7 @@ export function settingsControls({ current = loadLocalSettings(), onChange = () 
       group("appearance", "Look", APPEARANCE_LABELS),
       group("reading", "Reading", READING_LABELS),
       group("motion", "Motion", MOTION_LABELS),
-      classIsMuted() ? h("p.note.tight", "🔇 Your teacher turned sound off for the class.") : group("sound", "Sound", SOUND_LABELS)
+      classIsMuted() ? h("p.note.tight", icon("mute", { size: 16 }), " Your teacher turned sound off for the class.") : group("sound", "Sound", SOUND_LABELS)
     );
   paint();
   return box;
