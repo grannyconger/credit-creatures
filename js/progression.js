@@ -23,7 +23,7 @@ export const FEATURES = {
   academy: { at: 1 },
   inbox: { at: 1 },
   checks: { at: 1 },
-  // Five more Guild Hall jobs, all in Chapter 1 (teacher request 2026-10-22).
+  // Five more Arcade jobs, all in Chapter 1 (teacher request 2026-10-22).
   overdraft: { at: 1 },
   register: { at: 1 },
   checkhunt: { at: 1 },
@@ -91,7 +91,7 @@ export function payMethods(play, life) {
   return ["debit", hasFeature(play, "card", life) && "card", hasFeature(play, "bnpl", life) && "bnpl"].filter(Boolean);
 }
 
-// The jobs at the Guild Hall so far.
+// The jobs at the Arcade so far.
 export function openJobs(play) {
   return ["cashier", "checks", "overdraft", "register", "checkhunt", "drawer", "unitprice", "ledger"].filter((j) => hasFeature(play, j));
 }
@@ -101,13 +101,13 @@ export const UNLOCKS = {
   1: {
     icon: "🏦",
     title: "Your first bank account",
-    text: "The Vault opened a checking account and a savings account for you, with a debit card. Town Hall, Friendship Plaza and the Academy are open too, and the Guild Hall has a new job: Check Writer.",
+    text: "The Vault opened a checking account and a savings account for you, with a debit card. Town Hall, Friendship Plaza and the Academy are open too, and the Arcade has a new job: Check Writer.",
     lesson: "checking",
   },
   2: {
     icon: "🚗",
     title: "Loans are here",
-    text: "You're 18! Now you can borrow money and pay it back over time with an installment loan. The Garage is open, and your Cottage can be fixed up. The Guild Hall has a new job: Ledger Sort.",
+    text: "You're 18! Now you can borrow money and pay it back over time with an installment loan. The Garage is open, and your Cottage can be fixed up. The Arcade has a new job: Ledger Sort.",
     lesson: "loans",
   },
   3: {

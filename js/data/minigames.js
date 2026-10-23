@@ -49,7 +49,7 @@ export const JOBS = {
     mark: "piggy",
     icon: "💵",
     title: "Count the Drawer",
-    job: "Closing shift at Shimmer Market",
+    job: "Closing shift at Market",
     skill: "Count the cash drawer and find out if it's over or short.",
   },
   unitprice: {
@@ -68,7 +68,7 @@ export const SPENDS = [
   "Glimmer Grocers", "Moonbeam Cafe", "Pixel Pines Games", "Toadstool Taxi", "Featherfoot Shoes", "Copperkettle Diner",
   "Lanternlight Books", "Thistle Phone Co.", "Bramble Bus Pass", "Sprocket Bike Shop", "Puddle Pet Supply", "Sunnyside Laundry",
 ];
-export const EARNINGS = ["Paycheck from the Guild Hall", "Birthday money from Grandma", "Refund from Featherfoot Shoes", "Tutoring pay", "Sold an old game"];
+export const EARNINGS = ["Paycheck from the Arcade", "Birthday money from Grandma", "Refund from Featherfoot Shoes", "Tutoring pay", "Sold an old game"];
 export const CHECK_PAYEES = ["Maple Lane Rentals", "Coinhaven Water Works", "Dr. Fernsby's Office", "Willowbrook Music School", "Hilltop Soccer Club"];
 
 // ---------- Check Anatomy Hunt ----------

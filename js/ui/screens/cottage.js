@@ -156,7 +156,7 @@ export function render(root, { game, go, track, refreshWho, back }) {
     if (!st.current) return h("li.stage.locked", head, goals);
     const item = h("li.stage.current", head, h("p.note.tight", st.story), goals, st.cost ? h("p.stage-cost", icon("coins", { size: 14 }), " ", stageCostText(st, life)) : null);
     if (!st.ready) {
-      add(item, h("p.note.tight", "Meet every goal to finish this stage. Town Hall, the Guild Hall, the Vault and the Academy all help."));
+      add(item, h("p.note.tight", "Meet every goal to finish this stage. Town Hall, the Arcade, the Vault and the Academy all help."));
       return item;
     }
     if (game.practice) return add(item, h("p.note.tight", "Leave practice to finish this stage."));

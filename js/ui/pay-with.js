@@ -77,7 +77,7 @@ export function payWith({ life, cost, onPick, onBack, allowed = null, piggy = fa
     h("h3", `Pay ${money(cost.amount)} with...`),
     piggy ? null : h("p.note.tight", "📱 Your digital wallet holds your debit card and any credit cards."),
     list,
-    none ? h("p.error-text", piggy ? "Your piggy bank doesn't have enough yet. Work a shift at the Guild Hall." : "Nothing in your wallet can cover this right now.") : null,
+    none ? h("p.error-text", piggy ? "Your piggy bank doesn't have enough yet. Work a shift at the Arcade." : "Nothing in your wallet can cover this right now.") : null,
     h("div.row", h("button.secondary", { type: "button", onclick: onBack }, "Back"), none ? null : payBtn)
   );
 }

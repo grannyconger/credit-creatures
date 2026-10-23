@@ -85,7 +85,7 @@ A rough map from reading the code, for planning minigames and Skill Paths. Not y
 
 | Standard | Covered by now | Strength |
 |---|---|---|
-| A2, A3 | Decision cards, Shimmer Market, Unit Price Showdown, Cashier Rush, BNPL checkout | Some |
+| A2, A3 | Decision cards, Market, Unit Price Showdown, Cashier Rush, BNPL checkout | Some |
 | A4 | Bills, AutoPay, emergency fund card (Ch 8), lifestyle creep card | Some |
 | A6 | Data breach and credit freeze card, fake debt collector card | Light |
 | B7 | Renter's insurance card, broken laptop card, shopping for insurance card | Light |

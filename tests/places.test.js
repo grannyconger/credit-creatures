@@ -74,7 +74,7 @@ test("during a month: decisions first, then shifts, then End Month", () => {
   s = placeStatus({ life: l, play, creature: { dream: "home" }, classInfo: ci });
   assert.equal(s.townhall.text, "Ready for End Month");
   assert.ok(s.guild.count > 0);
-  assert.match(nextStep({ play, classInfo: ci, status: s }), /Guild Hall/);
+  assert.match(nextStep({ play, classInfo: ci, status: s }), /Arcade/);
 
   play.active.month.shifts = 99;
   s = placeStatus({ life: l, play, creature: { dream: "home" }, classInfo: ci });

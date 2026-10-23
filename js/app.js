@@ -40,6 +40,7 @@ import * as garage from "./ui/screens/garage.js";
 import * as records from "./ui/screens/records.js";
 import * as alley from "./ui/screens/alley.js";
 import * as map from "./ui/screens/map.js";
+import { initShell, paintShell } from "./ui/shell.js";
 import { watchSentences } from "./ui/sentences.js";
 import { publishSpringTokens, motionOn } from "./ui/motion/spring.js";
 import { installBoops } from "./ui/motion/boop.js";
@@ -57,6 +58,7 @@ const topbar = document.getElementById("topbar");
 const who = document.getElementById("who");
 let game = null;
 let cleanup = null;
+initShell({ getGame: () => game, go: (step) => (location.hash = `#/${step}`), track });
 // Set once the student is in the game this tab, so a refresh skips the title.
 const ENTERED = "credit-creatures:entered";
 // Google's own "G", as on a standard Google sign-in button.
@@ -164,6 +166,7 @@ async function loadBackends() {
 function signedOut(error = "", user = null) {
   game = null;
   topbar.hidden = true;
+  paintShell(null);
   bug.hide();
   const err = h("p.error", { role: "alert" }, error);
   // Looks like a standard Google sign-in button (teacher request 2026-10-21).
@@ -352,6 +355,7 @@ function updateWho() {
   if (!game) return;
   paintChapter();
   paintNav();
+  paintShell(game);
   const c = game.save.creature;
   clear(who);
   who.hidden = !c;
@@ -405,12 +409,15 @@ chapterChip.addEventListener("click", () => {
   track("chapterChipClick", { from: location.hash.replace(/^#\/?/, "") || game.step });
   location.hash = play.active || play.summary ? "#/month" : "#/hub";
 });
-addEventListener("cc:saved", () => paintChapter());
+addEventListener("cc:saved", () => {
+  paintChapter();
+  paintShell(game);
+});
 
 // Home, Map, Wallet and Leaderboard in the top bar (teacher request
 // 2026-10-22: the map, the wallet and the leaderboard were hard to find).
 const topnav = document.getElementById("topnav");
-const NAV = { hub: ["home", "Home"], map: ["compass", "Map"], wallet: ["wallet", "Wallet"], leaderboard: ["trophy", "Leaderboard"] };
+const NAV = { wallet: ["wallet", "Wallet"], leaderboard: ["trophy", "Leaderboard"] };
 function paintNav() {
   const inKingdom = game?.step === "hub";
   topnav.hidden = !inKingdom;
@@ -450,7 +457,7 @@ walletPop.addEventListener("beforetoggle", (e) => {
     h("div.wallet-pop-head", h("h2", icon("wallet", { size: 22 }), " Your wallet"), h("button.wallet-pop-close", { type: "button", "aria-label": "Close the wallet", onclick: () => walletPop.hidePopover() }, "✕")),
     moneyChips(life, play),
     stageOf(play) === 0
-      ? h("p.note.tight", bank ? "Your coins are in a piggy bank. Take them to the Vault to open a bank account." : "Your coins are in a piggy bank for now. Work shifts at the Guild Hall to fill it.")
+      ? h("p.note.tight", bank ? "Your coins are in a piggy bank. Take them to the Vault to open a bank account." : "Your coins are in a piggy bank for now. Work shifts at the Arcade to fill it.")
       : walletStrip(life, game.save.creature),
     bank && stageOf(play) > 0
       ? h("div.row", h("button", { type: "button", onclick: goBank("wallet") }, icon("vault", { size: 18 }), " Pay bills and move money"), h("button.secondary", { type: "button", onclick: goBank("inbox") }, icon("inbox", { size: 18 }), " Letters"))

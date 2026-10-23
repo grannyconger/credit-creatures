@@ -85,7 +85,7 @@ const GOALS = {
   }),
   shifts: (n) => ({
     icon: "guild",
-    label: `Work ${n} shifts at the Guild Hall`,
+    label: `Work ${n} shifts at the Arcade`,
     check: (life, play) => {
       const k = play?.stats?.shifts || 0;
       return { value: k, ok: k >= n, share: ratio(k, n), text: `now ${k}` };

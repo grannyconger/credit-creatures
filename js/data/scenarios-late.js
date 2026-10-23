@@ -299,7 +299,7 @@ export const LATE_SCENARIOS = [
     title: "A data breach",
     minChapter: 8,
     fits: () => true,
-    text: () => ["Shimmer Market was hacked, and your name, birthday and address may have been stolen. A thief could use them to open credit cards in your name."],
+    text: () => ["Market was hacked, and your name, birthday and address may have been stolen. A thief could use them to open credit cards in your name."],
     choices: () => [
       { key: "freeze", label: "Freeze my credit at all three bureaus", outcome: "Done, and it's free. Nobody can open new credit in your name while it's frozen. You can unfreeze it any time you apply for something.", quality: "good" },
       { key: "watch", label: "Check my report for new accounts", outcome: "Good habit. You'll spot a fake account, but a freeze would stop one from being opened at all.", quality: "ok" },

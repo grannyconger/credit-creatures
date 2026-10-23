@@ -2776,7 +2776,7 @@ main#app.app:has(.bestiary) {
 .bst-book-place .data-table td { border-bottom: 1px dashed var(--b-rule); color: var(--b-ink); }
 
 /* ===========================================================================
-   The Guild Hall: one sheet. Jobs are shift tickets with a perforated stub
+   The Arcade: one sheet. Jobs are shift tickets with a perforated stub
    that carries the pay, and a shift is worked on a stitched workbench.
    =========================================================================== */
 .bst-guild .panel.guild {
@@ -2999,7 +2999,7 @@ main#app.app:has(.bestiary) {
 .bst-guild :is(.minigame, .shift) button.secondary:hover { background: color-mix(in srgb, var(--b-on-ground) 10%, transparent); }
 
 /* ===========================================================================
-   Shimmer Market: a market stall. A striped awning over the page, goods
+   Market: a market stall. A striped awning over the page, goods
    standing on two plank shelves, and a string price tag on each.
    =========================================================================== */
 .bst-shop .bst-awning {
@@ -3825,7 +3825,7 @@ main#app.app:has(.bestiary) {
 
 /* ===========================================================================
    The five Chapter 1 jobs (teacher request 2026-10-22). They're played on the
-   Guild Hall's dark workbench like the first three, with paper for anything
+   Arcade's dark workbench like the first three, with paper for anything
    to read. Big touch targets, and right or wrong always has a word or a mark.
    =========================================================================== */
 .bst-guild :is(.overdraft, .register, .checkhunt, .drawer, .unitprice) { touch-action: manipulation; }
@@ -5336,3 +5336,144 @@ main#app.app:has(.bestiary) {
 .rank-line { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; }
 .rank-line .tr-seal { display: inline-block; line-height: 0; }
 .rank-line .tr-seal svg { display: block; }
+
+/* ===========================================================================
+   The shell (docs/UI-REBUILD.md slice 1): status chips in the top bar, and the
+   bottom bar with the creature, three shortcuts and Things To Do. Same leather
+   strap as the top bar, so the middle page is framed top and bottom.
+   =========================================================================== */
+.bst-topbar .status-chips {
+  display: flex;
+  gap: var(--b-s2);
+  list-style: none;
+  margin: 0 0 0 auto;
+  padding: 0;
+}
+.bst-topbar .status-chips[hidden] { display: none; }
+.bst-topbar .status-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1.5px solid color-mix(in srgb, var(--b-on-ground) 35%, transparent);
+  border-radius: var(--b-r-tag);
+  color: var(--b-on-ground);
+}
+.bst-topbar .status-chips .ico-wrap { color: var(--b-gold); }
+.bst-topbar .status-chips small { color: var(--b-on-ground-soft); font-size: var(--b-fs-tiny); }
+.bst-topbar .status-chips strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-ui); }
+.bst-topbar .status-chips:not([hidden]) ~ .topnav { margin-left: 0; }
+
+.bst-bottombar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--b-s4);
+  padding: var(--b-s2) var(--b-s4) var(--b-s3);
+  font-family: var(--b-body);
+  color: var(--b-on-ground);
+  background: var(--b-grain), var(--b-ground-deep);
+  box-shadow: 0 -6px 14px -8px color-mix(in srgb, var(--b-shadow-ink) 70%, transparent);
+}
+.bst-bottombar[hidden] { display: none; }
+.bst-bottombar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 5px;
+  border-top: 1.5px dashed color-mix(in srgb, var(--b-gold) 70%, transparent);
+  pointer-events: none;
+}
+.bst-bottombar :focus-visible { outline: 2.5px dashed var(--b-foxfire); outline-offset: 4px; }
+.bst-bottombar .who {
+  display: flex;
+  align-items: center;
+  gap: var(--b-s2);
+  margin: 0;
+  padding: 4px 10px 4px 4px;
+  color: var(--b-on-ground);
+  background: none;
+  border: 1.5px solid transparent;
+  border-radius: var(--b-r-tag);
+}
+.bst-bottombar .who:hover { background: color-mix(in srgb, var(--b-on-ground) 10%, transparent); }
+.bst-bottombar .who-art { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; background: var(--b-paper); border: 2px solid var(--b-gold); }
+.bst-bottombar .who-text { display: grid; text-align: left; line-height: 1.15; }
+.bst-bottombar .who-text strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-bottombar .who-text small { color: var(--b-on-ground-soft); font-size: var(--b-fs-tiny); }
+.bst-bottombar .shortcuts { display: flex; gap: var(--b-s2); margin-left: auto; }
+.bst-bottombar .shortcuts button,
+.bst-bottombar .things-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px 16px;
+  font-family: var(--b-body);
+  font-weight: 700;
+  font-size: var(--b-fs-ui);
+  color: var(--b-on-ground);
+  background: none;
+  border: 1.5px solid color-mix(in srgb, var(--b-on-ground) 35%, transparent);
+  border-radius: var(--b-r-tag);
+}
+.bst-bottombar .shortcuts button:hover { border-color: var(--b-on-ground); }
+.bst-bottombar .shortcuts .ico-wrap { color: var(--b-gold); }
+.bst-bottombar .shortcuts button[aria-current="page"] { color: var(--b-foxfire); border-style: dashed; border-color: var(--b-foxfire); }
+.bst-bottombar .shortcuts button[aria-disabled="true"] { opacity: 0.7; border-style: dotted; }
+.bst-bottombar .things-btn {
+  color: var(--b-on-rust);
+  background: var(--b-rust);
+  border-color: var(--b-seal-deep);
+  box-shadow: 0 2px 0 var(--b-seal-deep);
+}
+.bst-bottombar .things-btn:hover { transform: translateY(-1px); }
+
+/* Things To Do: a sheet of big tiles. */
+.things-dialog {
+  width: min(960px, calc(100% - 32px));
+  max-height: calc(100vh - 48px);
+  padding: var(--b-s4) var(--b-s5) var(--b-s5);
+  font-family: var(--b-body);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-paper);
+  border: 1.5px solid var(--b-paper-edge);
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-lift);
+}
+.things-dialog::backdrop { background: color-mix(in srgb, var(--b-shadow-ink) 65%, transparent); }
+.things-head { display: flex; align-items: center; justify-content: space-between; }
+.things-head h2 { display: flex; align-items: center; gap: var(--b-s2); margin: 0; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.things-close { padding: 6px; color: var(--b-ink); background: none; border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
+.things-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--b-s3); margin-top: var(--b-s3); }
+.thing-tile {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: var(--b-s3) var(--b-s2);
+  min-height: 150px;
+  text-align: center;
+  color: var(--b-ink);
+  background: var(--b-paper-insert);
+  border: 1.5px solid var(--b-paper-edge);
+  border-radius: var(--b-r-insert);
+  box-shadow: var(--b-shadow-card);
+}
+.thing-tile:hover, .thing-tile:focus-visible { transform: translateY(-2px); border-color: var(--b-rust); }
+.thing-tile:focus-visible { outline: 2.5px dashed var(--b-rust); outline-offset: 3px; }
+.thing-art { color: var(--b-plum); }
+.thing-tile strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.thing-tile small { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); }
+.thing-status { margin-top: 4px; font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+.thing-status.action { color: var(--b-rust-ink); font-weight: 700; }
+.thing-status.action::before { content: "! "; }
+.thing-tile[aria-disabled="true"] { opacity: 0.75; border-style: dashed; }
+.thing-tile[aria-disabled="true"] .thing-art { color: var(--b-ink-soft); }
+@media (prefers-reduced-motion: reduce) {
+  .thing-tile:hover, .bst-bottombar .things-btn:hover { transform: none; }
+}
+/* The bug button rides above the bottom bar so it never covers the creature. */
+body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; }

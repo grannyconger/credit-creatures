@@ -76,7 +76,7 @@ export const STALLS = [
     icon: "🎮",
     name: "Rent-a-Wonder",
     pitch: "New game console for just $25 a week! No credit needed!",
-    fine: ["78 weekly payments to own it.", "Miss a week and we pick it up. Payments already made are not returned.", "Same console at Shimmer Market: $500."],
+    fine: ["78 weekly payments to own it.", "Miss a week and we pick it up. Payments already made are not returned.", "Same console at Market: $500."],
     trap: true,
     math: ["$25 × 78 weeks = $1,950.", "That's $1,450 more than buying it outright.", "Saving $25 a week would buy it in 20 weeks."],
     clue: "A small weekly price with a very long count of payments.",

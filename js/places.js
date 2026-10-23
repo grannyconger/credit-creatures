@@ -8,10 +8,10 @@ import { alleyProgress } from "./data/alley.js";
 
 // The one next thing to do in the prologue (coach panel and chapter box).
 export const PROLOGUE_TEXT = {
-  welcome: "Say hi to Sage, then head to the Guild Hall.",
-  firstShift: "Work your first shift at the Guild Hall to earn coins.",
+  welcome: "Say hi to Sage, then head to the Arcade.",
+  firstShift: "Work your first shift at the Arcade to earn coins.",
   moreShifts: "Work 3 shifts in all. Your piggy bank is filling up!",
-  market: "Visit the Shimmer Market. Will you spend or save?",
+  market: "Visit the Market. Will you spend or save?",
   cottage: "Check on your creature and its dream at your Cottage.",
   bank: "Take your coins to the Vault and open a bank account.",
 };
@@ -25,10 +25,10 @@ export const PROLOGUE_TEXT = {
 export const PLACES = [
   { id: "townhall", kind: "Monthly choices", name: "Town Hall", icon: "townhall", route: "month", feature: "townhall", does: "This month's news, decisions and End Month", x: 37, y: 26 },
   { id: "vault", kind: "Your bank", name: "The Vault", icon: "vault", route: "accounts", feature: "vault", does: "Your bank: checking, savings, bills and letters", x: 12, y: 26 },
-  { id: "guild", kind: "Jobs and pay", name: "Guild Hall", icon: "guild", route: "guild", feature: "guild", does: "Work a shift to earn money", x: 63, y: 26 },
+  { id: "guild", kind: "Jobs and pay", name: "Arcade", icon: "guild", route: "guild", feature: "guild", does: "Work a shift to earn money", x: 63, y: 26 },
   { id: "records", kind: "Your credit score", name: "Hall of Records", icon: "scroll", route: "records", feature: "records", does: "Your credit report and credit score", x: 50, y: 55 },
   { id: "garage", kind: "Cars and loans", name: "The Garage", icon: "car", route: "garage", feature: "garage", does: "Buy a ride with cash or a loan", x: 75, y: 55 },
-  { id: "market", kind: "The shop", name: "Shimmer Market", icon: "market", route: "shop", feature: "market", does: "Spend money on things for your creature", x: 12, y: 81 },
+  { id: "market", kind: "The shop", name: "Market", icon: "market", route: "shop", feature: "market", does: "Spend money on things for your creature", x: 12, y: 81 },
   { id: "cottage", kind: "Your creature's home", name: "Your Cottage", icon: "cottage", route: "cottage", feature: "cottage", does: "Your creature, its dream, its home and your settings", x: 37, y: 81 },
   { id: "plaza", kind: "Friends and gifts", name: "Friendship Plaza", icon: "plaza", route: "friends", feature: "plaza", does: "Friends, groups and gifts", x: 63, y: 81 },
   { id: "alley", kind: "Tricky offers", name: "Lantern Alley", icon: "lantern", route: "alley", feature: "pitfalls", does: "Read the fine print on tricky offers", x: 25, y: 55 },
@@ -106,7 +106,7 @@ export function nextStep({ play, classInfo, status }) {
     return "Your teacher opens the next chapter soon. Meanwhile, practice at the Academy or check your Vault.";
   }
   if (status.townhall.count) return "Start at Town Hall: this month's decisions are waiting.";
-  if (status.guild.count) return `Earn money at the Guild Hall (${status.guild.text.toLowerCase()}), then check the Vault.`;
+  if (status.guild.count) return `Earn money at the Arcade (${status.guild.text.toLowerCase()}), then check the Vault.`;
   if (status.vault.tone === "warn") return "Visit the Vault: pay your bill before End Month.";
   return "Everything's done. End the month at Town Hall.";
 }

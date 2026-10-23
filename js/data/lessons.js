@@ -25,8 +25,8 @@ export const LESSONS = {
       { route: "hub", big: "🏰", title: "Welcome to Coinhaven, Guardian!", text: ["I'm Sage, the Royal Treasurer. Your creature is 16 and has no money of its own yet. Let's change that.", "I'll show you one thing at a time. The kingdom grows as you learn."] },
       { route: "hub", target: ".money-chips", title: "Your piggy bank", text: ["Right now your only account is a piggy bank. Coins you earn go in here.", "It's simple, but it can't do much. It can't pay bills, and lost coins are gone for good."] },
       { route: "hub", target: "#topnav", title: "Find your way", text: ["Home, the Map, your Wallet and the Leaderboard are always up here. Your chapter's progress sits next to them."] },
-      { route: "map", target: ".kingdom", title: "A kingdom that grows", text: ["More places appear on the map as you learn. Three are open now: your Cottage, the Guild Hall and the Shimmer Market."] },
-      { route: "map", target: ['.place[data-place="guild"]', '.place-row[data-place="guild"]'], title: "Start at the Guild Hall", text: ["Jobs pay coins. Your first job is Cashier Rush: count back the right change. Tap the Guild Hall when you're ready."] },
+      { route: "map", target: ".kingdom", title: "A kingdom that grows", text: ["More places appear on the map as you learn. Three are open now: your Cottage, the Arcade and the Market."] },
+      { route: "map", target: ['.place[data-place="guild"]', '.place-row[data-place="guild"]'], title: "Start at the Arcade", text: ["Jobs pay coins. Your first job is Cashier Rush: count back the right change. Tap the Arcade when you're ready."] },
     ],
   },
   guild: {
@@ -44,7 +44,7 @@ export const LESSONS = {
         route: "shop",
         target: [".shop-grid", ".place-header"],
         title: "Wants cost money",
-        text: ["The Shimmer Market sells things for your creature. Spending is fun, but coins you spend are gone.", "Your creature's dream needs savings. Every purchase is a choice between now and later."],
+        text: ["The Market sells things for your creature. Spending is fun, but coins you spend are gone.", "Your creature's dream needs savings. Every purchase is a choice between now and later."],
         quiz: { q: "You have $60 and want a $45 hat. Your dream fund needs $50 more. What's the smartest move?", choices: ["Buy the hat now", "Save first, buy the hat later", "Borrow $45 from a friend"], answer: 1, why: "Save first. You can still get the hat later, and your dream won't wait." },
       },
     ],
@@ -68,7 +68,7 @@ export const LESSONS = {
         route: "map",
         target: ['.place[data-place="townhall"]', '.place-row[data-place="townhall"]'],
         title: "Town Hall is open",
-        text: ["Each month, Town Hall brings a news card and a few money decisions. Then you end the month and your bills come out.", "Chapter 1 starts there. You can still work shifts at the Guild Hall, and there's a new job: Check Writer."],
+        text: ["Each month, Town Hall brings a news card and a few money decisions. Then you end the month and your bills come out.", "Chapter 1 starts there. You can still work shifts at the Arcade, and there's a new job: Check Writer."],
         quiz: { q: "Your debit card spends money from which account?", choices: ["Checking", "Savings", "The bank's own money"], answer: 0, why: "A debit card spends your own money from checking. That's why you can't spend more than you have." },
       },
     ],
@@ -79,7 +79,7 @@ export const LESSONS = {
     steps: [
       { route: "month", target: [".quest-board", ".place-header"], title: "This month's quests", text: ["Each month has a news card about your creature's life and a few money decisions. Do them in order. Each one gets a Done stamp."] },
       { route: "month", target: [".decision-card", ".month-main"], title: "Read, then choose", text: ["Read the card and pick what you'd really do. Some choices cost money, and then you pick how to pay.", "After you choose, the card flips to show what happened and which part of your money it changed."] },
-      { route: "month", target: [".quest-board li:last-child", ".quest-board"], title: "End Month", text: ["When every card is done, end the month. Bills come out of checking, and you see what changed.", "Before you do, work your shifts at the Guild Hall and check that checking can cover your bills."] },
+      { route: "month", target: [".quest-board li:last-child", ".quest-board"], title: "End Month", text: ["When every card is done, end the month. Bills come out of checking, and you see what changed.", "Before you do, work your shifts at the Arcade and check that checking can cover your bills."] },
     ],
   },
   academy: {

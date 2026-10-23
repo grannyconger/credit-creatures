@@ -31,7 +31,7 @@ const POKE_NOTES = [
 // own lock icon, so it keeps only the words.
 const unlockNote = (o) => {
   const text = lockText(o).replace(/^\S+\s/, "");
-  return text === "Shop item" ? "Sold at Shimmer Market" : text;
+  return text === "Shop item" ? "Sold at Market" : text;
 };
 
 const reduced = () => document.documentElement.dataset.motion === "calm" || globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;

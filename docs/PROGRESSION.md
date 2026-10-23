@@ -10,7 +10,7 @@ ask it.
 
 | Stage | Age | Unlocks | New on the map | Jobs |
 |---|---|---|---|---|
-| Prologue | 16 | Piggy bank (cash) | Cottage, Guild Hall, Shimmer Market | Cashier Rush |
+| Prologue | 16 | Piggy bank (cash) | Cottage, Arcade, Market | Cashier Rush |
 | Chapter 1: Your first bank account | 16 | Checking, savings, debit card, a phone bill, overdraft fees, Inbox | Vault, Town Hall, Friendship Plaza, Academy | + Check Writer |
 | Chapter 2: Borrow and pay back | 18 (time skip at the end of Ch 1) | Installment loans: vehicles (Garage), cottage upgrades (home improvement loan), credit-builder and student loans | The Garage | + Ledger Sort |
 | Chapter 3: Your first credit card | 18 | Credit card (Design Your Card at the end of Ch 2), statements, utilization, card AutoPay, credit and buy now, pay later at checkout | | |

@@ -34,7 +34,7 @@ export function render(root, { game, go, track }) {
     const c = game.save.creature;
     fill(
       panel,
-      placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `Chapter ${chapter} stock`, title: "Shimmer Market", subtitle: "Spend money on things for your creature. Time is paused while you shop. New stock every chapter.", practice: run.practice }),
+      placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `Chapter ${chapter} stock`, title: "Market", subtitle: "Spend money on things for your creature. Time is paused while you shop. New stock every chapter.", practice: run.practice }),
       moneyChips(run.life, play),
       buying ? checkout(buying, c) : h("div.shop-grid", stock.map((item) => card(item, c))),
       h("p.note.center", "Wants are fun, but check your bills first. Things you buy show up in the creature editor and on your hub.")
@@ -66,12 +66,12 @@ export function render(root, { game, go, track }) {
       box,
       payWith({
         life: run.life,
-        cost: { amount: item.price, item: item.name, methods, merchant: "Shimmer Market" },
+        cost: { amount: item.price, item: item.name, methods, merchant: "Market" },
         allowed: payMethods(play, run.life),
         piggy: !hasFeature(play, "debit"),
         onBack: () => paint(),
         onPick: async (method) => {
-          const r = resolveChoice(run.life, { cost: { amount: item.price, item: `shop: ${item.name}`, merchant: "Shimmer Market" } }, method);
+          const r = resolveChoice(run.life, { cost: { amount: item.price, item: `shop: ${item.name}`, merchant: "Market" } }, method);
           if (!r.ok) {
             toast(r.message, "bad");
             return paint(item);

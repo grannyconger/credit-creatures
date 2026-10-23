@@ -80,9 +80,9 @@ Left out (covered elsewhere in class): loan applications in depth, amortization 
   | Place | What it's for |
   |---|---|
   | Town Hall | This month's news, decisions and End Month |
-  | Guild Hall | Work shifts to earn money |
+  | Arcade | Work shifts to earn money |
   | The Vault | Bank: wallet, bills, statements, score, report, letters |
-  | Shimmer Market | Spend money in the shop |
+  | Market | Spend money in the shop |
   | The Academy | Practice Desk for XP, trophies and ranks |
   | Friendship Plaza | Friends, groups and gifts |
   | Your Cottage | The creature, its dream, customizing and settings |
@@ -137,7 +137,7 @@ Google sign-in (school accounts only) -> story intro -> create creature -> pick 
 -> AGE 16: teen option (join a parent's card, or a teen debit card)
 -> tutorial months: first work shift, first purchase, read your report
 -> AGE 18: DESIGN YOUR CARD -> approved or denied, with reasons
--> KINGDOM HUB: Town Hall (time passes), Guild Hall (earn), Market (spend),
+-> KINGDOM HUB: Town Hall (time passes), Arcade (earn), Market (spend),
    Vault (account management, time paused), Academy (XP), Plaza, Cottage
 -> chapter summary -> reflection -> saved
 Next class: sign in -> "Previously on your credit life..." -> next released chapter
@@ -205,7 +205,7 @@ As the requested limit slider moves up, show in real time how the other variable
 
 ## 8. Simulation: the month loop
 
-Time passes here, at Town Hall. Target 3 to 4 real minutes per game month. Shifts happen at the Guild Hall and bills are paid at the Vault, then the student comes back to Town Hall to end the month.
+Time passes here, at Town Hall. Target 3 to 4 real minutes per game month. Shifts happen at the Arcade and bills are paid at the Vault, then the student comes back to Town Hall to end the month.
 
 - **Life card (1 per month):** random event, for example a $400 car repair, broken phone, medical bill, raise, birthday money, lost hours, tax refund.
 - **Decision cards (up to 5 per month):** credit choices drawn from the scenario pool (Section 13), only ones that fit the creature's situation. Note: 5 per month is the teacher's setting. Tune in the pilot if months run long.
@@ -447,7 +447,7 @@ Quick (30 to 60 seconds), semi-related to the content. Pay depends on performanc
 | **Spot the Overdraft** (added 2026-10-22, Chapter 1) | Teller at the Vault | Purchases and deposits come one at a time over a live checking balance. Stop the one that would drop it below $0. Deposits can rescue a low balance. Missing it shows the $35 overdraft fee | Chapter 1 jobs |
 | **Register Balancer** (added 2026-10-22, Chapter 1) | Bookkeeper's helper | Type each new running balance in a check register on a money keypad. Dispute the two planted mistakes (a duplicate charge, or a charge far bigger than its receipt). The right balance carries forward after a slip | Chapter 1 jobs |
 | **Check Anatomy Hunt** (added 2026-10-22, Chapter 1) | Vault clerk | Tap each part of a check (routing, account and check numbers, payee, amounts, date, memo, signature), then judge two checks as good to cash or not (unsigned, numbers and words that don't match, no date) | Chapter 1 jobs |
-| **Count the Drawer** (added 2026-10-22, Chapter 1) | Closing shift at Shimmer Market | Count each pile of bills and coins with steppers, then add the float to the tape's sales and say whether the drawer is over, short or exact. Two drawers a shift | Chapter 1 jobs |
+| **Count the Drawer** (added 2026-10-22, Chapter 1) | Closing shift at Market | Count each pile of bills and coins with steppers, then add the float to the tape's sales and say whether the drawer is over, short or exact. Two drawers a shift | Chapter 1 jobs |
 | **Unit Price Showdown** (added 2026-10-22, Chapter 1) | Market price checker | Pick the better buy from two or three products by price per unit. Later rounds mix brands, add a coupon, or give a size in pounds or quarts | Chapter 1 jobs |
 | Check & Tip | Tavern server | Given a subtotal, add a 20% tip and give the total within 20 seconds | Later |
 | Delivery Dash | Courier | Timing and dodging (Frogger-style) | Later |

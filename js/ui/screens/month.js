@@ -1,5 +1,5 @@
 // Town Hall: one game month's news and decisions, then End Month (SPEC §8).
-// Work happens at the Guild Hall and bills at the Vault, so the month is
+// Work happens at the Arcade and bills at the Vault, so the month is
 // shared across the kingdom and always comes back to the hub.
 // In practice mode the same screen runs on a throwaway copy.
 import { payMethods } from "../../progression.js";
@@ -219,7 +219,7 @@ export function render(root, { game, go, track, refreshWho }) {
       wrap,
       h("p", "When the month ends, statements close, interest and fees are charged, automatic payments come out of checking, lenders report to the credit bureau, and your score updates."),
       left > 0
-        ? h("p.callout", icon("guild", { size: 18 }), ` You can still work ${left} shift${left === 1 ? "" : "s"} at the Guild Hall this month. `, h("button.small.secondary", { type: "button", onclick: () => go("guild") }, "Go to the Guild Hall"))
+        ? h("p.callout", icon("guild", { size: 18 }), ` You can still work ${left} shift${left === 1 ? "" : "s"} at the Arcade this month. `, h("button.small.secondary", { type: "button", onclick: () => go("guild") }, "Go to the Arcade"))
         : null,
       warnings.length ? h("div.callout.warn", { role: "alert" }, warnings.map((w) => h("p", icon("alert", { size: 16 }), " ", w))) : h("p.callout.good", icon("check", { size: 16 }), " Your bills are covered."),
       h(

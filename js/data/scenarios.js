@@ -542,14 +542,14 @@ export const SCENARIOS = [
     title: "Pay later, times three",
     fits: (life) => life.checking >= 80 && life.accounts.filter((a) => a.kind === "bnpl" && a.status === "open").length < 2,
     text: () => [
-      "Shimmer Market has sneakers ($80), headphones ($60) and a jacket ($100). Every item offers buy now, pay later.",
+      "Market has sneakers ($80), headphones ($60) and a jacket ($100). Every item offers buy now, pay later.",
       "Pay 25% today, then the rest comes out of checking over the next two End Months. Each plan is small. Together they add up.",
     ],
     choices: (life) => [
       {
         key: "all",
         label: "All three, pay later",
-        steps: [["buyWithBnpl", 80, "sneakers", "Shimmer Market"], ["buyWithBnpl", 60, "headphones", "Shimmer Market"], ["buyWithBnpl", 100, "jacket", "Shimmer Market"]],
+        steps: [["buyWithBnpl", 80, "sneakers", "Market"], ["buyWithBnpl", 60, "headphones", "Market"], ["buyWithBnpl", 100, "jacket", "Market"]],
         disabled: short(life, 60),
         outcome: "You paid $60 today. $120 comes out at this End Month and $60 at the next. Miss one and each plan charges a late fee.",
         quality: "bad",
@@ -558,7 +558,7 @@ export const SCENARIOS = [
       {
         key: "one",
         label: "Just the sneakers, pay later",
-        steps: [["buyWithBnpl", 80, "sneakers", "Shimmer Market"]],
+        steps: [["buyWithBnpl", 80, "sneakers", "Market"]],
         outcome: "$20 today, then $40 and $20 at the next two End Months. One plan is easy to track.",
         quality: "ok",
       },
@@ -650,7 +650,7 @@ export const SCENARIOS = [
       {
         key: "three",
         label: "Open all three",
-        steps: [["recordInquiry", "Hollow Oak store card"], ["recordInquiry", "Shimmer Market store card"], ["recordInquiry", "Lantern Lane store card"]],
+        steps: [["recordInquiry", "Hollow Oak store card"], ["recordInquiry", "Market store card"], ["recordInquiry", "Lantern Lane store card"]],
         outcome: "You saved a little at each store, but you added 3 hard inquiries in one week.",
         quality: "bad",
         factor: { key: "newCredit", dir: "down" },
@@ -876,7 +876,7 @@ export const SCENARIOS = [
     title: "No interest if paid in 6 months",
     fits: (life) => life.checking >= 120,
     text: () => [
-      "Shimmer Market sells a $600 laptop with a deal: \"No interest if paid in full in 6 months!\"",
+      "Market sells a $600 laptop with a deal: \"No interest if paid in full in 6 months!\"",
       "The catch: if even $1 is left after 6 months, they charge ALL the interest from day one, at 27%. That's called deferred interest.",
     ],
     choices: (life) => [

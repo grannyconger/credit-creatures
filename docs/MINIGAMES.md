@@ -1,6 +1,6 @@
 # Minigames: what exists, what's next, and how each one plugs in
 
-The teacher's Oct 22 idea doc ("Personal Finance Mini Games: Build Specs", 27 games, the full 17-page PDF arrived 2026-10-23) is folded in here. **The teacher's rule: educational tool first, engaging game second, and simple beats complex.** Nothing in the doc has to be built the way it's written. The doc was written by a chatbot without our project's context, so **these rules from it don't apply**: a separate game shell with stars and Easy/Medium/Hard menus, no real brands, and localStorage-only progress. Our games are Guild Hall jobs (the job board, the No timer toggle, the Shift over screen, `jobPay`), saved with the game, and real brand names are fine (CLAUDE.md).
+The teacher's Oct 22 idea doc ("Personal Finance Mini Games: Build Specs", 27 games, the full 17-page PDF arrived 2026-10-23) is folded in here. **The teacher's rule: educational tool first, engaging game second, and simple beats complex.** Nothing in the doc has to be built the way it's written. The doc was written by a chatbot without our project's context, so **these rules from it don't apply**: a separate game shell with stars and Easy/Medium/Hard menus, no real brands, and localStorage-only progress. Our games are Arcade jobs (the job board, the No timer toggle, the Shift over screen, `jobPay`), saved with the game, and real brand names are fine (CLAUDE.md).
 
 **What we keep from it:** money in integer cents, every number in `js/data/config.js`, seeded rounds, wrong answers never ending a game, a one-sentence why after every miss, 44px or bigger tap targets, keyboard support, and no color alone.
 
@@ -47,10 +47,10 @@ Added to each entry in `JOBS` (`js/data/minigames.js`) when the game is built or
 
 ## The rest of the doc (games 13 to 49), adapted
 
-**How to read this:** "Fits as" says where it lives in our game. A Guild Hall job is a timed shift for pay. A quest step is a Quest mode activity (later). A Skill Sim is one step of a combined pass/fail task. **Learning-first change** is what we'd change so the game teaches before it entertains.
+**How to read this:** "Fits as" says where it lives in our game. A Arcade job is a timed shift for pay. A quest step is a Quest mode activity (later). A Skill Sim is one step of a combined pass/fail task. **Learning-first change** is what we'd change so the game teaches before it entertains.
 
 ### Budgeting
-**13. Needs vs. Wants Sorter**: A2 (needs and wants), A4. Fits as a quest step early in Quest 1, and as a Guild Hall job. Battle: yes, clear cards only.
+**13. Needs vs. Wants Sorter**: A2 (needs and wants), A4. Fits as a quest step early in Quest 1, and as a Arcade job. Battle: yes, clear cards only.
 - Keep the third bin, "Depends", and the persona flip (a car for a rural commuter or a city dweller). That's the real lesson: needs depend on your life.
 - Learning-first change: points for a *sound reason*, never a fixed answer, on gray-area cards, and the reasons come from the student's own creature's situation when possible. The doc's results-screen "discussion prompt" goes to the teacher page instead (Reteach list) for a class debate.
 - Fault to plan for: students arguing that a phone is a need. That's the point, so accept a well-reasoned "Depends".
@@ -63,7 +63,7 @@ Added to each entry in `JOBS` (`js/data/minigames.js`) when the game is built or
 ### Paychecks and taxes (fills standards F, which have nothing today)
 All rates are simplified teaching values in config, labeled "simplified for learning, not tax advice". Never ask for a real Social Security number.
 
-**17. Paystub Decoder**: F4, F6. Fits as a Guild Hall job ("Payroll clerk") and a Banking or Earning Skill Sim step. Battle: yes, one tap per round.
+**17. Paystub Decoder**: F4, F6. Fits as a Arcade job ("Payroll clerk") and a Banking or Earning Skill Sim step. Battle: yes, one tap per round.
 - Same tap-the-part mechanic as Check Anatomy Hunt, so reuse that code.
 - Learning-first change: every right tap shows the line's plain meaning, and every wrong tap says what the tapped line actually is.
 
@@ -74,7 +74,7 @@ All rates are simplified teaching values in config, labeled "simplified for lear
 **19. W-4 Mini Form**: F4. Fits as a quest step (first job). Battle: no.
 - Learning-first change: keep it to a clearly labeled practice form, and show the result as "likely refund or likely owe, and why", the actual lesson.
 
-**20. Hourly vs. Salary**: F6, A2. Fits as a quest step or a Guild Hall job. Battle: yes, simple version (which pays more this week?).
+**20. Hourly vs. Salary**: F6, A2. Fits as a quest step or a Arcade job. Battle: yes, simple version (which pays more this week?).
 - Keep the reveal of the salaried job's effective hourly rate on long weeks.
 - Fault to plan for: overtime math. Show the formula on the first wrong answer.
 
@@ -110,14 +110,14 @@ All rates are simplified teaching values in config, labeled "simplified for lear
 - **42. Balance Sheet Builder**: the balance scale extends Ledger Sort's assets, liabilities and equity. Story mode (5 business days) would make a strong Business Skill Sim.
 
 ### Consumer smarts
-**45. Receipt Error Hunt**: A3, F3 (sales tax). Fits as a Guild Hall job ("Shimmer Market checker"). Battle: yes, one line per round.
+**45. Receipt Error Hunt**: A3, F3 (sales tax). Fits as a Arcade job ("Market checker"). Battle: yes, one line per round.
 - Keep "Looks Good" for receipts with no errors, so students can't assume there's always a mistake. Apply the same rule to Fee Detective.
 
 **46. Subscription Audit**: A2, A3, A4. Fits as a quest step or job. Battle: no.
 - Keep the usage meters and the yearly savings reveal. Keep the annual plan that shows up once but recurs. That's a real trap.
 - Learning-first change: the "Regret" meter teaches that cutting things you use isn't saving. Frame it as matching spending to your values, the class's theme.
 
-**47. Price Per Use**: A3. Fits as a Guild Hall job beside Unit Price Showdown. Battle: yes, the simple pick.
+**47. Price Per Use**: A3. Fits as a Arcade job beside Unit Price Showdown. Battle: yes, the simple pick.
 - Keep the break-even slider (the winner flips at the marked point) and the counter-examples (a costume worn once).
 
 **49. Gig Income Tracker**: A2, F6, A4. Fits as a quest step (side-hustle quest), not a timed job. Battle: no.
@@ -147,12 +147,12 @@ This game teaches the next generation to manage money in a complex world. That's
 - **Tax Bracket Bucket Fill stays in the game, but not as a minigame** (for example, a lesson or an Academy exhibit).
 - **Journal Entry Builder:** saved for another day.
 - **Crossword and logic grid:** saved for another project.
-- **Compound Interest Garden:** small, in each student's **Cottage**, needing routine care like a tree simulator. Seeds (account types) are bought at Shimmer Market, and gadgets like a self-waterer (automatic contributions) are bought too. See below.
+- **Compound Interest Garden:** small, in each student's **Cottage**, needing routine care like a tree simulator. Seeds (account types) are bought at Market, and gadgets like a self-waterer (automatic contributions) are bought too. See below.
 - **Games to find for the biggest engagement:** A6 (scams), A5 (social media marketing), B4 (a trivia game of all-true, shocking stats about what changes insurance rates and costs), F6 (gross to net pay) and G1 (compound interest).
 - **Estimate It:** the teacher wants to know exactly how it works before it's built.
 
 ## Naming, rewards and tech (teacher, 2026-10-23, later the same day)
-- **Every non-quest activity is a "side quest":** the minigames and arcade games, including today's Guild Hall jobs. Side quests are skill based.
+- **Every non-quest activity is a "side quest":** the minigames and arcade games, including today's Arcade jobs. Side quests are skill based.
 - **Quests earn XP** and are the most informative. **Side quests earn Coins (checking money), Energy and Sparkle Points.** Today's code still gives XP for shifts and right answers, so moving to this split is a planned balance change.
 - **Where'd My Paycheck Go** is a lesson only (taxes don't come out of the creature's pay). Later, a teacher switch can turn on real taxes for a class.
 - **Tech:** stay vanilla JS, DOM, SVG and CSS. No game engine (Phaser, Godot, Three.js).
@@ -163,7 +163,7 @@ These are pitched concepts, not approved specs. The teacher wants to review each
 - **Hype Check** (A5): a feed of made-up influencer posts. Tap the trick (fake countdown, "only 2 left", hidden sponsorship, filtered before-and-after). The last card is buy or skip, against the creature's budget and dream.
 - **Rate Shock** (B4): trivia of all-true, sourced, surprising facts about what changes car insurance costs. Formats: "Which costs more to insure?" and higher or lower.
 - **Where'd My Paycheck Go?** (F6): guess the take-home from the creature's real shifts, watch the deductions drain it line by line, then a Paystub Decoder tap round. Lesson only.
-- **The Cottage Garden** (G1): plant seeds (account types bought at Shimmer Market) by moving money from checking. Trees grow and drop seeds (interest on interest). Weeds are fees, and a self-waterer is automatic saving. It opens with Early Eva vs. Late Leo. Needs engine work (a real savings-like account).
+- **The Cottage Garden** (G1): plant seeds (account types bought at Market) by moving money from checking. Trees grow and drop seeds (interest on interest). Weeds are fees, and a self-waterer is automatic saving. It opens with Early Eva vs. Late Leo. Needs engine work (a real savings-like account).
 - **Estimate It** (D2, F6, G1, A4): one money question with a dollar answer and 6 guesses. Each guess shows Higher or Lower plus a closeness word (Bullseye within 5% wins, Hot within 10%, Warm within 25%, else Cold). Clues after guesses 2 and 4, then the worked math. A first-guess score stops halving the range. A shared daily puzzle with a streak, plus practice. In battles, both players guess once and the closer guess hits harder. **Open:** the Bullseye range (5%, or 10% for beginners) and whether the calculator is off (recommended) or on.
 
 ## Every game gets a guide with three tabs (teacher, 2026-10-23)

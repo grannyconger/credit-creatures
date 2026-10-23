@@ -44,3 +44,18 @@ test("every screen opens without an error", async ({ page }) => {
   }
   expect(errors).toEqual([]);
 });
+
+test("the shell: status chips, shortcuts and Things To Do", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await open(page, "hub");
+  await expect(page.locator("#status li")).toHaveCount(3);
+  await expect(page.locator("#shortcuts button")).toHaveCount(3);
+  await page.keyboard.press("t");
+  await expect(page.locator("dialog.things-dialog[open]")).toBeVisible();
+  await page.locator(".thing-tile", { hasText: "Map" }).click();
+  await expect(page).toHaveURL(/#\/map$/);
+  await page.click('#shortcuts button[data-place="market"]');
+  await expect(page).toHaveURL(/#\/shop$/);
+  expect(errors).toEqual([]);
+});
