@@ -8,7 +8,7 @@ Last updated: 2026-10-23 (/admin, teacher page round 2 and the Garage approved a
 
 **Where things stand (end of 2026-10-22):** everything below is pushed and live. Awaiting the teacher's review: Phases 15, 16 and 17 (motion, effects, living creatures), the five new Chapter 1 jobs, and the Trophies redesign. Firestore rules were last changed for gifts, class delete and reset notes, and the teacher has published them.
 
-**Up next, in order:** (1) the remaining old-look screens, one at a time with approval:  Lantern Alley, chapter end, Account settings (the story intro and name step are done). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) Fee Detective, the next job idea. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
+**Up next, in order:** (1) the remaining old-look screens, one at a time with approval: Lantern Alley, chapter end, Account settings (the story intro and name step are done). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) More minigames (Fee Detective is the next job idea), then Skill Paths and Skill Sims, which the teacher made the priority after the minigame build-outs. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
 
 **/admin and teacher page round 2 (teacher request 2026-10-23, approved and pushed):**
 - **/admin** (`admin/index.html`, `js/admin/admin.js`, same plain look as the teacher page, `css/teacher.css`). Only `ADMIN_EMAIL` (bweaver@greermiddlecollege.org, in `js/firebase-config.js`) can open it. It has three tabs:
