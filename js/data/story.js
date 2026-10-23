@@ -45,4 +45,4 @@ export const INTRO_PANELS = [
 ];
 
 // The loop students repeat, shown on the hub.
-export const HUB_HELP = "This is Home. Map at the top takes you to every place in Coinhaven. Your Wallet and the Leaderboard are up there too.";
+export const HUB_HELP = "This is your Cottage. Click things in the room to go places. Things To Do at the bottom opens every place in Coinhaven, and your Wallet and the Leaderboard are at the top.";

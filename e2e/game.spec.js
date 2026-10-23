@@ -59,3 +59,18 @@ test("the shell: status chips, shortcuts and Things To Do", async ({ page }) => 
   await expect(page).toHaveURL(/#\/shop$/);
   expect(errors).toEqual([]);
 });
+
+test("Home is the Cottage room: objects glow and lead places", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await open(page, "hub");
+  await expect(page.locator(".room-object")).toHaveCount(9);
+  await page.hover('[data-object="window"]');
+  await expect(page.locator('[data-object="window"] .room-tag')).toBeVisible();
+  await page.click('[data-object="window"]');
+  await expect(page).toHaveURL(/#\/map$/);
+  await open(page, "hub");
+  await page.click('[data-object="door"]');
+  await expect(page.locator("dialog.things-dialog[open]")).toBeVisible();
+  expect(errors).toEqual([]);
+});

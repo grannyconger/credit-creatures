@@ -15,6 +15,8 @@ import { placeStatus, nextStep, PLACES, PROLOGUE_TEXT } from "../../places.js";
 import { moneyChips } from "../wallet.js";
 import { openPlace, startChapter as beginChapter } from "./map.js";
 import { sealSvg } from "../bestiary-art.js";
+import { cottageRoom } from "../cottage-room.js";
+import { openThingsToDo } from "../shell.js";
 import { rankSeal } from "./trophies.js";
 import { rankFor } from "../../progress.js";
 import { celebrate } from "../celebrate.js";
@@ -59,23 +61,8 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
         : null,
       h(
         "div.home-layout",
-        h("div.home-creature", guardianCard()),
-        h(
-          "div.home-main",
-          chapterCard(status, checking),
-          needsYou(status),
-          h(
-            "section.home-money",
-            h("h2", "Your money right now"),
-            moneyChips(life, play),
-            h(
-              "div.row",
-              h("button.secondary", { type: "button", onclick: () => openWallet?.() }, icon("wallet", { size: 18 }), " Open my wallet"),
-              h("button.secondary", { type: "button", onclick: () => go("map") }, icon("compass", { size: 18 }), " Open the map")
-            )
-          ),
-          stageOf(play) === 0 ? null : h("p.bst-hub-note.home-help", HUB_HELP)
-        )
+        h("div.home-room", cottageRoom({ creature: c, ageMonths: life.ageMonths, play, status, onPick: pickObject(status), onCreature: () => go("cottage") }), roomCaption()),
+        h("div.home-main", chapterCard(status, checking), needsYou(status), stageOf(play) === 0 ? null : h("p.bst-hub-note.home-help", HUB_HELP))
       ),
       run.practice ? null : recapBox(play, track),
       run.practice ? null : practiceBox(play, game, go, track)
@@ -133,25 +120,28 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
     render(root, { game, go, track });
   }
 
-  // Who you're caring for, and how close its dream is.
-  function guardianCard() {
+  // What a click on a room object does. Locked places explain themselves.
+  const pickObject = (status) => (o, pl) => {
+    track("roomObject", { id: o.id });
+    if (o.act === "wallet") return openWallet?.();
+    if (o.act === "things") return openThingsToDo();
+    if (pl && status[pl.id]?.tone === "locked") return openPlace(pl, status, { game, go, track });
+    if (o.tab) game.accountsTab = o.tab;
+    go(o.route || pl.route);
+  };
+
+  // Under the room: the creature's name, rank and dream.
+  function roomCaption() {
     const r = rankFor(play.xp);
     const dream = c.dream ? DREAMS[c.dream] : null;
     const prog = c.dream ? dreamProgress(life, c.dream, play) : null;
     return h(
-      "section.guardian",
-      h("button.guardian-art", { type: "button", "aria-label": `Open ${c.name}'s cottage`, onclick: () => go("cottage"), html: creatureSvg(c, { size: 150, ageMonths: life.ageMonths, label: "" }) }),
-      h(
-        "div.guardian-text",
-        h("h1", fullName(c)),
-        h("p.bst-hub-note", "in the care of its Guardian of Coin (you)"),
-        // The rank as the same small wax seal Trophies uses (2026-10-23), not an emoji.
-        h("p.muted.tight.rank-line", `${ageLabel(life.ageMonths)} · `, rankSeal(r.level, 30), ` ${r.title} · ${play.xp} XP`),
-        dream
-          ? h("div.dream-mini", h("span.dream-name", icon(dream.mark || "dream", { size: 16 }), " Dream: ", h("strong", dream.title)), play.dreamDone ? h("span.good-text", " Done!") : meters(prog))
-          : h("button.small", { type: "button", onclick: () => go("dream") }, "Pick your creature's dream"),
-        h("button.secondary.small", { type: "button", onclick: () => go("cottage") }, icon("cottage", { size: 16 }), ` Visit ${c.name}'s Cottage`)
-      )
+      "section.room-caption",
+      h("h1", fullName(c)),
+      h("p.muted.tight.rank-line", `${ageLabel(life.ageMonths)} · `, rankSeal(r.level, 30), ` ${r.title} · ${play.xp} XP`),
+      dream
+        ? h("div.dream-mini", h("span.dream-name", icon(dream.mark || "dream", { size: 16 }), " Dream: ", h("strong", dream.title)), play.dreamDone ? h("span.good-text", " Done!") : meters(prog))
+        : h("button.small", { type: "button", onclick: () => go("dream") }, "Pick your creature's dream")
     );
   }
 

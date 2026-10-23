@@ -57,6 +57,9 @@ export function ensurePlay(play) {
   play.stats ??= { shifts: 0, paidInFull: 0, payoffSprints: 0, hadDebt: false };
   play.jobs ??= {};
   play.owned ??= [];
+  // The Cottage room (js/data/cottage.js): pieces bought and what each slot wears.
+  play.decorOwned ??= [];
+  play.cottage ??= null;
   play.records ??= { highestScore: null, longestOnTime: 0 };
   Object.assign(play.desk, { finished: play.desk.finished ?? 0, perfect: play.desk.perfect ?? 0, streak: play.desk.streak ?? 0, bestStreak: play.desk.bestStreak ?? 0 });
   return play;
