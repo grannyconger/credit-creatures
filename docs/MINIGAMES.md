@@ -138,11 +138,24 @@ All rates are simplified teaching values in config, labeled "simplified for lear
 6. **Compound Interest Garden** as its own place.
 7. Accounting (39 to 42), only if the teacher wants a Business path.
 
+## The spirit (teacher, 2026-10-23)
+This game teaches the next generation to manage money in a complex world. That's an inspiring job, so keep spirits high and **prioritize fun**. No game gets built if it would be "meh", because students won't play it and the effort is wasted.
+
+## Decisions (teacher, 2026-10-23)
+- Accepted as least practical: W-4 Mini Form, Deposit Slip Filler, Tax Bracket Bucket Fill as a minigame, Journal Entry Builder, and the Garden as a hub.
+- **Bank Reconciliation goes inside a Banking Skill Sim**, not a standalone game.
+- **Tax Bracket Bucket Fill stays in the game, but not as a minigame** (for example, a lesson or an Academy exhibit).
+- **Journal Entry Builder:** saved for another day.
+- **Crossword and logic grid:** saved for another project.
+- **Compound Interest Garden:** small, in each student's **Cottage**, needing routine care like a tree simulator. Seeds (account types) are bought at Shimmer Market, and gadgets like a self-waterer (automatic contributions) are bought too. See below.
+- **Games to find for the biggest engagement:** A6 (scams), A5 (social media marketing), B4 (a trivia game of all-true, shocking stats about what changes insurance rates and costs), F6 (gross to net pay) and G1 (compound interest).
+- **Estimate It:** the teacher wants to know exactly how it works before it's built.
+
 ## Every game gets a guide with three tabs (teacher, 2026-10-23)
 Each game has a guide the student can open anytime (before playing, or from the Shift over screen):
 1. **How to play:** the goal in one sentence, the steps, and one worked example.
-2. **Words to know:** the vocab, each with a plain definition, a tooltip that opens on tap or focus (not hover only, so it works on Chromebooks and with keyboards), and an example sentence.
-3. **In real life:** where this shows up for real, with a few interesting, factual stats. **Credible sources only** (CFPB, the Federal Reserve, FDIC, BLS, IRS, SSA, FTC, the Census Bureau, NAIC and similar). Each stat names its source and year, and is checked against the source when written. Never invented.
+2. **Vocab:** each word with a plain definition, a tooltip that opens on hover (and on keyboard focus, so keyboard users get it too), and an example sentence.
+3. **IRL:** where this shows up for real, with a few interesting, factual stats. **Credible sources only** (CFPB, the Federal Reserve, FDIC, BLS, IRS, SSA, FTC, the Census Bureau, NAIC and similar). Each stat names its source and year, and is checked against the source when written. Never invented.
 - Written so students *enjoy* reading it: short paragraphs, a wry line or two in the naturalist's voice, plain words for a 15-year-old, no em-dashes, no semicolons.
 - Content lives in data files (one per game), and opening the guide logs telemetry (`guideOpen`, `guideTab`).
 
