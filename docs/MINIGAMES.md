@@ -103,7 +103,7 @@ All rates are simplified teaching values in config, labeled "simplified for lear
 - Keep the "insured" tag and the "general ideas, not advice" note. No real funds.
 
 ### Accounting (games 39 to 42)
-**These aren't in the SC Personal Finance standards** (only G1 touches assets and equity, through Ledger Sort). The teacher marked 42 "LOVE IT: build this one deep". **To decide with the teacher:** build these as an optional "Business" side path (a teen-run snack shack or T-shirt shop), or skip them for this course.
+**These aren't in the SC Personal Finance standards** (only G1 touches assets and equity, through Ledger Sort). The teacher marked 42 "LOVE IT: build this one deep". **Decided (teacher, 2026-10-23): keep them as an optional Business side path** (a teen-run snack shack or T-shirt shop), built after the standards games.
 - **39. Debit/Credit Tug-of-War**: the rope that centers when debits equal credits is a great visual. Battle: yes.
 - **40. Journal Entry Builder**: the most complex form in the doc. If built, it's a Skill Sim, not a job.
 - **41. Income Statement Sort**: the "Neither" bin (a loan isn't revenue, and profit isn't cash) is the lesson. Battle: yes.
@@ -137,3 +137,24 @@ All rates are simplified teaching values in config, labeled "simplified for lear
 5. **Gross to Net**, **Hourly vs. Salary**, **Tax Brackets** and **W-4** as Quest mode steps once Quest mode exists.
 6. **Compound Interest Garden** as its own place.
 7. Accounting (39 to 42), only if the teacher wants a Business path.
+
+## Every game gets a guide with three tabs (teacher, 2026-10-23)
+Each game has a guide the student can open anytime (before playing, or from the Shift over screen):
+1. **How to play:** the goal in one sentence, the steps, and one worked example.
+2. **Words to know:** the vocab, each with a plain definition, a tooltip that opens on tap or focus (not hover only, so it works on Chromebooks and with keyboards), and an example sentence.
+3. **In real life:** where this shows up for real, with a few interesting, factual stats. **Credible sources only** (CFPB, the Federal Reserve, FDIC, BLS, IRS, SSA, FTC, the Census Bureau, NAIC and similar). Each stat names its source and year, and is checked against the source when written. Never invented.
+- Written so students *enjoy* reading it: short paragraphs, a wry line or two in the naturalist's voice, plain words for a 15-year-old, no em-dashes, no semicolons.
+- Content lives in data files (one per game), and opening the guide logs telemetry (`guideOpen`, `guideTab`).
+
+## Insurance (B) ideas, high level (teacher asked, 2026-10-23)
+- **Deductible or premium:** pick a plan for a person and a year of events, to see the tradeoff of a low premium with a high deductible (B1, B5).
+- **Which policy pays?** An event happens (a fender bender, a stolen laptop, an ER visit), and the student matches it to the policy and coverage that pays (B3, B5, B7).
+- **Risk manager:** sort situations into avoid, reduce, keep or transfer (B2).
+- **What changes the price?** What raises or lowers a teen driver's car insurance (B4).
+
+## Logic and puzzle games inspired by NYT Games (teacher asked, 2026-10-23)
+Not specs yet. Ranked by learning yield:
+- **Money Connections** (like Connections): 16 terms in 4 hidden groups. Vocab across every standard, quick, replayable, and a seeded daily puzzle the whole class shares.
+- **Estimate It** (a Wordle-style higher or lower): guess a total cost, a payment or a balance in 6 tries, with higher or lower clues. Builds number sense about money.
+- **Money Mini** (like the Mini crossword): 5 by 5 with definition clues. Vocab review.
+- **Logic grid** (classic logic puzzles): who took which loan, from clues. Reasoning, a smaller audience.
