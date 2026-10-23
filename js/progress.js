@@ -118,7 +118,11 @@ export function jobPay(play, job, score) {
   const j = CONFIG.play.jobs;
   let base;
   if (job === "ledger") base = j.pay.min + j.ledger.perRight * score.right - j.ledger.perWrong * score.wrong;
-  else if (job === "cashier") base = j.pay.min + j.cashier.perRight * score.right;
+  else if (job === "cashier" && score.coins != null) {
+    // Cashier Rush pays coins for each right sale, with no base pay or cap. Experience,
+    // a ride and a home workshop still add to every shift.
+    return score.coins + experienceBonus(play, job) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
+  } else if (job === "cashier") base = j.pay.min + j.cashier.perRight * score.right;
   else if (job === "checks") base = j.pay.min + j.checks.perField * score.right;
   else base = j.pay.min + (j[job]?.perRight || 0) * score.right;
   const clamped = Math.max(j.pay.min, Math.min(j.pay.max, Math.round(base)));

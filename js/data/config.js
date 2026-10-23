@@ -72,7 +72,11 @@ export const CONFIG = {
       // this long after a wrong answer only, so the right change can be read
       // (a right answer brings the next customer at once).
       ledger: { seconds: 45, untimedItems: 12, perRight: 8, perWrong: 4, lockMs: 300 },
-      cashier: { seconds: 60, untimedCustomers: 6, perRight: 14, nextCustomerMs: 900 },
+      // Cashier Rush (teacher request 2026-10-23): pick a difficulty and a round.
+      // Chill Round serves untimedCustomers with no clock. Speed Round serves as
+      // many as possible in seconds. rates are coins for each right sale, as
+      // [Chill, Speed]. perRight is only for old saves and tests.
+      cashier: { seconds: 60, untimedCustomers: 4, perRight: 14, nextCustomerMs: 900, rates: { easy: [1, 2], medium: [5, 10], hard: [10, 20] } },
       checks: { perField: 13 },
       // The five Chapter 1 jobs (teacher request 2026-10-22). perRight is
       // dollars per right answer on top of the base pay. A perfect shift

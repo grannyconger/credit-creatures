@@ -255,3 +255,36 @@ export function avoidOptions(rng, fee) {
   const opts = shuffle(rng, [{ text: k.avoid, right: true }, ...k.wrong.map((text) => ({ text, right: false }))]);
   return opts;
 }
+
+// ---------- Cashier Rush ----------
+
+export const CASH_LEVELS = {
+  easy: { label: "Easy", text: "Whole dollars", example: "$10 received − $6 cost = $4" },
+  medium: { label: "Medium", text: "Cents in multiples of 5", example: "$10 received − $6.35 cost = $3.65" },
+  hard: { label: "Hard", text: "Cents that aren't multiples of 5", example: "$10 received − $6.38 cost = $3.62" },
+};
+
+// One customer. The change is always a whole number of cents. Easy has whole
+// dollar prices, so the change is whole dollars (at least $1). Medium prices
+// end in a multiple of 5 cents but are never whole dollars. Hard prices end in
+// a digit that isn't 0 or 5, so the cents are never a multiple of 5.
+export function cashierCustomer(rng, level, items) {
+  const paid = rng.pick([500, 1000, 2000]);
+  let price;
+  if (level === "easy") price = rng.int(1, paid / 100 - 1) * 100;
+  else if (level === "medium") {
+    do price = rng.int(21, paid / 5 - 1) * 5;
+    while (price % 100 === 0);
+  } else {
+    do price = rng.int(101, paid - 1);
+    while (price % 5 === 0);
+  }
+  return { item: items ? rng.pick(items) : "something", price, paid };
+}
+
+// How far off a wrong answer was, in plain words.
+export function overShortText(given, want) {
+  const diff = given - want;
+  if (!diff) return "exact";
+  return `${fmt(Math.abs(diff))} ${diff > 0 ? "over" : "short"}`;
+}

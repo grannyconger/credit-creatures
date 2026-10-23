@@ -5967,3 +5967,28 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .bst-guild .fees .fd-stage { margin-top: var(--b-s1); }
 .bst-academy .dc-choice.right::before { content: "✓ "; }
 .bst-academy .dc-choice.wrong::before { content: "✗ "; }
+
+/* Cashier Rush round two (teacher request 2026-10-23): setup screen, the sale as a
+   subtraction, a smaller change preview, and the calculator on top. */
+.bst-guild .cash-setup { display: grid; gap: var(--b-s3); max-width: 860px; margin: 0 auto; padding: var(--b-s3) 0; }
+.bst-guild .cash-group { margin: 0; padding: var(--b-s3); border: 1.5px dashed color-mix(in srgb, var(--b-on-ground) 40%, transparent); border-radius: var(--b-r-insert); color: var(--b-on-ground); }
+.bst-guild .cash-group legend { padding: 0 var(--b-s2); font-family: var(--b-display); font-size: var(--b-fs-title); }
+.bst-guild .cash-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--b-s3); }
+.bst-guild .cash-choice { display: grid; gap: 2px; align-content: start; min-height: 112px; padding: var(--b-s3); text-align: left; font-family: var(--b-body); color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 2px solid var(--b-paper-edge); border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
+.bst-guild .cash-choice strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-guild .cash-choice small { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); }
+.bst-guild .cash-choice[aria-pressed="true"] { border: 3px solid var(--b-plum); background: var(--b-plum-wash); }
+.bst-guild .cash-choice[aria-pressed="true"] strong::after { content: " (chosen)"; font-family: var(--b-body); font-size: var(--b-fs-tiny); }
+.bst-guild .cash-choice:hover, .bst-guild .cash-choice:focus-visible { border-color: var(--b-rust); }
+.bst-guild .cash-summary { margin: 0; text-align: center; font-size: var(--b-fs-ui); color: var(--b-on-ground); }
+.bst-guild .cash-setup .row { justify-content: center; }
+.bst-guild .cash-op { font-family: var(--b-display); font-size: 1.4em; }
+.bst-guild .cashier .cash-amt.change strong { font-size: clamp(1.7rem, 2.4vw, 2.3rem); }
+.bst-guild .cashier .cash-amt.price { border-bottom: 3px solid currentColor; border-radius: var(--b-r-insert) var(--b-r-insert) 0 0; }
+/* The calculator sits above the drawer, tray and action row when it's open. */
+.bst-guild .cashier .calc-slot { position: relative; z-index: 40; }
+.bst-guild .cashier .calc { position: relative; z-index: 40; }
+.bst-guild .cashier .cash-actions { z-index: 5; }
+.bst-guild .cashier .cash-tray { min-height: 196px; }
+.bst-guild .cashier > .mg-flash { min-height: 2.6em; margin: var(--b-s1) 0 0; text-align: center; font-size: var(--b-fs-ui); }
+.bst-guild .cash-choice[aria-pressed="true"] { background: var(--b-grain), var(--b-paper-insert); border: 4px solid var(--b-plum); }

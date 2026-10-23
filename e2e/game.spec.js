@@ -165,3 +165,33 @@ test("Fee Detective: a whole shift plays through and pays", async ({ page }) => 
   await expect(page.locator(".bst-seal-btn", { hasText: "Collect" })).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test("Cashier Rush: pick a difficulty and a Chill Round, serve 4 customers, then collect", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await open(page, "hub");
+  await closePopups(page);
+  await page.click(".bst-seal-btn");
+  await page.waitForTimeout(600);
+  await closePopups(page);
+  await open(page, "guild");
+  await closePopups(page);
+  await page.locator(".job-card", { hasText: "Cashier Rush" }).click();
+  await page.locator(".cash-choice", { hasText: "Medium" }).click();
+  await page.locator(".cash-choice", { hasText: "Chill Round" }).click();
+  await page.click(".cash-setup .big");
+  // The sale reads as a subtraction: what they hand you comes first. Coins are above bills, small to big.
+  const amounts = await page.locator(".cash-amounts .cash-amt small").allTextContents();
+  expect(amounts[0]).toContain("They hand you");
+  expect(amounts[1]).toContain("Charged");
+  expect(await page.locator(".cash-drawer .drawer-row.coins .cash-piece").allTextContents()).toEqual(["1¢penny1", "5¢nickel2", "10¢dime3", "25¢quarter4"]);
+  expect(await page.locator(".cash-drawer .cash-piece").count()).toBe(7);
+  for (let i = 0; i < 4; i++) {
+    await page.locator(".cash-drawer .cash-piece").first().click();
+    await page.locator(".cash-actions .big").click();
+    await page.waitForTimeout(1100);
+  }
+  await closePopups(page);
+  await expect(page.locator(".bst-seal-btn", { hasText: "Collect" })).toBeVisible();
+  expect(errors).toEqual([]);
+});

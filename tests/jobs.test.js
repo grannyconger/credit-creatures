@@ -147,3 +147,28 @@ test("Fee Detective: same seed deals the same shift, and each avoid question has
     assert.equal(opts.filter((o) => o.right).length, 1);
   }
 });
+
+test("Cashier Rush customers match their difficulty, and coins are paid per right sale", () => {
+  const items = ["a scarf", "a map"];
+  for (const s of seeds) {
+    const rng = E.createRng(s);
+    for (let i = 0; i < 20; i++) {
+      const e = G.cashierCustomer(rng, "easy", items);
+      const m = G.cashierCustomer(rng, "medium", items);
+      const h = G.cashierCustomer(rng, "hard", items);
+      for (const c of [e, m, h]) assert.ok(Number.isInteger(c.price) && c.price > 0 && c.paid > c.price && [500, 1000, 2000].includes(c.paid), s);
+      assert.ok((e.paid - e.price) % 100 === 0 && e.paid - e.price >= 100, "easy change is whole dollars");
+      assert.ok((m.paid - m.price) % 5 === 0 && m.price % 100 !== 0, "medium cents are multiples of 5 and not whole dollars");
+      assert.ok((h.paid - h.price) % 5 !== 0, "hard cents are not multiples of 5");
+      assert.ok(e.paid - e.price < 2000 && m.paid - m.price < 2000 && h.paid - h.price < 2000, "change never needs a $20 bill");
+    }
+  }
+  const r = CONFIG.play.jobs.cashier.rates;
+  assert.deepEqual([r.easy, r.medium, r.hard], [[1, 2], [5, 10], [10, 20]]);
+  assert.equal(G.overShortText(410, 365), "$0.45 over");
+  assert.equal(G.overShortText(300, 365), "$0.65 short");
+  assert.equal(G.overShortText(365, 365), "exact");
+  const play = P.newPlay();
+  assert.equal(jobPay(play, "cashier", { right: 4, wrong: 0, coins: 4 * r.hard[0] }), 40, "four right hard Chill sales pay 40 coins");
+  assert.equal(jobPay(play, "cashier", { right: 0, wrong: 4, coins: 0 }), 0, "no right sales, no pay");
+});

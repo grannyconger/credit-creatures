@@ -75,7 +75,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
             h("strong", job.title),
             h("small", job.job),
             h("span", job.skill),
-            h("span.job-pay", `Pays ${money(j.pay.min + xp)} to ${money(j.pay.max + xp)}`),
+            h("span.job-pay", key === "cashier" ? `Pays ${j.cashier.rates.easy[0]} to ${j.cashier.rates.hard[1]} coins for each right sale` : `Pays ${money(j.pay.min + xp)} to ${money(j.pay.max + xp)}`),
             worked ? h("small.good-text", "Worked. Done for now.") : null,
             stats && !worked ? h("small", `${stats.shifts} shift${stats.shifts === 1 ? "" : "s"} worked. Best: ${stats.best}.`) : worked ? null : h("small", "New job!"),
             xp ? h("small.good-text", `+${money(xp)} for experience`) : null
