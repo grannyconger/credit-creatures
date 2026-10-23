@@ -1,0 +1,357 @@
+/* ===========================================================================
+   The Arcade (teacher request 2026-10-23): a world of its own. A dark carpeted
+   hall under neon signs, with a cabinet for each game, and inside each game its
+   own colors, type and feel (the .skin-* rules below). Colors come only from the
+   --arc-* tokens in css/tokens.css. Nothing here uses the bestiary paper look.
+   =========================================================================== */
+.arc-sign-font, .arc-title, .arc-hall-title, .arc-cab-marquee strong, .arc-play, .arc-stamp { font-family: "Arial Black", "Trebuchet MS", Impact, system-ui, sans-serif; }
+
+/* ---- The hall ---- */
+.bestiary.arc-world { background: radial-gradient(circle at 20% 10%, var(--arc-floor-2), transparent 55%), radial-gradient(circle at 85% 90%, var(--arc-floor-2), transparent 50%), var(--arc-floor); color: var(--arc-ink); }
+.bestiary.arc-world::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.35; background-image: radial-gradient(var(--arc-panel-edge) 1.5px, transparent 1.6px); background-size: 34px 34px; }
+.arc-world .panel.guild { background: none; box-shadow: none; padding: var(--b-s2) var(--b-s4) 0; max-width: 1280px; animation: none; transform: none; }
+.arc-hall-head { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: var(--b-s3) var(--b-s5); padding-bottom: var(--b-s3); }
+.arc-back { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font: 700 1rem "Trebuchet MS", system-ui, sans-serif; color: var(--arc-ink); background: var(--arc-panel); border: 2px solid var(--arc-panel-edge); border-radius: var(--b-r-round); }
+.arc-back:hover { border-color: var(--arc-cyan); color: var(--arc-cyan); }
+.arc-hall-title { margin: 0; font-size: clamp(2.2rem, 4.2vw, 3.6rem); line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; color: var(--arc-pink); text-shadow: 0 0 4px var(--arc-pink), 0 0 16px var(--arc-pink), 0 0 36px var(--arc-pink); }
+.arc-hall-sub { flex: 1 1 260px; margin: 0; font: 600 1.05rem "Trebuchet MS", system-ui, sans-serif; color: var(--arc-ink-soft); }
+.arc-wallet { display: inline-flex; align-items: center; gap: var(--b-s2); padding: 6px 16px; color: var(--arc-dark-ink); background: var(--arc-yellow); border: 3px solid var(--arc-dark-ink); border-radius: var(--b-r-round); box-shadow: 0 0 14px color-mix(in srgb, var(--arc-yellow) 60%, transparent); font: 800 1.2rem "Trebuchet MS", system-ui, sans-serif; }
+.arc-wallet small { font-weight: 700; }
+.arc-shifts { padding: 4px 14px; font: 700 1rem "Trebuchet MS", system-ui, sans-serif; color: var(--arc-ink); background: var(--arc-panel); border: 2px dashed var(--arc-cyan); border-radius: var(--b-r-round); }
+
+/* ---- Cabinets ---- */
+.arc-cabinets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-s4) var(--b-s4); margin-top: var(--b-s2); }
+.arc-cab { position: relative; display: grid; gap: var(--b-s1); align-content: start; --cab: var(--arc-pink); --cab-ink: var(--arc-dark-ink); --cab-bg: var(--arc-panel); }
+.arc-cab.cab-ledger { --cab: var(--arc-ledger-brass); --cab-bg: var(--arc-ledger-bg); --cab-ink: var(--arc-ledger-ink); }
+.arc-cab.cab-cashier { --cab: var(--arc-cashier-brass); --cab-bg: var(--arc-cashier-bg); --cab-ink: var(--arc-cashier-ink); }
+.arc-cab.cab-checks { --cab: var(--arc-checks-edge); --cab-bg: var(--arc-checks-bg); --cab-ink: var(--arc-checks-ink); }
+.arc-cab.cab-overdraft { --cab: var(--arc-atm-green); --cab-bg: var(--arc-atm-bg); --cab-ink: var(--arc-atm-bg); }
+.arc-cab.cab-register { --cab: var(--arc-tape-orange); --cab-bg: var(--arc-tape-bg); --cab-ink: var(--arc-tape-ink); }
+.arc-cab.cab-checkhunt { --cab: var(--arc-blue-line); --cab-bg: var(--arc-blue-bg); --cab-ink: var(--arc-blue-ink); }
+.arc-cab.cab-drawer { --cab: var(--arc-vault-gold); --cab-bg: var(--arc-vault-bg); --cab-ink: var(--arc-vault-ink); }
+.arc-cab.cab-unitprice { --cab: var(--arc-shop-yellow); --cab-bg: var(--arc-shop-red); --cab-ink: var(--arc-shop-ink); }
+.arc-cab.cab-fees { --cab: var(--arc-noir-red); --cab-bg: var(--arc-noir-bg); --cab-ink: var(--arc-noir-paper); }
+.arc-cab .arc-cab-front {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  text-align: left;
+  color: var(--arc-ink);
+  background: var(--cab-bg);
+  border: 4px solid var(--cab);
+  border-radius: 22px 22px 8px 8px;
+  box-shadow: 0 0 0 3px var(--arc-floor), 0 0 22px color-mix(in srgb, var(--cab) 55%, transparent), 0 14px 18px -8px #000;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.arc-cab .arc-cab-front:hover:not(:disabled), .arc-cab .arc-cab-front:focus-visible { transform: translateY(-4px) scale(1.012); box-shadow: 0 0 0 3px var(--arc-floor), 0 0 34px var(--cab), 0 18px 22px -8px #000; }
+.arc-cab .arc-cab-front:focus-visible { outline: 3px dashed var(--arc-cyan); outline-offset: 4px; }
+.arc-cab .arc-cab-front:disabled { filter: saturate(0.4); cursor: default; }
+.arc-cab-marquee { display: flex; align-items: center; gap: var(--b-s2); padding: 8px 14px; color: var(--cab-ink); background: var(--cab); }
+.arc-cab-marquee strong { font-size: 1.2rem; letter-spacing: 0.03em; text-transform: uppercase; }
+.arc-cab-icon .ico-wrap { color: var(--cab-ink); }
+.arc-cab-screen { position: relative; display: block; height: 118px; margin: 0 10px; background: #000; border: 3px solid var(--cab); border-radius: 8px; overflow: hidden; }
+.arc-cab-screen .arc-scene { display: block; width: 100%; height: 100%; }
+.arc-stamp { position: absolute; top: 8px; right: 8px; padding: 2px 10px; font-size: 0.8rem; letter-spacing: 0.1em; color: var(--arc-dark-ink); background: var(--arc-yellow); border: 2px solid var(--arc-dark-ink); border-radius: 4px; transform: rotate(8deg); }
+.arc-stamp.done { background: var(--arc-green); }
+.arc-cab-info { display: grid; gap: 3px; padding: 10px 14px 4px; }
+.arc-job { color: var(--cab); font: 700 0.85rem "Trebuchet MS", system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+.arc-skill { font: 600 1rem "Trebuchet MS", system-ui, sans-serif; line-height: 1.25; color: var(--arc-ink); }
+.arc-pay { display: inline-flex; align-items: center; gap: 6px; width: max-content; padding: 2px 12px 2px 8px; font: 800 0.95rem "Trebuchet MS", system-ui, sans-serif; color: var(--arc-dark-ink); background: var(--arc-yellow); border-radius: var(--b-r-round); }
+.arc-pay .ico-wrap { color: var(--arc-dark-ink); }
+.arc-bonus, .arc-stats { font: 600 0.9rem "Trebuchet MS", system-ui, sans-serif; color: var(--arc-ink-soft); }
+.arc-play { display: block; margin: 8px 14px 14px; padding: 8px; text-align: center; font-size: 1.25rem; letter-spacing: 0.2em; color: var(--cab-ink); background: var(--cab); border-radius: var(--b-r-round); box-shadow: inset 0 -4px 0 color-mix(in srgb, #000 25%, transparent); }
+.arc-cab-front:hover:not(:disabled) .arc-play { animation: arc-blink 0.7s steps(2) infinite; }
+@keyframes arc-blink { 50% { filter: brightness(1.25); } }
+.arc-guide { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; font: 700 0.9rem "Trebuchet MS", system-ui, sans-serif; color: var(--arc-ink); background: var(--arc-panel); border: 2px solid var(--arc-panel-edge); border-radius: var(--b-r-round); }
+.arc-guide:hover { border-color: var(--arc-cyan); color: var(--arc-cyan); }
+.arc-untimed { display: flex; align-items: center; gap: var(--b-s2); margin-top: var(--b-s3); color: var(--arc-ink-soft); font: 600 1rem "Trebuchet MS", system-ui, sans-serif; }
+.arc-world .jobs-later { display: flex; flex-wrap: wrap; gap: var(--b-s2); margin: var(--b-s3) 0 0; padding: 0; list-style: none; }
+.arc-world .jobs-later li { display: flex; align-items: center; gap: 6px; padding: 4px 14px; color: var(--arc-ink-soft); background: var(--arc-panel); border: 2px dashed var(--arc-panel-edge); border-radius: var(--b-r-round); font: 600 0.95rem "Trebuchet MS", system-ui, sans-serif; }
+.arc-world .jobs-later small { color: var(--arc-ink-soft); }
+.arc-world .callout { color: var(--arc-ink); background: var(--arc-panel); border: 2px solid var(--arc-panel-edge); border-radius: var(--b-r-insert); }
+
+/* ---- Inside a game: the marquee and the cabinet frame ---- */
+.bst-guild .arc-frame { --g-bg: var(--arc-panel); --g-ink: var(--arc-ink); --g-accent: var(--arc-pink); --g-accent-ink: var(--arc-dark-ink); --g-paper: var(--arc-panel); --g-paper-ink: var(--arc-ink); position: relative; border-radius: 22px; background: var(--g-bg); color: var(--g-ink); border: 4px solid var(--g-accent); box-shadow: 0 0 0 3px var(--arc-floor), 0 0 26px color-mix(in srgb, var(--g-accent) 50%, transparent); overflow: hidden; }
+.arc-marquee { display: flex; align-items: center; gap: var(--b-s3); padding: 8px 14px; color: var(--g-accent-ink); background: var(--g-accent); }
+.arc-title { flex: 1; display: flex; align-items: center; gap: var(--b-s2); margin: 0; font-size: 1.5rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--g-accent-ink); }
+.arc-title .ico-wrap { color: var(--g-accent-ink); }
+.arc-marquee .job-back, .arc-marquee .arc-guide { color: var(--g-accent-ink); background: color-mix(in srgb, #fff 28%, transparent); border: 2px solid var(--g-accent-ink); font: 700 0.95rem "Trebuchet MS", system-ui, sans-serif; border-radius: var(--b-r-round); padding: 4px 12px; }
+.arc-marquee .job-leave-ask { display: inline-flex; align-items: center; flex-wrap: wrap; gap: var(--b-s2); font: 700 0.95rem "Trebuchet MS", system-ui, sans-serif; color: var(--g-accent-ink); }
+.arc-marquee .job-leave-ask button { color: var(--g-accent-ink); background: color-mix(in srgb, #fff 40%, transparent); border: 2px solid var(--g-accent-ink); border-radius: var(--b-r-round); padding: 2px 12px; font-weight: 700; }
+.bst-guild .arc-frame > .minigame, .bst-guild .arc-frame > .shift { outline: none; box-shadow: none; border-radius: 0; background: none; color: var(--g-ink); padding: var(--b-s3) var(--b-s4) var(--b-s4); }
+.bst-guild .arc-frame .mg-bar { display: flex; align-items: center; gap: var(--b-s3); font: 800 1.15rem ui-monospace, "Courier New", monospace; color: var(--g-ink); }
+.bst-guild .arc-frame .mg-clock, .bst-guild .arc-frame .mg-score { padding: 2px 12px; background: color-mix(in srgb, #000 55%, transparent); color: var(--arc-yellow); border-radius: var(--b-r-round); letter-spacing: 0.05em; text-shadow: 0 0 8px color-mix(in srgb, var(--arc-yellow) 70%, transparent); }
+.bst-guild .arc-frame .mg-flash { font: 700 1.05rem "Trebuchet MS", system-ui, sans-serif; }
+.bst-guild .arc-frame .mg-flash.good { color: var(--arc-green); }
+.bst-guild .arc-frame .mg-flash.bad { color: var(--arc-orange); }
+.bst-guild .arc-frame .cash-keys-help { color: var(--arc-ink-soft); font-family: "Trebuchet MS", system-ui, sans-serif; }
+.bst-guild .arc-frame button.big { font-family: "Arial Black", "Trebuchet MS", system-ui, sans-serif; letter-spacing: 0.05em; color: var(--g-accent-ink); background: var(--g-accent); border: 3px solid var(--g-accent-ink); border-radius: var(--b-r-round); box-shadow: inset 0 -5px 0 color-mix(in srgb, #000 22%, transparent), 0 4px 0 color-mix(in srgb, #000 40%, transparent); }
+.bst-guild .arc-frame button.big:hover:not(:disabled) { filter: brightness(1.08); }
+.bst-guild .arc-frame button.big:active:not(:disabled) { transform: translateY(3px); box-shadow: inset 0 -2px 0 color-mix(in srgb, #000 22%, transparent); }
+.bst-guild .arc-frame button.secondary { font-family: "Trebuchet MS", system-ui, sans-serif; font-weight: 700; color: var(--g-ink); background: color-mix(in srgb, var(--g-ink) 12%, transparent); border: 2px solid var(--g-ink); border-radius: var(--b-r-round); box-shadow: none; }
+
+/* A right answer pulses the cabinet and a wrong one shakes it. */
+.arc-frame.hit-good { animation: arc-pop 0.5s ease-out; }
+.arc-frame.hit-bad { animation: arc-shake 0.45s ease-in-out; }
+@keyframes arc-pop { 0% { box-shadow: 0 0 0 3px var(--arc-floor), 0 0 26px color-mix(in srgb, var(--g-accent) 50%, transparent); } 40% { box-shadow: 0 0 0 3px var(--arc-floor), 0 0 60px var(--arc-green); transform: scale(1.006); } 100% { box-shadow: 0 0 0 3px var(--arc-floor), 0 0 26px color-mix(in srgb, var(--g-accent) 50%, transparent); } }
+@keyframes arc-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+:root[data-motion="calm"] .arc-frame.hit-good, :root[data-motion="calm"] .arc-frame.hit-bad, :root[data-motion="calm"] .arc-cab-front:hover .arc-play { animation: none; }
+@media (prefers-reduced-motion: reduce) { .arc-frame.hit-good, .arc-frame.hit-bad, .arc-cab-front:hover:not(:disabled) .arc-play { animation: none; } .arc-cab .arc-cab-front:hover:not(:disabled) { transform: none; } }
+
+@media (max-width: 1100px) { .arc-cabinets { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bst-guild .panel.playing > .arc-hall-head, .bst-guild .panel.playing > p.callout.practice { display: none; }
+.arc-world .panel.playing { padding-top: var(--b-s1); }
+.arc-world .arc-hall-title, .bestiary .arc-world .arc-hall-title { font-family: "Arial Black", "Trebuchet MS", Impact, system-ui, sans-serif; font-weight: 900; color: var(--arc-pink); }
+.arc-world .arc-hall-sub { color: var(--arc-ink-soft); font-family: "Trebuchet MS", system-ui, sans-serif; }
+.arc-world .arc-wallet { font-family: "Trebuchet MS", system-ui, sans-serif; }
+.arc-world .row > button { font-family: "Trebuchet MS", system-ui, sans-serif; font-weight: 800; color: var(--arc-dark-ink); background: var(--arc-yellow); border: 3px solid var(--arc-dark-ink); border-radius: var(--b-r-round); }
+.bst-guild .job-cards.arc-cabinets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-s4); margin-top: var(--b-s2); }
+@media (max-width: 1100px) { .bst-guild .job-cards.arc-cabinets { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bst-guild .job-card.arc-cab-front { width: 100%; font-family: "Trebuchet MS", system-ui, sans-serif; font-weight: 400; }
+.bst-guild .job-card.arc-cab-front strong { font-size: 1.2rem; font-weight: 900; }
+.arc-cab-screen > svg { position: absolute; inset: 0; }
+
+/* Cabinets, compact: the screen on the left, the words and PLAY on the right,
+   so all nine games fit on one screen. */
+.arc-cab .arc-cab-front { grid-template-columns: 46% minmax(0, 1fr); grid-template-areas: "m m" "s i" "s p"; align-items: stretch; }
+.arc-cab-marquee { grid-area: m; padding: 6px 12px; }
+.arc-cab-marquee strong { font-size: 1.1rem; }
+.arc-cab-screen { grid-area: s; height: auto; min-height: 112px; margin: 8px 0 8px 10px; background: var(--cab-bg); }
+.arc-cab-info { grid-area: i; padding: 8px 12px 0; align-content: start; gap: 2px; }
+.arc-play { grid-area: p; align-self: end; margin: 4px 12px 10px; padding: 5px; font-size: 1.05rem; }
+.arc-skill { font-size: 0.92rem; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.arc-pay { font-size: 0.85rem; }
+.arc-job { font-size: 0.75rem; }
+.arc-guide { margin-top: 2px; }
+.arc-cabinets { gap: var(--b-s3) var(--b-s4); }
+
+/* ===========================================================================
+   Skins: one per game. Each sets the frame's colors, then restyles the parts
+   that game is made of. A game's text and surfaces use only its own palette,
+   so contrast holds in light and dark.
+   =========================================================================== */
+
+/* ---- Ledger Sort: green-bar ledger paper, brass, typewriter ---- */
+.bst-guild .arc-frame.skin-ledger { --g-bg: var(--arc-ledger-bg); --g-accent: var(--arc-ledger-brass); --g-accent-ink: var(--arc-ledger-ink); --g-ink: var(--arc-ledger-paper); }
+.bst-guild .arc-frame.skin-ledger .ledger-item { transform: none; margin: var(--b-s3) 0; padding: var(--b-s5) var(--b-s4); text-align: center; font: 800 clamp(1.5rem, 2.6vw, 2.1rem) "Courier New", ui-monospace, monospace; color: var(--arc-ledger-ink); background: repeating-linear-gradient(var(--arc-ledger-paper) 0 34px, var(--arc-ledger-bar) 34px 68px); border: 0; border-left: 14px double var(--arc-cashier-red); border-radius: 4px; box-shadow: 0 8px 0 var(--arc-ledger-brass), 0 12px 18px -4px #000; }
+.bst-guild .arc-frame.skin-ledger .ledger-bin { display: grid; gap: 4px; justify-items: center; padding: var(--b-s3); color: var(--arc-ledger-ink); background: var(--arc-ledger-paper); border: 3px solid var(--arc-ledger-ink); border-top: 14px solid var(--bin, var(--arc-ledger-brass)); border-radius: 6px; box-shadow: 0 6px 0 var(--arc-ledger-ink); font: 800 1.35rem "Courier New", ui-monospace, monospace; text-transform: uppercase; }
+.bst-guild .arc-frame.skin-ledger .ledger-bin:nth-of-type(1) { --bin: var(--arc-green); }
+.bst-guild .arc-frame.skin-ledger .ledger-bin:nth-of-type(2) { --bin: var(--arc-cashier-red); }
+.bst-guild .arc-frame.skin-ledger .ledger-bin:nth-of-type(3) { --bin: var(--arc-ledger-brass); }
+.bst-guild .arc-frame.skin-ledger .ledger-bin small { color: var(--arc-ledger-ink); font: 600 0.9rem "Courier New", monospace; text-transform: none; }
+.bst-guild .arc-frame.skin-ledger .ledger-bin kbd { color: var(--arc-ledger-ink); background: var(--arc-ledger-bar); border: 2px solid var(--arc-ledger-ink); }
+.bst-guild .arc-frame.skin-ledger .ledger-bin:hover:not(:disabled), .bst-guild .arc-frame.skin-ledger .ledger-bin:focus-visible { transform: translateY(-4px); box-shadow: 0 10px 0 var(--arc-ledger-ink); }
+
+/* ---- Cashier Rush: a retro till, teal and cream, brass keys ---- */
+.bst-guild .arc-frame.skin-cashier { --g-bg: var(--arc-cashier-bg); --g-accent: var(--arc-cashier-brass); --g-accent-ink: var(--arc-cashier-ink); --g-ink: var(--arc-cashier-body); --cash-price: var(--arc-cashier-red); --cash-paid: var(--arc-shop-green); --cash-change: var(--arc-checks-ink); }
+.bst-guild .arc-frame.skin-cashier .cash-ticket, .bst-guild .arc-frame.skin-cashier .cash-tray, .bst-guild .arc-frame.skin-cashier .cash-left .cash-amt.change { color: var(--arc-cashier-ink); background: var(--arc-cashier-body); border: 3px solid var(--arc-cashier-ink); border-radius: 10px; box-shadow: 0 5px 0 var(--arc-cashier-ink); }
+.bst-guild .arc-frame.skin-cashier .cash-amt { background: color-mix(in srgb, var(--arc-cashier-brass) 22%, var(--arc-cashier-body)); border-left-width: 8px; }
+.bst-guild .arc-frame.skin-cashier .cash-item, .bst-guild .arc-frame.skin-cashier .cash-ask, .bst-guild .arc-frame.skin-cashier .tray-empty { color: var(--arc-cashier-ink); font-family: "Trebuchet MS", system-ui, sans-serif; }
+.bst-guild .arc-frame.skin-cashier .cash-amt small, .bst-guild .arc-frame.skin-cashier .cash-amt strong { font-family: "Arial Black", "Trebuchet MS", system-ui, sans-serif; }
+.bst-guild .arc-frame.skin-cashier .cash-drawer { background: repeating-linear-gradient(90deg, var(--arc-cashier-wood) 0 26px, color-mix(in srgb, var(--arc-cashier-wood) 82%, #000) 26px 28px); border: 4px solid var(--arc-cashier-ink); border-radius: 8px; box-shadow: inset 0 8px 14px #0007; }
+.bst-guild .arc-frame.skin-cashier .cash-piece.bill { color: var(--arc-cashier-ink); background: color-mix(in srgb, var(--arc-green) 55%, var(--arc-cashier-body)); border-color: var(--arc-cashier-ink); font-family: "Arial Black", "Trebuchet MS", system-ui, sans-serif; }
+.bst-guild .arc-frame.skin-cashier .cash-piece.coin { color: var(--arc-cashier-ink); border-color: var(--arc-cashier-ink); }
+.bst-guild .arc-frame.skin-cashier .cash-piece.coin .coin-name { color: var(--arc-cashier-ink); }
+.bst-guild .arc-frame.skin-cashier .cash-key { color: var(--arc-cashier-ink); background: var(--arc-cashier-body); border-color: var(--arc-cashier-ink); }
+.bst-guild .arc-frame.skin-cashier .cash-actions button.secondary { color: var(--arc-cashier-ink); background: var(--arc-cashier-body); border: 3px solid var(--arc-cashier-ink); box-shadow: 0 4px 0 var(--arc-cashier-ink); }
+.bst-guild .arc-frame.skin-cashier .cash-actions button.big { color: var(--arc-shop-white); background: var(--arc-cashier-red); border-color: var(--arc-cashier-ink); }
+.bst-guild .arc-frame.skin-cashier .cash-setup .cash-group { color: var(--arc-cashier-body); border-color: var(--arc-cashier-brass); }
+.bst-guild .arc-frame.skin-cashier .cash-choice { color: var(--arc-cashier-ink); background: var(--arc-cashier-body); border: 3px solid var(--arc-cashier-ink); box-shadow: 0 5px 0 var(--arc-cashier-ink); }
+.bst-guild .arc-frame.skin-cashier .cash-choice small { color: var(--arc-cashier-ink); }
+.bst-guild .arc-frame.skin-cashier .cash-choice[aria-pressed="true"] { background: var(--arc-cashier-brass); border-color: var(--arc-cashier-red); }
+.bst-guild .arc-frame.skin-cashier .cash-summary { color: var(--arc-cashier-body); }
+
+/* ---- Check Writer: a desk blotter, parchment checks, blue ink ---- */
+.bst-guild .arc-frame.skin-checks { --g-bg: var(--arc-checks-bg); --g-accent: var(--arc-checks-edge); --g-accent-ink: var(--arc-checks-bg); --g-ink: var(--arc-checks-paper); }
+.bst-guild .arc-frame.skin-checks .bill-paper { color: var(--arc-checks-ink); background: var(--arc-checks-paper); border: 0; border-top: 10px solid var(--arc-checks-red); border-radius: 3px; box-shadow: 0 8px 14px -4px #000; font-family: "Courier New", ui-monospace, monospace; }
+.bst-guild .arc-frame.skin-checks .check { color: var(--arc-checks-ink); background: repeating-linear-gradient(135deg, var(--arc-checks-paper) 0 14px, color-mix(in srgb, var(--arc-checks-edge) 22%, var(--arc-checks-paper)) 14px 16px); border: 3px solid var(--arc-checks-ink); border-radius: 8px; box-shadow: 0 8px 14px -4px #000; font-family: "Georgia", serif; }
+.bst-guild .arc-frame.skin-checks .check input { color: var(--arc-checks-ink); border-bottom: 2px solid var(--arc-checks-ink); font-family: "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive; background: color-mix(in srgb, #fff 55%, transparent); }
+.bst-guild .arc-frame.skin-checks .check input:focus { outline: 3px solid var(--arc-checks-red); background: #fff; }
+.bst-guild .arc-frame.skin-checks .sig-slot { color: var(--arc-checks-ink); background: color-mix(in srgb, #fff 60%, transparent); border: 2px dashed var(--arc-checks-ink); font-family: "Trebuchet MS", system-ui, sans-serif; font-weight: 700; }
+.bst-guild .arc-frame.skin-checks .step-label { color: var(--arc-checks-paper); font: 800 1rem "Trebuchet MS", system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+.bst-guild .arc-frame.skin-checks .check-grade li { color: var(--arc-checks-ink); background: var(--arc-checks-paper); border-radius: 4px; }
+.bst-guild .arc-frame.skin-checks .note, .bst-guild .arc-frame.skin-checks p { color: var(--arc-checks-paper); }
+.bst-guild .arc-frame.skin-checks .check p, .bst-guild .arc-frame.skin-checks .bill-paper p { color: var(--arc-checks-ink); }
+
+/* ---- Spot the Overdraft: an ATM, green phosphor on black ---- */
+.bst-guild .arc-frame.skin-overdraft { --g-bg: var(--arc-atm-bezel); --g-accent: var(--arc-atm-green); --g-accent-ink: var(--arc-atm-bg); --g-ink: var(--arc-atm-green); font-family: ui-monospace, "Courier New", monospace; }
+.bst-guild .arc-frame.skin-overdraft .od-balance-line { margin: var(--b-s2) 0; padding: var(--b-s2) var(--b-s3); font: 800 1.4rem ui-monospace, "Courier New", monospace; color: var(--arc-atm-amber); background: var(--arc-atm-bg); border: 3px solid var(--arc-atm-bezel); border-radius: 6px; }
+.bst-guild .arc-frame.skin-overdraft .od-balance { color: var(--arc-atm-amber); text-shadow: 0 0 10px var(--arc-atm-amber); font-size: 1.8rem; }
+.bst-guild .arc-frame.skin-overdraft .od-card { display: grid; gap: var(--b-s2); justify-items: center; padding: var(--b-s5) var(--b-s4); text-align: center; color: var(--arc-atm-green); background: repeating-linear-gradient(0deg, var(--arc-atm-screen) 0 3px, color-mix(in srgb, var(--arc-atm-green) 8%, var(--arc-atm-screen)) 3px 4px); border: 6px solid var(--arc-atm-bg); border-radius: 18px; box-shadow: inset 0 0 40px #0009, 0 0 0 4px var(--arc-atm-bezel), 0 0 24px color-mix(in srgb, var(--arc-atm-green) 40%, transparent); font-family: ui-monospace, "Courier New", monospace; text-shadow: 0 0 8px color-mix(in srgb, var(--arc-atm-green) 70%, transparent); }
+.bst-guild .arc-frame.skin-overdraft .od-kind { color: var(--arc-atm-green); font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase; }
+.bst-guild .arc-frame.skin-overdraft .od-label { font-size: 1.7rem; }
+.bst-guild .arc-frame.skin-overdraft .od-amount { font-size: 2.6rem; font-weight: 800; }
+.bst-guild .arc-frame.skin-overdraft .od-amount.out { color: var(--arc-atm-red); text-shadow: 0 0 10px var(--arc-atm-red); }
+.bst-guild .arc-frame.skin-overdraft .od-amount.in { color: var(--arc-atm-green); }
+.bst-guild .arc-frame.skin-overdraft .od-bar { height: 12px; background: var(--arc-atm-bg); border-radius: var(--b-r-round); overflow: hidden; border: 2px solid var(--arc-atm-green); }
+.bst-guild .arc-frame.skin-overdraft .od-bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--arc-atm-red), var(--arc-atm-amber), var(--arc-atm-green)); }
+.bst-guild .arc-frame.skin-overdraft .od-actions { justify-content: center; gap: var(--b-s4); }
+.bst-guild .arc-frame.skin-overdraft .od-stop { min-width: 220px; min-height: 76px; font-size: 1.5rem; color: #fff; background: var(--arc-atm-red); border: 4px solid var(--arc-atm-bg); clip-path: polygon(14% 0, 86% 0, 100% 30%, 100% 70%, 86% 100%, 14% 100%, 0 70%, 0 30%); box-shadow: none; }
+.bst-guild .arc-frame.skin-overdraft .od-let { min-width: 200px; min-height: 76px; font: 800 1.2rem ui-monospace, monospace; color: var(--arc-atm-green); background: var(--arc-atm-bg); border: 3px solid var(--arc-atm-green); border-radius: 12px; }
+.bst-guild .arc-frame.skin-overdraft .mg-flash.good { color: var(--arc-atm-green); }
+.bst-guild .arc-frame.skin-overdraft .mg-flash.bad { color: var(--arc-atm-amber); }
+
+/* ---- Register Balancer: an adding machine, paper tape, orange keys ---- */
+.bst-guild .arc-frame.skin-register { --g-bg: var(--arc-tape-bg); --g-accent: var(--arc-tape-orange); --g-accent-ink: var(--arc-tape-ink); --g-ink: var(--arc-tape-paper); }
+.bst-guild .arc-frame.skin-register .rg-table { color: var(--arc-tape-ink); background: var(--arc-tape-paper); border-collapse: collapse; font: 700 1.05rem ui-monospace, "Courier New", monospace; box-shadow: 0 0 0 6px var(--arc-tape-bg), 0 0 0 9px var(--arc-tape-paper), 0 10px 20px #000a; }
+.bst-guild .arc-frame.skin-register .rg-table th { color: var(--arc-tape-paper); background: var(--arc-tape-ink); text-transform: uppercase; letter-spacing: 0.08em; }
+.bst-guild .arc-frame.skin-register .rg-table td { color: var(--arc-tape-ink); border-bottom: 1px dashed var(--arc-tape-ink); }
+.bst-guild .arc-frame.skin-register .rg-table tr.start td { color: var(--arc-tape-ink); background: color-mix(in srgb, var(--arc-tape-orange) 25%, var(--arc-tape-paper)); }
+.bst-guild .arc-frame.skin-register .rg-table tr.current td { color: var(--arc-tape-ink); background: var(--arc-tape-orange); }
+.bst-guild .arc-frame.skin-register .rg-table tr.disputed td { color: var(--arc-tape-red); }
+.bst-guild .arc-frame.skin-register .rg-mark { color: var(--arc-tape-ink); font-weight: 900; }
+.bst-guild .arc-frame.skin-register .rg-receipt { color: var(--arc-tape-red); }
+.bst-guild .arc-frame.skin-register .keypad { color: var(--arc-tape-paper); background: #0000; box-shadow: none; padding: var(--b-s2); }
+.bst-guild .arc-frame.skin-register .kp-label { color: var(--arc-tape-paper); font-family: "Trebuchet MS", system-ui, sans-serif; }
+.bst-guild .arc-frame.skin-register .kp-screen { color: var(--arc-tape-orange); background: var(--arc-tape-ink); border: 3px solid var(--arc-tape-paper); font-family: ui-monospace, monospace; font-size: 1.9rem; text-shadow: 0 0 8px var(--arc-tape-orange); }
+.bst-guild .arc-frame.skin-register .kp-key { color: var(--arc-tape-ink); background: var(--arc-tape-paper); border: 3px solid var(--arc-tape-ink); border-radius: 10px; box-shadow: 0 5px 0 var(--arc-tape-ink); font: 800 1.4rem ui-monospace, monospace; }
+.bst-guild .arc-frame.skin-register .kp-key:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--arc-tape-ink); }
+.bst-guild .arc-frame.skin-register .kp-check { color: var(--arc-tape-ink); background: var(--arc-tape-orange); border: 3px solid var(--arc-tape-ink); border-radius: 10px; box-shadow: 0 5px 0 var(--arc-tape-ink); font-weight: 900; }
+.bst-guild .arc-frame.skin-register .rg-dispute { color: var(--arc-tape-paper); background: var(--arc-tape-red); border: 3px solid var(--arc-tape-ink); border-radius: 10px; font: 800 1.1rem "Trebuchet MS", system-ui, sans-serif; box-shadow: 0 5px 0 var(--arc-tape-ink); }
+
+/* ---- Check Anatomy Hunt: a blueprint, cyan lines on deep blue ---- */
+.bst-guild .arc-frame.skin-checkhunt { --g-bg: var(--arc-blue-bg); --g-accent: var(--arc-blue-line); --g-accent-ink: var(--arc-blue-ink); --g-ink: var(--arc-blue-paper); font-family: ui-monospace, "Courier New", monospace; }
+.bst-guild .arc-frame.skin-checkhunt .minigame { background-image: linear-gradient(var(--arc-blue-grid) 1px, transparent 1px), linear-gradient(90deg, var(--arc-blue-grid) 1px, transparent 1px); background-size: 32px 32px; }
+.bst-guild .arc-frame.skin-checkhunt .ch-prompt { color: var(--arc-blue-line); font: 800 1.2rem ui-monospace, monospace; text-shadow: 0 0 8px color-mix(in srgb, var(--arc-blue-line) 60%, transparent); }
+.bst-guild .arc-frame.skin-checkhunt .ch-prompt small { color: var(--arc-blue-paper); }
+.bst-guild .arc-frame.skin-checkhunt .ch-check { color: var(--arc-blue-paper); background: color-mix(in srgb, var(--arc-blue-bg) 80%, transparent); border: 3px solid var(--arc-blue-line); border-radius: 4px; font-family: ui-monospace, monospace; box-shadow: 0 0 20px color-mix(in srgb, var(--arc-blue-line) 35%, transparent); }
+.bst-guild .arc-frame.skin-checkhunt .ch-check * { color: var(--arc-blue-paper); }
+.bst-guild .arc-frame.skin-checkhunt .ch-spot { border: 2px dashed color-mix(in srgb, var(--arc-blue-line) 55%, transparent); border-radius: 4px; }
+.bst-guild .arc-frame.skin-checkhunt .ch-spot:hover, .bst-guild .arc-frame.skin-checkhunt .ch-spot:focus-visible { background: color-mix(in srgb, var(--arc-blue-line) 22%, transparent); border-style: solid; border-color: var(--arc-blue-line); }
+.bst-guild .arc-frame.skin-checkhunt .ch-right { background: color-mix(in srgb, var(--arc-green) 30%, transparent); border: 2px solid var(--arc-green); }
+.bst-guild .arc-frame.skin-checkhunt .ch-wrong { background: color-mix(in srgb, var(--arc-orange) 30%, transparent); border: 2px solid var(--arc-orange); }
+.bst-guild .arc-frame.skin-checkhunt .ch-answer { outline: 3px solid var(--arc-yellow); }
+.bst-guild .arc-frame.skin-checkhunt .ch-judge button { font-family: ui-monospace, monospace; }
+
+/* ---- Count the Drawer: the vault, steel and gold ---- */
+.bst-guild .arc-frame.skin-drawer { --g-bg: var(--arc-vault-bg); --g-accent: var(--arc-vault-gold); --g-accent-ink: var(--arc-vault-ink); --g-ink: var(--arc-shop-white); }
+.bst-guild .arc-frame.skin-drawer .dr-title, .bst-guild .arc-frame.skin-drawer .dr-ask { color: var(--arc-vault-gold); font: 800 1.2rem "Arial Black", "Trebuchet MS", system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.04em; }
+.bst-guild .arc-frame.skin-drawer .dr-slot { color: var(--arc-vault-ink); background: linear-gradient(180deg, var(--arc-vault-steel), color-mix(in srgb, var(--arc-vault-steel) 70%, #000)); border: 3px solid var(--arc-vault-dark); border-radius: 8px; box-shadow: inset 0 0 0 3px var(--arc-vault-gold), 0 5px 0 var(--arc-vault-dark); }
+.bst-guild .arc-frame.skin-drawer .dr-name { color: var(--arc-vault-ink); font-weight: 900; }
+.bst-guild .arc-frame.skin-drawer .dr-count { color: var(--arc-vault-gold); background: var(--arc-vault-dark); border: 2px solid var(--arc-vault-gold); border-radius: 4px; font: 800 1.5rem ui-monospace, monospace; padding: 0 10px; text-shadow: 0 0 8px color-mix(in srgb, var(--arc-vault-gold) 70%, transparent); }
+.bst-guild .arc-frame.skin-drawer .dr-plus, .bst-guild .arc-frame.skin-drawer .dr-minus { color: var(--arc-vault-ink); background: var(--arc-vault-gold); border: 3px solid var(--arc-vault-dark); border-radius: 50%; font-weight: 900; box-shadow: 0 4px 0 var(--arc-vault-dark); }
+.bst-guild .arc-frame.skin-drawer .dr-total, .bst-guild .arc-frame.skin-drawer .dr-running { color: var(--arc-vault-gold); font: 800 1.4rem ui-monospace, monospace; }
+.bst-guild .arc-frame.skin-drawer .dr-check { color: var(--arc-vault-ink); }
+.bst-guild .arc-frame.skin-drawer .dr-choices button { color: var(--arc-vault-ink); background: var(--arc-vault-gold); border: 3px solid var(--arc-vault-dark); border-radius: 10px; box-shadow: 0 5px 0 var(--arc-vault-dark); font: 900 1.3rem "Arial Black", system-ui, sans-serif; text-transform: uppercase; }
+
+/* ---- Unit Price Showdown: a supermarket flyer, red and yellow ---- */
+.bst-guild .arc-frame.skin-unitprice { --g-bg: var(--arc-shop-red); --g-accent: var(--arc-shop-yellow); --g-accent-ink: var(--arc-shop-ink); --g-ink: var(--arc-shop-white); }
+.bst-guild .arc-frame.skin-unitprice .up-prompt { color: var(--arc-shop-white); font: 900 1.3rem "Arial Black", Impact, system-ui, sans-serif; text-transform: uppercase; }
+.bst-guild .arc-frame.skin-unitprice .up-prompt small { color: var(--arc-shop-yellow); }
+.bst-guild .arc-frame.skin-unitprice .up-shelf { gap: var(--b-s4); }
+.bst-guild .arc-frame.skin-unitprice .up-card { position: relative; display: grid; gap: 4px; justify-items: center; padding: var(--b-s4) var(--b-s3); color: var(--arc-shop-ink); background: var(--arc-shop-white); border: 4px solid var(--arc-shop-ink); border-radius: 14px; box-shadow: 0 8px 0 var(--arc-shop-ink); font-family: "Trebuchet MS", system-ui, sans-serif; text-align: center; }
+.bst-guild .arc-frame.skin-unitprice .up-card:hover:not(:disabled), .bst-guild .arc-frame.skin-unitprice .up-card:focus-visible { transform: translateY(-5px) rotate(-1deg); }
+.bst-guild .arc-frame.skin-unitprice .up-name { font: 900 1.25rem "Arial Black", system-ui, sans-serif; color: var(--arc-shop-ink); }
+.bst-guild .arc-frame.skin-unitprice .up-size { font-weight: 800; color: var(--arc-shop-ink); }
+.bst-guild .arc-frame.skin-unitprice .up-price { padding: 2px 18px; font: 900 2.2rem "Arial Black", Impact, system-ui, sans-serif; color: var(--arc-shop-ink); background: var(--arc-shop-yellow); border: 3px solid var(--arc-shop-ink); border-radius: 50px; transform: rotate(-3deg); }
+.bst-guild .arc-frame.skin-unitprice .up-coupon { color: var(--arc-shop-white); background: var(--arc-shop-green); padding: 1px 10px; border-radius: 4px; font-weight: 800; }
+.bst-guild .arc-frame.skin-unitprice .up-unit { color: var(--arc-shop-ink); font-weight: 800; }
+.bst-guild .arc-frame.skin-unitprice .up-card .cash-key { color: var(--arc-shop-ink); background: var(--arc-shop-yellow); border-color: var(--arc-shop-ink); }
+.bst-guild .arc-frame.skin-unitprice .up-best { background: var(--arc-shop-yellow); border-color: var(--arc-shop-green); box-shadow: 0 0 0 5px var(--arc-shop-green), 0 8px 0 var(--arc-shop-ink); }
+.bst-guild .arc-frame.skin-unitprice .up-tag { color: var(--arc-shop-white); background: var(--arc-shop-green); padding: 1px 10px; border-radius: 4px; font-weight: 800; }
+.bst-guild .arc-frame.skin-unitprice .up-tag.chosen { background: var(--arc-shop-ink); }
+.bst-guild .arc-frame.skin-unitprice .up-next { color: var(--arc-shop-ink); background: var(--arc-shop-yellow); border: 3px solid var(--arc-shop-ink); border-radius: var(--b-r-round); font: 900 1.1rem "Arial Black", system-ui, sans-serif; box-shadow: 0 5px 0 var(--arc-shop-ink); }
+.bst-guild .arc-frame.skin-unitprice .mg-flash.good, .bst-guild .arc-frame.skin-unitprice .mg-flash.bad { color: var(--arc-shop-white); }
+
+/* ---- Fee Detective: noir, a spotlight on a sepia statement ---- */
+.bst-guild .arc-frame.skin-fees { --g-bg: var(--arc-noir-bg); --g-accent: var(--arc-noir-red); --g-accent-ink: var(--arc-noir-paper); --g-ink: var(--arc-noir-paper); font-family: Georgia, "Times New Roman", serif; }
+.bst-guild .arc-frame.skin-fees .minigame { background: radial-gradient(ellipse at 50% 0, color-mix(in srgb, var(--arc-noir-light) 22%, transparent), transparent 62%); }
+.bst-guild .arc-frame.skin-fees .fd-prompt strong { color: var(--arc-noir-paper); font: italic 700 1.3rem Georgia, serif; }
+.bst-guild .arc-frame.skin-fees .fd-paper { color: var(--arc-noir-ink); background: var(--arc-noir-paper); border-radius: 2px; box-shadow: 0 0 0 2px var(--arc-noir-ink), 0 16px 30px -6px #000, 0 0 60px color-mix(in srgb, var(--arc-noir-light) 18%, transparent); font-family: "Courier New", ui-monospace, monospace; }
+.bst-guild .arc-frame.skin-fees .fd-head { border-bottom-color: var(--arc-noir-ink); }
+.bst-guild .arc-frame.skin-fees .fd-head strong { font-family: Georgia, serif; font-variant: small-caps; color: var(--arc-noir-ink); }
+.bst-guild .arc-frame.skin-fees .fd-head span, .bst-guild .arc-frame.skin-fees .fd-date { color: var(--arc-noir-ink); }
+.bst-guild .arc-frame.skin-fees .fd-line, .bst-guild .arc-frame.skin-fees .fd-text, .bst-guild .arc-frame.skin-fees .fd-amount { color: var(--arc-noir-ink); }
+.bst-guild .arc-frame.skin-fees .fd-text small { color: var(--arc-noir-ink); }
+.bst-guild .arc-frame.skin-fees .fd-line { border-bottom-color: color-mix(in srgb, var(--arc-noir-ink) 45%, transparent); }
+.bst-guild .arc-frame.skin-fees button.fd-line:hover, .bst-guild .arc-frame.skin-fees button.fd-line:focus-visible { background: color-mix(in srgb, var(--arc-noir-red) 14%, transparent); }
+.bst-guild .arc-frame.skin-fees button.fd-line[aria-pressed="true"] { background: color-mix(in srgb, var(--arc-noir-red) 18%, transparent); outline: 3px solid var(--arc-noir-red); outline-offset: -3px; }
+.bst-guild .arc-frame.skin-fees .fd-mark { color: var(--arc-noir-red); font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; }
+.bst-guild .arc-frame.skin-fees .fd-shown.fd-right { background: color-mix(in srgb, var(--arc-shop-green) 22%, transparent); outline-color: var(--arc-shop-green); }
+.bst-guild .arc-frame.skin-fees .fd-shown.fd-right .fd-mark { color: var(--arc-shop-green); }
+.bst-guild .arc-frame.skin-fees .fd-shown.fd-missed, .bst-guild .arc-frame.skin-fees .fd-shown.fd-wrong { background: color-mix(in srgb, var(--arc-noir-red) 16%, transparent); outline-color: var(--arc-noir-red); }
+.bst-guild .arc-frame.skin-fees .fd-shown.fd-missed .fd-mark, .bst-guild .arc-frame.skin-fees .fd-shown.fd-wrong .fd-mark { color: var(--arc-noir-red); }
+.bst-guild .arc-frame.skin-fees .fd-option { color: var(--arc-noir-ink); background: var(--arc-noir-paper); border: 3px solid var(--arc-noir-ink); border-radius: 3px; font-family: Georgia, serif; }
+.bst-guild .arc-frame.skin-fees .fd-option.fd-right { outline: 4px solid var(--arc-shop-green); }
+.bst-guild .arc-frame.skin-fees .fd-summary { color: var(--arc-noir-ink); background: var(--arc-noir-paper); border: 3px solid var(--arc-noir-ink); }
+.bst-guild .arc-frame.skin-fees .fd-summary p, .bst-guild .arc-frame.skin-fees .fd-summary h3 { color: var(--arc-noir-ink); }
+.bst-guild .arc-frame.skin-fees .mg-flash.good { color: var(--arc-green); }
+.bst-guild .arc-frame.skin-fees .mg-flash.bad { color: var(--arc-orange); }
+.bst-guild .arc-frame .minigame, .bst-guild .arc-frame .shift { outline: none; box-shadow: none; border-radius: 0; background: none; padding: var(--b-s3) var(--b-s4) var(--b-s4); }
+.bst-guild .arc-frame h3.arc-title { font-family: "Arial Black", "Trebuchet MS", Impact, system-ui, sans-serif; font-weight: 900; font-size: 1.4rem; margin: 0; color: var(--g-accent-ink); }
+.bst-guild .arc-frame .arc-marquee button { font-family: "Trebuchet MS", system-ui, sans-serif; }
+.bst-guild .arc-frame .arc-marquee button.secondary, .bst-guild .arc-frame .arc-marquee button.arc-guide, .bst-guild .arc-frame .arc-marquee button.job-back { color: var(--g-accent-ink); background: color-mix(in srgb, #fff 30%, transparent); border: 2px solid var(--g-accent-ink); box-shadow: none; }
+.bst-guild .arc-frame .arc-marquee .job-leave-ask button { color: var(--g-accent-ink); background: color-mix(in srgb, #fff 40%, transparent); border: 2px solid var(--g-accent-ink); }
+
+/* ---- Check Writer layout: the whole desk on one screen ---- */
+.bst-guild .arc-frame.skin-checks .minigame.checks { display: grid; gap: var(--b-s2); }
+.bst-guild .arc-frame.skin-checks .cw-desk { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: var(--b-s4); align-items: start; }
+.bst-guild .arc-frame.skin-checks .bill-paper { margin: 0; padding: var(--b-s3) var(--b-s4); max-width: none; }
+.bst-guild .arc-frame.skin-checks .bill-paper p { margin: 4px 0; font-size: 1rem; }
+.bst-guild .arc-frame.skin-checks .bill-from { font-size: 1.15rem; border-bottom: 2px dashed var(--arc-checks-ink); padding-bottom: 4px; }
+.bst-guild .arc-frame.skin-checks .bill-due strong { font-size: 1.5rem; color: var(--arc-checks-red); }
+.bst-guild .arc-frame.skin-checks .bill-tip { margin-top: var(--b-s3); padding-top: var(--b-s2); border-top: 1px dotted var(--arc-checks-ink); font-size: 0.9rem; }
+.bst-guild .arc-frame.skin-checks .check { margin: 0; max-width: none; gap: var(--b-s2); }
+.bst-guild .arc-frame.skin-checks .cw-actions { justify-content: center; margin: 0; }
+.bst-guild .arc-frame.skin-checks .cw-note { margin: 0; text-align: center; font-weight: 700; }
+.bst-guild .arc-frame.skin-checks .cw-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-s4); }
+.bst-guild .arc-frame.skin-checks .cw-pair figure { margin: 0; display: grid; gap: 4px; }
+.bst-guild .arc-frame.skin-checks .cw-pair figcaption { color: var(--arc-checks-paper); font: 800 0.95rem "Trebuchet MS", system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+.bst-guild .arc-frame.skin-checks .check-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-s2); margin: 0; padding: 0; list-style: none; }
+.bst-guild .arc-frame.skin-checks .check-grade li { padding: var(--b-s2) var(--b-s3); border-left: 8px solid var(--arc-shop-green); }
+.bst-guild .arc-frame.skin-checks .check-grade li.bad { border-left-color: var(--arc-checks-red); }
+.bst-guild .arc-frame.skin-checks .check-grade li span { display: block; font-weight: 400; }
+.bst-guild .arc-frame.skin-checks .check-back { min-height: 100%; }
+.bst-guild .arc-frame.skin-checks .endorse-title, .bst-guild .arc-frame.skin-checks .endorse-note, .bst-guild .arc-frame.skin-checks .dep-only { color: var(--arc-checks-ink); }
+@media (max-width: 1000px) { .bst-guild .arc-frame.skin-checks .cw-desk, .bst-guild .arc-frame.skin-checks .cw-pair { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---- Fit one screen: Fee Detective rows and the Drawer piles are slimmer ---- */
+.bst-guild .arc-frame.skin-fees .fd-date { white-space: nowrap; font-size: 0.95rem; }
+.bst-guild .arc-frame.skin-fees .fd-line { grid-template-columns: 78px minmax(0, 1fr) auto 92px; min-height: 31px; padding: 1px 8px; font-size: 0.95rem; }
+.bst-guild .arc-frame.skin-fees button.fd-line { min-height: 31px; }
+.bst-guild .arc-frame.skin-fees .fd-prompt { margin: 0; }
+.bst-guild .arc-frame.skin-fees .fd-prompt strong { font-size: 1.1rem; }
+.bst-guild .arc-frame.skin-fees .mg-bar { margin: 0; }
+.bst-guild .arc-frame.skin-drawer .dr-grid { gap: var(--b-s2); }
+.bst-guild .arc-frame.skin-drawer .dr-slot { padding: var(--b-s2); gap: 4px; }
+.bst-guild .arc-frame.skin-drawer .dr-pile { zoom: 0.7; min-height: 40px; gap: 2px; }
+.bst-guild .arc-frame.skin-drawer .dr-title { margin: 0 0 var(--b-s2); }
+.bst-guild .arc-frame.skin-drawer .dr-foot { margin-top: var(--b-s2); }
+.bst-guild .arc-frame.skin-drawer .dr-stepper button { width: 40px; height: 40px; }
+.bst-guild .arc-frame .mg-bar { margin: 0 0 var(--b-s1); }
+
+/* ---- Contrast fixes found with e2e/contrast.js ---- */
+.bst-guild .arc-cab .arc-job { color: var(--arc-ink-soft); }
+.arc-cab.cab-checks { --cab-ink: var(--arc-checks-bg); }
+.bst-guild.arc-world label.untimed, .bst-guild.arc-world .arc-untimed { color: var(--arc-ink-soft); }
+.bst-guild .arc-frame.skin-overdraft .od-stop { color: var(--arc-atm-bg); }
+.bst-guild .arc-frame.skin-unitprice .cash-keys-help, .bst-guild .arc-frame.skin-unitprice .sentences { color: var(--arc-shop-white); }
+.bst-guild .arc-frame.skin-unitprice .up-prompt small { color: var(--arc-shop-white); }
+.bst-guild .arc-frame .cash-keys-help .sentences { color: inherit; }
+.bst-guild .arc-cab.cab-unitprice .arc-job { color: var(--arc-shop-white); }
+
+/* ---- The scoreboard after a shift ---- */
+.bst-guild .arc-results { max-width: 880px; margin: var(--b-s3) auto 0; }
+.arc-score { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--b-s4); padding: var(--b-s4) var(--b-s5) var(--b-s2); }
+.arc-payout { display: grid; gap: 0; }
+.arc-payout small { font: 800 1rem "Trebuchet MS", system-ui, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; color: var(--g-ink); }
+.bst-guild .arc-results .big-number { font: 900 clamp(3.4rem, 8vw, 5.5rem) "Arial Black", Impact, system-ui, sans-serif; line-height: 1; color: var(--arc-yellow); text-shadow: 0 0 10px var(--arc-yellow), 0 4px 0 color-mix(in srgb, #000 55%, transparent); animation: arc-count 0.7s ease-out; }
+@keyframes arc-count { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: none; opacity: 1; } }
+:root[data-motion="calm"] .bst-guild .arc-results .big-number { animation: none; }
+@media (prefers-reduced-motion: reduce) { .bst-guild .arc-results .big-number { animation: none; } }
+.arc-tally { display: flex; gap: var(--b-s3); }
+.arc-stat { display: grid; justify-items: center; min-width: 96px; padding: var(--b-s2) var(--b-s3); color: var(--arc-dark-ink); background: var(--g-accent); border: 3px solid var(--g-accent-ink); border-radius: var(--b-r-insert); }
+.bst-guild .arc-frame .arc-stat strong { font: 900 1.9rem "Arial Black", system-ui, sans-serif; color: var(--g-accent-ink); }
+.bst-guild .arc-frame .arc-stat small { font: 700 0.85rem "Trebuchet MS", system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.08em; color: var(--g-accent-ink); }
+.bst-guild .arc-frame .arc-note { margin: 0; padding: var(--b-s2) var(--b-s5); font: 700 1.05rem "Trebuchet MS", system-ui, sans-serif; color: var(--g-ink); }
+.bst-guild .arc-frame .arc-perfect { color: var(--arc-green); font-size: 1.3rem; }
+.bst-guild .arc-frame .arc-misses { margin: var(--b-s2) var(--b-s5); color: var(--arc-ink); background: color-mix(in srgb, #000 40%, transparent); border: 2px dashed var(--g-accent); border-radius: var(--b-r-insert); }
+.bst-guild .arc-frame .arc-misses summary { color: var(--arc-ink); font: 700 1rem "Trebuchet MS", system-ui, sans-serif; }
+.bst-guild .arc-frame .arc-misses li { color: var(--arc-ink); font-family: "Trebuchet MS", system-ui, sans-serif; }
+.arc-after { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--b-s4); padding: var(--b-s3) var(--b-s5) var(--b-s4); }
+.bst-guild .arc-frame .reactions button.reaction { background: color-mix(in srgb, #fff 90%, transparent); border: 3px solid var(--arc-dark-ink); border-radius: 50%; }
+.bst-guild .arc-frame .reactions button.reaction[aria-pressed="true"] { background: var(--arc-yellow); }
+.bst-guild .arc-frame .arc-collect { display: inline-flex; align-items: center; gap: var(--b-s2); min-height: 64px; padding: 6px 28px; font-size: 1.35rem; color: var(--arc-dark-ink); background: var(--arc-yellow); border: 4px solid var(--arc-dark-ink); }
+.arc-collect .ico-wrap { color: var(--arc-dark-ink); }

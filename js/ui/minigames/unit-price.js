@@ -3,7 +3,7 @@
 // each one's price per unit. Later rounds mix brands, add a coupon, or give a
 // size in pounds or quarts. Bigger is not always cheaper.
 import { h, fill } from "../dom.js";
-import { sfx } from "../sound.js";
+import { sfx } from "../arcade-sound.js";
 import { createRng } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { UNIT_TIPS } from "../../data/minigames.js";

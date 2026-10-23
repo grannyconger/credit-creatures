@@ -6,6 +6,7 @@ import { createRng } from "../../engine/index.js";
 import { CHECK_BILLS, CHECK_FIELDS, MONTH_NAMES, amountInWords, gradeCheck } from "../../data/minigames.js";
 import { fullName } from "../../data/creatures.js";
 import { askSignature, signatureMark } from "../signature-pad.js";
+import { sfx } from "../arcade-sound.js";
 
 // payFor(right) gives the paycheck amount. onDone({ right, wrong, total, seconds, misses, depositOnly }).
 export function checkWriter({ seed, life, creature, payFor, onDone, track }) {
@@ -36,40 +37,46 @@ export function checkWriter({ seed, life, creature, payFor, onDone, track }) {
     fill(sigSlot, signatureMark(sig));
   }
 
+  // The desk: the bill on the left, the check you write on the right. Nothing to scroll.
   function partOne() {
     fill(
       el,
       h("p.step-label", "Part 1 of 2: pay a bill by check"),
       h(
-        "div.bill-paper",
-        h("p", h("strong", `🧾 ${bill.payee}`)),
-        h("p", `For: ${bill.what}`),
-        h("p", "Amount due: ", h("strong", money(cents / 100))),
-        h("p", `Write this in the memo: ${bill.memo}`),
-        h("p", `Today's date: ${dateText}`)
+        "div.cw-desk",
+        h(
+          "aside.bill-paper",
+          h("p.bill-from", h("strong", bill.payee)),
+          h("p", `For: ${bill.what}`),
+          h("p.bill-due", "Amount due ", h("strong", money(cents / 100))),
+          h("p", "Memo: ", h("strong", bill.memo)),
+          h("p", "Today's date: ", h("strong", dateText)),
+          h("p.bill-tip", "Tip: write the cents as a fraction, like ", h("strong", "Forty-seven and 25/100"), ".")
+        ),
+        h(
+          "div.check",
+          { role: "group", "aria-label": "Your check" },
+          h("div.check-top", h("span.check-owner", name, h("br"), "Market Village"), h("label.check-date", "Date ", f.date), h("span.check-no", "No. 101")),
+          h("div.check-line", h("label", { for: "ck-payee" }, "Pay to the order of"), f.payee, h("span.check-dollar", "$"), f.amount),
+          h("div.check-line", f.words, h("span", "Dollars")),
+          h("div.check-bank", "The Vault"),
+          h("div.check-bottom", h("label", { for: "ck-memo" }, "Memo"), f.memo, h("div.check-sign", sigSlot, h("small", "Signature")))
+        )
       ),
-      h(
-        "div.check",
-        { role: "group", "aria-label": "Your check" },
-        h("div.check-top", h("span.check-owner", name, h("br"), "Market Village"), h("label.check-date", "Date ", f.date), h("span.check-no", "No. 101")),
-        h("div.check-line", h("label", { for: "ck-payee" }, "Pay to the order of"), f.payee, h("span.check-dollar", "$"), f.amount),
-        h("div.check-line", f.words, h("span", "Dollars")),
-        h("div.check-bank", "🏦 The Vault"),
-        h("div.check-bottom", h("label", { for: "ck-memo" }, "Memo"), f.memo, h("div.check-sign", sigSlot, h("small", "Signature")))
-      ),
-      h("p.note.tight", "Tip: write the cents as a fraction, like ", h("strong", "Forty-seven and 25/100"), "."),
-      h("div.row", h("button.big", { type: "button", onclick: send }, "Send the check"))
+      h("div.row.cw-actions", h("button.big", { type: "button", onclick: send }, "Send the check"))
     );
   }
 
   let grade = null;
   function send() {
+    sfx.stamp();
     grade = gradeCheck(
       { date: f.date.value, payee: f.payee.value, amount: f.amount.value, words: f.words.value, memo: f.memo.value, signed: Boolean(frontSig) },
       { dateText, payee: bill.payee, cents, memo: bill.memo }
     );
     const right = Object.values(grade).filter(Boolean).length;
     track("checkGraded", { right, ...Object.fromEntries(Object.entries(grade).map(([k, v]) => [k, v ? 1 : 0])) });
+    (right === 6 ? sfx.correct : sfx.error)();
     const correct = { date: dateText, payee: bill.payee, amount: (cents / 100).toFixed(2), words: amountInWords(cents), memo: bill.memo, signature: "Your signature on the front" };
     fill(
       el,
@@ -105,6 +112,7 @@ export function checkWriter({ seed, life, creature, payFor, onDone, track }) {
       if (deposited) return;
       deposited = true;
       depositBtn.disabled = true;
+      sfx.questComplete();
       const misses = Object.entries(grade)
         .filter(([, ok]) => !ok)
         .map(([k]) => `${CHECK_FIELDS[k]} was not right.`);
@@ -127,9 +135,9 @@ export function checkWriter({ seed, life, creature, payFor, onDone, track }) {
     fill(
       el,
       h("p.step-label", "Part 2 of 2: deposit your paycheck"),
-      h("p", "This check is made out to you. To deposit it, flip it over and sign the BACK. That's called endorsing it."),
-      front,
-      h("div.row", h("button.secondary", { type: "button", onclick: () => fill(el, h("p.step-label", "Part 2 of 2: endorse the back"), back, h("div.row", depositBtn)) }, "Flip it over"))
+      h("p.cw-note", "This check is made out to you. To deposit it, sign the BACK. That's called endorsing it."),
+      h("div.cw-pair", h("figure", h("figcaption", "Front"), front), h("figure", h("figcaption", "Back (flip it over)"), back)),
+      h("div.row.cw-actions", depositBtn)
     );
   }
 

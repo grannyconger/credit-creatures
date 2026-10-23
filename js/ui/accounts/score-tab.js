@@ -32,18 +32,14 @@ function gaugeBlock(score, sparkle, rep) {
     return h(
       "section.gauge-block",
       gauge(null),
-      h("p.big-score", "No score yet"),
-      h("p", need ? `You need ${need} more month${need === 1 ? "" : "s"} of reported credit history.` : "Your first score comes at the next End Month."),
-      sparkleLine
+      h("div.gauge-words", h("p.big-score", "No score yet"), h("p", need ? `You need ${need} more month${need === 1 ? "" : "s"} of reported credit history.` : "Your first score comes at the next End Month."), sparkleLine)
     );
   }
   const band = bandFor(score);
   return h(
     "section.gauge-block",
     gauge(score),
-    h("p.big-score", String(score), sparkle ? h("span.sparkle-add", ` + ${sparkle} ✨`) : null),
-    h("p.band-label", `${band.label} (${band.min} to ${band.max})`),
-    sparkleLine
+    h("div.gauge-words", h("p.big-score", String(score), sparkle ? h("span.sparkle-add", ` + ${sparkle} ✨`) : null), h("p.band-label", `${band.label} (${band.min} to ${band.max})`), sparkleLine)
   );
 }
 

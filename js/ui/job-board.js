@@ -7,10 +7,9 @@ import { JOBS } from "../data/minigames.js";
 import { jobPay, experienceBonus, recordShift, rideAndHomeBonus } from "../progress.js";
 import { openJobs, opensText, unlockStage } from "../progression.js";
 import { icon } from "./icons.js";
-import { sealSvg } from "./bestiary-art.js";
 import * as P from "../play.js";
 import { ledgerSort } from "./minigames/ledger-sort.js";
-import { cashierRush } from "./minigames/cashier-rush.js";
+import { cashierRush, cashierRate } from "./minigames/cashier-rush.js";
 import { checkWriter } from "./minigames/check-writer.js";
 import { spotOverdraft } from "./minigames/spot-overdraft.js";
 import { registerBalancer } from "./minigames/register-balancer.js";
@@ -19,6 +18,9 @@ import { countDrawer } from "./minigames/count-drawer.js";
 import { unitPriceShowdown } from "./minigames/unit-price.js";
 import { feeDetective } from "./minigames/fee-detective.js";
 import { hasGuide, openGameGuide } from "./game-guide.js";
+import { cabinetArt } from "./arcade-art.js";
+import { setArcadeVoice } from "./arcade-sound.js";
+import { watchJuice } from "./arcade-juice.js";
 
 // The games that only need the shared options (seed, timed, onDone, track).
 const GAMES = { ledger: ledgerSort, cashier: cashierRush, overdraft: spotOverdraft, register: registerBalancer, checkhunt: checkHunt, drawer: countDrawer, unitprice: unitPriceShowdown, fees: feeDetective };
@@ -60,31 +62,28 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     fill(
       el,
       h(
-        "div.job-cards",
+        "div.job-cards.arc-cabinets",
         Object.entries(JOBS)
           .filter(([key]) => openJobs(play).includes(key))
           .map(([key, job]) => {
           const xp = experienceBonus(play, key) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
           const stats = play.jobs[key];
           const worked = Boolean(play.prologue && !play.prologue.done && (play.prologue.worked || []).includes(key));
-          const guide = hasGuide(key) ? h("button.job-guide.small.secondary", { type: "button", onclick: () => openGameGuide(key, { track }) }, icon("scroll", { size: 14 }), " Guide") : null;
+          const guide = hasGuide(key) ? h("button.job-guide.arc-guide", { type: "button", onclick: () => openGameGuide(key, { track }) }, icon("scroll", { size: 14 }), " Guide") : null;
+          const pay = key === "cashier" ? `${cashierRate("easy", "chill")} to ${cashierRate("hard", "speed")} coins a sale` : `${money(j.pay.min + xp)} to ${money(j.pay.max + xp)} a shift`;
           const card = h(
-            "button.job-card",
+            "button.job-card.arc-cab-front",
             { type: "button", disabled: worked, onclick: () => start(key) },
-            h("span.job-icon", { "aria-hidden": "true" }, job.mark ? icon(job.mark, { size: 30 }) : job.icon),
-            h("strong", job.title),
-            h("small", job.job),
-            h("span", job.skill),
-            h("span.job-pay", key === "cashier" ? `Pays ${j.cashier.rates.easy[0]} to ${j.cashier.rates.hard[1]} coins for each right sale` : `Pays ${money(j.pay.min + xp)} to ${money(j.pay.max + xp)}`),
-            worked ? h("small.good-text", "Worked. Done for now.") : null,
-            stats && !worked ? h("small", `${stats.shifts} shift${stats.shifts === 1 ? "" : "s"} worked. Best: ${stats.best}.`) : worked ? null : h("small", "New job!"),
-            xp ? h("small.good-text", `+${money(xp)} for experience`) : null
+            h("span.arc-cab-marquee", h("span.arc-cab-icon", { "aria-hidden": "true" }, job.mark ? icon(job.mark, { size: 26 }) : job.icon), h("strong", job.title)),
+            h("span.arc-cab-screen", { html: cabinetArt(key) }, worked ? h("span.arc-stamp.done", "WORKED") : !stats ? h("span.arc-stamp", "NEW") : null),
+            h("span.arc-cab-info", h("small.arc-job", job.job), h("span.arc-skill", job.skill), h("span.arc-pay", icon("coins", { size: 16 }), ` ${pay}`), xp ? h("small.arc-bonus", `+${money(xp)} for experience`) : null, stats && !worked ? h("small.arc-stats", `${stats.shifts} shift${stats.shifts === 1 ? "" : "s"} worked. Best: ${stats.best}.`) : null),
+            h("span.arc-play", worked ? "Done for now" : "PLAY")
           );
-          return h("div.job-slot", card, guide);
+          return h("div.job-slot.arc-cab", { class: `cab-${key}` }, card, guide);
         })
       ),
       lockedJobs(),
-      h("label.untimed", timer, " No timer (fewer items, same pay for each right answer)")
+      h("label.untimed.arc-untimed", timer, " No timer (fewer items, same pay for each right answer)")
     );
   }
 
@@ -105,7 +104,25 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     };
     const opts = { seed, timed, onDone: done, track };
     running = key === "checks" ? checkWriter({ ...opts, life: run.life, creature: game.save.creature, payFor: (right) => jobPay(play, "checks", { right }) }) : GAMES[key](opts);
-    fill(el, h("h3", icon(JOBS[key].mark || "guild", { size: 24 }), ` ${JOBS[key].title} `, hasGuide(key) ? h("button.small.secondary.job-guide", { type: "button", onclick: () => openGameGuide(key, { track }) }, "Guide") : null), running);
+    const leave = h("span.job-leave");
+    const askLeave = () =>
+      fill(
+        leave,
+        h("span.job-leave-ask", { role: "alertdialog", "aria-label": "Leave this shift?" }, "Leave this shift? You won't be paid for it. ", h("button.small", { type: "button", onclick: backToGames }, "Leave"), h("button.small.secondary", { type: "button", onclick: showLeave }, "Keep playing"))
+      );
+    const showLeave = () => fill(leave, h("button.small.secondary.job-back", { type: "button", onclick: askLeave }, icon("back", { size: 16 }), " Back to the games"));
+    const backToGames = () => {
+      track("minigameLeave", { game: key });
+      running?.stop?.();
+      running = null;
+      el.closest(".panel")?.classList.remove("playing");
+      board();
+    };
+    showLeave();
+    // Every game plays inside its own cabinet: a marquee with its name, and its own colors and sounds.
+    setArcadeVoice(key);
+    fill(el, h("div.arc-frame", { class: `skin-${key}` }, h("div.arc-marquee", leave, h("h3.arc-title", icon(JOBS[key].mark || "guild", { size: 28 }), ` ${JOBS[key].title}`), hasGuide(key) ? h("button.arc-guide", { type: "button", onclick: () => openGameGuide(key, { track }) }, icon("scroll", { size: 14 }), " Guide") : null), running));
+    watchJuice(el.querySelector(".arc-frame"));
     // A minigame can say where the keyboard starts (Cashier Rush: Give change).
     (el.querySelector("[data-autofocus]") || el.querySelector("button"))?.focus();
   }
@@ -128,12 +145,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
       logShift = null;
       track("minigame", { game: key, right: result.right, wrong: result.wrong, total: result.total, pay, seconds: result.seconds, timed, reaction, depositOnly: result.depositOnly ?? null });
     };
-    const collect = h(
-      "button.big.bst-seal-btn",
-      { type: "button", "data-sound": "none" },
-      h("span.bst-seal-wax", { html: sealSvg({ seed: 47, size: 80, letter: "G" }) }),
-      h("span.bst-seal-text", `Collect ${money(pay)}`)
-    );
+    const collect = h("button.big.arc-collect", { type: "button", "data-sound": "none" }, icon("coins", { size: 26 }), ` Collect ${money(pay)}`);
     collect.addEventListener("click", async () => {
       if (collect.disabled) return;
       collect.disabled = true;
@@ -162,18 +174,24 @@ export function jobBoard({ game, run, track, save, onCollected }) {
         )
       )
     );
+    // The scoreboard: the same cabinet the game was in, with a big payout.
+    const total = result.right + result.wrong;
+    const accuracy = total ? Math.round((result.right / total) * 100) : 0;
     fill(
       el,
-      h("h3", icon(JOBS[key].mark || "guild", { size: 24 }), " Shift over!"),
-      hasGuide(key) ? h("p.center", h("button.small.secondary", { type: "button", onclick: () => openGameGuide(key, { track, tab: "irl" }) }, icon("scroll", { size: 14 }), " Read the guide")) : null,
-      h("div.big-number", money(pay)),
-      h("p.center", `${result.right} right${result.wrong ? `, ${result.wrong} missed` : ""}.`),
-      result.depositOnly ? h("p.callout.good", "Smart: \"For deposit only\" means nobody else can cash your check.") : null,
-      result.misses.length
-        ? h("details.math", { open: result.misses.length <= 4 }, h("summary", `What you missed (${result.misses.length})`), h("ul", result.misses.slice(0, 8).map((m) => h("li", m))))
-        : h("p.callout.good", "Perfect shift!"),
-      reacts,
-      h("div.row", collect)
+      h(
+        "div.arc-frame.arc-results",
+        { class: `skin-${key}` },
+        h("div.arc-marquee", h("h3.arc-title", icon(JOBS[key].mark || "guild", { size: 28 }), ` ${JOBS[key].title}: shift over!`), hasGuide(key) ? h("button.arc-guide", { type: "button", onclick: () => openGameGuide(key, { track, tab: "irl" }) }, icon("scroll", { size: 14 }), " Read the guide") : null),
+        h(
+          "div.arc-score",
+          h("div.arc-payout", h("small", "You earned"), h("strong.big-number", money(pay))),
+          h("div.arc-tally", h("div.arc-stat", h("strong", String(result.right)), h("small", "Right")), h("div.arc-stat", h("strong", String(result.wrong)), h("small", "Missed")), h("div.arc-stat", h("strong", `${accuracy}%`), h("small", "Accuracy")))
+        ),
+        result.depositOnly ? h("p.arc-note", "Smart: \"For deposit only\" means nobody else can cash your check.") : null,
+        result.misses.length ? h("details.math.arc-misses", { open: result.misses.length <= 4 }, h("summary", `What you missed (${result.misses.length})`), h("ul", result.misses.slice(0, 8).map((m) => h("li", m)))) : h("p.arc-note.arc-perfect", "Perfect shift!"),
+        h("div.arc-after", reacts, collect)
+      )
     );
     collect.focus();
   }

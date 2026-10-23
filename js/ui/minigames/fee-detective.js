@@ -5,7 +5,7 @@
 // twice. Every line has words as well as marks (never color alone).
 import { h, fill } from "../dom.js";
 import { icon } from "../icons.js";
-import { sfx } from "../sound.js";
+import { sfx } from "../arcade-sound.js";
 import { createRng } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { FEE_KINDS, FEE_DECOYS, MONTH_NAMES } from "../../data/minigames.js";

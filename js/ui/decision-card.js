@@ -4,7 +4,7 @@ import { h, add, fill } from "./dom.js";
 import { burstFrom } from "./motion/particles.js";
 import { payWith } from "./pay-with.js";
 import { sfx } from "./sound.js";
-import { FACTOR_LABELS } from "../engine/index.js";
+import { FACTOR_LABELS, compareChoices, allSame, startRow, dollars } from "../engine/index.js";
 import { GROUP_LABELS } from "../data/scenarios.js";
 import { icon } from "./icons.js";
 import { sealSvg } from "./bestiary-art.js";
@@ -30,6 +30,12 @@ const REACTIONS = [
 export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue, track, factorCheck, payAllowed = null }) {
   const shownAt = Date.now();
   const body = h("div.dc-body");
+  // The coin balance is the first thing to weigh, so it sits big in the card's corner
+  // and updates after the choice (teacher request 2026-10-23).
+  const balance = h("div.dc-balance", { role: "status", "aria-label": `Coins in checking: ${dollars(life.checking)}` });
+  const paintBalance = (amount, note = "") => balance.replaceChildren(icon("coins", { size: 30 }), h("span.dc-balance-text", h("small", note || "Coins in checking"), h("strong", dollars(amount))));
+  paintBalance(life.checking);
+  let lastMethod = null;
   const card = h(
     "article.decision-card",
     { class: kind === "life" ? "life-card" : "", "aria-labelledby": `dc-${def.id}` },
@@ -40,12 +46,22 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         "div",
         h("h2", { id: `dc-${def.id}` }, def.title),
         h("p.dc-kind", kind === "life" ? "Life card" : `Decision card · ${GROUP_LABELS[def.group]}`)
-      )
+      ),
+      balance
     ),
     h("div.dc-text", [].concat(def.text(life, ctx)).map((t) => h("p", t))),
     body
   );
   track(kind === "life" ? "lifeCardShown" : "cardShown", { id: def.id, choices: choices.length });
+
+  // "If you pay with coins, you'd have $X left." Shown right on the choice so the
+  // balance is part of weighing it.
+  function afterLine(c) {
+    const left = life.checking - c.cost.amount;
+    return left >= 0
+      ? h("small.dc-after", icon("coins", { size: 14 }), ` Pay with coins: you'd have ${dollars(left)} left`)
+      : h("small.dc-after.short", icon("alert", { size: 14 }), ` You have ${dollars(life.checking)} in checking, ${dollars(-left)} short`);
+  }
 
   // Tapping a choice only selects it. "Lock in my choice" makes it count
   // (bug fix 2026-10-22: a student scrolling on a touch screen picked an
@@ -75,6 +91,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         h("strong", c.label),
         c.detail ? h("small", c.detail) : null,
         c.cost ? h("small", "Choose how to pay next") : null,
+        c.cost ? afterLine(c) : null,
         c.disabled ? h("small.error-text", c.disabled) : null
       )
     );
@@ -99,6 +116,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
   }
 
   async function run(c, method) {
+    lastMethod = method;
     const r = await choose(c.key, method);
     const seconds = Math.round((Date.now() - shownAt) / 1000);
     track(kind === "life" ? "lifeCardChoice" : "cardChoice", { id: def.id, choice: c.key, method: method || "", ok: r.ok, seconds, quality: c.quality || "" });
@@ -121,6 +139,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
   }
 
   function fillOutcome(c, r) {
+    if (r.life) paintBalance(r.life.checking, "Coins in checking now");
     let reaction = "";
     let confusing = false;
     const factor = c.factor && !r.denied ? h("p.factor-chip", { class: c.factor.dir }, `${FACTOR_ICONS[c.factor.key]} ${FACTOR_LABELS[c.factor.key]} ${c.factor.dir === "up" ? "▲ goes up" : "▼ goes down"}`) : null;
@@ -174,6 +193,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         factor
       ),
       c.math ? h("details.math", { open: true }, h("summary", "Show the math"), h("p", c.math)) : null,
+      c.quiz ? null : tradeoffs(c),
       !r.denied && !c.quiz && factorCheck ? quickCheck(factorCheck(c)) : null,
       reactRow,
       h("div.row", cont)
@@ -181,8 +201,85 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
     cont.focus();
   }
 
+  // After locking in: every choice side by side, from the same starting point.
+  function tradeoffs(chosen) {
+    let rows;
+    try {
+      rows = compareChoices(life, choices, { chosenKey: chosen.key, chosenMethod: lastMethod, allowed: payAllowed });
+    } catch {
+      return null;
+    }
+    // One choice has nothing to sit beside, so it sits beside where you started.
+    if (rows.filter((r) => r.ok).length < 2) rows = [startRow(life), ...rows];
+    if (rows.filter((r) => r.ok && !r.start).every((r) => Object.values(r.delta).every((d) => !d) && !r.effect)) return null;
+    return tradeoffPanel(rows, life);
+  }
+
   showChoices();
   return card;
+}
+
+const money0 = (c) => dollars(c);
+const signed = (d) => `${d > 0 ? "+" : d < 0 ? "−" : ""}${dollars(Math.abs(d))}`;
+
+// Columns of bars, one per choice. Words say better or worse, never color alone.
+function tradeoffPanel(rows, life) {
+  const ok = rows.filter((r) => r.ok);
+  const hasCards = ok.some((r) => r.metrics.util != null);
+  const hasScore = ok.some((r) => r.metrics.score != null);
+  const best = (key, low = false) => {
+    const vals = ok.map((r) => r.metrics[key]).filter((v) => v != null);
+    if (new Set(vals).size < 2) return null;
+    return low ? Math.min(...vals) : Math.max(...vals);
+  };
+  const hasSavings = ok.some((r) => r.delta.savings);
+  const BEST = { checking: best("checking"), savings: best("savings"), owed: best("owed", true), util: best("util", true), score: best("score") };
+  const max = (key) => Math.max(1, ...ok.map((r) => Math.max(0, r.metrics[key] ?? 0)));
+  const MAX = { checking: max("checking"), savings: max("savings"), owed: max("owed") };
+  const row = (r, key, label, fmt, { low = false, pct = false } = {}) => {
+    const v = r.metrics[key];
+    if (v == null) return null;
+    const width = pct ? Math.min(100, Math.round(v * 100)) : Math.round((Math.max(0, v) / MAX[key]) * 100);
+    const d = r.delta[key];
+    const isBest = BEST[key] != null && v === BEST[key];
+    const dir = !d ? "same" : (d > 0) !== low ? "better" : "worse";
+    return h(
+      "div.trade-metric",
+      h("small", label),
+      h("strong", fmt(v)),
+      h("div.trade-bar", { "aria-hidden": "true" }, h("span", { class: dir, style: { width: `${Math.max(width, v > 0 ? 3 : 0)}%` } })),
+      h("small.trade-delta", { class: dir }, !d ? "No change" : `${key === "checking" || key === "owed" || key === "savings" ? signed(d) : key === "util" ? `${d > 0 ? "+" : "−"}${Math.abs(Math.round(d * 100))} points` : `${d > 0 ? "+" : "−"}${Math.abs(d)} points`} (${dir})`),
+      isBest ? h("small.trade-best", icon("star", { size: 12 }), " Best of these") : null
+    );
+  };
+  return h(
+    "section.dc-tradeoffs",
+    h("h3", icon("chart", { size: 22 }), " Side by side: what each choice would do"),
+    h("p.muted.tight", "Every choice starts from the same place. Here's where each one leaves your numbers."),
+    h(
+      "div.trade-grid",
+      { style: { "--cols": rows.length } },
+      rows.map((r, i) =>
+        h(
+          "article.trade-col",
+          { class: `col-${(i % 4) + 1} ${r.chosen ? "chosen" : ""} ${r.start ? "start" : ""} ${r.ok ? "" : "off"}` },
+          h("header", r.chosen ? h("span.trade-tag", icon("check", { size: 14 }), " You picked this") : null, h("strong", r.label)),
+          r.ok
+            ? [
+                row(r, "checking", "Coins in checking", money0),
+                hasSavings ? row(r, "savings", "Coins in savings", money0) : null,
+                row(r, "owed", "What you owe", money0, { low: true }),
+                hasCards ? row(r, "util", "Credit used", (v) => `${Math.round(v * 100)}%`, { low: true, pct: true }) : null,
+                hasScore ? row(r, "score", "Credit score", (v) => String(v)) : null,
+                r.effect?.shiftsCut ? h("p.trade-effect", icon("calendar", { size: 14 }), ` ${r.effect.shiftsCut} fewer shift${r.effect.shiftsCut === 1 ? "" : "s"} this month`) : null,
+                r.effect?.shiftBonus ? h("p.trade-effect", icon("coins", { size: 14 }), ` ${dollars(r.effect.shiftBonus)} more pay on every shift`) : null,
+                r.denied ? h("p.trade-effect", icon("alert", { size: 14 }), " The lender would say no.") : null
+              ]
+            : h("p.trade-effect", icon("lock", { size: 14 }), ` ${r.reason || "Not possible right now."}`)
+        )
+      )
+    )
+  );
 }
 
 // Optional one-question Factor Check after a decision (SPEC §11).

@@ -74,9 +74,10 @@ export const CONFIG = {
       ledger: { seconds: 45, untimedItems: 12, perRight: 8, perWrong: 4, lockMs: 300 },
       // Cashier Rush (teacher request 2026-10-23): pick a difficulty and a round.
       // Chill Round serves untimedCustomers with no clock. Speed Round serves as
-      // many as possible in seconds. rates are coins for each right sale, as
-      // [Chill, Speed]. perRight is only for old saves and tests.
-      cashier: { seconds: 60, untimedCustomers: 4, perRight: 14, nextCustomerMs: 900, rates: { easy: [1, 2], medium: [5, 10], hard: [10, 20] } },
+      // many as possible in seconds. perRight is only for old saves and tests.
+      // rvu is the relative value unit in coins. Easy pays 1 RVU a sale, Medium 5 and
+      // Hard 15 (rvuByLevel). Speed Round doubles it (speedMultiplier) and lasts 90 seconds.
+      cashier: { seconds: 90, untimedCustomers: 4, perRight: 14, nextCustomerMs: 900, rvu: 1, rvuByLevel: { easy: 1, medium: 5, hard: 15 }, speedMultiplier: 2 },
       checks: { perField: 13 },
       // The five Chapter 1 jobs (teacher request 2026-10-22). perRight is
       // dollars per right answer on top of the base pay. A perfect shift

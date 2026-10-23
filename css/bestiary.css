@@ -2805,59 +2805,7 @@ main#app.app:has(.bestiary) {
 .bst-guild .panel.guild > .muted { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-plum); }
 
 /* Shift tickets. */
-.bst-guild .job-cards { display: flex; flex-wrap: wrap; gap: var(--b-s5); margin-top: var(--b-s4); }
-.bst-guild .job-card {
-  position: relative;
-  flex: 0 1 300px;
-  display: grid;
-  justify-items: start;
-  gap: 4px;
-  padding: var(--b-s4) var(--b-s4) 64px;
-  text-align: left;
-  font-family: var(--b-body);
-  font-weight: 400;
-  color: var(--b-ink);
-  background: var(--b-grain), var(--b-paper-insert);
-  border: 0;
-  border-radius: var(--b-r-sheet);
-  box-shadow: var(--b-shadow-card);
-  transition: transform var(--b-quick) var(--ease-bouncy), box-shadow var(--b-quick) ease-out;
-}
-.bst-guild .job-card:nth-child(odd) { transform: rotate(-1.2deg); }
-.bst-guild .job-card:nth-child(even) { transform: rotate(1deg); }
-.bst-guild .job-card:hover { transform: rotate(0deg) translateY(-4px); box-shadow: var(--b-shadow-lift); }
-/* The tear-off stub: a dotted fold and the pay on it. */
-.bst-guild .job-card::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 52px;
-  border-top: 2px dotted var(--b-rule);
-}
-.bst-guild .job-icon {
-  display: grid;
-  place-items: center;
-  width: 54px;
-  height: 54px;
-  margin-bottom: var(--b-s1);
-  font-size: var(--b-fs-lead);
-  color: var(--b-ink);
-  border: 2px solid var(--b-ink);
-  border-radius: var(--b-r-blob);
-}
-.bst-guild .job-card strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); line-height: 1.05; }
-.bst-guild .job-card small { color: var(--b-ink-soft); font-size: var(--b-small); }
-.bst-guild .job-card .good-text { color: var(--b-good-ink); font-weight: 700; }
-.bst-guild .job-pay {
-  position: absolute;
-  left: var(--b-s4);
-  right: var(--b-s4);
-  bottom: 14px;
-  font-family: var(--b-display);
-  font-size: var(--b-fs-title);
-  color: var(--b-rust-ink);
-}
+/* The Arcade cabinets (css/arcade.css) replaced the job tickets that were here. */
 .bst-guild .jobs-later { list-style: none; display: flex; flex-wrap: wrap; gap: var(--b-s3); margin: var(--b-s4) 0 0; padding: 0; }
 .bst-guild .jobs-later li {
   display: grid;
@@ -3832,9 +3780,6 @@ main#app.app:has(.bestiary) {
    =========================================================================== */
 .bst-guild :is(.overdraft, .register, .checkhunt, .drawer, .unitprice) { touch-action: manipulation; }
 .bst-guild :is(.overdraft, .register, .checkhunt, .drawer, .unitprice) button { min-height: 48px; }
-.bst-guild :is(.overdraft, .register, .checkhunt, .drawer, .unitprice) .row button:not(.big):not(.kp-key):not(.kp-check) {
-  font-family: var(--b-body); font-weight: 700; color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card);
-}
 
 /* Keypad (Register Balancer, Count the Drawer) */
 .bst-guild .keypad { display: grid; gap: var(--b-s2); width: 260px; padding: var(--b-s3); color: var(--b-ink); background: var(--b-grain), var(--b-paper); border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-lift); }
@@ -5901,9 +5846,6 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
    bottom and centered with Undo and Clear to its left, and the money amounts
    large and color coded (always with words too). Fits one screen.
    =========================================================================== */
-.bst-guild .cashier { --cash-price: var(--b-rust-ink); --cash-paid: var(--b-good-ink); --cash-change: var(--b-plum); }
-:root[data-appearance="dark"] .bst-guild .cashier { --cash-paid: var(--b-foxfire); }
-@media (prefers-color-scheme: dark) { :root:not([data-appearance="light"]) .bst-guild .cashier { --cash-paid: var(--b-foxfire); } }
 .bst-guild .cashier .cash-counter { grid-template-columns: minmax(300px, 1fr) minmax(420px, 1.3fr) auto; gap: var(--b-s4); align-items: stretch; }
 .bst-guild .cash-left { display: grid; gap: var(--b-s3); align-content: start; min-width: 0; }
 .bst-guild .cashier .cash-ticket { display: grid; gap: var(--b-s2); padding: var(--b-s3); }
@@ -5992,3 +5934,227 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .bst-guild .cashier .cash-tray { min-height: 196px; }
 .bst-guild .cashier > .mg-flash { min-height: 2.6em; margin: var(--b-s1) 0 0; text-align: center; font-size: var(--b-fs-ui); }
 .bst-guild .cash-choice[aria-pressed="true"] { background: var(--b-grain), var(--b-paper-insert); border: 4px solid var(--b-plum); }
+
+/* ===========================================================================
+   Round 3 (teacher request 2026-10-23): stat pop-ups, settings pop-up in the
+   bestiary look, the Bugs? tag.
+   =========================================================================== */
+.bst-topbar .status-chips li { padding: 0; border: 0; }
+.bst-topbar .stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font: inherit;
+  color: var(--b-on-bar);
+  background: none;
+  border: 1.5px solid var(--b-on-bar-soft);
+  border-radius: var(--b-r-tag);
+  cursor: help;
+}
+.bst-topbar .stat-chip:hover, .bst-topbar .stat-chip:focus-visible { background: color-mix(in srgb, var(--b-on-bar) 12%, transparent); border-style: dashed; }
+.bst-topbar .stat-chip .ico-wrap { color: var(--b-bar-accent); }
+.bst-topbar .stat-chip small { color: var(--b-on-bar-soft); font-size: var(--b-fs-tiny); }
+.bst-topbar .stat-chip strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-ui); }
+.stat-pop { position: fixed; inset: auto; margin: 0; width: min(340px, calc(100vw - 16px)); padding: var(--b-s3) var(--b-s4); font-family: var(--b-body); color: var(--b-ink); background: var(--b-fibers), var(--b-paper); border: 2px solid var(--b-plum); border-radius: var(--b-r-paper); box-shadow: var(--b-shadow-lift); }
+.stat-pop p { margin: var(--b-s2) 0 0; font-size: var(--b-fs-ui); line-height: 1.35; }
+.stat-pop-head { display: flex; align-items: center; justify-content: space-between; gap: var(--b-s3); }
+.stat-pop-head h2 { display: flex; align-items: center; gap: var(--b-s2); margin: 0; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.stat-pop-value { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-plum); }
+
+.settings-dialog.bst-scope { width: min(620px, calc(100% - 32px)); max-height: calc(100vh - 48px); padding: var(--b-s4) var(--b-s5); font-family: var(--b-body); color: var(--b-ink); background: var(--b-fibers), var(--b-paper); border: 2px solid var(--b-paper-edge); border-radius: var(--b-r-paper); box-shadow: var(--b-shadow-lift); }
+.settings-dialog.bst-scope::backdrop { background: color-mix(in srgb, var(--b-shadow-ink) 65%, transparent); }
+.settings-dialog.bst-scope h2 { font-family: var(--b-display); font-weight: 400; color: var(--b-ink); }
+.settings-dialog.bst-scope h3 { display: flex; align-items: center; gap: var(--b-s2); margin: var(--b-s4) 0 var(--b-s2); font-family: var(--b-display); font-weight: 400; color: var(--b-ink); }
+.settings-dialog.bst-scope .muted, .settings-dialog.bst-scope .note { color: var(--b-ink-soft); }
+.settings-dialog.bst-scope .chip { color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-paper-edge); }
+.settings-dialog.bst-scope .chip[aria-pressed="true"] { color: var(--b-on-rust); background: var(--b-rust); border-color: var(--b-seal-deep); }
+.settings-dialog.bst-scope .chip-label { color: var(--b-ink); font-weight: 700; }
+.settings-dialog.bst-scope .settings-done { margin-top: var(--b-s4); }
+.settings-dialog.bst-scope a, .settings-dialog.bst-scope button.link { color: var(--b-plum); }
+.bst-bug-button { padding: 6px 12px; }
+
+/* ===========================================================================
+   Contrast pass (teacher request 2026-10-23, found with e2e/contrast.js).
+   Inside the bars the ground tokens point at the bar's. These selectors are
+   as strong as the dark token blocks, so they win in dark mode too.
+   =========================================================================== */
+:root .bst-topbar.bst-scope, :root .bst-bottombar.bst-scope {
+  --b-on-ground: var(--b-on-bar);
+  --b-on-ground-soft: var(--b-on-bar-soft);
+  --b-gold: var(--b-bar-accent);
+  --b-foxfire: var(--b-bar-hot);
+  --b-ground-deep: var(--b-bar);
+}
+.bst-home .decorate-btn { color: var(--b-on-ground); border-color: var(--b-on-ground-soft); background: none; }
+.bst-trophies .tr-rows .lb-place.tr-ribbon, .bst-shop .ribbon.gold { color: var(--b-money-ink); }
+.bst-trophies .tr-rows .lb-xp { color: var(--b-ink); }
+.home-stage.editing .room-badge { display: none; }
+.bst-cottage .cottage-room-body .stage-num { color: var(--b-on-plum); }
+.bst-cottage .cottage-room-body .stage.locked { opacity: 1; background: var(--b-paper-2); border-style: dashed; }
+.bst-cottage .cottage-room-body .stage.locked :is(.dream-goals li, .muted, small) { color: var(--b-ink-soft); }
+.bst-cottage .cottage-room.tone-locked, .bst-cottage .rooms-main .cottage-room.tone-locked { opacity: 1; }
+.bst-cottage .cottage-room-body :is(.stage-text, .dream-goals li) { color: var(--b-ink-soft); }
+.bestiary .loan-picker .chip:disabled { opacity: 1; color: var(--b-ink-soft); border-style: dashed; background: var(--b-paper-2); text-decoration: line-through; }
+.settings-dialog.bst-scope .chip[aria-pressed="true"] { background: var(--b-seal-deep); color: #fff; }
+.settings-dialog.bst-scope button.secondary { color: var(--b-plum); background: none; border: 1.5px solid var(--b-plum); }
+.settings-dialog.bst-scope button:not(.secondary):not(.link):not(.chip) { color: var(--b-on-rust); background: var(--b-rust); }
+
+/* Cashier Rush round three (teacher request 2026-10-23): the buttons sit between the
+   drawer and the tray, the drawer shows only the money a level needs, and the
+   Speed Round says "double coins" loudly. */
+.bst-guild .cashier .cash-actions { position: static; padding: 0; gap: var(--b-s2); }
+.bst-guild .cashier .cash-actions .big { min-width: 220px; min-height: 60px; }
+.bst-guild .cashier .cash-actions button.secondary { min-width: 88px; min-height: 60px; }
+.bst-guild .cashier .drawer-row.coins { grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); }
+.bst-guild .cashier .drawer-row.bills { grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); }
+.bst-guild .cashier .cash-left .mg-flash { margin: 0; min-height: 3.2em; text-align: left; }
+.bst-guild .cashier .cash-tray { min-height: 190px; }
+.cash-badge { display: inline-block; margin-left: var(--b-s2); padding: 1px 10px; font-family: var(--b-body); font-weight: 800; font-size: var(--b-fs-tiny); letter-spacing: 0.06em; color: var(--b-money-ink); background: var(--b-gold); border: 2px solid var(--b-money-ink); border-radius: var(--b-r-round); vertical-align: middle; }
+.cash-badge.cash-double { margin-left: var(--b-s3); animation: cash-pulse 1.6s ease-in-out infinite; }
+@keyframes cash-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+:root[data-motion="calm"] .cash-badge.cash-double { animation: none; }
+@media (prefers-reduced-motion: reduce) { .cash-badge.cash-double { animation: none; } }
+.bst-guild .cash-choice[aria-pressed="true"] strong .cash-badge::after { content: none; }
+:root .bst-home button.decorate-btn.secondary { color: var(--b-on-ground); border-color: var(--b-on-ground-soft); }
+.settings-dialog.bst-scope button:not(.secondary):not(.link):not(.chip) { background: var(--b-seal-deep); }
+.bst-academy .xp-bar-wrap small, .bst-trophies .xp-bar-wrap small, .xp-bar-wrap small { color: var(--b-ink-soft); }
+
+/* ===========================================================================
+   Compact place headers, round two (teacher request 2026-10-23): one row.
+   The back button, the colored place medallion, the title and the subtitle
+   share a line, so there's no empty corner and the page starts high. Every
+   place has its own hue (--page-hue), used by the medallion and an underline.
+   =========================================================================== */
+.bst-garage { --page-hue: var(--hue-garage); }
+.bst-shop { --page-hue: var(--hue-market); }
+.bst-guild { --page-hue: var(--hue-arcade); }
+.bst-academy { --page-hue: var(--hue-academy); }
+.bst-trophies { --page-hue: var(--hue-trophy); }
+.bst-plaza { --page-hue: var(--hue-plaza); }
+.bst-alley { --page-hue: var(--hue-alley); }
+.bst-cottage { --page-hue: var(--hue-cottage); }
+.bst-daily { --page-hue: var(--hue-daily); }
+.bst-month { --page-hue: var(--hue-townhall); }
+.bst-vault { --page-hue: var(--hue-vault); }
+.bst-records { --page-hue: var(--hue-records); }
+.bst-mapscreen { --page-hue: var(--hue-map); }
+.bst-settings { --page-hue: var(--hue-settings); }
+.bst-home { --page-hue: var(--hue-home); }
+.bestiary .place-head-main { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-s2) var(--b-s4); }
+.bestiary .place-head-main .place-sub { flex: 1 1 280px; margin: 0; max-width: none; text-align: right; color: var(--b-ink-soft); }
+.bestiary .place-title { gap: var(--b-s3); }
+.bestiary .place-title h1 { font-size: clamp(1.9rem, 2.4vw, 2.5rem); }
+.bestiary .place-title .place-kicker { margin-top: 0; }
+.bestiary .place-icon { width: 60px; height: 60px; color: #fff; background: var(--page-hue, var(--b-ink)); border: 3px solid var(--b-paper); box-shadow: 0 0 0 2px var(--page-hue, var(--b-ink)); }
+.bestiary .place-header { padding-bottom: var(--b-s2); border-bottom: 4px solid var(--page-hue, var(--b-rule)); }
+.bestiary .back-home { padding: 4px 12px 4px 8px; }
+.bestiary .place-header.has-aside { grid-template-columns: minmax(0, 1fr) auto; }
+.bst-alley .place-sub, .bst-settings .place-sub { color: var(--b-on-ground-soft); }
+.bst-alley .place-icon, .bst-settings .place-icon { color: #fff; background: var(--page-hue); border-color: var(--b-ground); box-shadow: 0 0 0 2px var(--page-hue); }
+.bst-alley .place-header, .bst-settings .place-header { border-bottom-color: var(--page-hue); }
+
+/* Less empty page around the content (teacher request 2026-10-23). */
+.bestiary { padding-top: var(--b-s3); padding-bottom: 110px; }
+.bst-hub .panel.hub, .bst-month .panel.month, .bst-guild .panel.guild, .bst-shop .panel.shop, .bst-academy .panel.academy, .bst-cottage .panel.cottage, .bst-trophies .panel.trophies, .bst-plaza .panel.friends, .bst-garage .panel.garage, .bst-daily .panel.daily {
+  margin-top: var(--b-s2);
+  padding: var(--b-s3) var(--b-s5) var(--b-s4);
+}
+.bst-shop .panel.shop { padding-top: var(--b-s5); }
+
+/* ===========================================================================
+   Things To Do, round two: four colored groups, every place its own hue and a
+   large medallion icon.
+   =========================================================================== */
+.things-dialog { width: min(1180px, calc(100% - 24px)); max-height: calc(100vh - 32px); overflow: auto; padding: var(--b-s3) var(--b-s4) var(--b-s4); }
+.things-head { display: flex; align-items: center; gap: var(--b-s4); flex-wrap: wrap; }
+.things-head h2 { font-size: var(--b-fs-lead); }
+.things-head .muted { flex: 1; margin: 0; color: var(--b-ink-soft); }
+.things-columns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--b-s4); margin-top: var(--b-s3); align-items: start; }
+.thing-group h3 { margin: 0 0 var(--b-s2); padding-bottom: var(--b-s1); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-ink); border-bottom: 4px solid var(--group-hue); }
+.thing-group.group-1 { --group-hue: var(--hue-vault); }
+.thing-group.group-2 { --group-hue: var(--hue-arcade); }
+.thing-group.group-3 { --group-hue: var(--hue-market); }
+.thing-group.group-4 { --group-hue: var(--hue-plaza); }
+.thing-list { display: grid; gap: var(--b-s2); }
+.things-dialog .thing-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--b-s3);
+  min-height: 104px;
+  padding: var(--b-s2) var(--b-s3) var(--b-s2) var(--b-s2);
+  text-align: left;
+  color: var(--b-ink);
+  background: color-mix(in srgb, var(--tile-hue) 18%, var(--b-paper-insert));
+  border: 2px solid color-mix(in srgb, var(--tile-hue) 70%, var(--b-paper));
+  border-left-width: 8px;
+  border-radius: var(--b-r-insert);
+  box-shadow: var(--b-shadow-card);
+}
+.things-dialog .thing-tile:hover, .things-dialog .thing-tile:focus-visible { transform: translateY(-2px) rotate(-0.4deg); box-shadow: var(--b-shadow-lift); border-color: var(--tile-hue); }
+.thing-medal { display: grid; place-items: center; flex: none; width: 72px; height: 72px; color: #fff; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tile-hue) 70%, #fff), var(--tile-hue) 62%); border: 3px solid var(--b-paper); border-radius: 50%; box-shadow: 0 0 0 2px var(--tile-hue), 0 4px 6px -2px color-mix(in srgb, var(--b-shadow-ink) 55%, transparent); }
+.thing-words { display: grid; gap: 1px; min-width: 0; }
+.things-dialog .thing-tile strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); line-height: 1.05; }
+.things-dialog .thing-tile small { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); line-height: 1.15; }
+.things-dialog .thing-status { margin-top: 2px; font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+.things-dialog .thing-status.action { color: var(--b-rust-ink); font-weight: 700; }
+.things-dialog .thing-tile.needs::after { content: "!"; position: absolute; top: -8px; right: -8px; display: grid; place-items: center; width: 24px; height: 24px; font-weight: 800; color: #fff; background: var(--b-seal-deep); border: 2px solid var(--b-paper); border-radius: 50%; }
+.things-dialog .thing-tile.locked { background: var(--b-paper-2); border-style: dashed; border-color: var(--b-rule); }
+.things-dialog .thing-tile.locked .thing-medal { background: var(--b-ink-soft); box-shadow: 0 0 0 2px var(--b-ink-soft); }
+@media (max-width: 1050px) { .things-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .things-dialog .thing-tile:hover { transform: none; } }
+
+/* ===========================================================================
+   Life cards (teacher request 2026-10-23): the coin balance is big in the corner,
+   each paid choice says what it leaves, and after locking in, every choice is
+   shown side by side.
+   =========================================================================== */
+.decision-card .dc-head { align-items: center; }
+.dc-balance { display: flex; align-items: center; gap: var(--b-s2); margin-left: auto; padding: var(--b-s2) var(--b-s4) var(--b-s2) var(--b-s3); color: var(--b-money-ink); background: linear-gradient(180deg, color-mix(in srgb, var(--b-gold) 55%, #fff), var(--b-gold)); border: 3px solid var(--b-money-ink); border-radius: var(--b-r-tag); box-shadow: 0 3px 0 color-mix(in srgb, var(--b-shadow-ink) 45%, transparent); }
+.dc-balance .ico-wrap { color: var(--b-money-ink); }
+.dc-balance-text { display: grid; line-height: 1; }
+.dc-balance small { font-family: var(--b-body); font-weight: 700; font-size: var(--b-fs-tiny); }
+.dc-balance strong { font-family: var(--b-display); font-weight: 400; font-size: clamp(1.9rem, 2.6vw, 2.5rem); font-variant-numeric: lining-nums tabular-nums; }
+.dc-choice .dc-after { display: flex; align-items: center; gap: 4px; margin-top: 4px; font-weight: 700; color: var(--b-plum); }
+.dc-choice .dc-after.short { color: var(--b-rust-ink); }
+.dc-tradeoffs { margin: var(--b-s4) 0 var(--b-s2); padding: var(--b-s3); background: var(--b-paper-2); border: 2px solid var(--b-paper-edge); border-radius: var(--b-r-paper); }
+.dc-tradeoffs h3 { display: flex; align-items: center; gap: var(--b-s2); margin: 0; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-ink); }
+.trade-grid { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); gap: var(--b-s3); margin-top: var(--b-s3); }
+.trade-col { --col-hue: var(--hue-townhall); display: grid; gap: var(--b-s2); align-content: start; padding: var(--b-s3); background: var(--b-paper); border: 2px solid color-mix(in srgb, var(--col-hue) 55%, var(--b-paper)); border-top: 8px solid var(--col-hue); border-radius: var(--b-r-insert); box-shadow: var(--b-shadow-card); }
+.trade-col.col-2 { --col-hue: var(--hue-arcade); }
+.trade-col.col-3 { --col-hue: var(--hue-market); }
+.trade-col.col-4 { --col-hue: var(--hue-vault); }
+.trade-col.start { --col-hue: var(--hue-settings); background: var(--b-paper-2); border-style: dashed; }
+.trade-col.chosen { outline: 4px solid var(--col-hue); outline-offset: 2px; }
+.trade-col.off { background: var(--b-paper-2); border-style: dashed; }
+.trade-col header { display: grid; gap: 2px; color: var(--b-ink); }
+.trade-col header strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); line-height: 1.1; }
+.trade-tag { display: inline-flex; align-items: center; gap: 4px; width: max-content; padding: 1px 10px; font-weight: 700; font-size: var(--b-fs-tiny); color: #fff; background: var(--col-hue); border-radius: var(--b-r-round); }
+.trade-metric { display: grid; gap: 2px; padding-top: var(--b-s2); border-top: 1px dashed var(--b-rule); color: var(--b-ink); }
+.trade-metric small { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); }
+.trade-metric strong { font-family: var(--b-display); font-weight: 400; font-size: clamp(1.5rem, 2.2vw, 2rem); font-variant-numeric: lining-nums tabular-nums; line-height: 1.05; }
+.trade-bar { height: 12px; background: var(--b-paper-edge); border-radius: var(--b-r-round); overflow: hidden; }
+.trade-bar span { display: block; height: 100%; border-radius: var(--b-r-round); background: var(--col-hue); }
+.trade-bar span.better { background: var(--b-right); }
+.trade-bar span.worse { background: var(--b-rust); }
+.trade-delta.better { color: var(--b-good-ink); font-weight: 700; }
+.trade-delta.worse { color: var(--b-rust-ink); font-weight: 700; }
+.trade-best { display: inline-flex; align-items: center; gap: 4px; color: var(--b-plum); font-weight: 700; }
+.trade-effect { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--b-ink); }
+@media (max-width: 1000px) { .trade-grid { grid-template-columns: minmax(0, 1fr); } }
+.trade-bar span.same { background: var(--b-ink-soft); }
+.bst-alley .place-sub, .bst-alley .place-sub .sentences, .bst-settings .place-sub, .bst-settings .place-sub .sentences { color: var(--b-on-ground-soft); }
+.vault-top { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--b-s4); align-items: start; margin-bottom: var(--b-s3); }
+.vault-top:not(:has(.apply-card)) { grid-template-columns: minmax(0, 1fr); }
+.vault-top .apply-card { margin: 0; }
+@media (max-width: 1000px) { .vault-top { grid-template-columns: minmax(0, 1fr); } }
+
+/* No empty corners (teacher request 2026-10-23): the Alley notice and its score share a row, and the score gauge sits beside its words. */
+.bst-alley .al-top { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--b-s5); align-items: center; }
+.bst-alley .al-top-side { display: grid; gap: var(--b-s2); }
+.bst-alley .al-top .al-notice { margin: 0; max-width: none; }
+.bst-records .gauge-block { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: var(--b-s5); align-items: center; text-align: left; }
+.bst-records .gauge-block .gauge-words { display: grid; gap: var(--b-s1); }
+.bst-records .gauge-block .big-score { margin: 0; }
+@media (max-width: 1000px) { .bst-alley .al-top, .bst-records .gauge-block { grid-template-columns: minmax(0, 1fr); } }

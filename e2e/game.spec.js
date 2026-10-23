@@ -156,13 +156,13 @@ test("Fee Detective: a whole shift plays through and pays", async ({ page }) => 
   await open(page, "guild");
   await closePopups(page);
   await page.locator(".job-card", { hasText: "Fee Detective" }).click();
-  for (let i = 0; i < 60 && !(await page.locator(".bst-seal-btn", { hasText: "Collect" }).count()); i++) {
+  for (let i = 0; i < 60 && !(await page.locator(".arc-collect").count()); i++) {
     const option = page.locator(".fd-option:not([disabled])").first();
     if (await option.count()) await option.click();
     else await page.locator(".fd-stage button.big").first().click();
     await closePopups(page);
   }
-  await expect(page.locator(".bst-seal-btn", { hasText: "Collect" })).toBeVisible();
+  await expect(page.locator(".arc-collect")).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -184,14 +184,90 @@ test("Cashier Rush: pick a difficulty and a Chill Round, serve 4 customers, then
   const amounts = await page.locator(".cash-amounts .cash-amt small").allTextContents();
   expect(amounts[0]).toContain("They hand you");
   expect(amounts[1]).toContain("Charged");
-  expect(await page.locator(".cash-drawer .drawer-row.coins .cash-piece").allTextContents()).toEqual(["1¢penny1", "5¢nickel2", "10¢dime3", "25¢quarter4"]);
-  expect(await page.locator(".cash-drawer .cash-piece").count()).toBe(7);
+  // Medium is bills and coins with no pennies: coins on top, small to big, then the bills.
+  expect(await page.locator(".cash-drawer .drawer-row.coins .cash-piece").allTextContents()).toEqual(["5¢nickel1", "10¢dime2", "25¢quarter3"]);
+  expect(await page.locator(".cash-drawer .cash-piece").count()).toBe(6);
   for (let i = 0; i < 4; i++) {
     await page.locator(".cash-drawer .cash-piece").first().click();
     await page.locator(".cash-actions .big").click();
     await page.waitForTimeout(1100);
   }
   await closePopups(page);
-  await expect(page.locator(".bst-seal-btn", { hasText: "Collect" })).toBeVisible();
+  await expect(page.locator(".arc-collect")).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+
+test("the top bar numbers explain themselves, and settings is a pop-up that keeps your place", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await open(page, "garage");
+  await closePopups(page);
+  await page.click('.stat-chip[data-stat="coins"]');
+  await expect(page.locator("#stat-pop")).toContainText("What it is");
+  await page.keyboard.press("Escape");
+  await page.click("#settings-btn");
+  await expect(page.locator("dialog.settings-dialog[open]")).toBeVisible();
+  await page.locator("dialog.settings-dialog .chip", { hasText: "Dark" }).first().click();
+  await expect(page.locator("html")).toHaveAttribute("data-appearance", "dark");
+  await page.locator("dialog.settings-dialog .settings-done button").click();
+  await expect(page).toHaveURL(/#\/garage$/);
+  expect(errors).toEqual([]);
+});
+
+test("Things To Do groups every place, each in its own color", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await open(page, "hub");
+  await closePopups(page);
+  await page.keyboard.press("t");
+  await expect(page.locator(".thing-group")).toHaveCount(4);
+  const hues = await page.locator(".thing-tile").evaluateAll((els) => [...new Set(els.map((e) => getComputedStyle(e.querySelector(".thing-medal")).backgroundImage))]);
+  expect(hues.length).toBeGreaterThanOrEqual(10);
+  expect(errors).toEqual([]);
+});
+
+test("you can leave a game for the Arcade library, and a life card shows its choices side by side", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await open(page, "hub");
+  await closePopups(page);
+  await page.click(".bst-seal-btn");
+  await page.waitForTimeout(600);
+  await closePopups(page);
+  await open(page, "guild");
+  await closePopups(page);
+  await page.locator(".job-card", { hasText: "Ledger Sort" }).click();
+  await page.click(".job-back");
+  await page.locator(".job-leave-ask button", { hasText: "Leave" }).click();
+  await expect(page.locator(".arc-cab")).toHaveCount(9);
+
+  await page.evaluate(async () => {
+    const E = await import("/js/engine/index.js");
+    const { decisionCard } = await import("/js/ui/decision-card.js");
+    let life = E.createLife({ seed: "e2e", ageMonths: 18 * 12 });
+    life = E.earn(life, 900, "shift").life;
+    const choices = [
+      { key: "a", label: "Buy the new phone", cost: { amount: 650, item: "phone", methods: ["debit"] } },
+      { key: "b", label: "Keep the old one" },
+    ];
+    const def = { id: "e2e", title: "Cracked phone", icon: "📱", group: "costs", text: () => ["Your phone cracked."] };
+    const root = document.getElementById("app");
+    root.replaceChildren();
+    const wrap = document.createElement("div");
+    wrap.className = "bestiary bst-month";
+    root.append(wrap);
+    wrap.append(
+      decisionCard({ def, kind: "life", life, ctx: {}, choices, track: () => {}, payAllowed: ["debit"], choose: async (key, method) => ({ ...E.resolveChoice(life, choices.find((c) => c.key === key), method), outcome: "Done." }), onContinue: () => {} })
+    );
+  });
+  await expect(page.locator(".dc-balance")).toContainText("$900");
+  await page.locator(".dc-choice").first().click();
+  await page.locator(".dc-submit").click();
+  await page.locator("button.pay-option:not([disabled])").first().click();
+  const confirm = page.locator(".pay-confirm");
+  if (await confirm.count()) await confirm.click();
+  await expect(page.locator(".trade-col")).toHaveCount(2);
+  await expect(page.locator(".trade-col.chosen")).toHaveCount(1);
   expect(errors).toEqual([]);
 });

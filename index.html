@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/bestiary.css">
+  <link rel="stylesheet" href="css/arcade.css">
   <script>
     // Apply the saved appearance and reading mode before the page draws (js/ui/settings.js).
     try {
@@ -24,7 +25,6 @@
 </head>
 <body>
   <header id="topbar" class="topbar bst-scope bst-topbar" hidden>
-    <a id="brand" class="brand" href="#/hub" aria-label="Credit Creatures: go Home" title="Credit Creatures: go Home"><svg class="ico" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V9l3 2V7l4-3 4 3v4l3-2v12"/><path d="M10 21v-5a2 2 0 0 1 4 0v5"/></svg></a>
     <button id="chapter-chip" class="chapter-chip" type="button" hidden></button>
     <ul id="status" class="status-chips" aria-label="Your coins, Sparkle and XP" hidden></ul>
     <nav id="topnav" class="topnav" aria-label="Main" hidden>
@@ -39,6 +39,7 @@
     </span>
   </header>
   <div id="wallet-pop" class="wallet-pop bst-scope" popover aria-label="Your wallet"></div>
+  <div id="stat-pop" class="stat-pop bst-scope" popover role="dialog" aria-label="What this number means"></div>
   <div id="nudge" class="nudge" role="status" hidden></div>
   <main id="app" class="app">
     <div class="bestiary bst-loading"><p class="bst-margin" role="status">Opening the field guide...</p></div>

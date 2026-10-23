@@ -259,9 +259,9 @@ export function avoidOptions(rng, fee) {
 // ---------- Cashier Rush ----------
 
 export const CASH_LEVELS = {
-  easy: { label: "Easy", text: "Whole dollars", example: "$10 received − $6 cost = $4" },
-  medium: { label: "Medium", text: "Cents in multiples of 5", example: "$10 received − $6.35 cost = $3.65" },
-  hard: { label: "Hard", text: "Cents that aren't multiples of 5", example: "$10 received − $6.38 cost = $3.62" },
+  easy: { label: "Easy", text: "Bills only" },
+  medium: { label: "Medium", text: "Bills and coins (no pennies)" },
+  hard: { label: "Hard", text: "Bills and all coins" },
 };
 
 // One customer. The change is always a whole number of cents. Easy has whole

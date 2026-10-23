@@ -19,7 +19,8 @@ export function placeHeader({ go, iconName, kicker = "Coinhaven", title, subtitl
       h(
         "div.place-head-main",
         h("button.back-home", { type: "button", onclick: () => go("map") }, icon("back", { size: 18 }), " Back to the map"),
-        h("div.place-title", h("span.place-icon", icon(iconName, { size: 30 })), h("div", h("h1", title), h("p.step-label.place-kicker", kicker), subtitle ? h("p.muted.tight", subtitle) : null))
+        h("div.place-title", h("span.place-icon", icon(iconName, { size: 34 })), h("div", h("h1", title), h("p.step-label.place-kicker", kicker))),
+        subtitle ? h("p.muted.tight.place-sub", subtitle) : null
       ),
       aside ? h("div.place-aside", aside) : null
     )

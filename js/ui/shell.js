@@ -8,6 +8,7 @@ import { hasFeature, prologueStep } from "../progression.js";
 import { openPlace } from "./screens/map.js";
 import { ensureDaily } from "../daily.js";
 import { progress } from "../challenges.js";
+import { STATS } from "../data/stats.js";
 
 const status = document.getElementById("status");
 const bottombar = document.getElementById("bottombar");
@@ -68,13 +69,15 @@ export function paintShell(game) {
 
   clear(status);
   const streak = ensureDaily(play).streak;
-  for (const [ico, label, value] of [
-    ["coins", "Coins", money(life.checking)],
-    ["sparkle", "Sparkle", String(play.sparkle?.total || 0)],
-    ["star", "XP", String(play.xp || 0)],
-    streak ? ["flame", "Streak", `${streak} day${streak === 1 ? "" : "s"}`] : null,
+  for (const [key, ico, label, value] of [
+    ["coins", "coins", "Coins", money(life.checking)],
+    ["sparkle", "sparkle", "Sparkle", String(play.sparkle?.total || 0)],
+    ["xp", "star", "XP", String(play.xp || 0)],
+    streak ? ["streak", "flame", "Streak", `${streak} day${streak === 1 ? "" : "s"}`] : null,
   ].filter(Boolean)) {
-    status.append(h("li", icon(ico, { size: 20 }), h("small", label), h("strong", value)));
+    status.append(
+      h("li", h("button.stat-chip", { type: "button", "data-stat": key, "aria-haspopup": "dialog", "aria-label": `${label}: ${value}. What is this?`, onclick: (e) => openStat(key, value, e.currentTarget) }, icon(ico, { size: 20 }), h("small", label), h("strong", value)))
+    );
   }
 
   paintChallenges(game);
@@ -116,6 +119,17 @@ function paintChallenges(game) {
 
 // A grid of big tiles, one per place. Locked places stay visible with a lock
 // and the words that say when they open, so students see what is coming.
+// Four groups of big colored tiles (teacher request 2026-10-23: they all looked
+// the same). Each place has its own hue and a large icon on a medallion. Locked
+// places stay visible with a lock and the words that say when they open.
+const GROUPS = [
+  { title: "Your money", ids: ["vault", "townhall", "records", "garage"] },
+  { title: "Earn and learn", ids: ["guild", "academy", "daily", "alley"] },
+  { title: "Shop and home", ids: ["market", "cottage"] },
+  { title: "Friends and fame", ids: ["plaza", "leaderboard", "trophies", "map"] },
+];
+const HUE = { vault: "vault", townhall: "townhall", guild: "arcade", records: "records", garage: "garage", market: "market", cottage: "cottage", plaza: "plaza", alley: "alley", academy: "academy", map: "map", leaderboard: "board", trophies: "trophy", daily: "daily" };
+
 export function openThingsToDo() {
   const game = api?.getGame();
   if (!game?.run) return;
@@ -129,36 +143,42 @@ export function openThingsToDo() {
     dialog.close();
     dialog.remove();
   };
-  const tile = (pl, locked, text, onPick) =>
-    h(
+  const everything = Object.fromEntries([...PLACES, ...EXTRAS].map((x) => [x.id, x]));
+  const hidden = (x) => (x.id === "leaderboard" && game.classInfo?.leaderboard === false) || (x.id === "trophies" && !hasFeature(play, "academy", life));
+  const tile = (x) => {
+    const locked = st[x.id]?.tone === "locked";
+    const text = st[x.id]?.text || "";
+    const isPlace = PLACES.some((p) => p.id === x.id);
+    return h(
       "button.thing-tile",
-      { type: "button", "aria-disabled": locked ? "true" : null, onclick: onPick },
-      h("span.thing-art", icon(locked ? "lock" : pl.icon, { size: 40 })),
-      h("strong", pl.name),
-      h("small", pl.kind),
-      text ? h("span.thing-status", { class: locked ? "locked" : st[pl.id]?.tone === "action" ? "action" : "" }, text) : null
+      {
+        type: "button",
+        "data-place": x.id,
+        class: `${locked ? "locked" : ""} ${st[x.id]?.tone === "action" ? "needs" : ""}`,
+        style: `--tile-hue: var(--hue-${HUE[x.id] || "home"})`,
+        "aria-disabled": locked ? "true" : null,
+        onclick: () => {
+          track("thingsToDoPick", { place: x.id, locked });
+          close();
+          if (isPlace) openPlace(x, st, { game, go, track });
+          else go(x.route);
+        },
+      },
+      h("span.thing-medal", icon(locked ? "lock" : x.icon, { size: 44 })),
+      h("span.thing-words", h("strong", x.name), h("small", x.kind), text ? h("span.thing-status", { class: locked ? "locked" : st[x.id]?.tone === "action" ? "action" : "" }, text) : null)
     );
-
-  const places = PLACES.map((pl) => {
-    const locked = st[pl.id]?.tone === "locked";
-    return tile(pl, locked, st[pl.id]?.text, () => {
-      track("thingsToDoPick", { place: pl.id, locked });
-      close();
-      openPlace(pl, st, { game, go, track });
-    });
-  });
-  const extras = EXTRAS.filter((x) => !(x.id === "leaderboard" && game.classInfo?.leaderboard === false) && !(x.id === "trophies" && !hasFeature(play, "academy", life))).map((x) =>
-    tile(x, false, st[x.id]?.text || "", () => {
-      track("thingsToDoPick", { place: x.id, locked: false });
-      close();
-      go(x.route);
-    })
+  };
+  const columns = GROUPS.map((g, i) =>
+    h(
+      "section.thing-group",
+      { class: `group-${i + 1}` },
+      h("h3", g.title),
+      h("div.thing-list", g.ids.map((id) => everything[id]).filter((x) => x && !hidden(x)).map(tile))
+    )
   );
-
   dialog.append(
-    h("div.things-head", h("h2", { id: "things-title" }, icon("compass", { size: 24 }), " Things To Do"), h("button.things-close", { type: "button", "aria-label": "Close Things To Do", onclick: close }, icon("down", { size: 20 }))),
-    h("p.muted", prologueStep(play) ? "Sage says: follow the glowing next step." : "Pick where to go. Press T any time to open this."),
-    h("div.things-grid", places, extras)
+    h("div.things-head", h("h2", { id: "things-title" }, icon("compass", { size: 28 }), " Things To Do"), h("p.muted", prologueStep(play) ? "Sage says: follow the one with the red mark." : "Pick where to go. Press T any time to open this."), h("button.things-close", { type: "button", "aria-label": "Close Things To Do", onclick: close }, icon("down", { size: 20 }))),
+    h("div.things-columns", columns)
   );
   dialog.addEventListener("cancel", close);
   dialog.addEventListener("click", (e) => {
@@ -166,4 +186,23 @@ export function openThingsToDo() {
   });
   document.body.append(dialog);
   dialog.showModal();
+}
+
+// A pop-up under a top bar chip that says what the number is and what it does.
+const statPop = document.getElementById("stat-pop");
+function openStat(key, value, anchor) {
+  const st = STATS[key];
+  if (!st) return;
+  api?.track("statInfoOpen", { stat: key });
+  statPop.replaceChildren(
+    h("div.stat-pop-head", h("h2", icon(st.icon, { size: 22 }), ` ${st.title}`), h("strong.stat-pop-value", value)),
+    h("p", h("strong", "What it is: "), st.what),
+    h("p", h("strong", "What it does: "), st.does),
+    h("p", h("strong", "How to get more: "), st.gain)
+  );
+  const r = anchor.getBoundingClientRect();
+  statPop.style.top = `${Math.round(r.bottom + 8)}px`;
+  statPop.style.left = `${Math.max(8, Math.min(Math.round(r.left), innerWidth - 360))}px`;
+  if (statPop.matches(":popover-open")) statPop.hidePopover();
+  statPop.showPopover();
 }

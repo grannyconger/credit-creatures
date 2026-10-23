@@ -4,7 +4,7 @@
 // one has to be read. Timed: each item waits a little less than the last.
 // No timer: nothing moves until the student decides.
 import { h, fill } from "../dom.js";
-import { sfx } from "../sound.js";
+import { sfx } from "../arcade-sound.js";
 import { createRng } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { overdraftFeed, fmt } from "./gen.js";

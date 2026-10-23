@@ -5,7 +5,7 @@
 // wrong answer shows the math, and the right balance carries forward, so one
 // slip doesn't snowball.
 import { h, fill } from "../dom.js";
-import { sfx } from "../sound.js";
+import { sfx } from "../arcade-sound.js";
 import { createRng } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { registerLines, fmt } from "./gen.js";

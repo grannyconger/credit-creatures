@@ -213,6 +213,25 @@
      with pale text (on bar 5:1). Accent and hot are the gold and foxfire
      that stay readable on each. */
   /* A right answer: fill, the text on it, and green text on paper. */
+  /* Place hues (teacher request 2026-10-23: the UI was too one-color). Each place
+     has its own. They sit behind white icons, so each is dark enough for white. */
+  --hue-vault: #2e7d4f;
+  --hue-townhall: #2f66b0;
+  --hue-arcade: #8a3fb0;
+  --hue-records: #1f7a80;
+  --hue-garage: #c4621a;
+  --hue-market: #c23b3b;
+  --hue-cottage: #b0557a;
+  --hue-plaza: #2b8fc7;
+  --hue-alley: #4a4fb5;
+  --hue-academy: #a87400;
+  --hue-map: #6b7d2a;
+  --hue-board: #b8334d;
+  --hue-trophy: #b58200;
+  --hue-daily: #c43c8f;
+  --hue-home: #3f7d5a;
+  --hue-settings: #546e7a;
+  --b-on-plum: #f3f6e8;
   --b-right: #3b5e33;
   --b-on-right: #f3f6e8;
   --b-good-ink: #3b5e33;
@@ -377,13 +396,15 @@
     --b-ground-deep: #0a110d;
     --b-on-ground: #dce2cc;
     --b-on-ground-soft: #a9b5a0;
+    --b-on-plum: #0e1a10;
     --b-right: #9fcf84;
     --b-on-right: #0e1a10;
     --b-good-ink: #9fcf84;
-    --b-right: #9fcf84;
+    --b-on-plum: #0e1a10;
+  --b-right: #9fcf84;
   --b-on-right: #0e1a10;
   --b-good-ink: #9fcf84;
-  --b-bar: #4c7355;
+  --b-bar: #3f6349;
     --b-on-bar: #f4f7e8;
     --b-on-bar-soft: #e8efd9;
     --b-bar-edge: #f0c766;
@@ -438,7 +459,7 @@
   --b-ground-deep: #0a110d;
   --b-on-ground: #dce2cc;
   --b-on-ground-soft: #a9b5a0;
-  --b-bar: #4c7355;
+  --b-bar: #3f6349;
   --b-on-bar: #f4f7e8;
   --b-on-bar-soft: #e8efd9;
   --b-bar-edge: #f0c766;
@@ -530,4 +551,82 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ===========================================================================
+   The Arcade (teacher request 2026-10-23): its own world, not the bestiary.
+   One floor and neon sign palette for the hall, and a palette for each game so
+   every side quest has its own identity. These don't change with light or dark,
+   because the arcade is lit from the inside. Every text pair here is checked
+   with e2e/contrast.js. Raw colors belong in this file only.
+   =========================================================================== */
+:root {
+  --arc-floor: #14102b;
+  --arc-floor-2: #1f1847;
+  --arc-panel: #251d57;
+  --arc-panel-edge: #5446b8;
+  --arc-ink: #f6f3ff;
+  --arc-ink-soft: #d3cdf0;
+  --arc-pink: #ff5fae;
+  --arc-cyan: #55f4ff;
+  --arc-yellow: #ffe45c;
+  --arc-green: #72ff94;
+  --arc-orange: #ffa23a;
+  --arc-dark-ink: #17102e;
+
+  --arc-ledger-bg: #0f2a1d;
+  --arc-ledger-paper: #e6f3e2;
+  --arc-ledger-bar: #c4e3c1;
+  --arc-ledger-ink: #12301d;
+  --arc-ledger-brass: #d9af4c;
+
+  --arc-cashier-bg: #0c3942;
+  --arc-cashier-body: #f7edd5;
+  --arc-cashier-ink: #2b1d11;
+  --arc-cashier-red: #bd2a22;
+  --arc-cashier-brass: #e2b340;
+  --arc-cashier-wood: #5b3a22;
+
+  --arc-checks-bg: #1d2944;
+  --arc-checks-paper: #f7f1df;
+  --arc-checks-ink: #17327f;
+  --arc-checks-red: #b3261e;
+  --arc-checks-edge: #8f9abd;
+
+  --arc-atm-bg: #04120a;
+  --arc-atm-screen: #072510;
+  --arc-atm-green: #72ff94;
+  --arc-atm-red: #ff6464;
+  --arc-atm-bezel: #2d352f;
+  --arc-atm-amber: #ffc858;
+
+  --arc-tape-bg: #2a2a31;
+  --arc-tape-paper: #fcfbf3;
+  --arc-tape-ink: #16161a;
+  --arc-tape-red: #c0231a;
+  --arc-tape-orange: #ff8c24;
+
+  --arc-blue-bg: #0a2a57;
+  --arc-blue-grid: #2161b5;
+  --arc-blue-line: #82ebff;
+  --arc-blue-paper: #ebf8ff;
+  --arc-blue-ink: #06305f;
+
+  --arc-vault-bg: #252932;
+  --arc-vault-steel: #939eae;
+  --arc-vault-gold: #e5b73d;
+  --arc-vault-ink: #12151b;
+  --arc-vault-dark: #171a21;
+
+  --arc-shop-red: #c8102e;
+  --arc-shop-yellow: #ffd60a;
+  --arc-shop-white: #fffdf2;
+  --arc-shop-ink: #1a1a1a;
+  --arc-shop-green: #0c7a37;
+
+  --arc-noir-bg: #15110f;
+  --arc-noir-paper: #ecdebb;
+  --arc-noir-ink: #211a12;
+  --arc-noir-red: #b3261e;
+  --arc-noir-light: #fff3bd;
 }

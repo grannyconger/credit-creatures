@@ -24,10 +24,14 @@ export function walletTab({ game, run, track, save, repaint, go }) {
   const noCard = hasFeature(run.play, "card", life) && !life.accounts.some((a) => a.kind === "revolving" && a.owner === "self" && a.status === "open");
   return h(
     "div",
-    noCard && !run.practice
-      ? h("section.callout.apply-card", h("p.tight", h("strong", icon("card", { size: 18 }), " Ready for your first credit card?")), h("p.tight", "Learn who's behind a card, design yours and apply. The Vault tells you why it says yes or no."), h("div.row", h("button", { type: "button", onclick: () => go("cardIntro") }, "Apply for a credit card")))
-      : null,
-    walletStrip(life, game.save.creature),
+    // The wallet and the credit card invitation sit side by side, so the page has no empty corner.
+    h(
+      "div.vault-top",
+      walletStrip(life, game.save.creature),
+      noCard && !run.practice
+        ? h("section.callout.apply-card", h("p.tight", h("strong", icon("card", { size: 18 }), " Ready for your first credit card?")), h("p.tight", "Learn who's behind a card, design yours and apply. The Vault tells you why it says yes or no."), h("div.row", h("button", { type: "button", onclick: () => go("cardIntro") }, "Apply for a credit card")))
+        : null
+    ),
     loans.length
       ? h(
           "section",

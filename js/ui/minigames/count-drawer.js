@@ -4,7 +4,7 @@
 // sales on the register tape, and say whether the drawer is over, short or
 // exact. Two drawers a shift. Uses the same bills and coins as Cashier Rush.
 import { h, fill } from "../dom.js";
-import { sfx } from "../sound.js";
+import { sfx } from "../arcade-sound.js";
 import { createRng } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { DENOMINATIONS } from "../../data/minigames.js";

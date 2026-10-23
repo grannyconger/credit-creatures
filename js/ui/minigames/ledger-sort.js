@@ -1,7 +1,7 @@
 // Ledger Sort (SPEC §17): sort items into ASSET, LIABILITY or EQUITY.
 // 45 seconds, or a no-timer mode with a set number of items. Keys 1, 2, 3 work too.
 import { h, fill } from "../dom.js";
-import { sfx } from "../sound.js";
+import { sfx } from "../arcade-sound.js";
 import { createRng } from "../../engine/index.js";
 import { LEDGER_ITEMS, LEDGER_BINS } from "../../data/minigames.js";
 import { CONFIG } from "../../data/config.js";

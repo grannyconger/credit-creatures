@@ -35,13 +35,16 @@ export function render(root, { game, go, track, refreshWho }) {
       placeHeader({ go, iconName: "lantern", title: "Lantern Alley", subtitle: "Bright signs, small print. Read every offer before you decide.", practice: run.practice }),
       // A notice nailed to the alley wall.
       h(
+        "div.al-top",
+      h(
         "section.al-notice",
         h("span.al-notice-string", { "aria-hidden": "true", html: stringSvg() }),
         h("h2", "Before you say yes to any offer, find three things"),
         h("ol", h("li", h("strong", "The total cost"), ": every payment and fee added up."), h("li", h("strong", "The APR"), ": the yearly cost, so you can compare."), h("li", h("strong", "What you lose"), " if you can't pay on time."))
       ),
-      h("p.alley-score", icon("lantern", { size: 18 }), ` ${prog.checked} of ${prog.total} stalls checked`, prog.checked ? `, ${prog.right} called right` : ""),
-      h("p.bst-margin.al-margin", "The brightest signs usually have the smallest print. This is not a coincidence."),
+      h("div.al-top-side", h("p.alley-score", icon("lantern", { size: 18 }), ` ${prog.checked} of ${prog.total} stalls checked`, prog.checked ? `, ${prog.right} called right` : ""),
+      h("p.bst-margin.al-margin", "The brightest signs usually have the smallest print. This is not a coincidence."))
+      ),
       h("div.stall-grid", STALLS.map(stallCard))
     );
   }

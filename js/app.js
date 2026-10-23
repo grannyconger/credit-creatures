@@ -306,8 +306,21 @@ function signedOut(error = "", user = null) {
 }
 
 // Students can't skip ahead. Earlier steps open only if they are editable.
+// Settings is a pop-up on top of whatever the student is doing (teacher request
+// 2026-10-23: going to a settings page lost the progress in an Arcade game).
+function openAccountSettings() {
+  if (!game) return;
+  openSettings({ game, track, account: game.step === "hub" ? { go: (step) => (location.hash = `#/${step}`), saveAndExit, saveAndSignOut } : null });
+}
+
 function route() {
   if (!game) return;
+  // A link to #/settings opens the pop-up and leaves the screen exactly as it was.
+  if (location.hash.replace(/^#\/?/, "") === "settings" && game.step === "hub") {
+    history.replaceState(null, "", `#/${shownName || "hub"}`);
+    track("settingsOpen", { from: shownName || "hub" });
+    return openAccountSettings();
+  }
   setClassMuted(game.classInfo?.sound === false);
   const want = location.hash.replace(/^#\/?/, "");
   const current = STEPS.indexOf(game.step);
@@ -564,8 +577,7 @@ document.getElementById("sign-out").addEventListener("click", saveAndExit);
 document.getElementById("settings-btn").addEventListener("click", () => {
   if (!game) return;
   track("settingsOpen", { from: location.hash.replace(/^#\/?/, "") || game.step });
-  if (game.step === "hub") location.hash = "#/settings";
-  else openSettings({ game, track });
+  openAccountSettings();
 });
 // The speaker in the top bar turns sound on or off in one tap. Off until the
 // student turns it on, since they may be in a quiet classroom.
@@ -587,16 +599,8 @@ paintSoundBtn();
 // A soft click for buttons (only when sound is on). Buttons with their own
 // sound (card flips, rewards) set data-sound="none".
 document.addEventListener("click", (e) => {
-  const b = e.target.closest?.("button, a.brand");
+  const b = e.target.closest?.("button");
   if (b && !b.disabled && b.dataset.sound !== "none") sfx.tap();
-});
-// The title always goes home: the kingdom once the student has one, otherwise
-// the onboarding step they're on.
-document.getElementById("brand").addEventListener("click", (e) => {
-  e.preventDefault();
-  if (!game) return;
-  track("brandClick", { from: location.hash.replace(/^#\/?/, "") || game.step });
-  location.hash = game.step === "hub" ? "#/hub" : `#/${game.step}`;
 });
 // A backup save when the tab is hidden, closed or refreshed (bug fix
 // 2026-10-22: progress was lost when a student clicked out). The game also

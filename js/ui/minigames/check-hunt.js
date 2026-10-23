@@ -5,7 +5,7 @@
 // match, or no date), or none. The bottom line reads routing, then account,
 // then check number, like a real check.
 import { h, fill } from "../dom.js";
-import { sfx } from "../sound.js";
+import { sfx } from "../arcade-sound.js";
 import { createRng } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
 import { CHECK_PARTS } from "../../data/minigames.js";

@@ -8,6 +8,7 @@ import { CONFIG } from "../js/data/config.js";
 import { jobPay } from "../js/progress.js";
 import * as P from "../js/play.js";
 import { unlockStage } from "../js/progression.js";
+import { cashierRate, DRAWER } from "../js/ui/minigames/cashier-rush.js";
 
 const seeds = Array.from({ length: 60 }, (_, i) => `s${i}`);
 
@@ -163,12 +164,16 @@ test("Cashier Rush customers match their difficulty, and coins are paid per righ
       assert.ok(e.paid - e.price < 2000 && m.paid - m.price < 2000 && h.paid - h.price < 2000, "change never needs a $20 bill");
     }
   }
-  const r = CONFIG.play.jobs.cashier.rates;
-  assert.deepEqual([r.easy, r.medium, r.hard], [[1, 2], [5, 10], [10, 20]]);
+  const rate = (d, m) => cashierRate(d, m);
+  assert.deepEqual(["easy", "medium", "hard"].map((d) => rate(d, "chill")), [1, 5, 15], "1, 5 and 15 relative value units");
+  assert.deepEqual(["easy", "medium", "hard"].map((d) => rate(d, "speed")), [2, 10, 30], "the Speed Round doubles it");
+  assert.equal(CONFIG.play.jobs.cashier.seconds, 90);
+  assert.deepEqual(DRAWER.easy.filter((c) => c < 100), [], "Easy is bills only");
+  assert.ok(!DRAWER.medium.includes(1) && DRAWER.medium.includes(5) && DRAWER.hard.includes(1), "Medium has no pennies and Hard has every coin");
   assert.equal(G.overShortText(410, 365), "$0.45 over");
   assert.equal(G.overShortText(300, 365), "$0.65 short");
   assert.equal(G.overShortText(365, 365), "exact");
   const play = P.newPlay();
-  assert.equal(jobPay(play, "cashier", { right: 4, wrong: 0, coins: 4 * r.hard[0] }), 40, "four right hard Chill sales pay 40 coins");
+  assert.equal(jobPay(play, "cashier", { right: 4, wrong: 0, coins: 4 * rate("hard", "chill") }), 60, "four right Hard Chill sales pay 60 coins");
   assert.equal(jobPay(play, "cashier", { right: 0, wrong: 4, coins: 0 }), 0, "no right sales, no pay");
 });

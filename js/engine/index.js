@@ -41,3 +41,4 @@ export { getTeenDebitCard, tutorialShiftPay, timeSkip } from "./onboarding.js";
 export { replayLife } from "./replay.js";
 export { runSteps, resolveChoice, paymentOptions, paymentStep, drawLifeEvent, drawDecisionCards, ownCards, utilization, upcomingPayments } from "./cards.js";
 export { dollars } from "./util.js";
+export { lifeMetrics, compareChoices, allSame, startRow } from "./preview.js";
