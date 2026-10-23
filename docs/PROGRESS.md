@@ -2,13 +2,15 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-23 (/admin, teacher page round 2 and the Garage approved and pushed. The teacher must publish firestore.rules for /admin)
+Last updated: 2026-10-23 (all screens in the bestiary look, design docs drafted. The teacher must publish firestore.rules for /admin)
 
 ## Next step
 
 **Where things stand (end of 2026-10-22):** everything below is pushed and live. Awaiting the teacher's review: Phases 15, 16 and 17 (motion, effects, living creatures), the five new Chapter 1 jobs, and the Trophies redesign. Firestore rules were last changed for gifts, class delete and reset notes, and the teacher has published them.
 
-**Up next, in order:** (1) Every screen is now in the bestiary look (Lantern Alley, chapter end and Account settings were done 2026-10-23, awaiting the teacher's look). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) More minigames (Fee Detective is the next job idea), then Skill Paths and Skill Sims, which the teacher made the priority after the minigame build-outs. (4) Done 2026-10-23: Home and the Cottage show the rank as the Trophies wax seal (`rankSeal`, exported from `js/ui/screens/trophies.js`) instead of an emoji. (5) Phone layout, on hold until the teacher's explicit OK.
+**Up next, in order:** (1) Every screen is now in the bestiary look (Lantern Alley, chapter end and Account settings were done 2026-10-23, awaiting the teacher's look). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) More minigames (Fee Detective first, plan in `docs/MINIGAMES.md`), developed together with the teacher, then Skill Paths and Skill Sims, which the teacher made the priority after the minigame build-outs. Quest and Battle modes are drafted in `docs/MODES.md`, still being discussed. (4) Done 2026-10-23: Home and the Cottage show the rank as the Trophies wax seal (`rankSeal`, exported from `js/ui/screens/trophies.js`) instead of an emoji. (5) Phone layout, on hold until the teacher's explicit OK.
+
+**Design docs (2026-10-23, drafts, nothing built):** `docs/MODES.md` records the teacher's Quest and Battle mode answers, feasibility, a first turn-math and ability proposal, edge cases, and open questions. The teacher wants to keep talking before anything is built. `docs/MINIGAMES.md` folds the Oct 22 idea doc into our Guild Hall job structure: the per-game data (skill, standards, battle, simStep, hints), the built games tagged, and simplified plans plus likely faults for Fee Detective, Bank Reconciliation Match and Deposit Slip Filler.
 
 **The last old-look screens (2026-10-23, pushed while the teacher was away, not yet reviewed):**
 - **Lantern Alley** (`.bst-alley`): the alley at night on the dark ground. Stalls are signs hanging from iron brackets under flickering lanterns. The fine print is a paper tag, and the verdict is an ink stamp (TRAP in rust, FAIR DEAL in green) plus words. Stalls got a drawn `mark` icon in `js/data/alley.js` instead of emoji. "Look closer" and the trap and fair-deal calls are rust ribbons.
