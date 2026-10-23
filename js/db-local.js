@@ -92,12 +92,13 @@ const CLASSMATES = [
 ];
 
 export async function writeLeaderboard(classId, uid, entry) {
-  write("leaderboard/me", { uid, ...entry });
+  write("leaderboard/me", { uid, ...entry, updatedAt: Date.now() });
 }
 
 export async function readLeaderboard() {
   const me = read("leaderboard/me");
-  return [...CLASSMATES, ...(me ? [me] : [])].sort((a, b) => b.xp - a.xp);
+  // "teacherDemoBoard" holds pretend entries for the teacher page's save watch.
+  return [...CLASSMATES, ...(read("teacherDemoBoard") || []), ...(me ? [me] : [])].sort((a, b) => b.xp - a.xp);
 }
 
 export async function setLeaderboardOn(classId, on) {

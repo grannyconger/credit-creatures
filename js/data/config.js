@@ -28,9 +28,10 @@ export const CONFIG = {
   // inactiveDays without playing, and the dashboard says the class is ready
   // for the next chapter once readyShare of it has finished the open one.
   // The save watch flags a student after quietMinutes with no save and
-  // re-checks every watchSeconds. Standards grid words: Strong from strong %,
+  // re-checks every watchSeconds, reading the small leaderboard entries the
+  // game touches at most every heartbeatMinutes. Standards grid words: Strong from strong %,
   // Getting there from gettingThere %, else Needs help (teacher request).
-  teacher: { inactiveDays: 5, readyShare: 0.75, quietMinutes: 8, watchSeconds: 60, strong: 80, gettingThere: 60, reteachMinAnswers: 5, reteachMinStudents: 3 },
+  teacher: { inactiveDays: 5, readyShare: 0.75, quietMinutes: 8, watchSeconds: 60, heartbeatMinutes: 2, strong: 80, gettingThere: 60, reteachMinAnswers: 5, reteachMinStudents: 3 },
   social: { giftHours: 20, giftsPerWindow: 4, giftMin: 5, giftMax: 50, groupMax: 6 },
 
   // The month loop after Chapter 1 (SPEC §8).

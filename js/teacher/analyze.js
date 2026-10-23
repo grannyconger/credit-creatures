@@ -407,6 +407,18 @@ export function gradeSummary(rows) {
 
 const MIN = 60 * 1000;
 
+// The newest sign of saving for each student: the save's own updatedAt, or
+// the small leaderboard entry the game touches every couple of minutes,
+// whichever is later. board: [{ uid, updatedAt }].
+export function lastSeen(rows, board = []) {
+  const at = new Map(board.map((b) => [b.uid, lastPlayed(b.updatedAt)]));
+  return rows.map((r) => {
+    const b = at.get(r.uid) ?? null;
+    const t = r.lastPlayed == null ? b : b == null ? r.lastPlayed : Math.max(r.lastPlayed, b);
+    return t === r.lastPlayed ? r : { ...r, lastPlayed: t };
+  });
+}
+
 // The save watch: students who saved today but not in the last quietMinutes.
 // Longest quiet first. now is passed in so tests stay exact.
 export function quietStudents(rows, { now = Date.now(), quietMinutes = 8 } = {}) {

@@ -222,3 +222,11 @@ test("timeline groups play logs into sessions", () => {
   assert.deepEqual([out[0].cards, out[0].shifts, out[0].questions, out[0].right, out[0].months, out[0].saves], [1, 1, 1, 1, 1, 2]);
   assert.deepEqual(out[0].gameMonths, [2, 3]);
 });
+
+test("lastSeen takes the newer of the save and the leaderboard heartbeat", () => {
+  const out = T.lastSeen(
+    [row({ uid: "a", lastPlayed: 1000 }), row({ uid: "b", lastPlayed: 5000 }), row({ uid: "c" }), row({ uid: "d", lastPlayed: 7 })],
+    [{ uid: "a", updatedAt: { seconds: 3 } }, { uid: "b", updatedAt: { seconds: 1 } }, { uid: "c", updatedAt: 42 }]
+  );
+  assert.deepEqual(out.map((r) => r.lastPlayed), [3000, 5000, 42, 7]);
+});

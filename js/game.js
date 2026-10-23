@@ -185,8 +185,11 @@ export function createGame(user, db) {
     },
 
     // One small write when XP or the creature's look changes, so classmates
-    // see it on the leaderboard and in Friends (SPEC §16).
+    // see it on the leaderboard and in Friends (SPEC §16). Also at most every
+    // heartbeatMinutes, so the entry's updatedAt tells the teacher's save watch
+    // the student is still saving (2026-10-23), without reading full saves.
     boardKey: null,
+    boardAt: 0,
     async syncLeaderboard() {
       const play = game.save.play;
       const c = game.save.creature;
@@ -203,10 +206,11 @@ export function createGame(user, db) {
         look: publicLook(c),
       };
       const key = JSON.stringify(entry);
-      if (key === game.boardKey) return;
+      if (key === game.boardKey && Date.now() - game.boardAt < CONFIG.teacher.heartbeatMinutes * 60000) return;
       try {
         await db.writeLeaderboard(game.profile.classId, user.uid, entry);
         game.boardKey = key;
+        game.boardAt = Date.now();
       } catch (err) {
         console.warn("Leaderboard update failed", err);
         track("leaderboardFailed", { code: err.code || "" });

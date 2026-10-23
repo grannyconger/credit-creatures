@@ -10,6 +10,12 @@ Last updated: 2026-10-23 (/admin, teacher page round 2 and the Garage approved a
 
 **Up next, in order:** (1) the remaining old-look screens, one at a time with approval: Lantern Alley, chapter end, Account settings (the story intro and name step are done). (2) The `docs/tuning v1` review (pilot data, gitignored). Teacher said not yet. (3) More minigames (Fee Detective is the next job idea), then Skill Paths and Skill Sims, which the teacher made the priority after the minigame build-outs. (4) Rank emoji on Home and in the Cottage (`r.icon`) could become the rank seal from Trophies. (5) Phone layout, on hold until the teacher's explicit OK.
 
+**A lighter save watch, and staying on the free plan (2026-10-23, pushed):**
+- **Usage:** the teacher expects about 50 students, 2 to 3 times a week. Usage on 2026-10-23 was 36 writes and 858 reads, out of 20,000 and 50,000 a day on Spark.
+- **Decision:** stay on Firebase Spark. Upgrade to Blaze (about 2 minutes, no code change) when a usage bar passes about 50% on a normal day, and always before live classmate battles. On Spark, hitting a limit stops saves until midnight Pacific.
+- **Change:** the save watch no longer re-reads full saves every minute. The game touches its small leaderboard entry at most every `CONFIG.teacher.heartbeatMinutes` (2), as well as when XP or the look changes (`syncLeaderboard` in `js/game.js`). The watch reads only those entries (`readLeaderboard`), and `lastSeen()` in `js/teacher/analyze.js` takes the newer of the save time and the entry time. No rules change.
+- **Checked:** a watch check reads only the leaderboard (zero save reads). A student with an old save but a recent heartbeat isn't flagged. No console errors, and 202 tests pass.
+
 **/admin and teacher page round 2 (teacher request 2026-10-23, approved and pushed):**
 - **/admin** (`admin/index.html`, `js/admin/admin.js`, same plain look as the teacher page, `css/teacher.css`). Only `ADMIN_EMAIL` (bweaver@greermiddlecollege.org, in `js/firebase-config.js`) can open it. It has three tabs:
   - All classes: every class from both teachers, with students, chapters open, median practice and chapters, needs-help count, and last activity.

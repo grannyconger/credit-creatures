@@ -15,7 +15,7 @@ import { icon } from "../ui/icons.js";
 import { creatureSvg } from "../ui/creature-art.js";
 import { reportTab } from "../ui/accounts/report-tab.js";
 import { scoreTab } from "../ui/accounts/score-tab.js";
-import { rosterRow, studentDetail, rosterCsv, classAlley, byName, FLAGS, LESSON_COUNT, parseEmails, needsHelp, pacing, gradeSummary, quietStudents, standardBand, reteach, timeline } from "./analyze.js";
+import { rosterRow, studentDetail, rosterCsv, classAlley, byName, FLAGS, LESSON_COUNT, parseEmails, needsHelp, pacing, gradeSummary, quietStudents, standardBand, reteach, timeline, lastSeen } from "./analyze.js";
 import { STALLS } from "../data/alley.js";
 import { STANDARD_LABELS } from "../data/practice-questions.js";
 import { CONFIG } from "../data/config.js";
@@ -24,7 +24,7 @@ import { chapterInfo } from "../data/chapters.js";
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 const VIEW_KEY = "credit-creatures:teacherView";
 const root = document.getElementById("teacher");
-const state = { me: null, db: null, classes: [], classId: null, view: savedView(), search: "", saves: [], rows: [], loaded: false, sort: ["lastName", 1], social: null, openUid: null, helpAll: false, watch: { on: false, timer: null, checkedAt: null, quiet: [] } };
+const state = { me: null, db: null, classes: [], classId: null, view: savedView(), search: "", saves: [], rows: [], loaded: false, sort: ["lastName", 1], social: null, openUid: null, helpAll: false, watch: { on: false, timer: null, checkedAt: null, quiet: [], board: [] } };
 
 boot();
 
@@ -839,23 +839,42 @@ async function loadSocial(uid, box) {
 // ---------- the save watch (teacher request 2026-10-23) ----------
 
 // Checks now, then every watchSeconds, for students who saved today but not
-// in the last quietMinutes. Runs until the teacher stops it or leaves.
+// in the last quietMinutes. Runs until the teacher stops it or leaves. Each
+// check reads only the small leaderboard entries (the game touches its entry
+// every couple of minutes), never the full saves.
 function startWatch() {
   state.watch.on = true;
   repaintWatch();
-  loadRoster({ quiet: true });
-  state.watch.timer = setInterval(() => loadRoster({ quiet: true }), CONFIG.teacher.watchSeconds * 1000);
+  watchTick();
+  state.watch.timer = setInterval(watchTick, CONFIG.teacher.watchSeconds * 1000);
+}
+
+async function watchTick() {
+  const id = state.classId;
+  try {
+    const board = await state.db.readLeaderboard(id);
+    if (!state.watch.on || id !== state.classId) return;
+    state.watch.board = board;
+  } catch (err) {
+    console.error(err);
+  }
+  checkQuiet();
+  repaintWatch();
+  // Repaint only the roster table, so the "Quiet N min" cells update and the
+  // search box keeps focus.
+  const table = document.getElementById("t-roster-table");
+  if (table && state.loaded) table.replaceWith(roster().querySelector("#t-roster-table"));
 }
 
 function stopWatch() {
   clearInterval(state.watch.timer);
-  Object.assign(state.watch, { on: false, timer: null, checkedAt: null, quiet: [] });
+  Object.assign(state.watch, { on: false, timer: null, checkedAt: null, quiet: [], board: [] });
   repaintWatch();
 }
 
 function checkQuiet() {
   state.watch.checkedAt = Date.now();
-  state.watch.quiet = quietStudents(state.rows, { quietMinutes: CONFIG.teacher.quietMinutes });
+  state.watch.quiet = quietStudents(lastSeen(state.rows, state.watch.board), { quietMinutes: CONFIG.teacher.quietMinutes });
 }
 
 function repaintWatch() {
