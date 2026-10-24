@@ -355,3 +355,7 @@
 .bst-guild .arc-frame .reactions button.reaction[aria-pressed="true"] { background: var(--arc-yellow); }
 .bst-guild .arc-frame .arc-collect { display: inline-flex; align-items: center; gap: var(--b-s2); min-height: 64px; padding: 6px 28px; font-size: 1.35rem; color: var(--arc-dark-ink); background: var(--arc-yellow); border: 4px solid var(--arc-dark-ink); }
 .arc-collect .ico-wrap { color: var(--arc-dark-ink); }
+.bst-mapscreen .m-neon { animation: arc-flicker 3.2s steps(1) infinite; }
+@keyframes arc-flicker { 0%, 92%, 100% { opacity: 1; } 94% { opacity: 0.55; } 96% { opacity: 1; } 98% { opacity: 0.7; } }
+:root[data-motion="calm"] .bst-mapscreen .m-neon { animation: none; }
+@media (prefers-reduced-motion: reduce) { .bst-mapscreen .m-neon { animation: none; } }

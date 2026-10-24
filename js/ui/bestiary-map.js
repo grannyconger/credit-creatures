@@ -67,18 +67,19 @@ const BUILDINGS = {
       ${both(R(-13, 2, 26, 32), "var(--m-door)")}${ink("M0 18 m-6 0 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0", 1.6)}
       ${ink("M-72 34 H72 M-66 40 H66", 2)}
     </g>`,
+  // The Arcade wears its own neon (css/arcade.css), inked like the rest of the map.
   guild: ({ x, y }) => `
     <g transform="translate(${x} ${y})">
-      ${both(R(38, -88, 16, 40), "var(--m-stone)")}
-      <path class="m-smoke" d="M46 -92 q-10 -10 0 -18 q10 -8 2 -18 q-6 -8 4 -14" fill="none" stroke="var(--m-smoke)" stroke-width="4" stroke-linecap="round"/>
-      ${both(R(-62, -38, 124, 74), "var(--m-wall)")}
-      ${both("M-74 -36 L0 -84 L74 -36 Z", "var(--m-roof-rust)")}
-      ${ink(hatch(-58, -42, 58, -42, 12, -5, -9), 1)}
-      ${ink("M-62 -10 H62 M-30 -38 V36 M30 -38 V36 M-62 -38 L-30 -10 M62 -38 L30 -10", 2.2)}
-      ${win(-52, -2)}${win(38, -2)}
-      ${door(-14, 4, 28, 32)}
-      <g transform="translate(-88 0)">${ink("M0 -34 v40", 2.2)}${both(R(-20, -34, 34, 22), "var(--m-gold)", 1.6)}${ink("M-10 -18 l8 -8 4 4 -8 8z M-12 -14 l-5 5", 1.6)}</g>
-      ${ink("M-80 36 H80", 2)}
+      ${both(R(-64, -48, 128, 84), "var(--arc-floor-2)")}
+      <path d="${R(-64, -48, 128, 84)}" fill="none" stroke="var(--arc-pink)" stroke-width="3" opacity=".9"/>
+      ${both("M-72 -48 H72 L62 -72 H-62 Z", "var(--arc-panel)")}
+      <path d="M-50 -63 H50" stroke="var(--arc-yellow)" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/>
+      <g class="m-neon"><rect x="-46" y="-44" width="92" height="22" rx="4" style="fill:var(--arc-dark-ink);stroke:var(--arc-pink);stroke-width:2.5"/><text x="0" y="-27" text-anchor="middle" font-size="16" font-weight="900" letter-spacing="3" font-family="Arial Black, Trebuchet MS, sans-serif" style="fill:var(--arc-pink)">ARCADE</text></g>
+      <g transform="translate(-44 -10)"><rect x="0" y="0" width="22" height="46" rx="3" style="fill:var(--arc-cyan);stroke:var(--m-ink);stroke-width:1.6"/><rect x="3" y="4" width="16" height="14" style="fill:var(--arc-dark-ink)"/><circle cx="8" cy="26" r="2.4" style="fill:var(--arc-pink)"/><circle cx="15" cy="26" r="2.4" style="fill:var(--arc-yellow)"/></g>
+      <g transform="translate(22 -10)"><rect x="0" y="0" width="22" height="46" rx="3" style="fill:var(--arc-orange);stroke:var(--m-ink);stroke-width:1.6"/><rect x="3" y="4" width="16" height="14" style="fill:var(--arc-dark-ink)"/><circle cx="8" cy="26" r="2.4" style="fill:var(--arc-green)"/><circle cx="15" cy="26" r="2.4" style="fill:var(--arc-pink)"/></g>
+      ${door(-13, 4, 26, 32)}
+      <path d="M-13 36 v-26 a13 13 0 0 1 26 0 v26" style="fill:var(--arc-dark-ink);opacity:.85"/>
+      ${ink("M-76 36 H76", 2)}
     </g>`,
   market: ({ x, y }) => `
     <g transform="translate(${x} ${y})">
