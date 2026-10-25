@@ -19,4 +19,6 @@ Each sound comes as `.ogg` (the original) and `.m4a` (AAC, for Safari before ver
 | correct | correct | Interface Sounds, confirmation_002 |
 | stamp | stamp | RPG Audio, bookPlace1 |
 
+Not by Kenney: `tap-to-pay.wav` and `.m4a` (event tapToPay) are an original two-note chime made by `scripts/make-tap-to-pay.py`, so there is nothing to credit. They are the only sounds that use `.wav` instead of `.ogg`, because no Ogg encoder was on hand. Run the script again to remake them.
+
 Packs: https://kenney.nl/assets/interface-sounds, https://kenney.nl/assets/rpg-audio, https://kenney.nl/assets/casino-audio, https://kenney.nl/assets/music-jingles

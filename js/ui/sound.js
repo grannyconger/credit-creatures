@@ -8,7 +8,10 @@
 //   sfx.tap()  sfx.coinGain()  sfx.coinLoss()  sfx.levelUp()  sfx.questComplete()
 //   sfx.chestOpen()  sfx.purchase()  sfx.error()  sfx.creditScoreUp()
 //   sfx.creditScoreDown()  sfx.cardFlip()  sfx.correct()  sfx.stamp()
+//   sfx.tapToPay()
 import { loadLocalSettings } from "./settings.js";
+
+const FORMATS = ["ogg", "m4a"];
 
 // Master volume. Reduced motion is taken as a hint to keep audio quieter too.
 export const MASTER_VOLUME = 0.4;
@@ -16,7 +19,8 @@ export const CALM_VOLUME = 0.25;
 // Each repeat plays up to 5% higher or lower so it doesn't get tiring.
 export const PITCH_SPREAD = 0.05;
 
-// file: in sounds/ (.ogg, with .m4a for older Safari). volume: relative to
+// file: in sounds/ (.ogg, with .m4a for older Safari, or the formats list when a
+// sound is made here as a .wav). volume: relative to
 // the master. gap: the shortest time in ms between two plays of this event.
 // calm: false skips it under Calm motion or reduce motion (small UI sounds).
 export const EVENTS = {
@@ -33,6 +37,8 @@ export const EVENTS = {
   cardFlip: { file: "card-flip", volume: 0.6, gap: 200, calm: false },
   correct: { file: "correct", volume: 0.7, gap: 300 },
   stamp: { file: "stamp", volume: 0.7, gap: 300 },
+  // The chime a phone makes when a tap to pay goes through (scripts/make-tap-to-pay.py).
+  tapToPay: { file: "tap-to-pay", formats: ["wav", "m4a"], volume: 0.8, gap: 800 },
 };
 
 export const SOUND_EVENTS = Object.keys(EVENTS);
@@ -89,7 +95,7 @@ function load() {
       howls = {};
       for (const [name, ev] of Object.entries(EVENTS)) {
         const base = new URL(`../../sounds/${ev.file}`, import.meta.url).href;
-        howls[name] = new Howl({ src: [`${base}.ogg`, `${base}.m4a`], volume: ev.volume, preload: true });
+        howls[name] = new Howl({ src: (ev.formats || FORMATS).map((ext) => `${base}.${ext}`), volume: ev.volume, preload: true });
       }
       return howls;
     })

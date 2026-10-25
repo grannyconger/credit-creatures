@@ -7,6 +7,7 @@ import { walletStrip } from "../wallet.js";
 import { billsPanel } from "../bills-panel.js";
 import { notePayment } from "../../progress.js";
 import { hasFeature } from "../../progression.js";
+import { sfx } from "../sound.js";
 
 export function walletTab({ game, run, track, save, repaint, go }) {
   const life = run.life;
@@ -14,6 +15,8 @@ export function walletTab({ game, run, track, save, repaint, go }) {
     if (!r.ok) return toast(r.message, "bad");
     run.life = r.life;
     track(reason, data);
+    // A bill payment is a payment, so it gets the same chime a phone makes after a tap to pay.
+    if (reason === "billPay") sfx.tapToPay();
     toast(r.message, "good");
     await save(reason);
     repaint();

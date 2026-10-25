@@ -271,3 +271,45 @@ test("you can leave a game for the Arcade library, and a life card shows its cho
   await expect(page.locator(".trade-col.chosen")).toHaveCount(1);
   expect(errors).toEqual([]);
 });
+
+test("the pay screen is a phone payment sheet: pick a card, hold near the reader, payment complete, then the receipt", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await page.evaluate(async () => {
+    const E = await import("/js/engine/index.js");
+    const { openCard } = await import("/js/engine/accounts.js");
+    const { copyLife } = await import("/js/engine/life.js");
+    const { decisionCard } = await import("/js/ui/decision-card.js");
+    let life = E.earn(E.createLife({ seed: "e2e-pay", ageMonths: 18 * 12 }), 400, "shift").life;
+    const next = copyLife(life);
+    openCard(next, { product: "student", name: "Student Card", issuer: "chase", network: "visa", icon: "🏛️", limit: 500, apr: 0.24, annualFee: 0 });
+    life = next;
+    const choices = [
+      { key: "a", label: "Buy the case", cost: { amount: 40, item: "Phone case", merchant: "Techtopia", methods: ["debit", "card", "bnpl"] } },
+      { key: "b", label: "Skip it" },
+    ];
+    const def = { id: "e2e-pay", title: "Cracked phone", icon: "📱", group: "costs", text: () => ["Your phone cracked."] };
+    const root = document.getElementById("app");
+    root.replaceChildren();
+    const wrap = document.createElement("div");
+    wrap.className = "bestiary bst-month";
+    root.append(wrap);
+    wrap.append(decisionCard({ def, kind: "life", life, ctx: {}, choices, track: () => {}, payAllowed: ["debit", "card", "bnpl"], choose: async (key, method) => ({ ...E.resolveChoice(life, choices.find((c) => c.key === key), method), outcome: "Done." }), onContinue: () => {} }));
+  });
+  await page.locator(".dc-choice").first().click();
+  await page.locator(".dc-submit").click();
+  // The sheet names who is paid and how much, and draws the wallet's cards.
+  await expect(page.locator(".ps-merchant")).toContainText("Techtopia");
+  await expect(page.locator(".ps-amount")).toHaveText("$40");
+  await expect(page.locator(".ps-card")).toHaveCount(3);
+  await expect(page.locator(".ps-card .card-art")).toHaveCount(2);
+  // Nothing is paid until a card is picked and Pay is pressed.
+  await expect(page.locator(".pay-confirm")).toBeDisabled();
+  await page.locator(".ps-card", { hasText: "Student Card" }).click();
+  await expect(page.locator(".ps-detail")).toContainText("Utilization");
+  await page.locator(".pay-confirm").click();
+  await expect(page.locator(".ps-terminal")).toContainText("Hold near reader");
+  await expect(page.locator(".ps-terminal.done")).toContainText("Payment complete");
+  await expect(page.locator(".dc-receipt")).toContainText("Paid $40 with Student Card");
+  expect(errors).toEqual([]);
+});

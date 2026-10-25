@@ -6226,11 +6226,11 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .trade-metric .trade-delta, .trade-metric .trade-best { grid-column: 1 / -1; }
 
 /* Once a choice is locked in, the card gives its room to the result: the question folds away and the header shrinks. */
-.bst-month .decision-card.is-outcome { padding-block: var(--b-s3) var(--b-s2); }
-.bst-month .decision-card.is-outcome .dc-text { display: none; }
-.bst-month .decision-card.is-outcome .dc-icon { width: 52px; height: 52px; font-size: 1.8rem; }
-.bst-month .decision-card.is-outcome .dc-head h2 { font-size: clamp(1.7rem, 2.3vw, 2.2rem); }
-.bst-month .decision-card.is-outcome .dc-balance { padding-block: var(--b-s1); }
+.bst-month .decision-card:is(.is-outcome, .is-paying) { padding-block: var(--b-s3) var(--b-s2); }
+.bst-month .decision-card:is(.is-outcome, .is-paying) .dc-text { display: none; }
+.bst-month .decision-card:is(.is-outcome, .is-paying) .dc-icon { width: 52px; height: 52px; font-size: 1.8rem; }
+.bst-month .decision-card:is(.is-outcome, .is-paying) .dc-head h2 { font-size: clamp(1.7rem, 2.3vw, 2.2rem); }
+.bst-month .decision-card:is(.is-outcome, .is-paying) .dc-balance { padding-block: var(--b-s1); }
 .bst-month .decision-card.is-outcome .dc-outcome { margin-top: var(--b-s3); padding-block: var(--b-s2); }
 .bst-month .decision-card.is-outcome .dc-outcome p { margin-block: 0 var(--b-s1); }
 .dc-tradeoffs { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: var(--b-s3); }
@@ -6241,3 +6241,76 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .bst-topbar .status-chips { gap: var(--b-s1); }
 .bst-topbar .stat-chip { white-space: nowrap; padding-inline: var(--b-s2); gap: 6px; }
 .bst-topbar .stat-chip strong { white-space: nowrap; }
+
+/* ---- The pay screen: a phone payment sheet (teacher request 2026-10-25) ---- */
+.pay-with { padding: var(--b-s3); background: color-mix(in srgb, var(--b-ink) 16%, var(--b-paper-2)); border-radius: var(--b-r-sheet); }
+.pay-with .pay-sheet { position: relative; display: grid; gap: var(--b-s3); max-width: 780px; margin: 0 auto; padding: var(--b-s2) var(--b-s5) var(--b-s4); color: var(--b-ink); background: var(--b-paper); border-radius: 28px; box-shadow: var(--b-shadow-lift); }
+.pay-with .ps-grabber { justify-self: center; width: 44px; height: 5px; background: var(--b-rule); border-radius: var(--b-r-round); }
+.pay-with .ps-merchant { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--b-s3); align-items: center; }
+.pay-with .ps-logo { display: grid; place-items: center; width: 52px; height: 52px; color: var(--b-on-plum); background: var(--b-plum); border-radius: 50%; }
+.pay-with .ps-who { display: grid; line-height: 1.2; }
+.pay-with .ps-who small { color: var(--b-ink-soft); font-size: var(--b-fs-tiny); text-transform: uppercase; letter-spacing: 0.08em; }
+.pay-with .ps-who strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.pay-with .ps-who span { color: var(--b-ink-soft); font-size: var(--b-small); }
+.pay-with .ps-amount { font-family: var(--b-display); font-weight: 400; font-size: clamp(2rem, 3vw, 2.6rem); font-variant-numeric: lining-nums tabular-nums; }
+.pay-with .ps-label { display: flex; align-items: center; gap: var(--b-s2); padding-top: var(--b-s2); color: var(--b-ink-soft); font-size: var(--b-fs-tiny); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border-top: 1px solid var(--b-rule); }
+/* The wallet: each way to pay drawn like the real card, cash or plan. */
+.pay-with .ps-cards { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: var(--b-s2); max-width: none; margin: 0; }
+.pay-with .pay-option.ps-card { display: grid; width: auto; flex: none; gap: 6px; justify-items: center; align-items: start; padding: var(--b-s2); color: var(--b-ink); background: none; border: 3px solid transparent; border-radius: 20px; box-shadow: none; transform: none; }
+.pay-with .pay-option.ps-card:hover:not(:disabled) { background: var(--b-plum-wash); box-shadow: none; transform: translateY(-3px); }
+.pay-with .pay-option.ps-card[aria-checked="true"] { background: var(--b-plum-wash); border-color: var(--b-plum); box-shadow: none; }
+.pay-with .pay-option.ps-card:disabled { cursor: not-allowed; opacity: 1; background: none; }
+.pay-with .pay-option.ps-card:disabled .card-art, .pay-with .pay-option.ps-card:disabled .pay-art { opacity: 0.5; filter: grayscale(0.7); }
+.pay-with .ps-card .card-art { box-shadow: var(--b-shadow-card); }
+.pay-with .ps-card-name { max-width: 220px; font-size: var(--b-small); font-weight: 700; text-align: center; line-height: 1.2; }
+.pay-with .ps-card[aria-checked="true"] .ps-card-name::before { content: "✓ "; color: var(--b-plum); }
+.pay-with .ps-decline { display: flex; gap: 4px; align-items: flex-start; max-width: 220px; color: var(--b-rust-ink); font-size: var(--b-fs-tiny); font-weight: 700; text-align: left; }
+.pay-with .ps-detail { display: grid; gap: var(--b-s1); min-height: 76px; padding: var(--b-s3); background: var(--b-paper-2); border-radius: 16px; }
+.pay-with .ps-detail p { margin: 0; }
+.pay-with .ps-hint { color: var(--b-ink-soft); text-align: center; }
+.pay-with .ps-name { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.pay-with .ps-what { color: var(--b-ink-soft); font-size: var(--b-small); }
+.pay-with .ps-numbers { font-weight: 700; font-variant-numeric: lining-nums tabular-nums; }
+.pay-with .ps-warn { display: flex; gap: 4px; align-items: center; color: var(--b-rust-ink); font-weight: 700; }
+.pay-with .ps-actions { display: flex; gap: var(--b-s3); align-items: center; justify-content: space-between; margin: 0; }
+/* The Pay button: a dark pill, like the phone's. */
+.pay-with .pay-sheet .ps-pay.pay-confirm { display: inline-flex; align-items: center; justify-content: center; gap: var(--b-s2); flex: 1; max-width: 360px; min-height: 56px; margin-left: auto; font-size: var(--b-fs-lead); font-weight: 700; color: var(--b-paper); background: var(--b-ink); border: 0; border-radius: var(--b-r-round); box-shadow: var(--b-shadow-card); }
+.pay-with .pay-sheet .ps-pay.pay-confirm:disabled { color: var(--b-ink-soft); background: var(--b-paper-2); box-shadow: inset 0 0 0 2px var(--b-rule); }
+/* Pay-later plan and piggy-bank cash, drawn at card size. */
+.pay-with .pay-art { position: relative; display: grid; align-content: space-between; width: 220px; aspect-ratio: 1.586; padding: 14px 16px; border-radius: 14px; box-shadow: var(--b-shadow-card); overflow: hidden; }
+.pay-with .later-art { color: var(--b-on-plum); background: linear-gradient(135deg, var(--b-plum), color-mix(in srgb, var(--b-plum) 55%, var(--b-ink))); }
+.pay-with .later-name { font-size: var(--b-small); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.pay-with .later-first { font-family: var(--b-display); font-weight: 400; font-size: 1.7rem; }
+.pay-with .later-dots { display: flex; gap: 10px; }
+.pay-with .later-dots i { width: 16px; height: 16px; border: 2.5px solid currentColor; border-radius: 50%; }
+.pay-with .later-dots i.on { background: currentColor; }
+.pay-with .later-note { font-size: var(--b-fs-tiny); font-weight: 700; }
+.pay-with .cash-art { color: var(--b-paper); background: linear-gradient(135deg, var(--b-moss-3), color-mix(in srgb, var(--b-moss-3) 60%, var(--b-ink))); border: 3px double var(--b-paper); }
+.pay-with .cash-bill { display: grid; place-items: center; width: 100%; height: 70%; font-family: var(--b-display); font-size: 2.6rem; border: 2px solid currentColor; border-radius: 6px; }
+.pay-with .cash-bill b { font-weight: 400; }
+.pay-with .cash-coin { position: absolute; right: 12px; bottom: 12px; display: grid; place-items: center; width: 40px; height: 40px; color: var(--b-ink); background: var(--b-gold); border: 3px solid var(--b-gold-ink); border-radius: 50%; font-weight: 800; }
+.pay-with .cash-name { font-size: var(--b-small); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+/* Paying: hold near the reader, then a check. */
+.pay-with .pay-sheet.paying { padding-block: var(--b-s5); }
+.pay-with .ps-terminal { display: grid; justify-items: center; gap: var(--b-s3); padding: var(--b-s3) 0; text-align: center; }
+.pay-with .ps-terminal .ps-art { transform: scale(0.9); }
+.pay-with .ps-state { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.pay-with .ps-terminal small { color: var(--b-ink-soft); }
+.pay-with .ps-ring { position: relative; display: grid; place-items: center; width: 88px; height: 88px; color: var(--b-plum); }
+.pay-with .ps-ring i { position: absolute; inset: 0; border: 3px solid currentColor; border-radius: 50%; opacity: 0.55; animation: ps-wave 1.1s ease-out infinite; }
+.pay-with .ps-ring i:nth-child(2) { animation-delay: 0.3s; }
+.pay-with .ps-ring i:nth-child(3) { animation-delay: 0.6s; }
+@keyframes ps-wave { from { transform: scale(0.45); opacity: 0.7; } to { transform: scale(1.1); opacity: 0; } }
+.pay-with .ps-terminal.done .ps-ring { color: var(--b-on-right); background: var(--b-right); border-radius: 50%; animation: ps-pop 0.3s ease-out; }
+.pay-with .ps-terminal.done .ps-ring i { display: none; }
+@keyframes ps-pop { from { transform: scale(0.5); } 70% { transform: scale(1.12); } to { transform: none; } }
+:root[data-motion="calm"] .pay-with .ps-ring i, :root[data-motion="calm"] .pay-with .ps-terminal.done .ps-ring { animation: none; }
+@media (prefers-reduced-motion: reduce) { .pay-with .ps-ring i, .pay-with .ps-terminal.done .ps-ring, .pay-with .pay-option.ps-card:hover:not(:disabled) { animation: none; transform: none; } }
+.pay-with .pay-art, .pay-with .ps-card .card-art.mini { width: 190px; }
+.pay-with .ps-card .card-art.mini { font-size: 0.6rem; padding: 10px 12px; }
+.pay-with .ps-card-name, .pay-with .ps-decline { max-width: 190px; }
+.pay-with .ps-actions { position: sticky; bottom: 92px; z-index: 6; padding-top: var(--b-s2); background: var(--b-paper); }
+.bst-month .dc-receipt { display: flex; align-items: center; gap: var(--b-s1); margin: var(--b-s1) 0 0; color: var(--b-ink-soft); font-size: var(--b-small); font-variant-numeric: lining-nums tabular-nums; }
+/* Text in the outcome and Tradeoffs reads at full strength. */
+.bst-month .dc-outcome p.note, .dc-tradeoffs .muted, .dc-tradeoffs .sentences { color: var(--b-ink); }
+.dc-tradeoffs .trade-delta.worse { color: var(--b-ink); }

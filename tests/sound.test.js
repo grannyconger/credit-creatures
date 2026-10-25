@@ -3,13 +3,13 @@ import assert from "node:assert/strict";
 import { existsSync, statSync } from "node:fs";
 import { EVENTS, SOUND_EVENTS, MASTER_VOLUME, CALM_VOLUME, PITCH_SPREAD, pitchFor, allowPlay, sfx } from "../js/ui/sound.js";
 
-const NAMED = ["tap", "coinGain", "coinLoss", "levelUp", "questComplete", "chestOpen", "purchase", "error", "creditScoreUp", "creditScoreDown"];
+const NAMED = ["tap", "coinGain", "coinLoss", "levelUp", "questComplete", "chestOpen", "purchase", "error", "creditScoreUp", "creditScoreDown", "tapToPay"];
 
 test("every named sound event exists and has a small .ogg and .m4a file", () => {
   for (const name of NAMED) assert.ok(SOUND_EVENTS.includes(name), `missing event ${name}`);
   for (const [name, ev] of Object.entries(EVENTS)) {
     assert.equal(typeof sfx[name], "function", `sfx.${name}`);
-    for (const ext of ["ogg", "m4a"]) {
+    for (const ext of ev.formats || ["ogg", "m4a"]) {
       const path = new URL(`../sounds/${ev.file}.${ext}`, import.meta.url);
       assert.ok(existsSync(path), `sounds/${ev.file}.${ext}`);
       assert.ok(statSync(path).size < 40 * 1024, `sounds/${ev.file}.${ext} is over 40 KB`);

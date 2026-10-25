@@ -127,6 +127,40 @@ for (const theme of themes) {
       });
     }
   }
+  // The pay sheet (a phone payment screen inside a decision card): choosing a card, and the receipt after.
+  if (!only || only === "pay") {
+    await run("pay-sheet", async () => {
+      await page.evaluate(async () => {
+        const E = await import("/js/engine/index.js");
+        const { openCard } = await import("/js/engine/accounts.js");
+        const { copyLife } = await import("/js/engine/life.js");
+        const { decisionCard } = await import("/js/ui/decision-card.js");
+        let life = E.earn(E.createLife({ seed: "contrast", ageMonths: 18 * 12 }), 400, "shift").life;
+        const next = copyLife(life);
+        openCard(next, { product: "student", name: "Student Card", issuer: "chase", network: "visa", icon: "🏛️", limit: 500, apr: 0.24, annualFee: 0 });
+        openCard(next, { product: "student", name: "Rewards Card", issuer: "capitalOne", network: "mastercard", icon: "🏛️", limit: 100, apr: 0.27, annualFee: 0 });
+        life = next;
+        const choices = [{ key: "a", label: "Buy it", cost: { amount: 349, item: "Charger bundle", merchant: "Techtopia", methods: ["debit", "card", "bnpl"] } }, { key: "b", label: "Skip" }];
+        const def = { id: "contrast", title: "Cracked phone", icon: "📱", group: "costs", text: () => ["Your phone cracked."] };
+        const root = document.getElementById("app");
+        root.replaceChildren();
+        const wrap = document.createElement("div");
+        wrap.className = "bestiary bst-month";
+        root.append(wrap);
+        wrap.append(decisionCard({ def, kind: "life", life, ctx: {}, choices, track: () => {}, payAllowed: ["debit", "card", "bnpl"], choose: async (key, method) => ({ ...E.resolveChoice(life, choices.find((c) => c.key === key), method), outcome: "Done." }), onContinue: () => {} }));
+      });
+      await page.locator(".dc-choice").first().click();
+      await page.locator(".dc-submit").click();
+      await page.locator(".ps-card", { hasText: "Student Card" }).click();
+    });
+    await run("pay-terminal", async () => {
+      await page.locator(".pay-confirm").click();
+      await page.locator(".ps-terminal.done").waitFor();
+    });
+    await run("pay-receipt", async () => {
+      await page.locator(".dc-receipt").waitFor();
+    });
+  }
   if (!only) {
     await run("things-to-do", async () => {
       await open(page, "hub");

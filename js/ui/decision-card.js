@@ -2,7 +2,7 @@
 // picker when a choice costs money, then the outcome with a 👍/😐/👎 reaction.
 import { h, add, fill } from "./dom.js";
 import { burstFrom } from "./motion/particles.js";
-import { payWith } from "./pay-with.js";
+import { payWith, methodLabel } from "./pay-with.js";
 import { sfx } from "./sound.js";
 import { FACTOR_LABELS, compareChoices, allSame, startRow, dollars } from "../engine/index.js";
 import { GROUP_LABELS } from "../data/scenarios.js";
@@ -67,7 +67,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
   // (bug fix 2026-10-22: a student scrolling on a touch screen picked an
   // answer by accident and it lowered her score).
   function showChoices(error = "") {
-    card.classList.remove("is-outcome");
+    card.classList.remove("is-outcome", "is-paying");
     let selected = null;
     const submit = h("button.dc-submit", { type: "button", disabled: true }, "Lock in my choice");
     const buttons = choices.map((c) =>
@@ -112,6 +112,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
 
   function pick(c) {
     if (!c.cost) return run(c, null);
+    card.classList.add("is-paying");
     fill(body, payWith({ life, cost: c.cost, allowed: payAllowed, onPick: (method) => run(c, method), onBack: () => showChoices() }));
     body.querySelector("button.pay-option:not([disabled])")?.focus({ preventScroll: true });
   }
@@ -213,6 +214,8 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         { class: c.quality === "bad" ? "bad" : c.quality === "good" ? "good" : "", role: "status" },
         h("p", h("strong", c.label)),
         r.outcome ? h("p", r.outcome) : null,
+        // A digital receipt for what was paid, like the one a phone shows after a tap to pay.
+        c.cost && lastMethod && !r.denied ? h("p.dc-receipt", icon("receipt", { size: 16 }), h("span", ` Paid ${dollars(c.cost.amount)} with ${methodLabel(lastMethod, life)}`)) : null,
         // Quests earn XP.
         r.xp ? h("p.dc-xp", icon("star", { size: 16 }), h("span", ` +${r.xp} XP`)) : null,
         verdict && !r.denied ? h("p.dc-verdict", icon(verdict[0], { size: 16 }), h("span", verdict[1])) : null,
