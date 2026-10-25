@@ -49,6 +49,12 @@ export function homeSteps(u, plan) {
   return [["openPurchaseLoan", { item: u.name.toLowerCase(), price: u.price, termMonths: plan.term, apr: u.loan.apr, lender: "creditUnion", type: "homeLoan", icon: u.icon }]];
 }
 
+// What the student's ride is worth now, for net worth: half its price. 0 with no ride.
+export function vehicleValue(play) {
+  const v = VEHICLE_BY_ID[play?.garage?.vehicle];
+  return v ? Math.round(v.price / 2) : 0;
+}
+
 // Selling a ride gets back half its price. Any loan on it keeps going.
 export function sellSteps(life, v) {
   const steps = [["receiveCash", Math.round(v.price / 2), `sold the ${v.name.toLowerCase()}`]];

@@ -363,5 +363,12 @@ test("every card asks a bold question, math cards have a Hint and a calculator, 
   await expect(page.locator(".trade-col.chosen [data-metric='owed']")).toContainText("Liabilities");
   await expect(page.locator(".trade-col.chosen [data-metric='qol']")).toContainText("Quality of life");
   await expect(page.locator(".dc-qol")).toContainText("Quality of life +4");
+  // Calm cards: one legend for the panel, bars for the parts, and no explaining words or "No change" lines.
+  await expect(page.locator(".dc-tradeoffs .seg-legend")).toHaveCount(1);
+  await expect(page.locator(".trade-col.chosen .seg-bar").first()).toBeVisible();
+  await expect(page.locator(".dc-tradeoffs")).not.toContainText("No change");
+  await expect(page.locator(".dc-tradeoffs")).not.toContainText("what you have");
+  await expect(page.locator(".dc-tradeoffs")).not.toContainText("Best of these");
+  await expect(page.locator(".trade-col.chosen [data-metric='assets'] .seg-bar")).toHaveAttribute("aria-label", /Assets: Checking/);
   expect(errors).toEqual([]);
 });

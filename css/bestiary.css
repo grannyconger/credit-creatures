@@ -6348,3 +6348,35 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .trade-metric.minor .trade-bar { display: none; }
 /* A locked-out Lock in button still reads at full contrast, and says so with a dashed edge. */
 .bst-month .dc-submit:disabled { color: var(--b-ink); border: 2px dashed var(--b-rule); }
+
+/* ---- Calmer Tradeoffs: color-coded bars instead of explaining words (teacher request 2026-10-25) ---- */
+.seg-legend { display: flex; flex-wrap: wrap; gap: 4px var(--b-s4); margin: var(--b-s2) 0 0; padding: 0; list-style: none; font-size: var(--b-fs-tiny); color: var(--b-ink); }
+.seg-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.seg-swatch { display: inline-block; width: 20px; height: 12px; border-radius: 3px; }
+.seg-bar { position: relative; height: 14px; background: var(--b-paper-edge); border-radius: var(--b-r-round); }
+.seg-fill { display: flex; height: 100%; overflow: hidden; border-radius: var(--b-r-round); }
+.seg-fill .seg { min-width: 4px; }
+.seg + .seg { box-shadow: inset 2px 0 0 var(--b-paper); }
+.seg-tick { position: absolute; top: -3px; bottom: -3px; width: 3px; margin-left: -1px; background: var(--b-ink); border-radius: 2px; }
+/* One color and one pattern per part, so color is never the only cue. */
+.seg-checking { background: var(--seg-checking); }
+.seg-cards { background: var(--seg-cards); }
+.seg-qol { background: var(--seg-qol); }
+.seg-savings { background: repeating-linear-gradient(45deg, transparent 0 4px, color-mix(in srgb, var(--b-paper) 50%, transparent) 4px 8px), var(--seg-savings); }
+.seg-loans { background: repeating-linear-gradient(-45deg, transparent 0 4px, color-mix(in srgb, var(--b-paper) 50%, transparent) 4px 8px), var(--seg-loans); }
+.seg-locked { background: radial-gradient(circle, color-mix(in srgb, var(--b-paper) 75%, transparent) 1.6px, transparent 2.2px) 0 0 / 7px 7px, var(--seg-locked); }
+.seg-later { background: radial-gradient(circle, color-mix(in srgb, var(--b-paper) 75%, transparent) 1.6px, transparent 2.2px) 0 0 / 7px 7px, var(--seg-later); }
+.seg-car { background: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--b-paper) 50%, transparent) 3px 5px), repeating-linear-gradient(90deg, transparent 0 3px, color-mix(in srgb, var(--b-paper) 50%, transparent) 3px 5px), var(--seg-car); }
+/* The metrics: a label, the number, a star if best, a change only if there is one, then the bar. */
+.trade-metric { display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; padding-top: var(--b-s2); border-top: 1px dashed var(--b-rule); }
+.trade-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--b-s2); }
+.trade-label { flex: 1 1 auto; color: var(--b-ink); font-size: var(--b-small); font-weight: 700; }
+.trade-value { font-family: var(--b-display); font-weight: 400; font-size: 1.4rem; font-variant-numeric: lining-nums tabular-nums; line-height: 1.05; text-align: right; }
+.trade-best { align-self: center; display: inline-flex; color: var(--b-gold-ink); }
+.trade-delta { display: inline-flex; align-items: center; gap: 2px; align-self: center; padding: 0 8px; font-size: var(--b-fs-tiny); font-weight: 700; line-height: 1.6; border-radius: var(--b-r-round); }
+.trade-delta.better { color: var(--b-on-right); background: var(--b-right); }
+.trade-delta.worse { color: var(--b-ink); background: none; border: 2px dashed var(--b-rust-ink); }
+.trade-metric.minor { padding-top: var(--b-s1); }
+.trade-metric.minor .trade-value { font-size: 1.05rem; }
+.trade-metric.minor .trade-head { flex-wrap: nowrap; }
+.dc-tradeoffs > .seg-legend { grid-column: 1 / -1; margin-bottom: var(--b-s1); }

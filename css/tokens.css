@@ -630,3 +630,19 @@
   --arc-noir-red: #b3261e;
   --arc-noir-light: #fff3bd;
 }
+
+/* The parts of a total, for the stacked bars in the Tradeoffs and the Vault Overview
+   (js/ui/segment-bar.js). Built from existing tokens, so they follow light, dark and
+   dyslexia modes. Each part also has its own pattern in css/bestiary.css. The --b-*
+   tokens live on .bestiary, so these do too. */
+.bestiary,
+.bst-scope {
+  --seg-checking: var(--b-right);
+  --seg-savings: var(--b-gold);
+  --seg-locked: var(--b-plum);
+  --seg-car: var(--b-ink-soft);
+  --seg-cards: var(--b-rust);
+  --seg-loans: var(--b-rust-ink);
+  --seg-later: var(--b-gold-ink);
+  --seg-qol: var(--b-plum);
+}

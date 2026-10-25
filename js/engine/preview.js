@@ -6,6 +6,7 @@ import { resolveChoice, paymentOptions, utilization } from "./cards.js";
 import { buildReport } from "./report.js";
 import { computeScore } from "./score.js";
 import { CONFIG } from "../data/config.js";
+import { balanceSheet } from "./balance.js";
 
 // The numbers a student can compare. score is null until there's enough history.
 export function lifeMetrics(life) {
@@ -32,8 +33,9 @@ function methodFor(life, choice, preferred, allowed) {
 // qol is the Quality of Life meter now. Each choice's points (c.qol) move it, apart from money.
 const clampQol = (n) => Math.max(CONFIG.pacing.qol.min, Math.min(CONFIG.pacing.qol.max, n));
 
-export function compareChoices(life, choices, { chosenKey = null, chosenMethod = null, allowed = null, qol = null } = {}) {
+export function compareChoices(life, choices, { chosenKey = null, chosenMethod = null, allowed = null, qol = null, vehicleValue = 0 } = {}) {
   const now = lifeMetrics(life);
+  const nowSheet = balanceSheet(life, { vehicleValue });
   return choices.map((c) => {
     const out = { key: c.key, label: c.label, chosen: c.key === chosenKey, effect: c.effect || null, quiz: Boolean(c.quiz) };
     if (c.disabled) return { ...out, ok: false, reason: c.disabled };
@@ -48,7 +50,12 @@ export function compareChoices(life, choices, { chosenKey = null, chosenMethod =
       metrics.qol = clampQol(qol + (c.qol || 0));
       delta.qol = metrics.qol - qol;
     }
-    return { ...out, ok: true, denied: Boolean(r.denied), metrics, delta };
+    // The same choice's balance sheet, with its parts, so a bar can show what moved.
+    // Assets includes the car, so it is the number the Vault Overview shows too.
+    const sheet = balanceSheet(r.life, { vehicleValue });
+    metrics.assets = sheet.assets.total;
+    delta.assets = Math.round((sheet.assets.total - nowSheet.assets.total) * 100) / 100;
+    return { ...out, ok: true, denied: Boolean(r.denied), metrics, delta, sheet };
   });
 }
 
@@ -60,9 +67,11 @@ export function allSame(rows) {
 }
 
 // A column for "where you started", used when a card has only one choice to compare.
-export function startRow(life, qol = null) {
+export function startRow(life, qol = null, vehicleValue = 0) {
   const metrics = lifeMetrics(life);
   if (qol != null) metrics.qol = qol;
+  const sheet = balanceSheet(life, { vehicleValue });
+  metrics.assets = sheet.assets.total;
   const delta = Object.fromEntries(Object.keys(metrics).map((k) => [k, metrics[k] == null ? null : 0]));
-  return { key: "_start", label: "Where you started", chosen: false, start: true, ok: true, denied: false, metrics, delta, effect: null, quiz: false };
+  return { key: "_start", label: "Where you started", chosen: false, start: true, ok: true, denied: false, metrics, delta, effect: null, quiz: false, sheet };
 }

@@ -20,6 +20,7 @@ import { factorOptions, factorChoice } from "../../data/practice-questions.js";
 import { monthSummary } from "../month-summary.js";
 import { ASKS } from "../../data/card-asks.js";
 import { HINTS } from "../../data/card-hints.js";
+import { vehicleValue } from "../../data/garage.js";
 import { sealSvg } from "../bestiary-art.js";
 
 export function render(root, { game, go, track, refreshWho }) {
@@ -167,6 +168,7 @@ export function render(root, { game, go, track, refreshWho }) {
       ask: ASKS[def.id] || "",
       hint: HINTS[def.id] || null,
       qolNow: run.play.qol ?? CONFIG.pacing.qol.start,
+      vehicleValue: vehicleValue(run.play),
       def,
       kind,
       life: run.life,
