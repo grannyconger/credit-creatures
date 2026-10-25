@@ -19,7 +19,7 @@ const WHAT = {
 
 // How long each step of paying shows, in ms. Calm motion and reduced motion
 // keep it short, so nobody waits on an animation.
-const STEPS = { reader: 900, done: 1000, calmReader: 250, calmDone: 500 };
+const STEPS = { reader: 900, done: 1300, calmReader: 250, calmDone: 500 };
 const calm = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "calm";
 
 // A pay-later plan drawn like a card: dots for each payment, the first one filled.

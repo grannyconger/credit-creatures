@@ -19,6 +19,6 @@ Each sound comes as `.ogg` (the original) and `.m4a` (AAC, for Safari before ver
 | correct | correct | Interface Sounds, confirmation_002 |
 | stamp | stamp | RPG Audio, bookPlace1 |
 
-Not by Kenney: `tap-to-pay.wav` and `.m4a` (event tapToPay) are an original two-note chime made by `scripts/make-tap-to-pay.py`, so there is nothing to credit. They are the only sounds that use `.wav` instead of `.ogg`, because no Ogg encoder was on hand. Run the script again to remake them.
+Not by Kenney: `apple-pay.mp3` (event tapToPay) was supplied by the teacher on 2026-10-25. It sounds like the Apple Pay confirmation chime, so it is **not** CC0 and has not been cleared for public use. It is used here as the teacher's decision for a classroom lesson. If the site is ever shared more widely, swap it for a sound you have the rights to.
 
 Packs: https://kenney.nl/assets/interface-sounds, https://kenney.nl/assets/rpg-audio, https://kenney.nl/assets/casino-audio, https://kenney.nl/assets/music-jingles
