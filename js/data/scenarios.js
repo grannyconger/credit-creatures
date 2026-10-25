@@ -207,34 +207,31 @@ export const SCENARIOS = [
     text: () => [
       "The bus is slow and your bus pass costs $30 a month. A used car costs $4,000. Gas and insurance would add about $90 a month.",
       "Truliant, a local credit union, wants $500 down for a 48-month loan. The dealer offers $0 down for 72 months, but adds to the rate.",
+      "This one is only an example. Nothing is bought. You can buy a ride for real at the Garage.",
     ],
     choices: (life) => {
       const cu = quoteAutoLoan(life, { price: 4000, downPayment: 500, termMonths: 48 });
       const dealer = quoteAutoLoan(life, { price: 4000, downPayment: 0, termMonths: 72, aprBump: 0.04 });
-      const carBills = [["removeBill", "Bus pass"], ["addBill", "Gas and insurance", 90]];
-      const denied = "Denied. Your score is too low for this loan right now. The application still added a hard inquiry.";
+      // An example only (teacher decision 2026-10-25): no loan opens and no money moves.
+      // The real purchase is at the Garage.
       return [
         {
           key: "creditUnion",
           label: `Truliant loan: ${dollars(cu.payment)}/month`,
           detail: `$500 down, ${apr(cu.apr)} APR, 48 months`,
-          steps: [["openAutoLoan", { price: 4000, downPayment: 500, termMonths: 48, lender: "creditUnion" }], ...carBills],
-          outcome: (r) => (r.denied ? denied : "You got the car. A loan you pay on time builds history and adds an installment loan to your credit mix."),
+          outcome: "Just an example, so nothing was bought. With this loan you'd pay on time to build history, and it would add an installment loan to your credit mix.",
           quality: "ok",
-          factor: { key: "mix", dir: "up" },
           math: `Truliant: ${dollars(cu.amount)} at ${apr(cu.apr)} for 48 months = ${dollars(cu.payment)} a month and ${dollars(cu.totalInterest)} in interest.`,
         },
         {
           key: "dealer",
           label: `Dealer financing: ${dollars(dealer.payment)}/month`,
           detail: `$0 down, ${apr(dealer.apr)} APR, 72 months`,
-          steps: [["openAutoLoan", { price: 4000, downPayment: 0, termMonths: 72, lender: "dealer", aprBump: 0.04 }], ...carBills],
-          outcome: (r) => (r.denied ? denied : "You got the car with nothing down, but you'll pay for it for 6 years and pay much more interest."),
+          outcome: "Just an example, so nothing was bought. With nothing down you'd pay for the car for 6 years and pay much more interest.",
           quality: "bad",
-          factor: { key: "mix", dir: "up" },
           math: `Dealer: ${dollars(dealer.amount)} at ${apr(dealer.apr)} for 72 months = ${dollars(dealer.payment)} a month and ${dollars(dealer.totalInterest)} in interest. That is ${dollars(dealer.totalInterest - cu.totalInterest)} more than Truliant.`,
         },
-        { key: "bus", label: "Keep taking the bus", outcome: "No loan, no inquiry. Your $30 bus pass is still the cheapest ride in the kingdom.", quality: "good" },
+        { key: "bus", label: "Keep taking the bus", outcome: "Just an example, so nothing was bought. Still, the bus has no loan and no inquiry, and your $30 bus pass is the cheapest ride in the kingdom.", quality: "good" },
       ];
     },
   },
@@ -788,17 +785,17 @@ export const SCENARIOS = [
     text: () => [
       "A dealer offers a shiny new car for $199 a month for 3 years, with $300 due when you sign. That's a lease.",
       "With a lease you're renting the car. After 3 years you give it back and own nothing. Gas and insurance add about $90 a month.",
+      "This one is only an example. Nothing is signed or bought.",
     ],
     choices: () => [
       {
         key: "lease",
         label: "Sign the lease",
-        steps: [["debitPurchase", 300, "car lease signing fee"], ["addBill", "Car lease", 199, 36], ["removeBill", "Bus pass"], ["addBill", "Gas and insurance", 90]],
-        outcome: "New car smell! $199 comes out every month for 3 years, and at the end you own nothing.",
+        outcome: "Just an example, so nothing was signed. If you did, $199 would come out every month for 3 years, and at the end you'd own nothing.",
         quality: "bad",
         math: "$300 + $199 × 36 months = $7,464 to drive a car you give back.",
       },
-      { key: "bus", label: "Keep riding the bus", outcome: "Your $30 bus pass wins again. You can save for a used car you'd actually own.", quality: "good" },
+      { key: "bus", label: "Keep riding the bus", outcome: "Just an example, so nothing was signed. Your $30 bus pass wins again, and you can save for a used car you'd actually own.", quality: "good" },
     ],
   },
   {

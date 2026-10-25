@@ -134,3 +134,19 @@ test("hints say how to work it out, never the answer", () => {
     }
   }
 });
+
+test("the car cards are examples only: no loan opens, no lease is signed and no money moves", () => {
+  const life = lifeWith({ seed: "cars", checking: 900 });
+  for (const id of ["carDecision", "carLease"]) {
+    const def = ALL.find((c) => c.id === id);
+    const text = asList(def.text(life, { chapter: 5, seen: [] })).join(" ");
+    assert.match(text, /only an example/, `${id} says it's an example`);
+    for (const c of def.choices(life, { chapter: 5, seen: [] })) {
+      assert.ok(!c.steps && !c.cost, `${id}.${c.key} changes nothing in the game`);
+      assert.match(typeof c.outcome === "string" ? c.outcome : "", /example/, `${id}.${c.key} outcome says so`);
+      const r = E.resolveChoice(life, c, null);
+      assert.equal(JSON.stringify(r.life), JSON.stringify(life), `${id}.${c.key} leaves the life alone`);
+      assert.equal(QOL[id][c.key], 0, `${id}.${c.key} doesn't move Quality of Life`);
+    }
+  }
+});

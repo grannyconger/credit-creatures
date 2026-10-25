@@ -30,7 +30,7 @@ export const QOL = {
   prescreened: { apply: 1, shred: 0 },
   securedUpgrade: { upgrade: 1, keep: 0 },
   limitIncrease: { accept: 1, decline: 0 },
-  carDecision: { creditUnion: 4, dealer: 4, bus: -1 },
+  carDecision: { creditUnion: 0, dealer: 0, bus: 0 }, // an example, so nothing changes
   studentLoan: { federal: 2, private: 2, notYet: -1 },
   graduation: { celebrate: 5 },
   storeCard: { open: 3, pay: 2, skip: -1 },
@@ -47,7 +47,7 @@ export const QOL = {
   weekendPlans: { go: 4, free: 3 },
   payYourselfFirst: { hundred: 0, fifty: 0, none: 1 },
   smallCharge: { card: 0, debit: 0, cancel: -1 },
-  carLease: { lease: 4, bus: -1 },
+  carLease: { lease: 0, bus: 0 }, // an example, so nothing changes
   rewardsCard: { apply: 1, skip: 0 },
   balanceTransfer: { transfer: 1, payDown: 0 },
   deferredInterest: { planFull: 3, planHalf: 3, cheaper: 1 },
