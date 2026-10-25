@@ -113,7 +113,8 @@ export function startGuide({ steps: STEPS, id, track, onFinish, returnTo = null 
       }
     }
     if (my !== token) return;
-    if (step.click) (await waitFor(step.click, 1200))?.click();
+    // click can be one thing to press, or a list pressed in order (a tab, then a sub-tab inside it).
+    for (const c of [].concat(step.click || [])) (await waitFor(c, 1200))?.click();
     current = target ? await waitFor(target) : null;
     if (my !== token) return;
     // Phones keep the bubble at the bottom, so the spotlight goes near the top.

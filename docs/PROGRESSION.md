@@ -14,7 +14,7 @@ ask it.
 | Chapter 1: Your first bank account | 16 | Checking, savings, debit card, a phone bill, overdraft fees, Inbox | Vault, Town Hall, Friendship Plaza, Academy | + Check Writer |
 | Chapter 2: Borrow and pay back | 18 (time skip at the end of Ch 1) | Installment loans: vehicles (Garage), cottage upgrades (home improvement loan), credit-builder and student loans | The Garage | + Ledger Sort |
 | Chapter 3: Your first credit card | 18 | Credit card (Design Your Card at the end of Ch 2), statements, utilization, card AutoPay, credit and buy now, pay later at checkout | | |
-| Chapter 4: Your credit score | 19 | The score, My Score and My Report, score-based offers | The Hall of Records | |
+| Chapter 4: Your credit score | 19 | The score, My Score and My Report, score-based offers | My Score and My Report in the Vault, under Build Credit (the Hall of Records moved into the Vault on 2026-10-25) | |
 | Chapter 5 | 19 | Pitfalls: payday and title loans, rent-to-own, settlement ads, cosigning, collections | Lantern Alley (Phase 12) | |
 | Chapter 6: Moving out | 19+ | Rent, utilities, renter's insurance, roommates (Phase 13 cards) | | |
 | Chapter 7: Setbacks and comebacks | | Emergencies, hardship plans, goodwill letters, fake collectors | | |

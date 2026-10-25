@@ -13,7 +13,7 @@ import { seededStudent, seedRichVault, open, closePopups } from "./helpers.js";
 const args = process.argv.slice(2);
 const only = args.find((a) => !a.startsWith("--"));
 const themes = args.includes("--dark") ? ["dark"] : args.includes("--light") ? ["light"] : ["light", "dark"];
-const ROUTES = ["hub", "map", "month", "guild", "accounts", "records", "shop", "academy", "cottage", "garage", "alley", "friends", "trophies", "leaderboard", "daily"];
+const ROUTES = ["hub", "map", "month", "guild", "accounts", "shop", "academy", "cottage", "garage", "alley", "friends", "trophies", "leaderboard", "daily"];
 
 // Runs in the page. Walks up from each text element to find what's behind it.
 function audit(withGradients) {

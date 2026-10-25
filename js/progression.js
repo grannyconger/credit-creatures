@@ -121,7 +121,7 @@ export const UNLOCKS = {
   4: {
     icon: "📜",
     title: "Your credit score",
-    text: "The Hall of Records is open. It keeps your credit report and your credit score. From now on, offers depend on your score.",
+    text: "Your credit score is open in the Vault, under Build Credit. It shows your credit report and your credit score. From now on, offers depend on your score.",
     lesson: "score",
   },
   5: {

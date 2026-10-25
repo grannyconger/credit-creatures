@@ -125,12 +125,12 @@ function paintChallenges(game) {
 // the same). Each place has its own hue and a large icon on a medallion. Locked
 // places stay visible with a lock and the words that say when they open.
 const GROUPS = [
-  { title: "Your money", ids: ["vault", "townhall", "records", "garage"] },
+  { title: "Your money", ids: ["vault", "townhall", "garage"] },
   { title: "Earn and learn", ids: ["guild", "academy", "daily", "alley"] },
   { title: "Shop and home", ids: ["market", "cottage"] },
   { title: "Friends and fame", ids: ["plaza", "leaderboard", "trophies", "map"] },
 ];
-const HUE = { vault: "vault", townhall: "townhall", guild: "arcade", records: "records", garage: "garage", market: "market", cottage: "cottage", plaza: "plaza", alley: "alley", academy: "academy", map: "map", leaderboard: "board", trophies: "trophy", daily: "daily" };
+const HUE = { vault: "vault", townhall: "townhall", guild: "arcade", garage: "garage", market: "market", cottage: "cottage", plaza: "plaza", alley: "alley", academy: "academy", map: "map", leaderboard: "board", trophies: "trophy", daily: "daily" };
 
 export function openThingsToDo() {
   const game = api?.getGame();

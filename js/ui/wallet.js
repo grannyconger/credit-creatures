@@ -35,7 +35,8 @@ function chip(ico, label, value, cls = "", roll = null) {
   return h("li", { class: cls }, icon(ico, { size: 22 }), h("small", label), strong);
 }
 
-export function walletStrip(life, creature) {
+// loans: false leaves the loan list out (the Vault shows loans under Manage Debt).
+export function walletStrip(life, creature, { loans: showLoans = true } = {}) {
   const holder = fullName(creature);
   const items = [
     h(
@@ -60,7 +61,7 @@ export function walletStrip(life, creature) {
     { "aria-label": "Your digital wallet" },
     h("h3", icon("wallet", { size: 20 }), " Your digital wallet"),
     h("div.wallet-row", items),
-    loans.length
+    showLoans && loans.length
       ? h(
           "ul.loan-list",
           loans.map((a) => h("li", h("span", { "aria-hidden": "true" }, a.icon), ` ${a.name}: `, h("strong", money(amountOwed(a))), a.payment ? ` (${money(a.payment)}/month)` : ""))
@@ -69,25 +70,3 @@ export function walletStrip(life, creature) {
   );
 }
 
-// Buttons into Account Management, with the inbox's unread count.
-export function accountButtons(game, go, unread) {
-  const open = (tab) => () => {
-    game.accountsTab = tab;
-    go("accounts");
-  };
-  return h(
-    "div.acct-buttons",
-    h("button.secondary", { type: "button", onclick: open("wallet") }, "🏦 Accounts"),
-    h("button.secondary", { type: "button", onclick: open("score") }, "⭐ My Score"),
-    h("button.secondary", { type: "button", onclick: open("desk") }, "🧮 Practice Desk"),
-    h("button.secondary", { type: "button", onclick: () => go("shop") }, "🛍️ Shop"),
-    h("button.secondary", { type: "button", onclick: () => go("trophies") }, "🏆 Trophies"),
-    game.classInfo?.social === false ? null : h("button.secondary", { type: "button", onclick: () => go("friends") }, "👥 Friends"),
-    h(
-      "button.secondary",
-      { type: "button", onclick: open("inbox"), "aria-label": unread ? `Inbox, ${unread} unread` : "Inbox" },
-      "📬 Inbox",
-      unread ? h("span.count-badge", { "aria-hidden": "true" }, String(unread)) : null
-    )
-  );
-}

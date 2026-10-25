@@ -29,10 +29,12 @@ test("every icon name written in the code exists in the icon set", () => {
   for (const name of used) assert.ok(ICON_NAMES.includes(name), `missing icon: ${name}`);
 });
 
-test("the kingdom has ten places, each with a route, a feature, a spot on the map and plain text", async () => {
+test("the kingdom has nine places, each with a route, a feature, a spot on the map and plain text", async () => {
   const { FEATURES } = await import("../js/progression.js");
-  assert.equal(PLACES.length, 10);
-  assert.equal(new Set(PLACES.map((p) => p.id)).size, 10);
+  // The Hall of Records moved into the Vault (2026-10-25), so there is no tile for it.
+  assert.equal(PLACES.length, 9);
+  assert.equal(new Set(PLACES.map((p) => p.id)).size, 9);
+  assert.ok(!PLACES.some((p) => p.id === "records"));
   for (const p of PLACES) {
     assert.ok(p.route && p.name && p.does, p.id);
     assert.ok(FEATURES[p.feature], `${p.id} has a feature`);
@@ -119,7 +121,7 @@ test("lessons cover every unlock, follow the text rules and have fair quizzes", 
       for (const w of words) assert.ok(!w.includes("—") && !w.includes(";"), w);
       if (s.quiz) assert.ok(s.quiz.answer >= 0 && s.quiz.answer < s.quiz.choices.length, s.title);
       // A lesson may only click tabs, never something that changes the game.
-      if (s.click) assert.match(s.click.sel, /acct-tabs/, s.title);
+      for (const c of [].concat(s.click || [])) assert.match(c.sel, /acct-(sub)?tabs/, s.title);
     }
   }
 });

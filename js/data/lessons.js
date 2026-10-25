@@ -15,6 +15,7 @@ export const GUIDE = {
 };
 
 const tab = (text, sel = ".acct-tabs button") => ({ sel, text });
+const sub = (text) => tab(text, ".acct-subtabs button");
 
 // feature: what has to be unlocked to replay it (js/progression.js).
 export const LESSONS = {
@@ -63,7 +64,7 @@ export const LESSONS = {
     steps: [
       { route: "hub", big: "🏦", title: "You opened a bank account!", text: ["Chapter 1 begins. Your coins are safe at the Vault now, and you have a debit card.", "Four new places opened: the Vault, Town Hall, Friendship Plaza and the Academy."] },
       { route: "hub", target: ".money-chips", title: "Checking and savings", text: ["Checking is for spending. Your debit card takes money straight from it.", "Savings is for later. Move money there so it's not so easy to spend."] },
-      { route: "accounts", click: tab("Wallet"), target: [".bills", ".acct-body"], title: "Bills come out of checking", text: ["Your phone bill comes out of checking on its own at End Month. If checking is short, the bank charges a $35 overdraft fee.", "You can move money between checking and savings here any time."] },
+      { route: "accounts", click: tab("Pay Bills"), target: [".bills", ".acct-body"], title: "Bills come out of checking", text: ["Your phone bill comes out of checking on its own at End Month. If checking is short, the bank charges a $35 overdraft fee.", "You can move money between checking and savings here any time."] },
       {
         route: "map",
         target: ['.place[data-place="townhall"]', '.place-row[data-place="townhall"]'],
@@ -119,29 +120,29 @@ export const LESSONS = {
       { route: "hub", big: "💳", title: "Credit cards are here", text: ["A credit card lets you borrow up to a limit, again and again. You don't pay for each purchase right away. You get a bill called a statement each month."] },
       {
         route: "accounts",
-        click: tab("Statements"),
+        click: [tab("Build Credit"), sub("Statements")],
         target: [".acct-body"],
         title: "Statements",
         text: ["Your statement lists what you bought, what you paid and what you owe. Pay the whole statement balance and there's no interest.", "Card utilization is how much of your limit you're using. Under 30% is good. Under 10% is great."],
         quiz: { q: "How do you avoid interest on a credit card?", choices: ["Pay the minimum", "Pay the full statement balance by the due date", "Use the card less often"], answer: 1, why: "Pay the full statement balance and the bank charges no interest. The minimum keeps you on time, but interest is added." },
       },
-      { route: "accounts", click: tab("Wallet"), target: [".apply-card", ".acct-body"], title: "Apply for your first card", text: ["Start here. You'll learn who's behind a card, design your own and apply. The Vault tells you exactly why it says yes or no.", "Tip: cards made for beginners, like a secured card, are the easiest to get."] },
+      { route: "accounts", click: [tab("Build Credit"), sub("Cards")], target: [".apply-card", ".acct-body"], title: "Apply for your first card", text: ["Start here. You'll learn who's behind a card, design your own and apply. The Vault tells you exactly why it says yes or no.", "Tip: cards made for beginners, like a secured card, are the easiest to get."] },
     ],
   },
   score: {
     title: "Your credit score",
     feature: "score",
     steps: [
-      { route: "hub", big: "📜", title: "Your credit score arrives", text: ["Lenders reported your loan and card payments every month. The Hall of Records turned that history into a credit score, from 300 to 850."] },
+      { route: "hub", big: "📜", title: "Your credit score arrives", text: ["Lenders reported your loan and card payments every month. The credit bureau turned that history into a credit score, from 300 to 850."] },
       {
-        route: "records",
-        click: tab("My Score"),
+        route: "accounts",
+        click: [tab("Build Credit"), sub("My Score")],
         target: [".acct-body"],
         title: "The 5 parts of your score",
         text: ["Payment history, amounts owed, length of history, credit mix and new credit. Open any part to see what moves it.", "From now on, offers and loan rates depend on your score."],
         quiz: { q: "Which part counts the most?", choices: ["Credit mix", "Payment history", "New credit"], answer: 1, why: "Payment history is 35% of your score. Paying on time, every time, matters most." },
       },
-      { route: "records", click: tab("My Report"), target: [".acct-body"], title: "Your credit report", text: ["Your report is what lenders see: every account, every late mark and every application. Check it for mistakes."] },
+      { route: "accounts", click: [tab("Build Credit"), sub("My Report")], target: [".acct-body"], title: "Your credit report", text: ["Your report is what lenders see: every account, every late mark and every application. Check it for mistakes."] },
     ],
   },
   pitfalls: {

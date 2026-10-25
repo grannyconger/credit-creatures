@@ -25,9 +25,8 @@ export const PROLOGUE_TEXT = {
 // staggered rows so no name tag lands on another building.
 export const PLACES = [
   { id: "townhall", kind: "Monthly choices", name: "Town Hall", icon: "townhall", route: "month", feature: "townhall", does: "This month's news, decisions and End Month", x: 37, y: 26 },
-  { id: "vault", kind: "Your bank", name: "The Vault", icon: "vault", route: "accounts", feature: "vault", does: "Your bank: checking, savings, bills and letters", x: 12, y: 26 },
+  { id: "vault", kind: "Your bank", name: "The Vault", icon: "vault", route: "accounts", feature: "vault", does: "Your bank: where you stand, bills, savings, credit and letters", x: 12, y: 26 },
   { id: "guild", kind: "Jobs and pay", name: "Arcade", icon: "guild", route: "guild", feature: "guild", does: "Work a shift to earn money", x: 63, y: 26 },
-  { id: "records", kind: "Your credit score", name: "Hall of Records", icon: "scroll", route: "records", feature: "records", does: "Your credit report and credit score", x: 50, y: 55 },
   { id: "garage", kind: "Cars and loans", name: "The Garage", icon: "car", route: "garage", feature: "garage", does: "Buy a ride with cash or a loan", x: 75, y: 55 },
   { id: "market", kind: "The shop", name: "Market", icon: "market", route: "shop", feature: "market", does: "Spend money on things for your creature", x: 12, y: 81 },
   { id: "cottage", kind: "Your creature's home", name: "Your Cottage", icon: "cottage", route: "cottage", feature: "cottage", does: "Your creature, its dream, its home and your settings", x: 37, y: 81 },
@@ -62,7 +61,7 @@ export function placeStatus({ life, play, creature, classInfo }) {
   if (up.cardsDue.length) out.vault = { text: "A bill is due", tone: "warn", count: up.cardsDue.length };
   else if (up.short > 0) out.vault = { text: "Checking is short", tone: "warn" };
   else if (unread) out.vault = { text: `${unread} new letter${unread === 1 ? "" : "s"}`, tone: "calm", count: unread };
-  else out.vault = { text: "All caught up", tone: "calm" };
+  else out.vault = { text: life?.score != null && hasFeature(play, "score", life) ? `Score ${life.score}` : "All caught up", tone: "calm" };
 
   out.market = { text: "New stock each chapter", tone: "calm" };
   const xpLeft = P.answerXpLeft(play);
@@ -70,7 +69,6 @@ export function placeStatus({ life, play, creature, classInfo }) {
   out.plaza = classInfo?.social === false ? { text: "Closed by your teacher", tone: "off" } : { text: "Friends and gifts", tone: "calm" };
 
   out.garage = { text: play.garage?.vehicle ? "Your ride is here" : "Rides for sale", tone: "calm" };
-  out.records = { text: life?.score == null ? "No score yet" : `Score ${life.score}`, tone: "calm" };
   const alley = alleyProgress(play);
   const stallsLeft = alley.total - alley.checked;
   out.alley = stallsLeft ? { text: `${stallsLeft} offer${stallsLeft === 1 ? "" : "s"} to check`, tone: "action", count: stallsLeft } : { text: `${alley.right} of ${alley.total} called right`, tone: "calm" };

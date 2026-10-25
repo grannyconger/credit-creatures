@@ -1,5 +1,5 @@
 // Pay your cards, set AutoPay, preview payoff time, and see what comes out of
-// checking at End Month. Used by the month's bills task and the Wallet tab.
+// checking at End Month. The pieces the Vault tabs are built from.
 import { icon } from "./icons.js";
 import { h, add, money, percent } from "./dom.js";
 import { ownCards, amountOwed, upcomingPayments, minimumOnlyPlan, payoffPlan } from "../engine/index.js";
@@ -8,16 +8,15 @@ import { CONFIG } from "../data/config.js";
 // onPay(accountId, amount, kind) runs the payment and repaints.
 // onMove("toSavings" | "toChecking", amount) moves money between accounts.
 // onAutopay(accountId, mode) sets AutoPay: null, "min" or "full".
-export function billsPanel({ life, onPay, onMove, onAutopay }) {
-  // A double click can't pay a bill or move money twice (bug fix 2026-10-22).
-  onPay = once(onPay);
-  onMove = once(onMove);
-  const cards = ownCards(life);
-  const cosigned = life.accounts.filter((a) => a.owner === "cosigned" && a.status === "open" && a.pastDue > 0);
-  const collections = life.accounts.filter((a) => a.status === "collections" && amountOwed(a) > 0);
-  const up = upcomingPayments(life);
-  const el = h("div.bills");
+// The Vault splits this across its tabs (teacher request 2026-10-25): Pay Bills takes
+// cardBills, exposureBills and upcomingBlock, Save for Goals takes savingsMover, and
+// Manage Debt takes exposureBills and payoffPreview.
 
+// A card's bill, with the buttons to pay it and its AutoPay control.
+export function cardBills({ life, onPay, onAutopay }) {
+  onPay = once(onPay);
+  const cards = ownCards(life);
+  const el = h("div.bills");
   if (!cards.length) add(el, h("p.muted", "No credit card bills right now."));
   for (const a of cards) {
     const owed = amountOwed(a);
@@ -69,7 +68,15 @@ export function billsPanel({ life, onPay, onMove, onAutopay }) {
       )
     );
   }
+  return el;
+}
 
+// Debts that need help: collections to settle and a cosigned loan that is behind.
+export function exposureBills({ life, onPay, kinds = ["collections", "cosigned"] }) {
+  onPay = once(onPay);
+  const cosigned = kinds.includes("cosigned") ? life.accounts.filter((a) => a.owner === "cosigned" && a.status === "open" && a.pastDue > 0) : [];
+  const collections = kinds.includes("collections") ? life.accounts.filter((a) => a.status === "collections" && amountOwed(a) > 0) : [];
+  const el = h("div.bills");
   for (const a of collections) {
     const owed = amountOwed(a);
     add(
@@ -82,7 +89,6 @@ export function billsPanel({ life, onPay, onMove, onAutopay }) {
       )
     );
   }
-
   for (const a of cosigned) {
     const need = a.pastDue;
     add(
@@ -95,9 +101,14 @@ export function billsPanel({ life, onPay, onMove, onAutopay }) {
       )
     );
   }
+  return el;
+}
 
-  add(
-    el,
+// What comes out of checking on its own at End Month, and whether checking covers it.
+export function upcomingBlock({ life }) {
+  const up = upcomingPayments(life);
+  return h(
+    "div.upcoming-block",
     h("h3", "Comes out of checking at End Month"),
     up.auto.length
       ? h(
@@ -108,10 +119,8 @@ export function billsPanel({ life, onPay, onMove, onAutopay }) {
       : h("p.muted", "Nothing automatic this month."),
     up.short > 0
       ? h("p.callout.warn", icon("alert", { size: 16 }), ` Checking is ${money(up.short)} short. Each payment that bounces costs a ${money(CONFIG.fees.overdraft)} overdraft fee. Work a shift or move money from savings.`)
-      : h("p.note.tight", `After these, checking would have ${money(life.checking - up.total)} left.`),
-    savingsMover(life, onMove)
+      : h("p.note.tight", `After these, checking would have ${money(life.checking - up.total)} left.`)
   );
-  return el;
 }
 
 function utilBar(u) {
@@ -119,7 +128,7 @@ function utilBar(u) {
 }
 
 // "Minimum only: 14 months, $86 interest. $60 a month: 4 months, $19 interest." (SPEC §14)
-function payoffPreview(a, owed) {
+export function payoffPreview(a, owed) {
   const id = `payoff-${a.id}`;
   const out = h("p.payoff-out", { "aria-live": "polite" });
   const input = h("input", { type: "number", id, min: 1, step: "1", inputmode: "decimal", value: Math.max(25, Math.ceil(owed / 4)) });
@@ -144,7 +153,7 @@ const AUTOPAY = [
   ["full", "Full statement"],
 ];
 
-function autopayControl(a, onAutopay) {
+export function autopayControl(a, onAutopay) {
   return h(
     "div.autopay",
     h("span.autopay-label", "AutoPay"),
@@ -159,7 +168,8 @@ function autopayControl(a, onAutopay) {
   );
 }
 
-function savingsMover(life, onMove) {
+export function savingsMover(life, onMove) {
+  onMove = once(onMove);
   const amount = h("input", { type: "number", min: 1, step: "1", inputmode: "decimal", id: "move-amount", placeholder: "Amount" });
   const go = (dir) => {
     const v = Math.round(Number(amount.value) * 100) / 100;

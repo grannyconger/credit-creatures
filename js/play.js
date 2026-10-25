@@ -10,7 +10,8 @@ import { chapterInfo } from "./data/chapters.js";
 import { INBOX_KEPT } from "./data/explainers.js";
 import { XP } from "./data/achievements.js";
 import { qolFor } from "./data/card-qol.js";
-import { drawLifeEvent, drawDecisionCards, resolveChoice, endMonth, earn, replayLife, ownCards, dollars, utilization } from "./engine/index.js";
+import { drawLifeEvent, drawDecisionCards, resolveChoice, endMonth, earn, replayLife, ownCards, dollars, utilization, balanceSheet } from "./engine/index.js";
+import { vehicleValue } from "./data/garage.js";
 
 // "Cosign for a friend?" reads badly as "Cosign for a friend?: ...".
 export function titled(title) {
@@ -231,6 +232,8 @@ export function finishMonth(play, life) {
   const month = life.month;
   const r = endMonth(life);
   const record = monthRecord(month, r);
+  // Net worth at the month's end, so the Vault Overview can draw a line (js/vault.js netWorthSeries).
+  record.netWorth = balanceSheet(r.life, { vehicleValue: vehicleValue(play) }).netWorth;
   const a = play.active;
   a.records.push(record);
   play.lastChange = { delta: record.delta, factor: record.factor, message: record.change };

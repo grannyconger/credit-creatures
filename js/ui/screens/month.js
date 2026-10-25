@@ -242,7 +242,7 @@ export function render(root, { game, go, track, refreshWho }) {
               {
                 type: "button",
                 onclick: () => {
-                  game.accountsTab = "wallet";
+                  game.accountsTab = "paybills";
                   go("accounts");
                 },
               },

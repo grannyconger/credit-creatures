@@ -1,7 +1,7 @@
 // The student game: a brand-new student gets from the title to Home, and an
 // established student can open every screen without a page error.
 import { test, expect } from "@playwright/test";
-import { watchErrors, freshStart, enterGame, closePopups, seededStudent, open } from "./helpers.js";
+import { watchErrors, freshStart, enterGame, closePopups, seededStudent, seedRichVault, open } from "./helpers.js";
 
 test("a new student goes from the title to Home", async ({ page }) => {
   const errors = watchErrors(page);
@@ -370,5 +370,38 @@ test("every card asks a bold question, math cards have a Hint and a calculator, 
   await expect(page.locator(".dc-tradeoffs")).not.toContainText("what you have");
   await expect(page.locator(".dc-tradeoffs")).not.toContainText("Best of these");
   await expect(page.locator(".trade-col.chosen [data-metric='assets'] .seg-bar")).toHaveAttribute("aria-label", /Assets: Checking/);
+  expect(errors).toEqual([]);
+});
+
+test("the Vault is organised by money jobs: an Overview with assets, liabilities and net worth, tabs, and sub-tabs", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await seedRichVault(page);
+  await open(page, "accounts");
+  await closePopups(page);
+  // The landing page: assets, liabilities and net worth, with what each is made of.
+  const tabs = (await page.locator("nav.acct-tabs button").allInnerTexts()).map((t) => t.replace(/\d+$/, "").trim());
+  expect(tabs).toEqual(["Overview", "Pay Bills", "Save for Goals", "Manage Debt", "Build Credit", "Protect Yourself", "Messages"]);
+  await expect(page.locator(".nw-card.assets .nw-total")).toHaveText("$1,185");
+  await expect(page.locator(".nw-card.liabilities .nw-total")).toHaveText("$4,840");
+  await expect(page.locator(".nw-card.networth .nw-total")).toContainText("3,655");
+  await expect(page.locator(".nw-card.assets .seg-bar")).toHaveAttribute("aria-label", /Checking \$271, Savings \$414, Locked savings \$500/);
+  // Each tab opens with something real, with no errors.
+  for (const [tab, text] of [["Pay Bills", "Comes out of checking"], ["Save for Goals", "safety net"], ["Manage Debt", "Auto loan"], ["Protect Yourself", "Renter's insurance"], ["Messages", ""]]) {
+    await page.locator("nav.acct-tabs button", { hasText: tab }).click();
+    if (text) await expect(page.locator(".acct-body")).toContainText(text);
+  }
+  // Build Credit has sub-tabs, and the score and report moved here from the Hall of Records.
+  await page.locator("nav.acct-tabs button", { hasText: "Build Credit" }).click();
+  expect((await page.locator("nav.acct-subtabs button").allInnerTexts()).map((t) => t.trim())).toEqual(["Cards", "Statements", "My Score", "My Report"]);
+  await page.locator("nav.acct-subtabs button", { hasText: "My Score" }).click();
+  await expect(page.locator(".acct-body")).toContainText(/score/i);
+  // The old Hall of Records link lands on the score.
+  await open(page, "records");
+  await expect(page).toHaveURL(/#\/accounts/);
+  await expect(page.locator("nav.acct-subtabs button[aria-pressed='true']")).toHaveText("My Score");
+  // Something that needs attention has a button to the tab that fixes it.
+  await page.locator("nav.acct-tabs button", { hasText: "Overview" }).click();
+  await expect(page.locator(".nw-attention")).toBeVisible();
   expect(errors).toEqual([]);
 });

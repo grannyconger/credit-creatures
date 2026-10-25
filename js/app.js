@@ -363,7 +363,10 @@ function show(name) {
   shownName = name;
   if (!moving || !document.startViewTransition || !motionOn()) return swap();
   document.documentElement.dataset.nav = name === "hub" ? "back" : "forward";
-  document.startViewTransition(swap);
+  // A second move that starts before this one finishes skips it, and the browser then rejects
+  // the transition's promises. Skipping is fine, so those rejections are quietly ignored.
+  const t = document.startViewTransition(swap);
+  for (const p of [t.ready, t.finished, t.updateCallbackDone]) p.catch(() => {});
 }
 
 function showNow(name) {

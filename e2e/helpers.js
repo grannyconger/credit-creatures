@@ -109,6 +109,9 @@ export async function seedRichVault(page) {
     life = E.startSchool(life).life;
     life = E.buyWithBnpl(life, 80, "sneakers", "Market").life;
     life = E.openCreditBuilderLoan(life).life;
+    life = E.addBill(life, "Renter's insurance", 10).life;
+    life = E.cosign(life, { friend: "Bramble", amount: 600 }).life;
+    life = E.joinAsAuthorizedUser(life, "maxed").life;
     localStorage.setItem(k, JSON.stringify({ ...save, life }));
   }, KEY);
   await page.goto("/?local");

@@ -6380,3 +6380,41 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .trade-metric.minor .trade-value { font-size: 1.05rem; }
 .trade-metric.minor .trade-head { flex-wrap: nowrap; }
 .dc-tradeoffs > .seg-legend { grid-column: 1 / -1; margin-bottom: var(--b-s1); }
+
+/* ---- The nested Vault (teacher request 2026-10-25) ---- */
+/* Seven index tabs named after real-life jobs, a little wider so the words fit on one line. */
+.bst-vault .acct-tabs { width: 176px; right: -170px; gap: var(--b-s1); }
+.bst-vault .acct-tabs button { white-space: nowrap; font-size: var(--b-fs-ui); padding-block: var(--b-s2); }
+/* Sub-tabs: the views inside one tab, as chips on the page. */
+.bst-book-place .acct-subtabs { display: flex; flex-wrap: wrap; gap: var(--b-s2); margin: var(--b-s3) 0 var(--b-s2); }
+.bst-book-place .acct-subtabs .chip[aria-pressed="true"] { color: var(--b-on-plum); background: var(--b-plum); border-color: var(--b-plum); }
+/* Overview: three cards. */
+.bst-book-place .nw-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-s3); margin-top: var(--b-s3); }
+.bst-book-place .nw-card { display: grid; align-content: start; gap: var(--b-s2); padding: var(--b-s3) var(--b-s4); color: var(--b-ink); background: var(--b-grain), var(--b-paper); border-radius: var(--b-r-insert); box-shadow: var(--b-shadow-card); }
+.bst-book-place .nw-title { color: var(--b-ink); font-size: var(--b-small); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.bst-book-place .nw-total { font-family: var(--b-display); font-weight: 400; font-size: clamp(1.9rem, 2.8vw, 2.6rem); line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
+.bst-book-place .nw-card.networth { background: var(--b-grain), var(--b-plum-wash); outline: 2px solid var(--b-plum); outline-offset: -2px; }
+.bst-book-place .nw-card.networth.negative .nw-total { color: var(--b-rust-ink); }
+.bst-book-place .nw-card .seg-bar { height: 22px; }
+.bst-book-place .nw-parts { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.bst-book-place .nw-parts li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--b-s2); font-size: var(--b-small); }
+.bst-book-place .nw-parts strong { font-family: var(--b-display); font-weight: 400; font-variant-numeric: lining-nums tabular-nums; }
+.bst-book-place .nw-cosigned { display: flex; gap: 4px; align-items: flex-start; margin: 0; padding: var(--b-s2); font-size: var(--b-small); border: 2px dashed var(--b-rust-ink); border-radius: var(--b-r-tag); }
+.bst-book-place .nw-trend svg { display: block; }
+.bst-book-place .nw-line { fill: none; stroke: var(--b-plum); stroke-width: 2.5; stroke-linejoin: round; }
+.bst-book-place .nw-dot { fill: var(--b-plum); }
+.bst-book-place .nw-zero { stroke: var(--b-rule); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.bst-book-place .nw-attention ul { display: grid; gap: var(--b-s2); margin: 0; padding: 0; list-style: none; }
+.bst-book-place .nw-attention li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--b-s3); padding: var(--b-s2) var(--b-s3); background: var(--b-paper); border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
+.bst-book-place .nw-attention li.warn { border-left: 6px solid var(--b-rust); }
+.bst-book-place .nw-attention li.calm { border-left: 6px solid var(--b-plum); }
+/* Pay Bills activity, Save for Goals safety net. */
+.bst-book-place .activity { margin: 0; padding: 0; list-style: none; max-width: 640px; }
+.bst-book-place .activity li { display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; gap: var(--b-s3); padding: 6px 0; border-bottom: 1px dashed var(--b-rule); }
+.bst-book-place .activity .act-when { color: var(--b-ink); font-size: var(--b-small); }
+.bst-book-place .activity .act-amount { font-family: var(--b-display); font-weight: 400; font-variant-numeric: lining-nums tabular-nums; }
+.bst-book-place .activity li.in .act-amount { color: var(--b-good-ink); }
+.bst-book-place .save-goal { display: grid; gap: var(--b-s2); max-width: 640px; margin: var(--b-s3) 0; padding: var(--b-s3) var(--b-s4); background: var(--b-paper); border-radius: var(--b-r-insert); box-shadow: var(--b-shadow-card); }
+.bst-book-place .save-goal h3 { margin: 0; }
+.bst-book-place .save-top .nw-card { max-width: 320px; }
+.bst-book-place .vault-debt > .nw-card { max-width: 480px; }

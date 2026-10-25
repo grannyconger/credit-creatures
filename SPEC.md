@@ -408,6 +408,22 @@ Real math is allowed (Section 1). Show the worked math after each answer.
 
 ---
 
+## 14a. The Vault (2026-10-25)
+
+The Vault is organised by the jobs a person does with money, with a landing **Overview** and sub-tabs where a tab holds several views. A tab shows only when it has real content (`js/vault.js` has the layout, a test keeps it honest).
+
+| Tab | What it holds | Opens |
+|---|---|---|
+| Overview | **Assets, Liabilities and Net Worth** with what each is made of in color, a net worth line by month, and what needs attention | Ch 1 |
+| Pay Bills | What comes out of checking at End Month, card bills with Pay and AutoPay, money in and out of checking | Ch 1 |
+| Save for Goals | Savings, moving money, a three-month safety net, savings locked by a credit-builder loan | Ch 1 |
+| Manage Debt | Everything owed by kind, loans, pay-later plans, collections | Ch 2 |
+| Build Credit | Sub-tabs Cards, Statements, My Score and My Report (the Hall of Records moved here) | Ch 3 and 4 |
+| Protect Yourself | Insurance you pay, a parent's card, a loan you cosigned | Only when you have one |
+| Messages | The inbox | Ch 1 |
+
+Net worth is cash plus your car at resale value (half its price) minus everything owed on your own accounts (`balanceSheet` in `js/engine/balance.js`). A parent's card isn't counted, and a cosigned loan shows as a separate "you could owe" line. The card Tradeoffs use the same numbers, drawn as color-coded bars. The old `#/records` link still works and opens My Score.
+
 ## 14b. Decision cards: the question, the hint and the three spectrums (2026-10-25)
 
 - **Every card asks one bold question** under its story (`js/data/card-asks.js`), so students know what to decide. A card that only brings news says "Nothing to decide here" and names the button to press. The story never repeats the question.

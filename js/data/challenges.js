@@ -13,7 +13,7 @@ export const CHALLENGES = [
   { id: "alley", text: "Call a stall in Lantern Alley", event: "alleyCall", target: 1, needs: (play) => hasFeature(play, "pitfalls") },
   { id: "vault", text: "Visit the Vault", event: "placeOpen", match: (d) => d.place === "vault", target: 1, needs: (play, life) => hasFeature(play, "vault", life) },
   { id: "cottage", text: "Visit your Cottage", event: "placeOpen", match: (d) => d.place === "cottage", target: 1, needs: (play) => hasFeature(play, "cottage") },
-  { id: "records", text: "Check the Hall of Records", event: "placeOpen", match: (d) => d.place === "records", target: 1, needs: (play) => hasFeature(play, "records") },
+  { id: "records", text: "Check your credit score in the Vault", event: "accountsTab", match: (d) => d.tab === "credit" && d.sub === "score", target: 1, needs: (play) => hasFeature(play, "records") },
 ];
 
 export const CHALLENGE_BY_ID = Object.fromEntries(CHALLENGES.map((c) => [c.id, c]));

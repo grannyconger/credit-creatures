@@ -1,55 +1,74 @@
 // The Vault: Account Management (SPEC §14). Time is paused here:
 // nothing on these tabs ends a month. It opens from the kingdom and goes back there.
+// Reorganised 2026-10-25 around the jobs a person does with money, with sub-tabs
+// where a tab holds several views (js/vault.js has the layout).
 import { h, fill } from "../dom.js";
 import { icon } from "../icons.js";
 import { placeHeader } from "../place-header.js";
 import * as P from "../../play.js";
-import { hasFeature, prologueStep, openBankAccount } from "../../progression.js";
+import { prologueStep, openBankAccount } from "../../progression.js";
 import { money } from "../dom.js";
 import { CONFIG } from "../../data/config.js";
 import { creatureSvg } from "../creature-art.js";
 import { GUIDE } from "../../data/lessons.js";
-import { walletTab } from "../accounts/wallet-tab.js";
 import { sealSvg } from "../bestiary-art.js";
+import { vaultTabs, pickVaultTab, legacyVaultTab } from "../../vault.js";
+import { overviewTab } from "../accounts/overview-tab.js";
+import { payBillsTab } from "../accounts/paybills-tab.js";
+import { saveTab } from "../accounts/save-tab.js";
+import { debtTab } from "../accounts/debt-tab.js";
+import { cardsTab } from "../accounts/credit-tab.js";
 import { statementsTab } from "../accounts/statements-tab.js";
 import { scoreTab } from "../accounts/score-tab.js";
 import { reportTab } from "../accounts/report-tab.js";
+import { protectTab } from "../accounts/protect-tab.js";
 import { inboxTab } from "../accounts/inbox-tab.js";
 
-// [key, icon, label, tab, feature]. A tab shows once its feature is unlocked
-// (js/progression.js). The score and the report moved to the Hall of Records.
-const VAULT_TABS = [
-  ["wallet", "wallet", "Wallet", walletTab, "vault"],
-  ["statements", "statement", "Statements", statementsTab, "statements"],
-  ["inbox", "inbox", "Inbox", inboxTab, "inbox"],
-];
-export const RECORDS_TABS = [
-  ["score", "gauge", "My Score", scoreTab, "score"],
-  ["report", "report", "My Report", reportTab, "report"],
-];
+// Which function draws each tab, or each sub-tab of Build Credit.
+const VIEWS = {
+  overview: overviewTab,
+  paybills: payBillsTab,
+  save: saveTab,
+  debt: debtTab,
+  protect: protectTab,
+  messages: inboxTab,
+  "credit:cards": cardsTab,
+  "credit:statements": statementsTab,
+  "credit:score": scoreTab,
+  "credit:report": reportTab,
+};
 
 export function render(root, ctx) {
   if (prologueStep(ctx.game.play)?.place === "vault") return bankOpening(root, ctx);
-  return tabbedPlace(root, ctx, {
-    tabs: VAULT_TABS,
-    stateKey: "accountsTab",
-    iconName: "vault",
-    title: "The Vault",
-    subtitle: "Your bank. Move money, pay bills and read your letters. Time is paused here.",
-  });
+  return vaultScreen(root, ctx);
 }
 
-// A place made of tabs (the Vault and the Hall of Records).
-export function tabbedPlace(root, { game, go, track, refreshWho }, { tabs, stateKey, iconName, title, subtitle }) {
+// Opens the Vault on a tab (and a sub-tab) from anywhere. Old tab names still work.
+export function openVaultTab(game, key, sub = null) {
+  const t = legacyVaultTab(key);
+  game.accountsTab = t.tab;
+  game.accountsSub = { ...(game.accountsSub || {}), ...(t.sub || sub ? { [t.tab]: t.sub || sub } : {}) };
+}
+
+function vaultScreen(root, { game, go, track, refreshWho }) {
   const run = game.run;
   const play = run.play;
-  const TABS = tabs.filter((t) => hasFeature(play, t[4], run.life));
-  if (!TABS.some(([k]) => k === game[stateKey])) game[stateKey] = TABS[0][0];
   const shell = h("section.panel.accounts");
   const body = h("div.acct-body", { id: "acct-body", role: "tabpanel" });
   // A page of the Mossy Bestiary (2026-10-22): a bank passbook, with its
   // tabs as index tabs on the page's right edge.
-  root.append(h(`div.bestiary.bst-book-place.${iconName === "vault" ? "bst-vault" : "bst-records"}`, shell));
+  root.append(h("div.bestiary.bst-book-place.bst-vault", shell));
+
+  // The tab and sub-tab showing, kept on the game so a repaint or a return visit keeps the place.
+  function current() {
+    const tabs = vaultTabs(play, run.life);
+    const legacy = legacyVaultTab(game.accountsTab);
+    const sub = game.accountsSub?.[legacy.tab] ?? legacy.sub;
+    const at = pickVaultTab(tabs, legacy.tab, sub);
+    game.accountsTab = at.tab;
+    game.accountsSub = { ...(game.accountsSub || {}), ...(at.sub ? { [at.tab]: at.sub } : {}) };
+    return { tabs, ...at };
+  }
 
   const ctx = {
     game,
@@ -61,39 +80,52 @@ export function tabbedPlace(root, { game, go, track, refreshWho }, { tabs, state
       await run.persist(reason);
     },
     repaint: () => paint(),
+    // Jump to another tab (the Overview's "Go there" buttons).
+    openTab(tab, sub = null) {
+      openVaultTab(game, tab, sub);
+      const at = current();
+      track("accountsTab", { tab: at.tab, sub: at.sub || "" });
+      paint();
+    },
   };
 
   function paint() {
-    const tab = game[stateKey];
+    const { tabs, tab, sub } = current();
     const unread = P.unreadCount(play);
+    const here = tabs.find((t) => t.key === tab);
+    const view = VIEWS[sub ? `${tab}:${sub}` : tab];
     fill(
       shell,
-      placeHeader({ go, iconName, title, subtitle, practice: run.practice }),
-      TABS.length > 1
+      placeHeader({ go, iconName: "vault", title: "The Vault", subtitle: "Your bank. See where you stand, pay bills, save and build credit. Time is paused here.", practice: run.practice }),
+      tabs.length > 1
         ? h(
             "nav.acct-tabs",
-            { "aria-label": title },
-            TABS.map(([key, ico, label]) =>
+            { "aria-label": "The Vault" },
+            tabs.map((t) =>
               h(
                 "button",
                 {
                   type: "button",
-                  "aria-current": key === tab ? "page" : null,
+                  "aria-current": t.key === tab ? "page" : null,
                   "aria-controls": "acct-body",
-                  onclick: () => {
-                    game[stateKey] = key;
-                    track("accountsTab", { tab: key });
-                    paint();
-                  },
+                  onclick: () => ctx.openTab(t.key),
                 },
-                icon(ico),
-                ` ${label}`,
-                key === "inbox" && unread ? h("span.count-badge", { "aria-label": `${unread} unread`, "data-sparkle": "" }, String(unread)) : null
+                icon(t.icon),
+                ` ${t.label}`,
+                t.key === "messages" && unread ? h("span.count-badge", { "aria-label": `${unread} unread`, "data-sparkle": "" }, String(unread)) : null
               )
             )
           )
         : null,
-      fill(body, TABS.find(([k]) => k === tab)[3](ctx))
+      // Sub-tabs: the views inside one tab, as a row of chips on the page.
+      here?.subs.length > 1
+        ? h(
+            "nav.acct-subtabs",
+            { "aria-label": here.label },
+            here.subs.map((s) => h("button.chip", { type: "button", "aria-pressed": String(s.key === sub), onclick: () => ctx.openTab(tab, s.key) }, s.label))
+          )
+        : null,
+      fill(body, view(ctx))
     );
   }
 
