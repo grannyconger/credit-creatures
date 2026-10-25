@@ -6203,3 +6203,41 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .trade-col { justify-items: stretch; }
 .trade-col .pick-tag { justify-self: start; }
 .trade-col header { justify-items: start; }
+
+/* ---- Chapter cards fit one screen (teacher request 2026-10-25) ---- */
+/* A card on screen folds the page header and money strip away, like an Arcade shift. */
+.bst-month .panel.playing > .place-header-wrap,
+.bst-month .panel.playing > .money-chips,
+.bst-month .panel.playing > p.muted { display: none; }
+.bst-month .panel.playing { padding-top: var(--b-s4); }
+/* Reactions and Continue stay in view above the bottom bar, so moving on never needs a scroll. */
+.bst-month .dc-footer { position: sticky; bottom: 92px; z-index: 6; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--b-s3); margin-top: var(--b-s3); padding: var(--b-s2) 0 var(--b-s1); background: var(--b-paper-insert); border-top: 1.5px dashed var(--b-rule); }
+.bst-month .dc-footer .reactions, .bst-month .dc-footer .clarity-row { margin: 0; }
+.bst-month .dc-footer .clarity-btn { min-height: 40px; padding: 4px 16px; }
+.bst-month .dc-footer > .row { margin: 0; justify-content: flex-end; }
+/* Tradeoffs read as compact rows: the label and number on one line, the change under it. */
+.dc-tradeoffs { margin: var(--b-s3) 0 var(--b-s2); padding: var(--b-s2) var(--b-s3); }
+.dc-tradeoffs > p.muted { margin: 2px 0 0; }
+.trade-grid { margin-top: var(--b-s2); gap: var(--b-s2); }
+.bst-month .trade-col { min-height: 0; padding: var(--b-s2) var(--b-s3); gap: var(--b-s1); }
+.trade-metric { grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; column-gap: var(--b-s2); row-gap: 0; padding-top: var(--b-s1); }
+.trade-metric strong { font-size: 1.3rem; text-align: right; }
+.trade-metric .trade-bar { grid-column: 1 / -1; height: 6px; }
+.trade-metric .trade-delta, .trade-metric .trade-best { grid-column: 1 / -1; }
+
+/* Once a choice is locked in, the card gives its room to the result: the question folds away and the header shrinks. */
+.bst-month .decision-card.is-outcome { padding-block: var(--b-s3) var(--b-s2); }
+.bst-month .decision-card.is-outcome .dc-text { display: none; }
+.bst-month .decision-card.is-outcome .dc-icon { width: 52px; height: 52px; font-size: 1.8rem; }
+.bst-month .decision-card.is-outcome .dc-head h2 { font-size: clamp(1.7rem, 2.3vw, 2.2rem); }
+.bst-month .decision-card.is-outcome .dc-balance { padding-block: var(--b-s1); }
+.bst-month .decision-card.is-outcome .dc-outcome { margin-top: var(--b-s3); padding-block: var(--b-s2); }
+.bst-month .decision-card.is-outcome .dc-outcome p { margin-block: 0 var(--b-s1); }
+.dc-tradeoffs { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: var(--b-s3); }
+.dc-tradeoffs > .trade-grid { grid-column: 1 / -1; }
+.dc-tradeoffs > p.muted { margin: 0; }
+.bst-month .dc-xp { display: flex; align-items: center; gap: var(--b-s1); margin: var(--b-s1) 0 0; font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-good-ink); }
+/* Five chips (Coins, Energy, Sparkle, XP, Streak) share the top bar, so they stay on one line and sit a little closer. */
+.bst-topbar .status-chips { gap: var(--b-s1); }
+.bst-topbar .stat-chip { white-space: nowrap; padding-inline: var(--b-s2); gap: 6px; }
+.bst-topbar .stat-chip strong { white-space: nowrap; }

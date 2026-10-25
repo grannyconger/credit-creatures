@@ -82,6 +82,9 @@ export function render(root, { game, go, track, refreshWho }) {
     if (view == null || (view !== "end" && isDone(view) && !revisit)) view = nextOpen();
     const info = chapterInfo(a.chapter, run.play);
     const fresh = !m.shifts && items().every((i) => !isDone(i));
+    // A card on screen folds the page header and money strip away (like an Arcade shift),
+    // so the card, its outcome and Continue fit one screen.
+    panel.classList.toggle("playing", view !== "end");
 
     fill(
       panel,
@@ -192,7 +195,9 @@ export function render(root, { game, go, track, refreshWho }) {
         if (reaction || confusing || clarity) track("cardReaction", { id: def.id, reaction, confusing, clarity: clarity || "" });
         view = null;
         paint();
-        panel.querySelector(".month-main button, .month-main a")?.focus();
+        // Every card starts at the same spot on the page.
+        window.scrollTo(0, 0);
+        panel.querySelector(".month-main button, .month-main a")?.focus({ preventScroll: true });
       },
     });
   }
@@ -279,6 +284,7 @@ export function render(root, { game, go, track, refreshWho }) {
         fees,
         cards: ownCards(life).length,
       });
+      if (r.xp) toast(`+${r.xp} XP for finishing the month`, "info");
       track("monthTime", { chapter, monthIndex, seconds: Math.round((Date.now() - monthStartedAt) / 1000) });
       monthStartedAt = Date.now();
       if (r.chapterDone) track("chapterDone", { chapter, score: life.score ?? -1 });

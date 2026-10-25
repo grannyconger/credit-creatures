@@ -97,12 +97,13 @@ test("on-time streaks reset after a late month", () => {
   assert.ok(s.current >= 3 && s.current <= 4, JSON.stringify(s));
 });
 
-test("job pay stays in the $40 to $120 band and grows with experience", () => {
+test("job pay is coins for each right answer, between the floor and the cap, and grows with experience", () => {
   const play = P.newPlay();
   const j = CONFIG.play.jobs;
-  assert.equal(G.jobPay(play, "ledger", { right: 0, wrong: 9 }), j.pay.min);
+  assert.equal(G.jobPay(play, "ledger", { right: 0, wrong: 9 }), j.pay.min, "finishing always pays the floor");
   assert.equal(G.jobPay(play, "ledger", { right: 30, wrong: 0 }), j.pay.max);
-  assert.equal(G.jobPay(play, "checks", { right: 6 }), j.pay.min + 6 * j.checks.perField);
+  assert.equal(G.jobPay(play, "checks", { right: 3 }), 3 * j.checks.perField, "no base pay on top");
+  assert.equal(G.jobPay(play, "checks", { right: 6 }), j.pay.max, "a perfect Check Writer shift pays the cap");
   for (let i = 0; i < 6; i++) G.recordShift(play, "cashier", { right: 3, pay: 80 });
   assert.equal(G.experienceBonus(play, "cashier"), 2 * j.experience.bonus);
   assert.equal(G.jobPay(play, "cashier", { right: 99 }), j.pay.max + 2 * j.experience.bonus);
@@ -139,4 +140,42 @@ test("Practice Desk visits track perfect runs and streaks", () => {
   assert.equal(play.desk.perfect, 1);
   assert.equal(play.desk.bestStreak, 3);
   assert.equal(play.desk.streak, 0);
+});
+
+test("side quests pay Energy and Sparkle and no XP, and Energy stops at its cap", () => {
+  const play = P.newPlay();
+  const r = CONFIG.pacing.rewards;
+  // Finishing, doing well and a perfect shift each add Energy.
+  assert.deepEqual(G.shiftRewards(play, { right: 1, wrong: 2 }), { energy: r.energy.finish, sparkle: 0, perfect: false, strong: false });
+  const strong = G.shiftRewards(play, { right: 8, wrong: 2 });
+  assert.equal(strong.energy, r.energy.finish + r.energy.strong);
+  assert.equal(strong.sparkle, 0, "only a perfect shift earns Sparkle");
+  const perfect = G.shiftRewards(play, { right: 6, wrong: 0 });
+  assert.equal(perfect.sparkle, r.perfectSparkle);
+  assert.equal(play.sparkle.total, r.perfectSparkle);
+  // Too few scored answers can't earn a bonus.
+  const tiny = G.shiftRewards(P.newPlay(), { right: r.minAnswers - 1, wrong: 0 });
+  assert.deepEqual([tiny.energy, tiny.sparkle], [r.energy.finish, 0]);
+  // Energy is held at the cap.
+  for (let i = 0; i < 10; i++) G.shiftRewards(play, { right: 6, wrong: 0 });
+  assert.equal(play.energy, r.energy.max);
+  assert.equal(G.shiftRewards(play, { right: 6, wrong: 0 }).energy, 0, "nothing more at the cap");
+  // Sparkle stays inside the chapter cap.
+  assert.ok(play.sparkle.total <= CONFIG.pacing.sparkle.perChapter);
+  // A shift never gives XP.
+  const xpPlay = P.newPlay();
+  G.recordShift(xpPlay, "ledger", { right: 5, pay: 50 });
+  assert.equal(xpPlay.xp, 0);
+});
+
+test("a perfect shift pays the cap in every game, and the average student keeps about the old income", () => {
+  const j = CONFIG.play.jobs;
+  const most = { ledger: j.ledger.untimedItems, checks: 6, overdraft: j.overdraft.rounds, register: j.register.lines, checkhunt: 10, drawer: j.drawer.drawers * 10, unitprice: j.unitprice.rounds, fees: 16 };
+  for (const [job, n] of Object.entries(most)) {
+    const play = P.newPlay();
+    const top = G.jobPay(play, job, { right: n, wrong: 0 });
+    assert.ok(top >= 110 && top <= j.pay.max, `${job} perfect pays ${top}`);
+    const mid = G.jobPay(play, job, { right: Math.round(n * 0.75), wrong: n - Math.round(n * 0.75) });
+    assert.ok(mid >= 65 && mid <= 100, `${job} at 75% pays ${mid}`);
+  }
 });

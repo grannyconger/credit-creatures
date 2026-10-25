@@ -4,7 +4,7 @@ import { CONFIG } from "./data/config.js";
 import { ACHIEVEMENTS, ACHIEVEMENT_BY_ID, XP, RANKS } from "./data/achievements.js";
 import { SHOP_BY_ID } from "./data/shop.js";
 import { amountOwed } from "./engine/index.js";
-import { addNote, addXp } from "./play.js";
+import { addNote, addXp, awardSparkle, awardEnergy } from "./play.js";
 import { VEHICLE_BY_ID, HOME_BY_ID } from "./data/garage.js";
 
 export { addXp };
@@ -113,21 +113,35 @@ export function experienceBonus(play, job) {
   return Math.min(e.max, Math.floor(shifts / e.everyShifts) * e.bonus);
 }
 
-// Pay from performance, kept in the $40 to $120 band, plus experience and any raise.
+// Coins from performance (teacher decision 2026-10-23: side quests pay coins for
+// each right answer). Never below pay.min for finishing, never above pay.max,
+// plus experience, a ride and a home workshop on top.
 export function jobPay(play, job, score) {
   const j = CONFIG.play.jobs;
   let base;
-  if (job === "ledger") base = j.pay.min + j.ledger.perRight * score.right - j.ledger.perWrong * score.wrong;
-  else if (job === "cashier" && score.coins != null) {
-    // Cashier Rush pays coins for each right sale, with no base pay or cap. Experience,
-    // a ride and a home workshop still add to every shift.
-    return score.coins + experienceBonus(play, job) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
-  } else if (job === "cashier") base = j.pay.min + j.cashier.perRight * score.right;
-  else if (job === "checks") base = j.pay.min + j.checks.perField * score.right;
-  else base = j.pay.min + (j[job]?.perRight || 0) * score.right;
-  const clamped = Math.max(j.pay.min, Math.min(j.pay.max, Math.round(base)));
-  // A ride and a home workshop (Phase 10 Garage and Cottage) pay off too.
-  return clamped + experienceBonus(play, job) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
+  if (job === "ledger") base = j.ledger.perRight * score.right - j.ledger.perWrong * score.wrong;
+  else if (job === "cashier" && score.coins != null) base = score.coins;
+  else if (job === "cashier") base = j.cashier.perRight * score.right;
+  else if (job === "checks") base = j.checks.perField * score.right;
+  else base = (j[job]?.perRight || 0) * score.right;
+  const coins = Math.max(j.pay.min, Math.min(j.pay.max, Math.round(base)));
+  return coins + experienceBonus(play, job) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
+}
+
+// What a finished shift gives besides coins: Energy for finishing, doing well
+// and a perfect shift, and a Sparkle Point for a perfect one. Both only count with
+// at least minAnswers scored answers, so one lucky tap can't earn them. Sparkle
+// stays inside its usual caps. Returns what was actually given.
+export function shiftRewards(play, { right, wrong }) {
+  const r = CONFIG.pacing.rewards;
+  const total = right + wrong;
+  const scored = total >= r.minAnswers;
+  const strong = scored && right / total >= r.strongPct;
+  const perfect = scored && wrong === 0;
+  const energy = awardEnergy(play, r.energy.finish + (strong ? r.energy.strong : 0) + (perfect ? r.energy.perfect : 0));
+  let sparkle = 0;
+  if (perfect) for (let i = 0; i < r.perfectSparkle; i++) sparkle += awardSparkle(play);
+  return { energy, sparkle, perfect, strong };
 }
 
 export function rideAndHomeBonus(play) {
@@ -142,7 +156,6 @@ export function recordShift(play, job, { right, pay }) {
   r.best = Math.max(r.best, right);
   r.totalPay += pay;
   play.stats.shifts++;
-  addXp(play, XP.shift);
 }
 
 // ---------- Payments, for "Paid in Full" and "Payoff Sprint" ----------

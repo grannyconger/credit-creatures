@@ -265,3 +265,27 @@ test("a bill can wait months before its first payment", () => {
   assert.equal(life.bills.some((b) => b.name === "Later"), false);
   assert.equal(JSON.stringify(E.replayLife(life.start, life.log)), JSON.stringify(life));
 });
+
+test("quests earn XP: each card by how well the choice went, and each finished month", () => {
+  const { play } = playChapters("bot-careful", 1);
+  const x = CONFIG.pacing.xp;
+  const decisions = play.history[0].decisions.length;
+  const months = play.history[0].months;
+  const base = months * x.month + x.reflection;
+  assert.ok(play.xp >= base + decisions * x.card.bad, `xp ${play.xp} is at least ${base} plus ${decisions} cards`);
+  assert.ok(play.xp <= base + decisions * x.card.good, `xp ${play.xp} is at most ${base} plus ${decisions} good cards`);
+  assert.equal(play.stats.shifts, 0, "this bot's shifts went through workShift, which never pays XP");
+});
+
+test("a choice returns its XP, better choices earn more, and a finished month earns the month XP", () => {
+  const life = lifeWith({ seed: "xp", checking: 600 });
+  const play = P.newPlay();
+  P.startChapter(play, life);
+  const item = play.active.month.life ? "life" : 0;
+  const choice = P.choicesFor(play, life, item).find((c) => !c.cost && !c.disabled);
+  const r = P.choose(play, life, item, choice.key);
+  assert.ok(r.ok);
+  assert.equal(r.xp, CONFIG.pacing.xp.card[choice.quality] ?? CONFIG.pacing.xp.card.none);
+  assert.equal(play.xp, r.xp);
+  assert.ok(CONFIG.pacing.xp.card.good > CONFIG.pacing.xp.card.ok && CONFIG.pacing.xp.card.ok > CONFIG.pacing.xp.card.bad);
+});

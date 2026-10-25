@@ -67,6 +67,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
   // (bug fix 2026-10-22: a student scrolling on a touch screen picked an
   // answer by accident and it lowered her score).
   function showChoices(error = "") {
+    card.classList.remove("is-outcome");
     let selected = null;
     const submit = h("button.dc-submit", { type: "button", disabled: true }, "Lock in my choice");
     const buttons = choices.map((c) =>
@@ -112,7 +113,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
   function pick(c) {
     if (!c.cost) return run(c, null);
     fill(body, payWith({ life, cost: c.cost, allowed: payAllowed, onPick: (method) => run(c, method), onBack: () => showChoices() }));
-    body.querySelector("button.pay-option:not([disabled])")?.focus();
+    body.querySelector("button.pay-option:not([disabled])")?.focus({ preventScroll: true });
   }
 
   async function run(c, method) {
@@ -124,21 +125,16 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
     showOutcome(c, r);
   }
 
-  // The card flips over to its outcome (visual plan item 7).
+  // The outcome replaces the choices in place. The card keeps its shape and its
+  // spot on the page, so nothing slides or flips under the student's eyes
+  // (teacher request 2026-10-25: the flip made the screen feel like it moved).
   function showOutcome(c, r) {
-    const still = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (still || !card.isConnected) return fillOutcome(c, r);
     sfx.cardFlip();
-    card.classList.add("flip-out");
-    setTimeout(() => {
-      fillOutcome(c, r);
-      card.classList.remove("flip-out");
-      card.classList.add("flip-in");
-      setTimeout(() => card.classList.remove("flip-in"), 260);
-    }, 230);
+    fillOutcome(c, r);
   }
 
   function fillOutcome(c, r) {
+    card.classList.add("is-outcome");
     if (r.life) paintBalance(r.life.checking, "Coins in checking now");
     let reaction = "";
     let confusing = false;
@@ -217,6 +213,8 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         { class: c.quality === "bad" ? "bad" : c.quality === "good" ? "good" : "", role: "status" },
         h("p", h("strong", c.label)),
         r.outcome ? h("p", r.outcome) : null,
+        // Quests earn XP.
+        r.xp ? h("p.dc-xp", icon("star", { size: 16 }), h("span", ` +${r.xp} XP`)) : null,
         verdict && !r.denied ? h("p.dc-verdict", icon(verdict[0], { size: 16 }), h("span", verdict[1])) : null,
         r.message && !c.quiz ? h("p.note.tight", r.message) : null,
         factor
@@ -224,10 +222,10 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
       c.math ? h("details.math", { open: true }, h("summary", "Show the math"), h("p", c.math)) : null,
       c.quiz ? null : tradeoffs(c),
       !r.denied && !c.quiz && factorCheck ? quickCheck(factorCheck(c)) : null,
-      reactRow,
-      h("div.row", cont)
+      // Reactions and Continue stay in view at the bottom of the card, so moving on never needs a scroll.
+      h("div.dc-footer", reactRow, h("div.row", cont))
     );
-    cont.focus();
+    cont.focus({ preventScroll: true });
   }
 
   // After locking in: every choice side by side, from the same starting point.
@@ -284,7 +282,7 @@ function tradeoffPanel(rows, life) {
   return h(
     "section.dc-tradeoffs",
     h("h3", icon("chart", { size: 22 }), " Tradeoffs"),
-    h("p.muted.tight", "Every choice starts from the same place. Here's where each one leaves your numbers. The one you picked is outlined."),
+    h("p.muted.tight", "Here's where each choice leaves your numbers. Yours is outlined."),
     h(
       "div.trade-grid",
       { style: { "--cols": rows.length } },

@@ -4,7 +4,7 @@ import { h, fill, money } from "./dom.js";
 import { coinsFly } from "./fx.js";
 import { CONFIG } from "../data/config.js";
 import { JOBS } from "../data/minigames.js";
-import { jobPay, experienceBonus, recordShift, rideAndHomeBonus } from "../progress.js";
+import { jobPay, experienceBonus, recordShift, rideAndHomeBonus, shiftRewards } from "../progress.js";
 import { openJobs, opensText, unlockStage } from "../progression.js";
 import { icon } from "./icons.js";
 import * as P from "../play.js";
@@ -70,7 +70,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
           const stats = play.jobs[key];
           const worked = Boolean(play.prologue && !play.prologue.done && (play.prologue.worked || []).includes(key));
           const guide = hasGuide(key) ? h("button.job-guide.arc-guide", { type: "button", onclick: () => openGameGuide(key, { track }) }, icon("scroll", { size: 14 }), " Guide") : null;
-          const pay = key === "cashier" ? `${cashierRate("easy", "chill")} to ${cashierRate("hard", "speed")} coins a sale` : `${money(j.pay.min + xp)} to ${money(j.pay.max + xp)} a shift`;
+          const pay = key === "cashier" ? `${cashierRate("easy", "chill")} to ${cashierRate("hard", "speed")} coins a sale` : `Up to ${money(j.pay.max + xp)} a shift`;
           const card = h(
             "button.job-card.arc-cab-front",
             { type: "button", disabled: worked, onclick: () => start(key) },
@@ -132,6 +132,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     el.closest(".panel")?.classList.remove("playing");
     const pay = jobPay(play, key, result);
     let reaction = "";
+    let rewards = { energy: 0, sparkle: 0 };
     // The pay is banked and saved the moment the shift ends (bug fix
     // 2026-10-22: leaving before Collect lost the whole shift). Collect is
     // just the coins and the reaction now.
@@ -139,11 +140,13 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     if (r.ok) {
       run.life = r.life;
       recordShift(play, key, { right: result.right, pay });
+      // Side quests pay Coins, Energy and Sparkle. XP is for quests.
+      rewards = shiftRewards(play, result);
     }
     const saved = r.ok ? save("shift") : Promise.resolve();
     logShift = () => {
       logShift = null;
-      track("minigame", { game: key, right: result.right, wrong: result.wrong, total: result.total, pay, seconds: result.seconds, timed, reaction, depositOnly: result.depositOnly ?? null });
+      track("minigame", { game: key, right: result.right, wrong: result.wrong, total: result.total, pay, energy: rewards.energy, sparkle: rewards.sparkle, seconds: result.seconds, timed, reaction, depositOnly: result.depositOnly ?? null });
     };
     const collect = h("button.big.arc-collect", { type: "button", "data-sound": "none" }, icon("coins", { size: 26 }), ` Collect ${money(pay)}`);
     collect.addEventListener("click", async () => {
@@ -185,7 +188,17 @@ export function jobBoard({ game, run, track, save, onCollected }) {
         h("div.arc-marquee", h("h3.arc-title", icon(JOBS[key].mark || "guild", { size: 28 }), ` ${JOBS[key].title}: shift over!`), hasGuide(key) ? h("button.arc-guide", { type: "button", onclick: () => openGameGuide(key, { track, tab: "irl" }) }, icon("scroll", { size: 14 }), " Read the guide") : null),
         h(
           "div.arc-score",
-          h("div.arc-payout", h("small", "You earned"), h("strong.big-number", money(pay))),
+          h(
+            "div.arc-payout",
+            h("small", "You earned"),
+            h("strong.big-number", money(pay)),
+            // The other two things a side quest pays. XP is for quests, so it isn't here.
+            h(
+              "div.arc-extras",
+              h("span.arc-extra", icon("energy", { size: 20 }), ` +${rewards.energy} Energy${play.energy >= CONFIG.pacing.rewards.energy.max ? " (full)" : ""}`),
+              rewards.sparkle ? h("span.arc-extra", icon("sparkle", { size: 20 }), ` +${rewards.sparkle} Sparkle for a perfect shift`) : null
+            )
+          ),
           h("div.arc-tally", h("div.arc-stat", h("strong", String(result.right)), h("small", "Right")), h("div.arc-stat", h("strong", String(result.wrong)), h("small", "Missed")), h("div.arc-stat", h("strong", `${accuracy}%`), h("small", "Accuracy")))
         ),
         result.depositOnly ? h("p.arc-note", "Smart: \"For deposit only\" means nobody else can cash your check.") : null,

@@ -2,9 +2,18 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-23 (all screens in the bestiary look, dev environment set up with Playwright and GitHub Actions, side quest concepts ready for the teacher's review)
+Last updated: 2026-10-25 (all screens in the bestiary look, dev environment set up with Playwright and GitHub Actions, side quest concepts ready for the teacher's review)
 
 ## Next step
+
+- **Reward split, economy tune and one-screen chapter cards (teacher request 2026-10-25, done):**
+  - **Side quests (Arcade) pay Coins, Energy and Sparkle, never XP.** Coins are paid for each right answer in every game: `jobPay` (`js/progress.js`) is `perRight x right`, floored at `CONFIG.play.jobs.pay.min` (10, for finishing) and capped at `pay.max` (120), plus experience, ride and home bonuses on top. The old $40 base pay is gone. Each game's `perRight` is set so a perfect shift pays the 120 cap (Ledger 10, Check Writer 20, Spot the Overdraft 20, Register 12, Check Anatomy 12, Count the Drawer 6, Unit Price 12, Fee Detective 7.5). Cashier Rush is 5, 12 and 25 coins a sale by level, Speed doubles it, capped at 120 (a Hard Chill Round of 4 pays 100). **Economy check:** a student at 75% accuracy now earns about 70 to 95 a shift against the 80 the tuning sim assumes, and a student who does badly earns 10, not 40. The sim still uses `rng.int(40, 120)` a shift, so rerun `npm run sim` and the tuning report after the next pilot.
+  - **Energy** (`play.energy`, `awardEnergy` in `js/play.js`, `CONFIG.pacing.rewards`): 1 for finishing a shift, 1 more at 80% or better, 1 more for a perfect shift, held up to 10, shown as a top bar chip and on the shift-over screen. Nothing spends it yet (Battles), and there is no daily refill (open question in `docs/MODES.md`).
+  - **Sparkle:** a perfect shift (no wrong answers, at least 4 scored) earns 1, inside the existing caps (10 a chapter, 30 total). One lucky tap can't earn a bonus.
+  - **Quests earn XP:** each decision card pays 6 for a good choice, 4 ok, 2 bad or unrated, and each finished month pays 10 (`CONFIG.pacing.xp.card` and `.month`, `choose` and `finishMonth` in `js/play.js`). `XP.shift` is gone. The card outcome says "+N XP" and ending a month toasts it.
+  - **Chapter cards fit one screen:** the page header and money strip fold away while a card is up (`.panel.playing` in the month screen, like an Arcade shift), the flip animation is gone (the outcome replaces the choices in place), every card starts at the same spot (scroll to the top on Continue and no focus jump), the question text folds away once you lock in, the Tradeoffs are compact rows, and the reactions and Continue sit in a sticky footer above the bottom bar. A card with a long Tradeoffs panel can still scroll a little, but Continue stays in view.
+  - Tests: 228 unit (new: Energy cap, Sparkle only on perfect shifts, no XP from shifts, a perfect shift pays the cap in every game, card and month XP), 15 e2e, contrast audit clean for the month screen and Arcade.
+  - **Not committed:** the Receipt Error Hunt prototype, built before the specs were approved, is in `git stash` ("receipt-error-hunt prototype (unapproved)"). `GAME-SPECS.md` (all built and planned games, for review) is untracked.
 
 **UI rebuild in progress (teacher, 2026-10-23): Webkinz-inspired shell, plan in `docs/UI-REBUILD.md`, research in `docs/WEBKINZ-RESEARCH.md`.** Slices, each stopping for approval: (1) shell, (2) Home as the Creature Cottage room with glowing clickable objects, (3) Dock and Market tie-in, (4) Daily Pick (resets at local midnight, seeded luck per student), login streak and visible challenges, (5) Cottage decorating with slots (no tile grid). Stay on Spark, keep the Bestiary look, no pet needs, no phone work.
 - **Arcade facelift and round-three UI requests (teacher, 2026-10-23, done and pushed):**

@@ -11,13 +11,24 @@ export const CONFIG = {
     // From this chapter on, one-time cards already played can come back once the new ones run out.
     replayFromChapter: 9,
     shiftsPerMonth: 3,
-    payPerShift: [40, 120],
+    payPerShift: [10, 120],
     sessionMinutes: 15,
     sparkle: { perChapter: 10, total: 30 },
-    // XP (SPEC §16). It never goes down, and there's no lifetime cap. Only right
-    // answers repeat without limit, so their XP is capped per chapter.
-    // alleyStall: bonus XP for each Lantern Alley stall called right, once each.
-    xp: { rightAnswer: 5, shift: 5, reflection: 25, answersPerChapter: 100, alleyStall: 10 },
+    // What a side quest shift pays besides Coins (teacher decision 2026-10-23).
+    // A shift needs at least minAnswers scored answers to count for a bonus.
+    // Energy: finishing pays finish, 80% or better (strongPct) adds strong, a
+    // perfect shift adds perfect. It is held up to max. Sparkle: a perfect shift
+    // earns perfectSparkle, inside the usual Sparkle caps above. Energy is spent
+    // on Battles, which are not built yet.
+    rewards: { minAnswers: 4, strongPct: 0.8, energy: { max: 10, finish: 1, strong: 1, perfect: 1 }, perfectSparkle: 1 },
+    // XP (SPEC §16). It never goes down, and there's no lifetime cap. Quests earn
+    // it (teacher decision 2026-10-23, built 2026-10-25): each decision card by how
+    // well the choice went (card: good, ok, bad, none for news and quiz cards), and a
+    // finished month. Side quests (Arcade shifts) pay Coins, Energy and Sparkle
+    // instead, never XP. Only right answers repeat without limit, so their XP is
+    // capped per chapter. alleyStall: bonus XP for each Lantern Alley stall called
+    // right, once each.
+    xp: { rightAnswer: 5, card: { good: 6, ok: 4, bad: 2, none: 2 }, month: 10, reflection: 25, answersPerChapter: 100, alleyStall: 10 },
   },
 
   // Friends, groups and gifts (Phase 8). firestore.rules repeats giftHours,
@@ -64,33 +75,38 @@ export const CONFIG = {
     cashAdvanceFee: { percent: 0.05, min: 10 },
     // Work shift minigames (SPEC §17). Pay stays between min and max, plus experience.
     jobs: {
-      pay: { min: 40, max: 120 },
+      // Coins for a shift: perRight for each right answer (and perWrong off for
+      // Ledger Sort), never below min for finishing and never above max. A
+      // perfect shift in every game pays max (120), so the average student
+      // earns about what the old $40 to $120 band paid. Experience, a ride and
+      // a home workshop add to this on top.
+      pay: { min: 10, max: 120 },
       // Every `everyShifts` shifts at one job adds `bonus` dollars, up to `max`.
       experience: { everyShifts: 3, bonus: 5, max: 20 },
       // lockMs: a short pause after each Ledger Sort answer, so a double click
       // can't answer the next item too. nextCustomerMs: Cashier Rush pauses
       // this long after a wrong answer only, so the right change can be read
       // (a right answer brings the next customer at once).
-      ledger: { seconds: 45, untimedItems: 12, perRight: 8, perWrong: 4, lockMs: 300 },
+      ledger: { seconds: 45, untimedItems: 12, perRight: 10, perWrong: 5, lockMs: 300 },
       // Cashier Rush (teacher request 2026-10-23): pick a difficulty and a round.
       // Chill Round serves untimedCustomers with no clock. Speed Round serves as
       // many as possible in seconds. perRight is only for old saves and tests.
       // rvu is the relative value unit in coins. Easy pays 1 RVU a sale, Medium 5 and
       // Hard 15 (rvuByLevel). Speed Round doubles it (speedMultiplier) and lasts 90 seconds.
-      cashier: { seconds: 90, untimedCustomers: 4, perRight: 14, nextCustomerMs: 900, rvu: 1, rvuByLevel: { easy: 1, medium: 5, hard: 15 }, speedMultiplier: 2 },
-      checks: { perField: 13 },
+      cashier: { seconds: 90, untimedCustomers: 4, perRight: 14, nextCustomerMs: 900, rvu: 1, rvuByLevel: { easy: 5, medium: 12, hard: 25 }, speedMultiplier: 2 },
+      checks: { perField: 20 },
       // The five Chapter 1 jobs (teacher request 2026-10-22). perRight is
-      // dollars per right answer on top of the base pay. A perfect shift
-      // reaches about the top of the pay range, like the first three jobs.
+      // coins per right answer. A perfect shift pays the top of the range (max),
+      // like the first three jobs.
       // seconds is the timed shift. The No timer toggle drops the clock.
-      overdraft: { rounds: 6, feedLength: 7, startMs: 2800, endMs: 1500, betweenMs: 1600, perRight: 13 },
-      register: { lines: 10, seconds: 180, perRight: 8 },
-      checkhunt: { seconds: 120, rightMs: 1300, wrongMs: 2600, perRight: 8 },
-      drawer: { drawers: 2, seconds: 240, perRight: 4 },
-      unitprice: { rounds: 10, seconds: 120, perRight: 8 },
+      overdraft: { rounds: 6, feedLength: 7, startMs: 2800, endMs: 1500, betweenMs: 1600, perRight: 20 },
+      register: { lines: 10, seconds: 180, perRight: 12 },
+      checkhunt: { seconds: 120, rightMs: 1300, wrongMs: 2600, perRight: 12 },
+      drawer: { drawers: 2, seconds: 240, perRight: 6 },
+      unitprice: { rounds: 10, seconds: 120, perRight: 12 },
       // Fee Detective: statements per shift (one has no fees), lines on each,
-      // and a pause after each reveal. perRight is dollars per right answer.
-      fees: { statements: 3, lines: 13, seconds: 240, perRight: 4, noFeePoints: 2, revealMs: 1600 },
+      // and a pause after each reveal. perRight is coins per right answer.
+      fees: { statements: 3, lines: 13, seconds: 240, perRight: 7.5, noFeePoints: 2, revealMs: 1600 },
     },
     monthRecordsKept: 6,
   },

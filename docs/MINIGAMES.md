@@ -153,7 +153,7 @@ This game teaches the next generation to manage money in a complex world. That's
 
 ## Naming, rewards and tech (teacher, 2026-10-23, later the same day)
 - **Every non-quest activity is a "side quest":** the minigames and arcade games, including today's Arcade jobs. Side quests are skill based.
-- **Quests earn XP** and are the most informative. **Side quests earn Coins (checking money), Energy and Sparkle Points.** Today's code still gives XP for shifts and right answers, so moving to this split is a planned balance change.
+- **Quests earn XP** and are the most informative. **Side quests earn Coins (checking money), Energy and Sparkle Points.** **Built 2026-10-25:** shifts no longer pay XP. They pay coins for each right answer (floor 10, cap 120, a perfect shift pays the cap), Energy and Sparkle (see PROGRESS.md). Quests pay XP per decision card and finished month.
 - **Where'd My Paycheck Go** is a lesson only (taxes don't come out of the creature's pay). Later, a teacher switch can turn on real taxes for a class.
 - **Tech:** stay vanilla JS, DOM, SVG and CSS. No game engine (Phaser, Godot, Three.js).
 

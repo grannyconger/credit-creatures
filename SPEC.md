@@ -404,6 +404,7 @@ Real math is allowed (Section 1). Show the worked math after each answer.
 - Caps: **10 per chapter, 30 total** (teacher-adjustable).
 - Always shown separately, for example "Score 702 + 6 ✨ Unicorn Sparkle Points," and labeled as a classroom bonus so students don't think real scores work this way.
 - Sparkle Points are separate from XP (Section 16).
+- **Also earned from side quests (2026-10-25):** a perfect Arcade shift (no wrong answers, at least 4 scored) earns 1 Sparkle Point, inside the same caps.
 
 ---
 
@@ -412,7 +413,7 @@ Real math is allowed (Section 1). Show the worked math after each answer.
 This is a core engagement mechanic. Build it out fully.
 
 - **Lots of achievements.** Aim for 40+ in the pilot across categories. Each awards XP. Some are hidden until earned.
-- **XP** accumulates on the student's account and never decreases.
+- **XP** accumulates on the student's account and never decreases. **Quests earn XP (2026-10-25):** each decision card (6 for a good choice, 4 ok, 2 bad, 2 for news and unrated cards), 10 for each finished month, plus achievements, Academy right answers and the chapter reflection. Side quests (Arcade shifts) never pay XP.
 - **Class leaderboard ranks by XP**, so careful, consistent play wins, not having the most cash. Teacher can toggle the leaderboard on or off.
 - **Names (2026-10-20):** among classmates (leaderboard, friends, groups, gifts) every creature shows as "Creature name (Student's Google name)", so everyone knows who sent what. The Firestore rules check that the name matches the student's sign-in, so it can't be faked. Gift messages are picked from a preset list (38, including silly ones), never typed.
 - Show levels or ranks derived from XP (for example kingdom ranks: Squire, Knight, Treasurer, Grand Vizier).
@@ -438,6 +439,8 @@ This is a core engagement mechanic. Build it out fully.
 ## 17. Minigames (work shifts)
 
 Quick (30 to 60 seconds), semi-related to the content. Pay depends on performance. Jobs unlock with age and pay rises with experience.
+
+**Side quest rewards (2026-10-25):** Coins for each right answer (a finished shift pays at least 10, no shift pays over 120, and a perfect shift in any game pays the 120 cap), plus Energy (1 for finishing, 1 more for 80% or better, 1 more for a perfect shift, held up to 10, spent on Battles later) and a Sparkle Point for a perfect shift. Experience, a ride and a home workshop still add on top. No XP.
 
 | Minigame | Job | Skill | Phase |
 |---|---|---|---|
@@ -476,7 +479,10 @@ Tutor Time is cut.
 | Game months per chapter | 3 |
 | Decision cards per month | 5 |
 | Work shifts per month | 3 |
-| Pay per shift | $40 to $120 |
+| Pay per shift | 10 to 120 coins, for each right answer (a perfect shift pays 120) |
+| Energy cap | 10 |
+| XP per decision card | 6 good, 4 ok, 2 bad or unrated |
+| XP per finished month | 10 |
 | Session length | 15 minutes |
 | Sparkle Points cap per chapter / total | 10 / 30 |
 

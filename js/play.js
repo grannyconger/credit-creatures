@@ -32,6 +32,9 @@ export function ensurePlay(play) {
   play.announced ??= 1;
   play.desk ??= { visits: 0, byStandard: {}, byType: {} };
   play.sparkle ??= { total: 0, byChapter: {} };
+  // Energy (teacher decision 2026-10-23): earned by side quests, held up to a cap, and
+  // spent on Battles later.
+  play.energy ??= 0;
   play.theme ??= "royal";
   // Phase 6: XP, achievements, minigame jobs, shop and records.
   play.xp ??= 0;
@@ -177,7 +180,9 @@ export function choose(play, life, item, key, method = null) {
     quiz: Boolean(choice.quiz),
     outcome,
   });
-  return { life: r.life, ok: true, choice, outcome, results: r.results, message: r.message, denied: Boolean(r.denied) };
+  // Quests earn XP (teacher decision 2026-10-23): more for a choice that went well.
+  const xp = addXp(play, XP.card[choice.quality] ?? XP.card.none);
+  return { life: r.life, ok: true, choice, outcome, results: r.results, message: r.message, denied: Boolean(r.denied), xp };
 }
 
 export function shiftsLeft(play) {
@@ -215,6 +220,7 @@ export function finishMonth(play, life) {
   a.records.push(record);
   play.lastChange = { delta: record.delta, factor: record.factor, message: record.change };
   notesFromMonth(play, r, month);
+  const xp = addXp(play, XP.month);
   a.monthIndex++;
   const chapterDone = a.monthIndex >= (a.months || CONFIG.pacing.monthsPerChapter);
   if (chapterDone) {
@@ -223,7 +229,7 @@ export function finishMonth(play, life) {
   } else {
     startMonth(play, r.life);
   }
-  return { life: r.life, ok: true, record, chapterDone, events: r.events, scoreChange: r.scoreChange };
+  return { life: r.life, ok: true, record, chapterDone, events: r.events, scoreChange: r.scoreChange, xp };
 }
 
 const RANK = { good: 2, ok: 1, bad: 0 };
@@ -300,6 +306,16 @@ export function addXp(play, n) {
   const ch = String(play.chapter);
   play.xpByChapter[ch] = (play.xpByChapter[ch] || 0) + n;
   return n;
+}
+
+// ---------- Energy: earned from side quests, spent on Battles later ----------
+
+// Adds Energy up to the cap and returns how much was actually added.
+export function awardEnergy(play, n) {
+  const max = CONFIG.pacing.rewards.energy.max;
+  const before = play.energy || 0;
+  play.energy = Math.min(max, before + Math.max(0, n));
+  return play.energy - before;
 }
 
 // ---------- Unicorn Sparkle Points (SPEC §15) ----------

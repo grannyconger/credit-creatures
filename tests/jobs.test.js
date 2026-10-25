@@ -165,8 +165,8 @@ test("Cashier Rush customers match their difficulty, and coins are paid per righ
     }
   }
   const rate = (d, m) => cashierRate(d, m);
-  assert.deepEqual(["easy", "medium", "hard"].map((d) => rate(d, "chill")), [1, 5, 15], "1, 5 and 15 relative value units");
-  assert.deepEqual(["easy", "medium", "hard"].map((d) => rate(d, "speed")), [2, 10, 30], "the Speed Round doubles it");
+  assert.deepEqual(["easy", "medium", "hard"].map((d) => rate(d, "chill")), [5, 12, 25], "5, 12 and 25 coins a sale");
+  assert.deepEqual(["easy", "medium", "hard"].map((d) => rate(d, "speed")), [10, 24, 50], "the Speed Round doubles it");
   assert.equal(CONFIG.play.jobs.cashier.seconds, 90);
   assert.deepEqual(DRAWER.easy.filter((c) => c < 100), [], "Easy is bills only");
   assert.ok(!DRAWER.medium.includes(1) && DRAWER.medium.includes(5) && DRAWER.hard.includes(1), "Medium has no pennies and Hard has every coin");
@@ -174,6 +174,7 @@ test("Cashier Rush customers match their difficulty, and coins are paid per righ
   assert.equal(G.overShortText(300, 365), "$0.65 short");
   assert.equal(G.overShortText(365, 365), "exact");
   const play = P.newPlay();
-  assert.equal(jobPay(play, "cashier", { right: 4, wrong: 0, coins: 4 * rate("hard", "chill") }), 60, "four right Hard Chill sales pay 60 coins");
-  assert.equal(jobPay(play, "cashier", { right: 0, wrong: 4, coins: 0 }), 0, "no right sales, no pay");
+  assert.equal(jobPay(play, "cashier", { right: 4, wrong: 0, coins: 4 * rate("hard", "chill") }), 100, "four right Hard Chill sales pay 100 coins");
+  assert.equal(jobPay(play, "cashier", { right: 99, wrong: 0, coins: 99 * rate("hard", "speed") }), CONFIG.play.jobs.pay.max, "a Speed Round hits the cap");
+  assert.equal(jobPay(play, "cashier", { right: 0, wrong: 4, coins: 0 }), CONFIG.play.jobs.pay.min, "no right sales still pays the floor");
 });

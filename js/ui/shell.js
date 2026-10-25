@@ -9,6 +9,7 @@ import { openPlace } from "./screens/map.js";
 import { ensureDaily } from "../daily.js";
 import { progress } from "../challenges.js";
 import { STATS } from "../data/stats.js";
+import { CONFIG } from "../data/config.js";
 
 const status = document.getElementById("status");
 const bottombar = document.getElementById("bottombar");
@@ -71,6 +72,7 @@ export function paintShell(game) {
   const streak = ensureDaily(play).streak;
   for (const [key, ico, label, value] of [
     ["coins", "coins", "Coins", money(life.checking)],
+    ["energy", "energy", "Energy", `${play.energy || 0}/${CONFIG.pacing.rewards.energy.max}`],
     ["sparkle", "sparkle", "Sparkle", String(play.sparkle?.total || 0)],
     ["xp", "star", "XP", String(play.xp || 0)],
     streak ? ["streak", "flame", "Streak", `${streak} day${streak === 1 ? "" : "s"}`] : null,
