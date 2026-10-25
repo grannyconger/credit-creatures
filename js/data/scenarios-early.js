@@ -168,7 +168,7 @@ export const EARLY_SCENARIOS = [
     maxChapter: 3,
     needs: ["checking"],
     fits: () => true,
-    text: () => ["A budget is a plan for your money before you spend it. One popular plan is 50/30/20: half for needs, 30% for wants and 20% for savings.", "If you earn $200 this month, how much goes to savings?"],
+    text: () => ["A budget is a plan for your money before you spend it. One popular plan is 50/30/20: half for needs, 30% for wants and 20% for savings.", "Say you earn $200 this month."],
     choices: () =>
       [
         ["ten", "$10", false],
@@ -239,7 +239,7 @@ export const EARLY_SCENARIOS = [
     maxChapter: 4,
     needs: ["loans"],
     fits: () => true,
-    text: () => ["A $1,000 loan for 12 months at 10% APR costs about $88 a month. How much do you pay in total?"],
+    text: () => ["A $1,000 loan for 12 months at 10% APR costs about $88 a month."],
     choices: () =>
       [
         ["thousand", "$1,000", false],
@@ -281,7 +281,7 @@ export const EARLY_SCENARIOS = [
     maxChapter: 4,
     needs: ["loans"],
     fits: () => true,
-    text: () => ["You want to borrow $2,000 for 24 months. The dealer offers 18% APR. Greenville Federal Credit Union offers 9% APR.", "Which loan costs less in total?"],
+    text: () => ["You want to borrow $2,000 for 24 months. The dealer offers 18% APR. Greenville Federal Credit Union offers 9% APR."],
     choices: () => {
       const dealer = amortizedPayment(2000, 0.18, 24) * 24 - 2000;
       const cu = amortizedPayment(2000, 0.09, 24) * 24 - 2000;

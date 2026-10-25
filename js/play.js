@@ -9,6 +9,7 @@ import { LIFE_EVENTS, LIFE_EVENT_BY_ID } from "./data/life-events.js";
 import { chapterInfo } from "./data/chapters.js";
 import { INBOX_KEPT } from "./data/explainers.js";
 import { XP } from "./data/achievements.js";
+import { qolFor } from "./data/card-qol.js";
 import { drawLifeEvent, drawDecisionCards, resolveChoice, endMonth, earn, replayLife, ownCards, dollars, utilization } from "./engine/index.js";
 
 // "Cosign for a friend?" reads badly as "Cosign for a friend?: ...".
@@ -35,6 +36,8 @@ export function ensurePlay(play) {
   // Energy (teacher decision 2026-10-23): earned by side quests, held up to a cap, and
   // spent on Battles later.
   play.energy ??= 0;
+  // Quality of Life (js/data/card-qol.js): the meter every card choice moves, apart from money.
+  play.qol ??= CONFIG.pacing.qol.start;
   play.theme ??= "royal";
   // Phase 6: XP, achievements, minigame jobs, shop and records.
   play.xp ??= 0;
@@ -143,9 +146,17 @@ export function stillFits(play, life, item) {
   return !def.fits || def.fits(life, ctx);
 }
 
+// A choice's Quality of Life points come from js/data/card-qol.js, so every
+// choice carries a number (0 if a card is new and hasn't been given one yet).
 export function choicesFor(play, life, item) {
   const { def, ctx } = itemDef(play, item);
-  return def.choices(life, ctx);
+  return def.choices(life, ctx).map((c) => ({ ...c, qol: qolFor(def.id, c.key) ?? 0 }));
+}
+
+// The meter after a change, kept inside its range.
+export function qolAfter(now, delta) {
+  const q = CONFIG.pacing.qol;
+  return Math.max(q.min, Math.min(q.max, (now ?? q.start) + delta));
 }
 
 export function skipItem(play, item) {
@@ -182,7 +193,11 @@ export function choose(play, life, item, key, method = null) {
   });
   // Quests earn XP (teacher decision 2026-10-23): more for a choice that went well.
   const xp = addXp(play, XP.card[choice.quality] ?? XP.card.none);
-  return { life: r.life, ok: true, choice, outcome, results: r.results, message: r.message, denied: Boolean(r.denied), xp };
+  // The choice moves Quality of Life, which isn't money, so it lives in play and not in the life.
+  const qolBefore = play.qol ?? CONFIG.pacing.qol.start;
+  play.qol = qolAfter(qolBefore, choice.qol);
+  play.active.decisions.at(-1).qol = play.qol - qolBefore;
+  return { life: r.life, ok: true, choice, outcome, results: r.results, message: r.message, denied: Boolean(r.denied), xp, qol: play.qol - qolBefore, qolNow: play.qol };
 }
 
 export function shiftsLeft(play) {

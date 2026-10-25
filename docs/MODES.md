@@ -54,7 +54,7 @@ Absent students and odd numbers (computer opponents and byes), farming computer 
 1. Minigames: Fee Detective, Bank Reconciliation Match, Deposit Slip Filler, each with skill, standard, eligibility and hint data (see `docs/MINIGAMES.md`).
 2. Quest mode behind the teacher switch, with one main quest built fully first as the template.
 3. Skill Paths (Banking C, Credit D) and Skill Sims with the coach.
-4. Battles against the computer: the engine, Energy, the entry fee, abilities and the arena screen.
+4. Battles against the computer: the engine, Energy, the entry fee, abilities and the arena screen. **Build the two-tab save protection here** (teacher, 2026-10-25: when it's relevant), because Energy makes a double-tab cheat worth trying. See `docs/BATTLE-SCALING.md`.
 5. Live battles: friends, ranked matches and the ladder, brackets, the capped wager, and a rules change.
 
 ## Still open

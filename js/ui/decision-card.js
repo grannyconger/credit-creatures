@@ -2,7 +2,8 @@
 // picker when a choice costs money, then the outcome with a 👍/😐/👎 reaction.
 import { h, add, fill } from "./dom.js";
 import { burstFrom } from "./motion/particles.js";
-import { payWith, methodLabel } from "./pay-with.js";
+import { payWith } from "./pay-with.js";
+import { calculator } from "./minigames/calculator.js";
 import { sfx } from "./sound.js";
 import { FACTOR_LABELS, compareChoices, allSame, startRow, dollars } from "../engine/index.js";
 import { GROUP_LABELS } from "../data/scenarios.js";
@@ -27,15 +28,72 @@ const REACTIONS = [
 // onContinue({ reaction, confusing }) moves on.
 // factorCheck(choice) returns an optional Factor Check (SPEC §11) or null.
 // payAllowed: the ways to pay unlocked so far (js/progression.js payMethods).
-export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue, track, factorCheck, payAllowed = null }) {
+// ask: the one bold question the card is asking (js/data/card-asks.js). hint: how to work
+// it out, with a calculator if hint.calc (js/data/card-hints.js). qolNow: the Quality of
+// Life meter before this choice (js/data/card-qol.js).
+export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue, track, factorCheck, payAllowed = null, ask = "", hint = null, qolNow = null }) {
   const shownAt = Date.now();
   const body = h("div.dc-body");
+  const calcSlot = h("div.dc-calc-slot");
   // The coin balance is the first thing to weigh, so it sits big in the card's corner
   // and updates after the choice (teacher request 2026-10-23).
   const balance = h("div.dc-balance", { role: "status", "aria-label": `Coins in checking: ${dollars(life.checking)}` });
   const paintBalance = (amount, note = "") => balance.replaceChildren(icon("coins", { size: 30 }), h("span.dc-balance-text", h("small", note || "Coins in checking"), h("strong", dollars(amount))));
   paintBalance(life.checking);
   let lastMethod = null;
+
+  // The bold question, and for a card that asks students to work something out, a Hint
+  // (a pop-up on hover or keyboard focus that explains how, never the answer) and a calculator.
+  function askRow() {
+    if (!ask && !hint) return null;
+    const tools = [];
+    if (hint) {
+      const popId = `hint-${def.id}`;
+      const pop = h(
+        "div.dc-hint-pop",
+        { id: popId, role: "tooltip" },
+        h("strong", "How to work it out"),
+        h("ol", hint.steps.map((s) => h("li", s))),
+        hint.calcTip ? h("p.dc-hint-calc", icon("gauge", { size: 16 }), h("span", ` ${hint.calcTip}`)) : null
+      );
+      const btn = h("button.dc-hint-btn", { type: "button", "aria-describedby": popId, "aria-haspopup": "true", "data-sound": "none" }, icon("info", { size: 18 }), " Hint");
+      const wrap = h("span.dc-hint", btn, pop);
+      let seen = false;
+      const noteSeen = () => {
+        if (seen) return;
+        seen = true;
+        track("hintOpen", { id: def.id });
+      };
+      wrap.addEventListener("pointerenter", noteSeen);
+      wrap.addEventListener("focusin", noteSeen);
+      // Touch screens have no hover, so a tap opens it and a second tap closes it.
+      btn.addEventListener("click", () => wrap.classList.toggle("open"));
+      wrap.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          wrap.classList.remove("open");
+          btn.blur();
+        }
+      });
+      tools.push(wrap);
+      if (hint.calc) {
+        let calcUses = 0;
+        const toggle = h("button.calc-toggle", { type: "button", "aria-expanded": "false", "data-sound": "none" }, "Calculator");
+        toggle.addEventListener("click", () => {
+          const open = toggle.getAttribute("aria-expanded") !== "true";
+          toggle.setAttribute("aria-expanded", String(open));
+          toggle.textContent = open ? "Hide calculator" : "Calculator";
+          card.classList.toggle("has-calc", open);
+          calcSlot.replaceChildren(...(open ? [calculator({ onUse: () => calcUses++ })] : []));
+          if (open) {
+            track("calcOpen", { game: "card", id: def.id });
+            calcSlot.querySelector(".calc")?.focus({ preventScroll: true });
+          }
+        });
+        tools.push(toggle);
+      }
+    }
+    return h("div.dc-ask-row", ask ? h("p.dc-ask", h("strong", ask)) : null, tools.length ? h("div.dc-tools", tools) : null);
+  }
   const card = h(
     "article.decision-card",
     { class: kind === "life" ? "life-card" : "", "aria-labelledby": `dc-${def.id}` },
@@ -50,7 +108,8 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
       balance
     ),
     h("div.dc-text", [].concat(def.text(life, ctx)).map((t) => h("p", t))),
-    body
+    askRow(),
+    h("div.dc-stage", body, calcSlot)
   );
   track(kind === "life" ? "lifeCardShown" : "cardShown", { id: def.id, choices: choices.length });
 
@@ -121,7 +180,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
     lastMethod = method;
     const r = await choose(c.key, method);
     const seconds = Math.round((Date.now() - shownAt) / 1000);
-    track(kind === "life" ? "lifeCardChoice" : "cardChoice", { id: def.id, choice: c.key, method: method || "", ok: r.ok, seconds, quality: c.quality || "" });
+    track(kind === "life" ? "lifeCardChoice" : "cardChoice", { id: def.id, choice: c.key, method: method || "", ok: r.ok, seconds, quality: c.quality || "", qol: c.qol ?? 0 });
     if (!r.ok) return showChoices(r.message);
     showOutcome(c, r);
   }
@@ -214,8 +273,8 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         { class: c.quality === "bad" ? "bad" : c.quality === "good" ? "good" : "", role: "status" },
         h("p", h("strong", c.label)),
         r.outcome ? h("p", r.outcome) : null,
-        // A digital receipt for what was paid, like the one a phone shows after a tap to pay.
-        c.cost && lastMethod && !r.denied ? h("p.dc-receipt", icon("receipt", { size: 16 }), h("span", ` Paid ${dollars(c.cost.amount)} with ${methodLabel(lastMethod, life)}`)) : null,
+        // Quality of Life moved too. It isn't money, so it has its own line.
+        r.qolNow != null ? h("p.dc-qol", icon("heart", { size: 16 }), h("span", ` Quality of life ${r.qol ? `${r.qol > 0 ? "+" : "−"}${Math.abs(r.qol)}` : "no change"} (now ${r.qolNow} of 100)`)) : null,
         // Quests earn XP.
         r.xp ? h("p.dc-xp", icon("star", { size: 16 }), h("span", ` +${r.xp} XP`)) : null,
         verdict && !r.denied ? h("p.dc-verdict", icon(verdict[0], { size: 16 }), h("span", verdict[1])) : null,
@@ -235,12 +294,12 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
   function tradeoffs(chosen) {
     let rows;
     try {
-      rows = compareChoices(life, choices, { chosenKey: chosen.key, chosenMethod: lastMethod, allowed: payAllowed });
+      rows = compareChoices(life, choices, { chosenKey: chosen.key, chosenMethod: lastMethod, allowed: payAllowed, qol: qolNow });
     } catch {
       return null;
     }
     // One choice has nothing to sit beside, so it sits beside where you started.
-    if (rows.filter((r) => r.ok).length < 2) rows = [startRow(life), ...rows];
+    if (rows.filter((r) => r.ok).length < 2) rows = [startRow(life, qolNow), ...rows];
     if (rows.filter((r) => r.ok && !r.start).every((r) => Object.values(r.delta).every((d) => !d) && !r.effect)) return null;
     return tradeoffPanel(rows, life);
   }
@@ -253,20 +312,29 @@ const money0 = (c) => dollars(c);
 const signed = (d) => `${d > 0 ? "+" : d < 0 ? "−" : ""}${dollars(Math.abs(d))}`;
 
 // Columns of bars, one per choice. Words say better or worse, never color alone.
+// The three spectrums every card compares (teacher request 2026-10-25): Assets (what you
+// have), Liabilities (what you owe) and Quality of Life (fun and peace of mind, which
+// isn't money). Credit used and the credit score sit below them when they apply.
 function tradeoffPanel(rows, life) {
   const ok = rows.filter((r) => r.ok);
+  for (const r of ok) {
+    r.metrics.assets = r.metrics.checking + r.metrics.savings;
+    r.delta.assets = r.delta.checking + r.delta.savings;
+  }
   const hasCards = ok.some((r) => r.metrics.util != null);
   const hasScore = ok.some((r) => r.metrics.score != null);
+  const hasQol = ok.some((r) => r.metrics.qol != null);
   const best = (key, low = false) => {
     const vals = ok.map((r) => r.metrics[key]).filter((v) => v != null);
     if (new Set(vals).size < 2) return null;
     return low ? Math.min(...vals) : Math.max(...vals);
   };
-  const hasSavings = ok.some((r) => r.delta.savings);
-  const BEST = { checking: best("checking"), savings: best("savings"), owed: best("owed", true), util: best("util", true), score: best("score") };
+  const BEST = { assets: best("assets"), owed: best("owed", true), util: best("util", true), score: best("score"), qol: best("qol") };
   const max = (key) => Math.max(1, ...ok.map((r) => Math.max(0, r.metrics[key] ?? 0)));
-  const MAX = { checking: max("checking"), savings: max("savings"), owed: max("owed") };
-  const row = (r, key, label, fmt, { low = false, pct = false } = {}) => {
+  const MAX = { assets: max("assets"), owed: max("owed"), qol: 100 };
+  const points = (d) => `${d > 0 ? "+" : "−"}${Math.abs(d)} points`;
+  const deltaText = (key, d) => (key === "assets" || key === "owed" ? signed(d) : key === "util" ? `${d > 0 ? "+" : "−"}${Math.abs(Math.round(d * 100))} points` : points(d));
+  const row = (r, key, label, fmt, { low = false, pct = false, caption = "", sub = null, minor = false } = {}) => {
     const v = r.metrics[key];
     if (v == null) return null;
     const width = pct ? Math.min(100, Math.round(v * 100)) : Math.round((Math.max(0, v) / MAX[key]) * 100);
@@ -275,10 +343,12 @@ function tradeoffPanel(rows, life) {
     const dir = !d ? "same" : (d > 0) !== low ? "better" : "worse";
     return h(
       "div.trade-metric",
-      h("small", label),
+      { class: minor ? "minor" : "", "data-metric": key },
+      h("small", label, caption ? h("span.trade-caption", ` · ${caption}`) : null),
       h("strong", fmt(v)),
       h("div.trade-bar", { "aria-hidden": "true" }, h("span", { class: dir, style: { width: `${Math.max(width, v > 0 ? 3 : 0)}%` } })),
-      h("small.trade-delta", { class: dir }, !d ? "No change" : `${key === "checking" || key === "owed" || key === "savings" ? signed(d) : key === "util" ? `${d > 0 ? "+" : "−"}${Math.abs(Math.round(d * 100))} points` : `${d > 0 ? "+" : "−"}${Math.abs(d)} points`} (${dir})`),
+      sub,
+      h("small.trade-delta", { class: dir }, !d ? "No change" : `${deltaText(key, d)} (${dir})`),
       isBest ? h("small.trade-best", icon("star", { size: 12 }), " Best of these") : null
     );
   };
@@ -296,11 +366,14 @@ function tradeoffPanel(rows, life) {
           h("header", r.chosen ? h("span.pick-tag", icon("check", { size: 14 }), " Your pick") : null, h("strong", r.label)),
           r.ok
             ? [
-                row(r, "checking", "Coins in checking", money0),
-                hasSavings ? row(r, "savings", "Coins in savings", money0) : null,
-                row(r, "owed", "What you owe", money0, { low: true }),
-                hasCards ? row(r, "util", "Credit used", (v) => `${Math.round(v * 100)}%`, { low: true, pct: true }) : null,
-                hasScore ? row(r, "score", "Credit score", (v) => String(v)) : null,
+                row(r, "assets", "Assets", money0, {
+                  caption: "what you have",
+                  sub: r.metrics.savings || r.delta.savings ? h("small.trade-sub", `Checking ${money0(r.metrics.checking)}, savings ${money0(r.metrics.savings)}`) : null,
+                }),
+                row(r, "owed", "Liabilities", money0, { low: true, caption: "what you owe" }),
+                hasQol ? row(r, "qol", "Quality of life", (v) => `${v} of 100`, { caption: "fun and peace of mind" }) : null,
+                hasCards ? row(r, "util", "Credit used", (v) => `${Math.round(v * 100)}%`, { low: true, pct: true, minor: true }) : null,
+                hasScore ? row(r, "score", "Credit score", (v) => String(v), { minor: true }) : null,
                 r.effect?.shiftsCut ? h("p.trade-effect", icon("calendar", { size: 14 }), ` ${r.effect.shiftsCut} fewer shift${r.effect.shiftsCut === 1 ? "" : "s"} this month`) : null,
                 r.effect?.shiftBonus ? h("p.trade-effect", icon("coins", { size: 14 }), ` ${dollars(r.effect.shiftBonus)} more pay on every shift`) : null,
                 r.denied ? h("p.trade-effect", icon("alert", { size: 14 }), " The lender would say no.") : null

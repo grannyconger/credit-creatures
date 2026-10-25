@@ -135,7 +135,7 @@ export const LATE_SCENARIOS = [
     fits: (life) => life.checking + life.savings >= 40,
     text: (life) => [
       "Payday is still a week away, and the fridge is empty. You need $80 of groceries.",
-      `Your bills still come out at End Month: ${dollars(billTotal(life))} in all. How will you cover the groceries?`,
+      `Your bills still come out at End Month: ${dollars(billTotal(life))} in all.`,
     ],
     choices: (life) => [
       { key: "savings", label: "Use my savings", disabled: life.savings < 80 ? `You only have ${dollars(life.savings)} in savings.` : null, steps: [["moveToChecking", 80], ["debitPurchase", 80, "groceries"]], outcome: "This is exactly what an emergency fund is for. No debt, no stress.", quality: "good" },

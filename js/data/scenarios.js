@@ -737,7 +737,6 @@ export const SCENARIOS = [
     fits: (life) => life.checking >= 200,
     text: (life) => [
       `You have ${dollars(life.checking)} in checking. Savings is money set aside for emergencies, so a surprise bill doesn't turn into debt.`,
-      "How much will you move to savings?",
     ],
     choices: (life) => [
       { key: "hundred", label: "Move $100", steps: [["moveToSavings", 100]], disabled: life.checking < 300 ? "Keep at least $200 in checking for bills." : null, outcome: "$100 is safe in savings.", quality: "good" },
@@ -811,7 +810,7 @@ export const SCENARIOS = [
     fits: (life) => life.score != null && life.score >= 700 && !life.accounts.some((a) => a.product === "premium" && a.status === "open"),
     text: () => [
       "An ad says: \"Earn 2% back on everything with the Capital One Venture X!\" It has a $395 annual fee and wants a long, strong credit history.",
-      "You spend about $300 a month on a card. Is it worth it?",
+      "You spend about $300 a month on a card.",
     ],
     choices: () => [
       {
@@ -915,7 +914,7 @@ export const SCENARIOS = [
     fits: (life) => ownCards(life).some((a) => a.annualFee > 0),
     text: (life) => {
       const a = ownCards(life).find((x) => x.annualFee > 0);
-      return [`Your ${a.name} charges a ${dollars(a.annualFee)} annual fee every year on its birthday. Is the card worth it?`, "Closing it saves the fee, but you lose its limit and its age on your report."];
+      return [`Your ${a.name} charges a ${dollars(a.annualFee)} annual fee every year on its birthday.`, "Closing it saves the fee, but you lose its limit and its age on your report."];
     },
     choices: (life) => {
       const a = ownCards(life).find((x) => x.annualFee > 0);
@@ -1109,7 +1108,6 @@ export const SCENARIOS = [
     weight: 1.2,
     text: () => [
       "You can see your credit report for free at the official site. Some people worry that looking will hurt their score.",
-      "Will you check yours?",
     ],
     choices: (life) => {
       const r = buildReport(life);
@@ -1176,7 +1174,7 @@ export const SCENARIOS = [
     once: false,
     priority: 4,
     fits: (life, ctx) => Boolean(ctx.lastChange && ctx.lastChange.delta < 0 && ctx.lastChange.factor),
-    text: (life, ctx) => [`Your score dropped ${-ctx.lastChange.delta} points at the last End Month. Which part of your score caused it?`],
+    text: (life, ctx) => [`Your score dropped ${-ctx.lastChange.delta} points at the last End Month.`],
     choices: (life, ctx) =>
       FACTOR_KEYS.map((k) => ({
         key: k,

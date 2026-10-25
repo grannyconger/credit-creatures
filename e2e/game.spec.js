@@ -310,6 +310,58 @@ test("the pay screen is a phone payment sheet: pick a card, hold near the reader
   await page.locator(".pay-confirm").click();
   await expect(page.locator(".ps-terminal")).toContainText("Hold near reader");
   await expect(page.locator(".ps-terminal.done")).toContainText("Payment complete");
-  await expect(page.locator(".dc-receipt")).toContainText("Paid $40 with Student Card");
+  await expect(page.locator(".dc-outcome")).toContainText("$40");
+  expect(errors).toEqual([]);
+});
+
+test("every card asks a bold question, math cards have a Hint and a calculator, and Tradeoffs show assets, liabilities and quality of life", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await page.evaluate(async () => {
+    const E = await import("/js/engine/index.js");
+    const { decisionCard } = await import("/js/ui/decision-card.js");
+    const { SCENARIOS } = await import("/js/data/scenarios.js");
+    const { ASKS } = await import("/js/data/card-asks.js");
+    const { HINTS } = await import("/js/data/card-hints.js");
+    const { qolFor } = await import("/js/data/card-qol.js");
+    window.__show = (id) => {
+      const def = SCENARIOS.find((s) => s.id === id);
+      const life = E.earn(E.createLife({ seed: "e2e-ask", ageMonths: 18 * 12 }), 360, "shift").life;
+      const choices = def.choices(life, { chapter: 3, seen: [] }).map((c) => ({ ...c, qol: qolFor(id, c.key) ?? 0 }));
+      const root = document.getElementById("app");
+      root.replaceChildren();
+      const wrap = document.createElement("div");
+      wrap.className = "bestiary bst-month";
+      root.append(wrap);
+      wrap.append(decisionCard({ def, kind: "decision", life, ctx: { chapter: 3, seen: [] }, choices, track: () => {}, payAllowed: ["debit"], ask: ASKS[id], hint: HINTS[id] || null, qolNow: 50, choose: async (key, method) => { const c = choices.find((x) => x.key === key); const r = E.resolveChoice(life, c, method); return { ...r, outcome: "Done.", qol: c.qol, qolNow: 50 + c.qol }; }, onContinue: () => {} }));
+    };
+    window.__show("loanLetter");
+  });
+  // The question is bold, and the math card has a Hint and a calculator.
+  await expect(page.locator(".dc-ask strong")).toHaveText("How much will you pay in total over the 12 months?");
+  expect(await page.locator(".dc-ask strong").evaluate((e) => Number(getComputedStyle(e).fontWeight))).toBeGreaterThanOrEqual(700);
+  await page.hover(".dc-hint-btn");
+  await expect(page.locator(".dc-hint-pop")).toBeVisible();
+  await expect(page.locator(".dc-hint-pop")).toContainText("monthly payment times the number of months");
+  await expect(page.locator(".dc-hint-pop")).not.toContainText("1,056");
+  await page.mouse.move(5, 5);
+  await expect(page.locator(".dc-hint-pop")).toBeHidden();
+  await page.click(".calc-toggle");
+  await expect(page.locator(".decision-card .calc")).toBeVisible();
+  await page.click(".calc-toggle");
+  await expect(page.locator(".decision-card .calc")).toHaveCount(0);
+  // A card with no math has the question but no Hint or calculator.
+  await page.evaluate(() => window.__show("weekendPlans"));
+  await expect(page.locator(".dc-ask strong")).toHaveText("What will you do this weekend?");
+  await expect(page.locator(".dc-hint-btn")).toHaveCount(0);
+  await page.locator(".dc-choice").first().click();
+  await page.locator(".dc-submit").click();
+  await page.locator(".pay-option:not([disabled])").first().click();
+  await page.locator(".pay-confirm").click();
+  // The Tradeoffs are three spectrums: assets, liabilities and quality of life.
+  await expect(page.locator(".trade-col.chosen [data-metric='assets']")).toBeVisible({ timeout: 8000 });
+  await expect(page.locator(".trade-col.chosen [data-metric='owed']")).toContainText("Liabilities");
+  await expect(page.locator(".trade-col.chosen [data-metric='qol']")).toContainText("Quality of life");
+  await expect(page.locator(".dc-qol")).toContainText("Quality of life +4");
   expect(errors).toEqual([]);
 });

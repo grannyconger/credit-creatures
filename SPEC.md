@@ -408,6 +408,13 @@ Real math is allowed (Section 1). Show the worked math after each answer.
 
 ---
 
+## 14b. Decision cards: the question, the hint and the three spectrums (2026-10-25)
+
+- **Every card asks one bold question** under its story (`js/data/card-asks.js`), so students know what to decide. A card that only brings news says "Nothing to decide here" and names the button to press. The story never repeats the question.
+- **Math cards get a Hint and a calculator.** The Hint button opens a pop-up on hover or keyboard focus (a tap on touch screens) that explains how to work it out and how to use the calculator, and never gives the answer (`js/data/card-hints.js`, checked by a test). The calculator is the Cashier Rush one, toggled on beside the choices.
+- **Tradeoffs are three spectrums:** **Assets** (checking plus savings, what you have), **Liabilities** (what you owe) and **Quality of Life**. Credit used and the credit score sit below them when they apply.
+- **Quality of Life** is fun, comfort and peace of mind, which money can't count. A meter from 0 to 100 that starts at 50 (`CONFIG.pacing.qol`, kept in `play.qol`). Every choice on every card has points (`js/data/card-qol.js`, -4 to +6): a movie night lowers assets, adds no liabilities and raises Quality of Life, while going without or worrying lowers it. A test fails if a new choice has no points.
+
 ## 16. Achievements, XP and leaderboard (teacher priority)
 
 This is a core engagement mechanic. Build it out fully.

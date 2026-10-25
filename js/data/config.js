@@ -14,6 +14,10 @@ export const CONFIG = {
     payPerShift: [10, 120],
     sessionMinutes: 15,
     sparkle: { perChapter: 10, total: 30 },
+    // Quality of Life (teacher request 2026-10-25): the third Tradeoffs spectrum, next
+    // to Assets and Liabilities. A meter from min to max that every card choice moves
+    // by its points in js/data/card-qol.js. It starts at start and never leaves the range.
+    qol: { start: 50, min: 0, max: 100 },
     // What a side quest shift pays besides Coins (teacher decision 2026-10-23).
     // A shift needs at least minAnswers scored answers to count for a bonus.
     // Energy: finishing pays finish, 80% or better (strongPct) adds strong, a

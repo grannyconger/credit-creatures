@@ -3659,7 +3659,7 @@ main#app.app:has(.bestiary) {
 .bst-guild .tray-piece.coin { border-radius: 999px; background: var(--b-coin-silver); }
 .bst-guild .cash-actions { justify-content: flex-end; gap: var(--b-s2); }
 .bst-guild .cash-actions button { min-height: 56px; touch-action: manipulation; }
-.bst-guild .calc-toggle {
+:is(.bst-guild, .bst-month) .calc-toggle {
   margin-left: auto;
   font-family: var(--b-body);
   font-weight: 700;
@@ -3670,8 +3670,8 @@ main#app.app:has(.bestiary) {
   box-shadow: var(--b-shadow-card);
   min-height: 48px;
 }
-.bst-guild .calc-toggle[aria-expanded="true"] { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
-.bst-guild .calc {
+:is(.bst-guild, .bst-month) .calc-toggle[aria-expanded="true"] { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
+:is(.bst-guild, .bst-month) .calc {
   width: 272px;
   padding: var(--b-s3);
   color: var(--b-ink);
@@ -3680,20 +3680,20 @@ main#app.app:has(.bestiary) {
   box-shadow: var(--b-shadow-lift);
   touch-action: manipulation;
 }
-.bst-guild .calc:focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
-.bst-guild .calc-top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--b-s2); margin-bottom: var(--b-s2); }
-.bst-guild .calc-screen { display: block; padding: 8px 12px; overflow: hidden; text-align: right; font-family: var(--b-body); font-size: var(--b-fs-lead); font-variant-numeric: tabular-nums; background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; }
-.bst-guild .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--b-s2); }
-.bst-guild .calc-key { min-height: 54px; padding: 0; font-family: var(--b-body); font-weight: 700; font-size: var(--b-fs-title); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; touch-action: manipulation; user-select: none; }
-.bst-guild .calc-key:active { transform: translateY(2px); }
-.bst-guild .calc-key.calc-op { color: var(--b-on-rust); background: var(--b-rust); border-color: transparent; }
-.bst-guild .calc-key.calc-fn { min-width: 52px; }
+:is(.bst-guild, .bst-month) .calc:focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
+:is(.bst-guild, .bst-month) .calc-top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--b-s2); margin-bottom: var(--b-s2); }
+:is(.bst-guild, .bst-month) .calc-screen { display: block; padding: 8px 12px; overflow: hidden; text-align: right; font-family: var(--b-body); font-size: var(--b-fs-lead); font-variant-numeric: tabular-nums; background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; }
+:is(.bst-guild, .bst-month) .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--b-s2); }
+:is(.bst-guild, .bst-month) .calc-key { min-height: 54px; padding: 0; font-family: var(--b-body); font-weight: 700; font-size: var(--b-fs-title); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; touch-action: manipulation; user-select: none; }
+:is(.bst-guild, .bst-month) .calc-key:active { transform: translateY(2px); }
+:is(.bst-guild, .bst-month) .calc-key.calc-op { color: var(--b-on-rust); background: var(--b-rust); border-color: transparent; }
+:is(.bst-guild, .bst-month) .calc-key.calc-fn { min-width: 52px; }
 @media (max-width: 1100px) {
   .bst-guild .cash-counter { grid-template-columns: minmax(0, 1fr); }
 }
 .bst-guild .cash-drawer { justify-content: stretch; flex-wrap: nowrap; }
 .bst-guild .drawer-row .cash-piece.bill { width: 100%; }
-.bst-guild .calc-key.calc-op { font-family: system-ui, sans-serif; font-size: 1.6rem; line-height: 1; }
+:is(.bst-guild, .bst-month) .calc-key.calc-op { font-family: system-ui, sans-serif; font-size: 1.6rem; line-height: 1; }
 .bst-guild .cashier .cash-actions button.secondary { color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
 /* Pet the creature in the Cottage (Phase 16). */
 .bst-cottage .cottage-pet { padding: 0; background: none; border: 0; border-radius: var(--b-r-blob); cursor: var(--b-cursor-lens), pointer; }
@@ -6310,7 +6310,38 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .pay-with .ps-card .card-art.mini { font-size: 0.6rem; padding: 10px 12px; }
 .pay-with .ps-card-name, .pay-with .ps-decline { max-width: 190px; }
 .pay-with .ps-actions { position: sticky; bottom: 92px; z-index: 6; padding-top: var(--b-s2); background: var(--b-paper); }
-.bst-month .dc-receipt { display: flex; align-items: center; gap: var(--b-s1); margin: var(--b-s1) 0 0; color: var(--b-ink-soft); font-size: var(--b-small); font-variant-numeric: lining-nums tabular-nums; }
 /* Text in the outcome and Tradeoffs reads at full strength. */
 .bst-month .dc-outcome p.note, .dc-tradeoffs .muted, .dc-tradeoffs .sentences { color: var(--b-ink); }
 .dc-tradeoffs .trade-delta.worse { color: var(--b-ink); }
+
+/* ---- The bold question, Hint, calculator and the three Tradeoff spectrums (teacher request 2026-10-25) ---- */
+.bst-month .dc-ask-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--b-s3); margin-top: var(--b-s3); padding-top: var(--b-s3); border-top: 2px dashed var(--b-rule); }
+.bst-month .dc-ask { flex: 1 1 360px; margin: 0; font-size: var(--b-fs-lead); line-height: 1.25; color: var(--b-ink); }
+.bst-month .dc-ask strong { font-weight: 800; }
+.bst-month .dc-tools { display: flex; align-items: center; gap: var(--b-s2); }
+.bst-month .dc-tools .calc-toggle { margin-left: 0; min-height: 44px; padding: 4px 16px; }
+.bst-month .dc-hint { position: relative; display: inline-block; }
+.bst-month .dc-hint-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 4px 16px; font-family: var(--b-body); font-weight: 700; color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
+.bst-month .dc-hint-btn:hover, .bst-month .dc-hint-btn:focus-visible, .bst-month .dc-hint.open .dc-hint-btn { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
+.bst-month .dc-hint-pop { position: absolute; top: calc(100% + 8px); right: 0; z-index: 60; display: none; width: min(380px, 80vw); padding: var(--b-s3) var(--b-s4); color: var(--b-ink); background: var(--b-paper); border: 2px solid var(--b-plum); border-radius: var(--b-r-insert); box-shadow: var(--b-shadow-lift); text-align: left; font-size: var(--b-small); }
+.bst-month .dc-hint-pop strong { display: block; margin-bottom: var(--b-s1); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-month .dc-hint-pop ol { margin: 0; padding-left: 1.2em; display: grid; gap: var(--b-s1); }
+.bst-month .dc-hint-calc { display: flex; gap: 4px; margin: var(--b-s2) 0 0; padding-top: var(--b-s2); border-top: 1px dashed var(--b-rule); font-weight: 700; }
+.bst-month .dc-hint:is(:hover, :focus-within, .open) .dc-hint-pop { display: block; }
+/* The calculator opens beside the choices, so both stay in view. */
+.bst-month .dc-stage { min-width: 0; }
+.bst-month .decision-card.has-calc .dc-stage { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--b-s4); align-items: start; }
+.bst-month .decision-card.has-calc .dc-choices { grid-template-columns: minmax(0, 1fr); }
+.bst-month .decision-card.has-calc .dc-choice { min-height: 0; }
+.bst-month .dc-calc-slot { min-width: 0; }
+.bst-month .dc-calc-slot .calc { margin-top: var(--b-s4); }
+/* Once the choice is locked in, the question and its tools fold away with the story. */
+.bst-month .decision-card:is(.is-outcome, .is-paying) .dc-ask-row, .bst-month .decision-card:is(.is-outcome, .is-paying) .dc-calc-slot { display: none; }
+.bst-month .dc-qol { display: flex; align-items: center; gap: var(--b-s1); margin: var(--b-s1) 0 0; color: var(--b-ink); font-family: var(--b-hand); font-size: var(--b-fs-hand); }
+/* Tradeoffs: three spectrums, with credit under them in smaller type. */
+.trade-metric small .trade-caption { color: var(--b-ink); font-weight: 400; }
+.trade-metric .trade-sub { grid-column: 1 / -1; color: var(--b-ink); }
+.trade-metric.minor strong { font-size: 1.05rem; }
+.trade-metric.minor .trade-bar { display: none; }
+/* A locked-out Lock in button still reads at full contrast, and says so with a dashed edge. */
+.bst-month .dc-submit:disabled { color: var(--b-ink); border: 2px dashed var(--b-rule); }

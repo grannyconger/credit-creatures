@@ -5,6 +5,7 @@ import { amountOwed, isOpen } from "./accounts.js";
 import { resolveChoice, paymentOptions, utilization } from "./cards.js";
 import { buildReport } from "./report.js";
 import { computeScore } from "./score.js";
+import { CONFIG } from "../data/config.js";
 
 // The numbers a student can compare. score is null until there's enough history.
 export function lifeMetrics(life) {
@@ -28,7 +29,10 @@ function methodFor(life, choice, preferred, allowed) {
 
 // For each choice: { key, label, ok, denied, metrics, delta, effect }. delta is
 // the change from now. A choice that can't be done (no money, locked) is ok: false.
-export function compareChoices(life, choices, { chosenKey = null, chosenMethod = null, allowed = null } = {}) {
+// qol is the Quality of Life meter now. Each choice's points (c.qol) move it, apart from money.
+const clampQol = (n) => Math.max(CONFIG.pacing.qol.min, Math.min(CONFIG.pacing.qol.max, n));
+
+export function compareChoices(life, choices, { chosenKey = null, chosenMethod = null, allowed = null, qol = null } = {}) {
   const now = lifeMetrics(life);
   return choices.map((c) => {
     const out = { key: c.key, label: c.label, chosen: c.key === chosenKey, effect: c.effect || null, quiz: Boolean(c.quiz) };
@@ -40,6 +44,10 @@ export function compareChoices(life, choices, { chosenKey = null, chosenMethod =
     const metrics = lifeMetrics(r.life);
     const delta = {};
     for (const k of Object.keys(now)) delta[k] = now[k] == null || metrics[k] == null ? null : metrics[k] - now[k];
+    if (qol != null) {
+      metrics.qol = clampQol(qol + (c.qol || 0));
+      delta.qol = metrics.qol - qol;
+    }
     return { ...out, ok: true, denied: Boolean(r.denied), metrics, delta };
   });
 }
@@ -52,8 +60,9 @@ export function allSame(rows) {
 }
 
 // A column for "where you started", used when a card has only one choice to compare.
-export function startRow(life) {
+export function startRow(life, qol = null) {
   const metrics = lifeMetrics(life);
+  if (qol != null) metrics.qol = qol;
   const delta = Object.fromEntries(Object.keys(metrics).map((k) => [k, metrics[k] == null ? null : 0]));
   return { key: "_start", label: "Where you started", chosen: false, start: true, ok: true, denied: false, metrics, delta, effect: null, quiz: false };
 }

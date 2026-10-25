@@ -158,7 +158,30 @@ for (const theme of themes) {
       await page.locator(".ps-terminal.done").waitFor();
     });
     await run("pay-receipt", async () => {
-      await page.locator(".dc-receipt").waitFor();
+      await page.locator(".dc-outcome").waitFor();
+    });
+  }
+  // A math card: the bold question, the Hint pop-up and the calculator beside the choices.
+  if (!only || only === "pay") {
+    await run("card-hint", async () => {
+      await page.evaluate(async () => {
+        const E = await import("/js/engine/index.js");
+        const { decisionCard } = await import("/js/ui/decision-card.js");
+        const { SCENARIOS } = await import("/js/data/scenarios.js");
+        const { ASKS } = await import("/js/data/card-asks.js");
+        const { HINTS } = await import("/js/data/card-hints.js");
+        const def = SCENARIOS.find((s) => s.id === "loanLetter");
+        const life = E.earn(E.createLife({ seed: "hint", ageMonths: 18 * 12 }), 360, "shift").life;
+        const choices = def.choices(life, { chapter: 3, seen: [] }).map((c) => ({ ...c, qol: 0 }));
+        const root = document.getElementById("app");
+        root.replaceChildren();
+        const wrap = document.createElement("div");
+        wrap.className = "bestiary bst-month";
+        root.append(wrap);
+        wrap.append(decisionCard({ def, kind: "decision", life, ctx: {}, choices, track: () => {}, ask: ASKS.loanLetter, hint: HINTS.loanLetter, qolNow: 50, choose: async () => ({ ok: true }), onContinue: () => {} }));
+      });
+      await page.click(".calc-toggle");
+      await page.hover(".dc-hint-btn");
     });
   }
   if (!only) {
