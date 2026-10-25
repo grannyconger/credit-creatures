@@ -8,7 +8,7 @@
 // Prints each failing text style once per route and theme, with the ratio, the
 // colors and a sample. WCAG AA: 4.5 for normal text, 3 for large text.
 import { chromium } from "@playwright/test";
-import { seededStudent, open, closePopups } from "./helpers.js";
+import { seededStudent, seedRichVault, open, closePopups } from "./helpers.js";
 
 const args = process.argv.slice(2);
 const only = args.find((a) => !a.startsWith("--"));
@@ -219,6 +219,42 @@ for (const theme of themes) {
     });
   }
   await page.close();
+  // The Vault again with a full life (cards, loans, savings, a pay-later plan), since a
+  // fresh student has none of those and their text never draws. Every tab is audited.
+  if (!only || only === "accounts" || only === "vault") {
+    const rich = await browser.newPage({ viewport: { width: 1440, height: 900 }, baseURL: "http://localhost:8000", colorScheme: theme });
+    await seededStudent(rich);
+    await seedRichVault(rich);
+    const richRun = async (name, setup) => {
+      try {
+        await setup();
+        await rich.waitForTimeout(450);
+        for (const f of await rich.evaluate(audit, args.includes("--gradients"))) all.push({ theme, route: name, ...f });
+      } catch (err) {
+        console.log(`skipped ${name} (${theme}): ${err.message.split("\n")[0]}`);
+      }
+    };
+    await richRun("vault-rich", async () => {
+      await open(rich, "accounts");
+      await closePopups(rich);
+    });
+    // Every tab, then every sub-tab inside it.
+    const tabs = await rich.locator("nav.acct-tabs button").count();
+    for (let i = 0; i < tabs; i++) {
+      const label = (await rich.locator("nav.acct-tabs button").nth(i).innerText()).trim().replace(/\s+/g, " ");
+      await richRun(`vault-${label}`, async () => {
+        await rich.locator("nav.acct-tabs button").nth(i).click();
+      });
+      const subs = await rich.locator("nav.acct-subtabs button").count();
+      for (let j = 0; j < subs; j++) {
+        const sub = (await rich.locator("nav.acct-subtabs button").nth(j).innerText()).trim().replace(/\s+/g, " ");
+        await richRun(`vault-${label}-${sub}`, async () => {
+          await rich.locator("nav.acct-subtabs button").nth(j).click();
+        });
+      }
+    }
+    await rich.close();
+  }
 }
 await browser.close();
 // The same style on many routes prints once, with where it was seen.

@@ -86,3 +86,32 @@ export async function open(page, route) {
   await page.waitForTimeout(600);
   await closePopups(page);
 }
+
+// Gives the signed-in student a full Vault: money in checking and savings, a card
+// with a balance, an auto loan, a couch loan, a student loan, a pay-later plan and a
+// credit-builder loan. A fresh student has none of these, so those parts of the
+// Vault never draw and the contrast audit can't see them. Reloads the game after.
+export async function seedRichVault(page) {
+  // Leave the game first: it saves its own state when the page is hidden, which would overwrite this.
+  await page.goto("/css/tokens.css");
+  await page.evaluate(async (k) => {
+    const E = await import("/js/engine/index.js");
+    const { openCard } = await import("/js/engine/accounts.js");
+    const { copyLife } = await import("/js/engine/life.js");
+    const save = JSON.parse(localStorage.getItem(k));
+    let life = E.earn(save.life, 1200, "seeded pay").life;
+    life = E.moveToSavings(life, 414).life;
+    const next = copyLife(life);
+    const a = openCard(next, { product: "student", name: "Student Card", issuer: "chase", network: "visa", icon: "🏛️", limit: 800, apr: 0.24, annualFee: 0 });
+    life = E.cardPurchase(next, a.id, 180, "seeded purchase").life;
+    life = E.openAutoLoan(life, { price: 4000, downPayment: 500, termMonths: 48 }).life;
+    life = E.openPurchaseLoan(life, { item: "couch", price: 600, termMonths: 12 }).life;
+    life = E.startSchool(life).life;
+    life = E.buyWithBnpl(life, 80, "sneakers", "Market").life;
+    life = E.openCreditBuilderLoan(life).life;
+    localStorage.setItem(k, JSON.stringify({ ...save, life }));
+  }, KEY);
+  await page.goto("/?local");
+  await enterGame(page);
+  await closePopups(page);
+}

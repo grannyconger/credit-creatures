@@ -2620,6 +2620,9 @@ main#app.app:has(.bestiary) {
 .bst-book-place .wallet-item figcaption strong { color: var(--b-on-ground); }
 .bst-book-place .wallet .note,
 .bst-book-place .wallet .muted { color: var(--b-on-ground-soft); }
+/* Loan lines sit on pale paper chips inside the dark wallet, so they need their own dark text. */
+.bst-book-place .wallet .loan-list li { color: var(--b-ink); background: var(--b-paper); font-size: var(--b-small); box-shadow: var(--b-shadow-card); }
+.bst-book-place .wallet .loan-list li strong { color: var(--b-ink); }
 
 /* Bills: ledger entries, each card a ruled entry with its own margin. */
 .bst-book-place .bill-card {
