@@ -342,6 +342,19 @@ export const CONFIG = {
         riskyThreshold: 1000,
         riskyCap: 500,
       },
+      // Market Dash (game 13). Money in cents except perMeal, takeout and catchBonus.
+      dash: {
+        maxPayScore: { easy: 290, medium: 345, hard: 410 },
+        seconds: 120,
+        meals: { easy: 4, medium: 5, hard: 5 },
+        budgetFactor: { easy: 1.45, medium: 1.35, hard: 1.2 },
+        taxRate: 0.07,
+        saleOff: 0.3,
+        saleSeconds: 30,
+        takeout: 18,
+        perMeal: 60,
+        catchBonus: 30,
+      },
       // Score Chase (game 7). 18 months, a card at a time.
       scorechase: {
         maxPayScore: 660,

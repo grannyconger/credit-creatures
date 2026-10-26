@@ -703,6 +703,16 @@
   --arc-rd-good: #11744a;
   --arc-rd-bad: #b3261e;
   --arc-rd-soft: #e2e9f2;
+  /* Market Dash: a bright supermarket with aisle signs. */
+  --arc-md-bg: #0f3d2e;
+  --arc-md-card: #fffdf6;
+  --arc-md-ink: #1c1c1c;
+  --arc-md-sign: #e8402b;
+  --arc-md-sign-ink: #ffffff;
+  --arc-md-yellow: #ffd23f;
+  --arc-md-good: #0c7a37;
+  --arc-md-bad: #b8261c;
+  --arc-md-soft: #eef3ea;
 }
 
 /* The parts of a total, for the stacked bars in the Tradeoffs and the Vault Overview
