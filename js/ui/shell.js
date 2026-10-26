@@ -31,6 +31,7 @@ const EXTRAS = [
   { id: "map", name: "Map", kind: "The whole kingdom", icon: "compass", route: "map" },
   { id: "leaderboard", name: "Leaderboard", kind: "How the class is doing", icon: "trophy", route: "leaderboard" },
   { id: "trophies", name: "Trophies", kind: "Ranks and achievements", icon: "star", route: "trophies" },
+  { id: "arena", name: "Battle Arena", kind: "Battle a classmate or the computer", icon: "shield", route: "arena" },
 ];
 
 export function initShell({ getGame, go, track }) {
@@ -130,9 +131,9 @@ const GROUPS = [
   { title: "Your money", ids: ["vault", "townhall", "garage"] },
   { title: "Earn and learn", ids: ["guild", "academy", "daily", "alley"] },
   { title: "Shop and home", ids: ["market", "cottage"] },
-  { title: "Friends and fame", ids: ["plaza", "leaderboard", "trophies", "map"] },
+  { title: "Friends and fame", ids: ["arena", "plaza", "leaderboard", "trophies", "map"] },
 ];
-const HUE = { vault: "vault", townhall: "townhall", guild: "arcade", garage: "garage", market: "market", cottage: "cottage", plaza: "plaza", alley: "alley", academy: "academy", map: "map", leaderboard: "board", trophies: "trophy", daily: "daily" };
+const HUE = { vault: "vault", townhall: "townhall", guild: "arcade", garage: "garage", market: "market", cottage: "cottage", plaza: "plaza", alley: "alley", academy: "academy", map: "map", leaderboard: "board", trophies: "trophy", daily: "daily", arena: "arena" };
 
 export function openThingsToDo() {
   const game = api?.getGame();
@@ -148,7 +149,7 @@ export function openThingsToDo() {
     dialog.remove();
   };
   const everything = Object.fromEntries([...PLACES, ...EXTRAS].map((x) => [x.id, x]));
-  const hidden = (x) => (x.id === "leaderboard" && game.classInfo?.leaderboard === false) || (x.id === "trophies" && !hasFeature(play, "academy", life));
+  const hidden = (x) => (x.id === "leaderboard" && game.classInfo?.leaderboard === false) || (x.id === "trophies" && !hasFeature(play, "academy", life)) || (x.id === "arena" && !hasFeature(play, "arena", life));
   const tile = (x) => {
     const locked = st[x.id]?.tone === "locked";
     const text = st[x.id]?.text || "";

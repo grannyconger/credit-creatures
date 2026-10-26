@@ -6434,3 +6434,123 @@ dialog.broke-alert.reset .broke-siren { animation: none; }
 .broke-banner { display: flex; align-items: center; gap: 4px; border: 3px solid var(--b-rust); }
 .iou-card { margin: var(--b-s3) 0; padding: var(--b-s2) var(--b-s3); border: 2px dashed var(--b-rust); border-radius: var(--b-r-insert); background: var(--b-paper-2); }
 .iou-card h3 { display: flex; align-items: center; gap: 4px; margin: 0 0 var(--b-s1); }
+
+/* ===========================================================================
+   The Battle Arena (docs/BATTLES.md, 2026-10-26). The lobby is a field notice
+   board: notes pinned at slight angles. A battle happens in a mossy clearing at
+   dusk: two creatures on mounds, and the round on a paper sheet between them.
+   =========================================================================== */
+.bst-arena { --page-hue: var(--hue-arena); }
+.bst-arena .panel.arena { max-width: 1240px; margin: 0 auto; }
+.arena-purse { display: grid; gap: 2px; padding: var(--b-s2) var(--b-s3); background: var(--b-paper-2); border: 2px dashed var(--b-paper-edge); border-radius: var(--b-r-tag); color: var(--b-ink); }
+.arena-purse-line { display: flex; align-items: center; gap: 6px; }
+.arena-purse-line .ico-wrap { color: var(--b-gold-ink); }
+.arena-purse small { color: var(--b-ink-soft); }
+.arena-cant { display: flex; align-items: center; gap: 4px; }
+
+.arena-board { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: var(--b-s4) var(--b-s5); margin-top: var(--b-s4); align-items: start; }
+.arena-note { position: relative; padding: var(--b-s4); background: var(--b-fibers), var(--b-paper); border: 1px solid var(--b-paper-edge); border-radius: var(--b-r-paper); box-shadow: var(--b-shadow-card); color: var(--b-ink); rotate: var(--tilt, 0deg); }
+.arena-note::before { content: ""; position: absolute; top: -9px; left: 50%; width: 18px; height: 18px; translate: -50% 0; border-radius: 50%; background: var(--b-pin); border: 2px solid var(--b-pin-edge); box-shadow: inset -3px -3px 0 color-mix(in srgb, var(--b-shadow-ink) 25%, transparent); }
+.arena-bots { --tilt: -0.6deg; grid-row: span 2; }
+.arena-live { --tilt: 0.5deg; }
+.arena-record { --tilt: -0.4deg; }
+.arena-note h2 { margin: 0 0 var(--b-s2); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-ink); }
+.arena-hand { margin: 0 0 var(--b-s3); font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink-soft); }
+
+.arena-bot-list { display: grid; gap: var(--b-s3); }
+.arena-bot { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; gap: var(--b-s3); padding: var(--b-s2) var(--b-s3); background: var(--b-paper-insert); border-radius: var(--b-r-insert); border-bottom: 2px solid var(--b-rule); }
+.arena-bot-words { display: grid; gap: 2px; }
+.arena-bot-words strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
+.arena-bot-words small { color: var(--b-ink-soft); }
+
+.arena-live-body { display: grid; gap: var(--b-s2); }
+.arena-slip { display: grid; grid-auto-flow: column; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--b-s2); text-align: left; padding: var(--b-s2) var(--b-s3); background: var(--b-paper-2); border: 2px solid var(--b-paper-edge); border-radius: var(--b-r-tag); }
+.arena-slip.incoming { border-color: var(--b-rust); border-style: dashed; }
+.arena-slip.active { border-color: var(--b-plum); }
+.arena-mates { list-style: none; margin: var(--b-s2) 0 0; padding: 0; display: grid; gap: var(--b-s1); max-height: 340px; overflow-y: auto; }
+.arena-mates li { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: var(--b-s2); padding: 4px var(--b-s2); border-bottom: 1px solid var(--b-rule); }
+.arena-mate-words { display: grid; }
+.arena-mate-words small { color: var(--b-ink-soft); }
+
+.arena-tally { display: flex; flex-wrap: wrap; gap: var(--b-s3); margin: 0 0 var(--b-s2); }
+.arena-tally strong { font-variant-numeric: lining-nums; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-gold-ink); margin-right: 2px; }
+.arena-log { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.arena-log-result { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; }
+.arena-log-result.win { color: var(--b-good-ink); }
+.arena-log-result.loss { color: var(--b-rust-ink); }
+
+.arena-how { grid-column: 1 / -1; padding: var(--b-s3) var(--b-s4); background: var(--b-paper-2); border: 1px solid var(--b-paper-edge); border-radius: var(--b-r-paper); color: var(--b-ink); }
+.arena-how summary { cursor: pointer; font-family: var(--b-display); font-size: var(--b-fs-lead); display: flex; align-items: center; gap: 6px; }
+.arena-how-body ol { margin: var(--b-s3) 0; }
+.arena-move-key { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-s3); }
+.arena-key { display: grid; gap: 2px; padding: var(--b-s2); background: var(--b-paper); border-radius: var(--b-r-insert); }
+.arena-key small { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink-soft); }
+
+/* ---------- The clearing ---------- */
+.arena-match { padding: var(--b-s4); color: var(--b-on-ground); background: radial-gradient(60% 50% at 50% 100%, color-mix(in srgb, var(--b-foxfire) 14%, transparent), transparent 70%), var(--b-grain), var(--b-ground-deep); border-radius: var(--b-r-sheet); box-shadow: var(--b-shadow-page); }
+.bst-arena .panel.arena:has(.arena-match) { padding: 0; background: none; border: 0; box-shadow: none; }
+.bestiary button.arena-giveup { color: var(--b-on-ground); background: transparent; border: 2px solid var(--b-on-ground-soft); }
+.bestiary button.arena-giveup:hover, .bestiary button.arena-giveup:focus-visible { border-color: var(--b-on-ground); }
+.arena-top { display: flex; align-items: center; justify-content: space-between; gap: var(--b-s3); margin-bottom: var(--b-s3); }
+.arena-round { font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-on-ground); }
+.arena-field { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(0, 2fr) minmax(180px, 1fr); gap: var(--b-s4); align-items: start; }
+.arena-side { display: grid; justify-items: center; gap: var(--b-s2); text-align: center; }
+.arena-art { display: block; padding-bottom: 10px; background: radial-gradient(50% 18% at 50% 92%, var(--b-moss-2), transparent 72%); }
+.arena-side.them .arena-art svg { transform: scaleX(-1); }
+.arena-name { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); color: var(--b-on-ground); }
+.arena-name small { font-family: var(--b-body); color: var(--b-on-ground-soft); }
+.arena-hp { width: 100%; display: grid; gap: 4px; }
+.arena-hp-bar { display: block; height: 14px; background: color-mix(in srgb, var(--b-ground) 70%, black); border: 2px solid var(--b-on-ground-soft); border-radius: var(--b-r-round); overflow: hidden; }
+.arena-hp-fill { display: block; height: 100%; width: var(--hp); background: var(--b-foxfire); transition: width var(--b-settle) var(--ease-gentle); }
+.arena-hp.low .arena-hp-fill { background: var(--b-rust); }
+.arena-hp-num { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--b-on-ground); }
+.arena-effects { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: var(--b-fs-ui); color: var(--b-on-ground-soft); }
+.arena-effects li { display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+.arena-stage { min-height: 360px; padding: var(--b-s4); background: var(--b-fibers), var(--b-paper); color: var(--b-ink); border-radius: var(--b-r-paper); box-shadow: var(--b-shadow-lift); animation: arena-settle var(--b-settle) var(--ease-bouncy) both; }
+@keyframes arena-settle { from { translate: 0 14px; rotate: -1deg; opacity: 0; } to { translate: 0 0; rotate: 0deg; opacity: 1; } }
+.arena-stage h2 { margin: 0 0 var(--b-s3); font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-ink); }
+.arena-moves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-s3); }
+.bestiary button.arena-move { display: grid; gap: 2px; align-content: start; text-align: left; padding: var(--b-s2) var(--b-s3); color: var(--b-ink); background: var(--b-paper-insert); border: 2px solid var(--b-paper-edge); border-radius: var(--b-r-tag); box-shadow: 0 2px 0 var(--b-paper-edge); rotate: var(--tilt, 0deg); transition: translate var(--b-quick), border-color var(--b-quick); }
+.bestiary button.arena-move:hover:not(:disabled), .bestiary button.arena-move:focus-visible { translate: 0 -3px; border-color: var(--b-plum); }
+.bestiary button.arena-move:focus-visible { outline: 3px dashed var(--b-plum); outline-offset: 3px; }
+.bestiary button.arena-move:disabled { opacity: 0.6; cursor: not-allowed; border-style: dashed; }
+.arena-move-head { display: flex; align-items: center; gap: 6px; font-family: var(--b-display); font-size: var(--b-fs-lead); }
+.arena-move-head .ico-wrap { color: var(--b-rust-ink); }
+.arena-move-kind { font-weight: 700; color: var(--b-plum); }
+.arena-move-does { font-size: var(--b-fs-ui); }
+.arena-move-echo { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink-soft); }
+.arena-move-wait { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; color: var(--b-rust-ink); }
+
+.arena-q-head { display: flex; align-items: center; justify-content: space-between; gap: var(--b-s3); margin-bottom: var(--b-s2); }
+.arena-chosen { display: inline-flex; align-items: center; gap: 4px; padding: 2px var(--b-s2); background: var(--b-plum); color: var(--b-on-plum); border-radius: var(--b-r-tag); font-weight: 700; }
+.arena-chosen .ico-wrap { color: var(--b-on-plum); }
+.arena-question .arc-ring { color: var(--b-ink); }
+.arena-question .arc-ring.low { color: var(--b-rust-ink); }
+.arena-q-prompt p { margin: 0 0 var(--b-s1); font-size: var(--b-fs-lead); }
+.arena-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-s2); margin-top: var(--b-s3); }
+.bestiary button.arena-choice { display: flex; align-items: center; gap: var(--b-s2); text-align: left; padding: var(--b-s2) var(--b-s3); color: var(--b-ink); background: var(--b-paper-insert); border: 2px solid var(--b-paper-edge); border-radius: var(--b-r-insert); }
+.bestiary button.arena-choice:hover, .bestiary button.arena-choice:focus-visible { border-color: var(--b-plum); }
+.arena-choice-letter { display: inline-grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 50%; border: 2px solid var(--b-ink-soft); font-weight: 700; }
+
+.arena-answer { margin-bottom: var(--b-s3); padding: var(--b-s2) var(--b-s3); border-radius: var(--b-r-insert); background: var(--b-paper-2); border: 2px solid var(--b-paper-edge); }
+.arena-answer.right { border-color: var(--b-good-ink); }
+.arena-answer.wrong { border-color: var(--b-rust); border-style: dashed; }
+.arena-verdict { display: flex; align-items: flex-start; gap: 4px; margin: 0 0 4px; font-weight: 700; }
+.arena-answer.right .arena-verdict { color: var(--b-good-ink); }
+.arena-answer.wrong .arena-verdict { color: var(--b-rust-ink); }
+.arena-math { margin: 0; color: var(--b-ink-soft); }
+.arena-turn { list-style: none; margin: 0 0 var(--b-s3); padding: 0; display: grid; gap: var(--b-s2); }
+.arena-turn li { display: flex; gap: var(--b-s2); align-items: flex-start; padding-left: var(--b-s2); border-left: 3px solid var(--b-rule); }
+.arena-turn li.mine { border-left-color: var(--b-plum); }
+.arena-turn .ico-wrap { flex: none; margin-top: 2px; }
+.arena-waiting .arena-slip { margin-top: var(--b-s3); }
+.arena-over { display: grid; justify-items: center; gap: var(--b-s2); text-align: center; }
+.arena-stamp { display: block; width: 220px; color: var(--b-rust-ink); rotate: -6deg; }
+.arena-stamp svg { width: 100%; height: auto; }
+.arena-prize { display: flex; align-items: center; gap: 4px; font-weight: 700; color: var(--b-gold-ink); }
+
+:root[data-motion="calm"] .arena-stage { animation: none; }
+:root[data-motion="calm"] .arena-hp-fill, :root[data-motion="calm"] button.arena-move { transition: none; }
+@media (prefers-reduced-motion: reduce) { .arena-stage { animation: none; } .arena-hp-fill { transition: none; } }
+:root[data-reading="dyslexia"] .arena-note, :root[data-reading="dyslexia"] button.arena-move, :root[data-reading="dyslexia"] .arena-stamp { rotate: none; }

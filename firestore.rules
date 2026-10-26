@@ -101,13 +101,14 @@ service cloud.firestore {
       // Teachers change only these settings, within sensible ranges.
       allow update: if isTeacher()
         && resource.data.teacherEmail == myEmail()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'releasedChapter', 'leaderboard', 'paused', 'monthsPerChapter', 'social', 'sound'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'releasedChapter', 'leaderboard', 'paused', 'monthsPerChapter', 'social', 'sound', 'battles'])
         && request.resource.data.releasedChapter is int
         && request.resource.data.releasedChapter >= 1 && request.resource.data.releasedChapter <= 30
         && request.resource.data.get('leaderboard', true) is bool
         && request.resource.data.get('paused', false) is bool
         && request.resource.data.get('social', true) is bool
         && request.resource.data.get('sound', true) is bool
+        && request.resource.data.get('battles', true) is bool
         && request.resource.data.get('monthsPerChapter', 3) is int
         && request.resource.data.get('monthsPerChapter', 3) >= 1
         && request.resource.data.get('monthsPerChapter', 3) <= 6
@@ -172,6 +173,66 @@ service cloud.firestore {
         && shortString('creatureName', 41)
         && request.resource.data.best is map
         && request.resource.data.best.size() <= 60;
+    }
+
+    // ---------- Battles (docs/BATTLES.md, 2026-10-26) ----------
+    // One doc per battle between two classmates. players never change. live
+    // holds both players while the battle is open and is emptied when it ends,
+    // so a student listens only to their open battles. Each player writes only
+    // their own answers (p0 or p1), one new turn at a time, never changing an
+    // old one. The class's battle switch is checked once, when a battle is made.
+    function battlesOn(classId) {
+      return get(/databases/$(database)/documents/classes/$(classId)).data.get('battles', true) == true;
+    }
+    function oneNewTurn(field) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([field, 'updatedAt'])
+        && request.resource.data[field] is map
+        && request.resource.data[field].size() == resource.data[field].size() + 1
+        && request.resource.data[field].size() <= 8
+        && request.resource.data[field].diff(resource.data[field]).changedKeys().size() == 0
+        && request.resource.data[field].diff(resource.data[field]).removedKeys().size() == 0;
+    }
+    match /battles/{battleId} {
+      allow read: if isSchool() && (request.auth.uid in resource.data.live || request.auth.uid in resource.data.players || teachesClass(resource.data.classId));
+      allow create: if isSchool()
+        && request.resource.data.keys().hasOnly(['classId', 'players', 'live', 'names', 'seed', 'status', 'p0', 'p1', 'winner', 'createdAt', 'updatedAt'])
+        && request.resource.data.players is list
+        && request.resource.data.players.size() == 2
+        && request.resource.data.players[0] == request.auth.uid
+        && request.resource.data.players[1] != request.auth.uid
+        && request.resource.data.live == request.resource.data.players
+        && request.resource.data.names is list
+        && request.resource.data.names.size() == 2
+        && request.resource.data.names[0] is string && request.resource.data.names[0].size() <= 41
+        && request.resource.data.names[1] is string && request.resource.data.names[1].size() <= 41
+        && request.resource.data.seed is string && request.resource.data.seed.size() <= 40
+        && request.resource.data.status == 'invited'
+        && request.resource.data.p0 == {} && request.resource.data.p1 == {}
+        && request.resource.data.winner == null
+        && classOf(request.auth.uid) == request.resource.data.classId
+        && classOf(request.resource.data.players[1]) == request.resource.data.classId
+        && battlesOn(request.resource.data.classId);
+      allow update: if isSchool() && request.auth.uid in resource.data.players && (
+        // The one challenged accepts or declines.
+        (resource.data.status == 'invited' && request.auth.uid == resource.data.players[1]
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'live', 'updatedAt'])
+          && ((request.resource.data.status == 'active' && request.resource.data.live == resource.data.live)
+            || (request.resource.data.status == 'declined' && request.resource.data.live == [])))
+        // The challenger cancels.
+        || (resource.data.status == 'invited' && request.auth.uid == resource.data.players[0]
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'live', 'updatedAt'])
+          && request.resource.data.status == 'cancelled' && request.resource.data.live == [])
+        // An answer for the next turn, your own side only.
+        || (resource.data.status == 'active' && request.auth.uid == resource.data.players[0] && oneNewTurn('p0'))
+        || (resource.data.status == 'active' && request.auth.uid == resource.data.players[1] && oneNewTurn('p1'))
+        // Ending it, once: a result, or no winner because the other player left.
+        || (resource.data.status == 'active'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'winner', 'live', 'endedBy', 'updatedAt'])
+          && request.resource.data.live == []
+          && ((request.resource.data.status == 'done' && request.resource.data.winner in [0, 1, -1])
+            || (request.resource.data.status == 'abandoned' && request.resource.data.endedBy == request.auth.uid)))
+      );
+      allow delete: if teachesClass(resource.data.classId);
     }
 
     // ---------- Social (Phase 8): friends, groups and gifts ----------

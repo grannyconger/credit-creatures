@@ -193,6 +193,7 @@ function classStrip(c) {
       status("calendar", `${plural(c.monthsPerChapter || CONFIG.pacing.monthsPerChapter, "month")} per chapter`),
       status("trophy", c.leaderboard === false ? "Leaderboard off" : "Leaderboard on"),
       status("gift", c.social === false ? "Friends off" : "Friends on"),
+      status("shield", c.battles === false ? "Battles off" : "Battles on"),
       status(c.sound === false ? "mute" : "volume", c.sound === false ? "Sound muted" : "Students choose sound")
     ),
     h(
@@ -327,6 +328,7 @@ function settingsBody(c, repaint) {
       row("Months per chapter", "", "Applies to chapters students start from now on.", months),
       row("Leaderboard", c.leaderboard === false ? "Off" : "On", null, h("button.t-btn", { type: "button", onclick: () => toggle({ leaderboard: c.leaderboard === false }, "the leaderboard") }, c.leaderboard === false ? "Turn on" : "Turn off")),
       row("Friends and gifts", c.social === false ? "Off" : "On", null, h("button.t-btn", { type: "button", onclick: () => toggle({ social: c.social === false }, "friends and gifts") }, c.social === false ? "Turn on" : "Turn off")),
+      row("Classmate battles", c.battles === false ? "Off" : "On", "Practice bouts against the computer always work.", h("button.t-btn", { type: "button", onclick: () => toggle({ battles: c.battles === false }, "classmate battles") }, c.battles === false ? "Turn on" : "Turn off")),
       row("Sound effects", c.sound === false ? "Muted for everyone" : "Students choose", null, h("button.t-btn", { type: "button", onclick: () => toggle({ sound: c.sound === false }, "sound effects") }, c.sound === false ? "Let students choose" : "Mute for everyone"))
     ),
     LOCAL ? null : h("section.t-drawer-section", h("h3", "Another class"), createForm()),

@@ -13,7 +13,7 @@ export const STATS = {
     title: "Energy",
     icon: "energy",
     what: "Energy is your get-up-and-go. You can hold up to 10.",
-    does: "You'll spend Energy on Battles when they open. For now it just builds up, so you'll be ready.",
+    does: "Each battle in the Battle Arena costs 2 Energy. Find the Arena in Things To Do.",
     gain: "Finish a side quest in the Arcade for 1. Score 80% or better for 1 more, and a perfect shift for 1 more.",
   },
   xp: {

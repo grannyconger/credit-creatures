@@ -19,7 +19,7 @@ export const STEPS = ["intro", "profile", "creature", "dream", "join", "hub"];
 const OLD_STEPS = new Set(["teen", "tutorial", "skip", "networks", "design", "result", "done"]);
 
 // Screens open once the student reaches the hub. The router guards each one.
-export const HUB_SCREENS = new Set(["hub", "map", "leaderboard", "month", "chapterEnd", "accounts", "shop", "trophies", "friends", "guild", "academy", "cottage", "garage", "records", "alley", "settings", "daily", "cardIntro", "cardDesign", "cardResult"]);
+export const HUB_SCREENS = new Set(["hub", "map", "leaderboard", "month", "chapterEnd", "accounts", "shop", "trophies", "friends", "guild", "academy", "cottage", "garage", "records", "alley", "settings", "daily", "cardIntro", "cardDesign", "cardResult", "arena"]);
 
 // Steps a student can go back to after moving past them.
 export const EDITABLE = new Set(["profile", "creature", "dream"]);

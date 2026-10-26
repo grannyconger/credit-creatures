@@ -11,6 +11,8 @@ export const FEATURES = {
   piggy: { at: 0 },
   cottage: { at: 0 },
   guild: { at: 0 },
+  // Battles (docs/BATTLES.md): after the prologue, once there is a checking account for the entry fee.
+  arena: { at: 1 },
   market: { at: 0 },
   cashier: { at: 0 },
   // GAME-SPECS.md games, opened by chapter topic (teacher decision 2026-10-25).

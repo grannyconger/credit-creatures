@@ -44,3 +44,4 @@ export { dollars } from "./util.js";
 export { lifeMetrics, compareChoices, allSame, startRow } from "./preview.js";
 export { balanceSheet, resaleValue } from "./balance.js";
 export { arcadeCharge, freshStart, arcadeIou, IOU_TYPE } from "./arcade.js";
+export { newBattle, availableMoves, quality, resolveTurn, replayBattle, resultFor, botAction } from "./battle.js";

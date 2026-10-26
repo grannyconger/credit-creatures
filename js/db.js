@@ -19,6 +19,7 @@ import {
   writeBatch,
   serverTimestamp,
   increment,
+  onSnapshot,
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 import { db } from "./firebase.js";
 
@@ -154,6 +155,42 @@ export async function writeArcadeBest(classId, uid, entry) {
 export async function readArcadeBoard(classId) {
   const snap = await getDocs(query(collection(db, "arcade", classId, "players"), limit(60)));
   return snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
+}
+
+// ---------- Battles (docs/BATTLES.md, 2026-10-26) ----------
+// One doc per battle in battles/{id}. live holds the two players while the battle
+// is open (invited or active), so one narrow listener finds a student's open
+// battles. p0 and p1 hold each side's answers by turn, and each player writes
+// only their own. Needs the 2026-10-26 rules block for battles/{id}.
+// Listeners run only while the Arena is open (docs/BATTLE-SCALING.md item 2).
+const battleData = (d) => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toMillis?.() ?? Date.now(), updatedAt: d.data().updatedAt?.toMillis?.() ?? Date.now() });
+
+export async function createBattle(battle) {
+  const ref = doc(collection(db, "battles"));
+  await setDoc(ref, { ...plain(battle), status: "invited", p0: {}, p1: {}, winner: null, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+  return ref.id;
+}
+
+export function watchMyBattles(uid, cb, onError) {
+  return onSnapshot(query(collection(db, "battles"), where("live", "array-contains", uid), limit(20)), (snap) => cb(snap.docs.map(battleData)), onError);
+}
+
+export function watchBattle(id, cb, onError) {
+  return onSnapshot(doc(db, "battles", id), (d) => cb(d.exists() ? battleData(d) : null), onError);
+}
+
+// status: "active" (accept), "declined", "cancelled". Closing a battle empties live.
+export async function setBattleStatus(id, status) {
+  await updateDoc(doc(db, "battles", id), { status, ...(status === "active" ? {} : { live: [] }), updatedAt: serverTimestamp() });
+}
+
+export async function submitTurn(id, slot, turn, answer) {
+  await updateDoc(doc(db, "battles", id), { [`p${slot}.${turn}`]: plain(answer), updatedAt: serverTimestamp() });
+}
+
+// status: "done" with winner 0, 1 or -1 for a draw, or "abandoned" by endedBy.
+export async function endBattle(id, fields) {
+  await updateDoc(doc(db, "battles", id), { ...plain(fields), live: [], updatedAt: serverTimestamp() });
 }
 
 export async function setLeaderboardOn(classId, on) {

@@ -1,4 +1,4 @@
-# Quest mode and Battle mode (DRAFT, nothing built)
+# Quest mode and Battle mode (Battle mode started 2026-10-26, see docs/BATTLES.md)
 
 The teacher's answers from 2026-10-23, written down so they aren't lost. **Nothing here is approved for building yet.** The teacher wants to keep talking it through first ("Let's talk more"). Open questions are at the bottom. Course standards are in `docs/STANDARDS.md`, and minigames are in `docs/MINIGAMES.md`.
 
@@ -58,7 +58,7 @@ Absent students and odd numbers (computer opponents and byes), farming computer 
 5. Live battles: friends, ranked matches and the ladder, brackets, the capped wager, and a rules change.
 
 ## Still open
-- Battle rewards: Sparkle Points or a new coin?
+- ~~Battle rewards: Sparkle Points or a new coin?~~ Sparkle Points were removed (2026-10-26). Battles pay coins (docs/BATTLES.md).
 - Energy numbers: cost per battle, daily refill, and earnings per quest step.
 - Rank tier names, and when the ladder resets.
 - The final ability list per skill.

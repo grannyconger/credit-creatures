@@ -4,12 +4,13 @@ import { giftWindow } from "./social.js";
 
 export const LOCAL_CLASS = { code: "TEST01", classId: "local-class", name: "Local Test Class", teacherEmail: "local.teacher@greermiddlecollege.org" };
 
-export const LOCAL_USER = {
-  uid: "local-student",
-  displayName: "Local Tester",
-  email: "local.tester@greermiddlecollege.org",
-  emailVerified: true,
-};
+// ?local&player=2 signs in a second pretend student, so a live battle can be
+// tried between two tabs on one computer.
+const PLAYER = (typeof location !== "undefined" && Number(new URLSearchParams(location.search).get("player"))) || 1;
+export const LOCAL_USER =
+  PLAYER > 1
+    ? { uid: `local-student-${PLAYER}`, displayName: `Local Tester ${PLAYER}`, email: `local.tester${PLAYER}@greermiddlecollege.org`, emailVerified: true }
+    : { uid: "local-student", displayName: "Local Tester", email: "local.tester@greermiddlecollege.org", emailVerified: true };
 
 const key = (k) => `credit-life:${k}`;
 
@@ -53,6 +54,7 @@ export async function getClass(classId) {
         monthsPerChapter: read("class/months") || 3,
         social: read("class/social") ?? true,
         sound: read("class/sound") ?? true,
+        battles: read("class/battles") ?? true,
       }
     : null;
 }
@@ -91,14 +93,20 @@ const CLASSMATES = [
   { uid: "c5", creatureName: "Clover Thistledown", displayName: "Taylor", person: "Taylor Nguyen", xp: 330, rank: "Knight", species: "cloudBunny", palette: "rose", look: { species: "cloudBunny", palette: "rose", pattern: "hearts", eyeColor: "violet", accessories: { head: "bow", feet: "slippers" } } },
 ];
 
+// Each local player has their own entry (player 1 keeps the old "me" key).
+const boardKey = (uid) => (uid === "local-student" ? "leaderboard/me" : `leaderboard/${uid}`);
+
 export async function writeLeaderboard(classId, uid, entry) {
-  write("leaderboard/me", { uid, ...entry, updatedAt: Date.now() });
+  write(boardKey(uid), { uid, ...entry, updatedAt: Date.now() });
 }
 
 export async function readLeaderboard() {
-  const me = read("leaderboard/me");
+  const mine = Object.keys(localStorage)
+    .filter((k) => k.startsWith(key("leaderboard/")))
+    .map((k) => read(k.slice(key("").length)))
+    .filter(Boolean);
   // "teacherDemoBoard" holds pretend entries for the teacher page's save watch.
-  return [...CLASSMATES, ...(read("teacherDemoBoard") || []), ...(me ? [me] : [])].sort((a, b) => b.xp - a.xp);
+  return [...CLASSMATES, ...(read("teacherDemoBoard") || []), ...mine].sort((a, b) => b.xp - a.xp);
 }
 
 // Arcade class top scores: the student's own bests plus one pretend classmate.
@@ -123,7 +131,7 @@ export async function listMyClasses() {
 }
 
 export async function updateClass(classId, fields) {
-  const keys = { releasedChapter: "class/released", leaderboard: "class/leaderboard", paused: "class/paused", monthsPerChapter: "class/months", social: "class/social", sound: "class/sound" };
+  const keys = { releasedChapter: "class/released", leaderboard: "class/leaderboard", paused: "class/paused", monthsPerChapter: "class/months", social: "class/social", sound: "class/sound", battles: "class/battles" };
   for (const [k, v] of Object.entries(fields)) if (keys[k]) write(keys[k], v);
 }
 
@@ -268,6 +276,67 @@ export async function claimGift(classId, giftId) {
 export async function listClassSocial() {
   const s = social();
   return { requests: s.requests, gifts: s.gifts };
+}
+
+// ---------- Battles, like db.js ----------
+// Kept in localStorage. Other tabs hear changes through the storage event and
+// this tab through its own listeners, so two tabs can battle each other.
+const battleWatchers = new Set();
+const allBattles = () => read("battles") || {};
+function saveBattles(all) {
+  write("battles", all);
+  for (const fn of battleWatchers) fn();
+}
+if (typeof window !== "undefined") window.addEventListener("storage", (e) => e.key === key("battles") && battleWatchers.forEach((fn) => fn()));
+
+function watch(fn) {
+  battleWatchers.add(fn);
+  queueMicrotask(fn);
+  return () => battleWatchers.delete(fn);
+}
+
+export async function createBattle(battle) {
+  const all = allBattles();
+  const id = `b${Date.now().toString(36)}${Math.floor(Math.random() * 1e4)}`;
+  all[id] = { ...JSON.parse(JSON.stringify(battle)), status: "invited", p0: {}, p1: {}, winner: null, createdAt: Date.now(), updatedAt: Date.now() };
+  saveBattles(all);
+  return id;
+}
+
+export function watchMyBattles(uid, cb) {
+  return watch(() => cb(Object.entries(allBattles()).filter(([, b]) => (b.live || []).includes(uid)).map(([id, b]) => ({ id, ...b }))));
+}
+
+export function watchBattle(id, cb) {
+  return watch(() => {
+    const b = allBattles()[id];
+    cb(b ? { id, ...b } : null);
+  });
+}
+
+function changeBattle(id, fn) {
+  const all = allBattles();
+  if (!all[id]) throw new Error("That battle is gone.");
+  fn(all[id]);
+  all[id].updatedAt = Date.now();
+  saveBattles(all);
+}
+
+export async function setBattleStatus(id, status) {
+  changeBattle(id, (b) => {
+    b.status = status;
+    if (status !== "active") b.live = [];
+  });
+}
+
+export async function submitTurn(id, slot, turn, answer) {
+  changeBattle(id, (b) => {
+    b[`p${slot}`][turn] = JSON.parse(JSON.stringify(answer));
+  });
+}
+
+export async function endBattle(id, fields) {
+  changeBattle(id, (b) => Object.assign(b, JSON.parse(JSON.stringify(fields)), { live: [] }));
 }
 
 export function resetLocal() {

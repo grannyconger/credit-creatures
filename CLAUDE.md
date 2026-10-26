@@ -5,7 +5,7 @@ A classroom personal-finance game. Each student is the Guardian of Coin for a fa
 - `SPEC.md` is the source of truth. Read the relevant section before planning a phase.
 - `docs/PROGRESS.md` has the current status, open decisions and the next step.
 - `docs/STANDARDS.md` has the course standards (SC Personal Finance 5141, A to G). The game's "Std 1, 2, 3, 5" are D1, D2, D3 and D5.
-- `docs/MINIGAMES.md` (side quests) and `docs/MODES.md` (Quest and Battle modes, a draft) hold the game plans.
+- `docs/MINIGAMES.md` (side quests) and `docs/MODES.md` (Quest and Battle modes, a draft) hold the game plans. `docs/BATTLES.md` is what's built for Battles (the Battle Arena, route `arena`).
 
 ## Resuming work ("keep going")
 1. Read `docs/PROGRESS.md`, then run `npm test` to confirm the baseline is green.

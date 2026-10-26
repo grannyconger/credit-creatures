@@ -117,6 +117,47 @@ export const CONFIG = {
   // debt wiped, checking set to resetChecking and a mark on the credit report.
   broke: { fromChapter: 2, resetChecking: 500 },
 
+  // Battles (docs/BATTLES.md, teacher request 2026-10-26). Two creatures, hp each.
+  // A turn: both pick a move, then answer one quick question. A right answer
+  // plays the move at full power plus up to speedBonus for a fast answer, a wrong
+  // answer plays it at wrongPower. maxTurns ends a battle on time, and the side
+  // with more HP wins. Moves: power is damage, heal or shield, cd is how many
+  // turns before it can be used again, ticks are what a lingering effect does at
+  // the end of each turn (Compound Interest grows, a Payday Loan charges you back).
+  // Guard halves the hit you take this turn and your next hit gets boost.
+  // Costs: energy plus an entry fee from checking, never more than what's left
+  // after this month's bills. Prizes are coins. Computer wins pay a prize only
+  // botPrizesPerDay times a day, so they can't be farmed. Live rounds give
+  // waitSeconds before the one still there can end it with no winner.
+  battle: {
+    hp: 100,
+    maxTurns: 8,
+    roundSeconds: 30,
+    speedBonus: 0.15,
+    wrongPower: 0.5,
+    shieldMax: 30,
+    moves: {
+      strike: { power: 17, cd: 0 },
+      guard: { power: 0.5, wrongPower: 0.75, boost: 1.3, cd: 0 },
+      fund: { power: 20, cd: 3 },
+      compound: { ticks: [5, 8, 11], cd: 3 },
+      payday: { power: 34, ticks: [4, 4, 4], cd: 4 },
+      payfull: { power: 18, cd: 3 },
+    },
+    energy: 2,
+    fee: 5,
+    prize: { win: 25, draw: 10, loss: 5 },
+    botPrizesPerDay: 3,
+    bots: {
+      sprout: { right: 0.55, label: "Sprout" },
+      grove: { right: 0.7, label: "Grove" },
+      elder: { right: 0.85, label: "Elder" },
+    },
+    waitSeconds: 60,
+    inviteMinutes: 10,
+    resultsKept: 25,
+  },
+
   // The Arcade side quests (GAME-SPECS.md Part 2). Pay for a shift is
   // round(payCap x min(1, score / maxPayScore)), plus experience, ride and home
   // bonuses on top. Safe mode uses the month's shifts and mistakes cost nothing.

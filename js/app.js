@@ -31,6 +31,7 @@ import * as accounts from "./ui/screens/accounts.js";
 import * as shop from "./ui/screens/shop.js";
 import * as trophies from "./ui/screens/trophies.js";
 import * as friends from "./ui/screens/friends.js";
+import * as arena from "./ui/screens/arena.js";
 import * as intro from "./ui/screens/intro.js";
 import * as dream from "./ui/screens/dream.js";
 import * as guild from "./ui/screens/guild.js";
@@ -53,7 +54,7 @@ import { installGaze } from "./ui/motion/gaze.js";
 
 // The leaderboard opens straight from the top bar (teacher request 2026-10-22).
 const leaderboard = { render: (root, ctx) => trophies.render(root, { ...ctx, startTab: "board" }) };
-const SCREENS = { map, leaderboard, profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley, daily, settings: settingsScreen };
+const SCREENS = { map, leaderboard, profile, creature, join, cardIntro: networks, cardDesign: design, cardResult: result, hub, month, chapterEnd, accounts, shop, trophies, friends, intro, dream, guild, academy, cottage, garage, records, alley, daily, arena, settings: settingsScreen };
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 
@@ -340,7 +341,7 @@ function route() {
 // progress. Practice mode lasts until the student leaves it from the hub.
 // Places open as they unlock (js/progression.js). A typed-in link to a
 // locked place goes back to the kingdom.
-const ROUTE_FEATURE = { ...Object.fromEntries(PLACES.map((p) => [p.route, p.feature])), trophies: "academy", cardIntro: "card", cardDesign: "card", cardResult: "card" };
+const ROUTE_FEATURE = { ...Object.fromEntries(PLACES.map((p) => [p.route, p.feature])), trophies: "academy", arena: "arena", cardIntro: "card", cardDesign: "card", cardResult: "card" };
 
 
 function hubTarget(want) {

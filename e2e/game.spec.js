@@ -33,7 +33,7 @@ test("a new student goes from the title to Home", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-const SCREENS = ["hub", "map", "month", "guild", "accounts", "records", "shop", "academy", "cottage", "garage", "alley", "friends", "trophies", "leaderboard", "settings", "daily"];
+const SCREENS = ["arena", "hub", "map", "month", "guild", "accounts", "records", "shop", "academy", "cottage", "garage", "alley", "friends", "trophies", "leaderboard", "settings", "daily"];
 
 test("every screen opens without an error", async ({ page }) => {
   const errors = watchErrors(page);
@@ -477,5 +477,34 @@ test("Bill Drop: settings modal, a full untimed month, results, why and bonus", 
   await expect(page.locator(".arc-bonus-result")).toBeVisible();
   const play = await page.evaluate(() => JSON.parse(localStorage.getItem("credit-life:saves/local-student")).play);
   expect(play.arcade.log.at(-1).why.text).toBe("<b>my words</b>");
+  expect(errors).toEqual([]);
+});
+
+test("Battle Arena: a computer bout costs Energy and the fee, plays rounds with the worked math, and records the result", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await page.goto("/css/tokens.css");
+  await page.evaluate(() => {
+    const k = "credit-life:saves/local-student";
+    const s = JSON.parse(localStorage.getItem(k));
+    s.play.energy = 10;
+    localStorage.setItem(k, JSON.stringify(s));
+  });
+  await enterGame(page);
+  await closePopups(page);
+  await open(page, "arena");
+  await expect(page.locator(".arena-bot")).toHaveCount(3);
+  await page.getByRole("button", { name: "Battle Pip" }).click();
+  await expect(page.locator(".stat-chip[data-stat='energy'] strong")).toHaveText(/^8\//);
+  for (let i = 0; i < 8 && !(await page.locator(".arena-over").count()); i++) {
+    await page.locator("button.arena-move:not([disabled])").first().click();
+    await expect(page.locator(".arena-q-prompt")).toBeVisible();
+    await page.locator("button.arena-choice").first().click();
+    await expect(page.locator(".arena-math")).not.toBeEmpty();
+    await page.locator("button.arena-next").click();
+  }
+  await expect(page.locator(".arena-over h2")).toHaveText(/won|lost|tie/i);
+  await page.locator(".arena-over .bst-seal-btn").click();
+  await expect(page.locator(".arena-tally")).toContainText("1");
   expect(errors).toEqual([]);
 });
