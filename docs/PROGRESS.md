@@ -2,7 +2,7 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-25 (Arcade overhaul from GAME-SPECS.md under way: shared systems, safe and risky mode, going broke and Bill Drop are built)
+Last updated: 2026-10-26 (Arcade overhaul from GAME-SPECS.md finished: all 14 games built, Version 1 cabinets retired, awaiting the teacher's review)
 
 ## Next step
 
