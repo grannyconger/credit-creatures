@@ -25,6 +25,13 @@ export const JOBS = {
     job: "Phone safety tester",
     skill: "Trust, Block or Verify a flood of messages. Some are scams.",
   },
+  grind: {
+    mark: "briefcase",
+    icon: "🛵",
+    title: "The Grind",
+    job: "Delivery driver or store clerk",
+    skill: "Deliver food or work store shifts, and find what each job really pays per hour.",
+  },
   scorechase: {
     mark: "gauge",
     icon: "📈",

@@ -602,3 +602,71 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .ph-cols h5 { display: flex; align-items: center; gap: 4px; margin: 0; }
 .ph-cols ul { margin: 4px 0; padding-left: 18px; font-size: 0.9rem; }
 .skin-phish .arc-keys { color: var(--arc-ph-glass); }
+
+/* ===========================================================================
+   The Grind: a delivery app on a night city map, or a store schedule board.
+   =========================================================================== */
+.bst-guild .arc-frame.skin-grind { --g-bg: var(--arc-gr-bg); --g-accent: var(--arc-gr-orange); --g-accent-ink: var(--arc-gr-orange-ink); --g-ink: var(--arc-gr-card); --g-paper: var(--arc-gr-card); --g-paper-2: var(--arc-gr-soft); --g-paper-ink: var(--arc-gr-ink); --g-good: var(--arc-gr-good); --g-bad: var(--arc-gr-bad); }
+.arc-cab.cab-grind { --cab: var(--arc-gr-orange); --cab-bg: var(--arc-gr-bg); --cab-ink: var(--arc-gr-orange-ink); }
+.gr-skill, .gr-payday { max-width: 760px; margin: 14px auto; padding: 14px 18px; color: var(--arc-gr-ink); background: var(--arc-gr-card); border-radius: 16px; }
+.gr-payday.two { max-width: none; display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; }
+.gr-skill h4, .gr-payday h4 { margin: 0 0 6px; font: 900 1.25rem "Arial Black", sans-serif; }
+.gr-skill-q { font-size: 1.15rem; font-weight: 700; }
+.gr-skill .row { display: flex; align-items: center; gap: 8px; }
+.gr-skill input { width: 120px; padding: 6px 10px; font-size: 1.1rem; border: 2px solid var(--arc-gr-ink); border-radius: 8px; color: var(--arc-gr-ink); background: #fff; }
+.gr-skill .row button { padding: 6px 16px; font-weight: 800; color: var(--arc-gr-orange-ink); background: var(--arc-gr-orange); border: 2px solid var(--arc-gr-ink); border-radius: 999px; }
+.gr-skill .mg-flash.good { color: var(--arc-gr-good); }
+.gr-skill .mg-flash.bad { color: var(--arc-gr-bad); }
+.gr-grid { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 12px; align-items: start; }
+.gr-map { position: relative; min-height: 360px; display: grid; place-items: center; padding: 16px; background: var(--arc-gr-map); border-radius: 16px; overflow: hidden; }
+.gr-city { position: absolute; inset: 0; background-image: linear-gradient(var(--arc-gr-road) 6px, transparent 6px), linear-gradient(90deg, var(--arc-gr-road) 6px, transparent 6px); background-size: 90px 70px; opacity: 0.7; }
+.gr-offer, .gr-driving, .gr-idle { position: relative; display: grid; gap: 6px; width: min(520px, 100%); padding: 12px 16px; color: var(--arc-gr-ink); background: var(--arc-gr-card); border-radius: 16px; box-shadow: 0 10px 0 color-mix(in srgb, #000 40%, transparent); }
+.gr-offer p, .gr-driving p { margin: 0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.gr-offer-head { display: flex; align-items: center; gap: 8px; }
+.gr-offer-head strong { flex: 1; font: 900 1.2rem "Arial Black", sans-serif; }
+.gr-offer-head .arc-ring { color: var(--arc-gr-ink); }
+.gr-offer-pay { font: 900 2rem "Arial Black", sans-serif; }
+.gr-offer-pay small { font: 600 0.9rem "Trebuchet MS", sans-serif; }
+.gr-keep { font-weight: 700; }
+.gr-surge { display: inline-flex; align-items: center; gap: 2px; padding: 0 8px; font-weight: 900; color: var(--arc-gr-orange-ink); background: var(--arc-gr-orange); border-radius: 999px; }
+.gr-offer .row { display: flex; gap: 10px; }
+.bst-guild .arc-frame.skin-grind .accept { background: var(--arc-gr-good); color: #fff; }
+.bst-guild .arc-frame.skin-grind .decline { background: var(--arc-gr-soft); color: var(--arc-gr-ink); }
+.gr-bar { height: 14px; background: var(--arc-gr-soft); border-radius: 7px; overflow: hidden; }
+.gr-bar span { display: block; height: 100%; background: var(--arc-gr-orange); transition: width 0.2s linear; }
+.gr-idle { display: flex; align-items: center; gap: 6px; margin: 0; font-weight: 800; }
+.gr-side, .gr-panel { display: grid; gap: 8px; padding: 12px; color: var(--arc-gr-ink); background: var(--arc-gr-card); border-radius: 16px; }
+.gr-side p { display: flex; align-items: center; gap: 4px; margin: 0; font-weight: 700; }
+.gr-side p.warn { color: var(--arc-gr-bad); }
+.gr-stat { display: grid; }
+.gr-stat strong { font: 900 1.4rem "Arial Black", sans-serif; }
+.gr-stat strong.neg { color: var(--arc-gr-bad); }
+.gr-slider { width: 100%; accent-color: var(--arc-gr-orange); }
+.gr-jar-pct { font-weight: 800; }
+.gr-fall { display: grid; gap: 2px; margin: 6px 0; padding: 0; list-style: none; }
+.gr-fall li { display: flex; justify-content: space-between; gap: 8px; padding: 3px 8px; background: var(--arc-gr-soft); border-radius: 6px; }
+.gr-fall li.total { font-weight: 900; border: 2px solid var(--arc-gr-ink); }
+.gr-fall li.bad { border: 2px dashed var(--arc-gr-bad); }
+.gr-rates { display: grid; gap: 4px; margin-top: 8px; }
+.gr-rates h5 { margin: 0; }
+.gr-rate { display: grid; grid-template-columns: 190px 1fr 90px; gap: 6px; align-items: center; font-size: 0.9rem; }
+.gr-rate span:first-child { display: inline-flex; align-items: center; gap: 2px; }
+.gr-rate.mine { font-weight: 900; }
+.gr-rate-track { height: 10px; background: color-mix(in srgb, currentColor 14%, transparent); border-radius: 5px; overflow: hidden; }
+.gr-rate-track span { display: block; height: 100%; background: var(--g-accent, var(--arc-gr-orange)); }
+.gr-rate.mine .gr-rate-track span { background-image: repeating-linear-gradient(45deg, transparent 0 4px, color-mix(in srgb, #000 25%, transparent) 4px 6px); }
+.gr-rate strong { text-align: right; }
+.gr-board { display: grid; gap: 8px; padding: 12px; color: var(--arc-gr-ink); background: var(--arc-gr-card); border-radius: 16px; }
+.gr-energy { display: flex; align-items: center; gap: 8px; }
+.gr-pips { display: inline-flex; gap: 4px; }
+.gr-pip { width: 18px; height: 18px; border: 2px solid var(--arc-gr-ink); border-radius: 50%; }
+.gr-pip.on { background: var(--arc-gr-orange); }
+.gr-week { padding: 8px; background: var(--arc-gr-soft); border-radius: 10px; }
+.gr-week h5, .gr-week p { margin: 0; }
+.gr-hours { display: flex; height: 14px; margin-top: 4px; background: #fff; border: 1px solid var(--arc-gr-ink); border-radius: 4px; overflow: hidden; }
+.gr-hours .reg { background: var(--arc-gr-ink); }
+.gr-hours .ot { background: var(--arc-gr-orange); background-image: repeating-linear-gradient(45deg, transparent 0 4px, color-mix(in srgb, #000 30%, transparent) 4px 6px); }
+.gr-week .warn { display: inline-flex; align-items: center; gap: 2px; font-weight: 800; color: var(--arc-gr-bad); }
+.gr-panel .gr-offer { box-shadow: none; border: 2px solid var(--arc-gr-ink); }
+.gr-stub { --doc-cols: 1fr 10px 90px; }
+.skin-grind .arc-keys { color: var(--arc-gr-card); }

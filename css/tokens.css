@@ -672,6 +672,17 @@
   --arc-ph-good: #0d7a4a;
   --arc-ph-bad: #b8261c;
   --arc-ph-hook: #f6c445;
+  /* The Grind: a delivery app on a night city map, or a store schedule board. */
+  --arc-gr-bg: #1e1530;
+  --arc-gr-map: #2c2346;
+  --arc-gr-road: #4b3f6b;
+  --arc-gr-card: #fff8ee;
+  --arc-gr-ink: #24183a;
+  --arc-gr-orange: #ff7a3d;
+  --arc-gr-orange-ink: #2a1003;
+  --arc-gr-good: #157244;
+  --arc-gr-bad: #b3261e;
+  --arc-gr-soft: #efe4d2;
 }
 
 /* The parts of a total, for the stacked bars in the Tradeoffs and the Vault Overview

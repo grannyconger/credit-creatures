@@ -102,7 +102,7 @@ for (const theme of themes) {
   }
   // The Arcade needs a chapter running. Each game is audited at its start screen.
   if (!only || only === "arcade") {
-    const NAMES = { billdrop: "Bill Drop", payin4: "Pay in 4", scorechase: "Score Chase", phish: "Phish Tank", ledger: "Ledger Sort", cashier: "Cashier Rush", checks: "Check Writer", overdraft: "Spot the Overdraft", register: "Register Balancer", checkhunt: "Check Anatomy Hunt", drawer: "Count the Drawer", unitprice: "Unit Price Showdown", fees: "Fee Detective" };
+    const NAMES = { billdrop: "Bill Drop", payin4: "Pay in 4", scorechase: "Score Chase", phish: "Phish Tank", grind: "The Grind", ledger: "Ledger Sort", cashier: "Cashier Rush", checks: "Check Writer", overdraft: "Spot the Overdraft", register: "Register Balancer", checkhunt: "Check Anatomy Hunt", drawer: "Count the Drawer", unitprice: "Unit Price Showdown", fees: "Fee Detective" };
     await run("arcade-start", async () => {
       await open(page, "hub");
       await closePopups(page);

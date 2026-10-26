@@ -41,7 +41,7 @@ export function echoHost() {
   // log: false for a plain notice that isn't a consequence (not in the recap).
   el.push = (text, { kind = "bad", log: keep = true } = {}) => {
     if (keep) log.push({ text, kind });
-    const tag = h("p.arc-echo", { class: kind }, icon(kind === "good" ? "up" : "alert", { size: 16 }), h("span", text));
+    const tag = h("p.arc-echo", { class: kind }, icon(kind === "good" ? "up" : kind === "safe" ? "info" : "alert", { size: 16 }), h("span", text));
     el.append(tag);
     // Never more than two tags on screen, so they don't cover the game.
     while (el.children.length > 2) el.firstElementChild.remove();

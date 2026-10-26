@@ -54,10 +54,14 @@ async function shareBest(game) {
   }
 }
 
-export function scoreText(meta, b) {
+// A game can name and format its metric per board (The Grind: an hourly rate
+// for Delivery, points for Store).
+export function scoreText(meta, b, board = null) {
   if (!b) return "";
+  if (meta.formatBoard) return meta.formatBoard(board, b.s);
   return meta.format ? meta.format(b.s) : String(b.s);
 }
+const metricName = (meta, settings) => meta.metricFor?.(settings) ?? meta.metric;
 
 // host: the job board's element. onBack(): back to the cabinets.
 export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
@@ -98,14 +102,14 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
     const paintTop = async () => {
       const board = meta.board(settings);
       const mine = AC.bestOf(play, board);
-      fill(topCard, h("h3", icon("trophy", { size: 18 }), ` Class top: ${meta.metric}${meta.boardLabel ? ` (${meta.boardLabel(settings)})` : ""}`), h("p.arc-top-load", "Checking the class board..."), h("p.arc-top-mine", mine ? `Your best: ${scoreText(meta, mine)} on ${fmtDate(mine.at)}` : "Your best: no ranked shift yet."));
+      fill(topCard, h("h3", icon("trophy", { size: 18 }), ` Class top: ${metricName(meta, settings)}${meta.boardLabel ? ` (${meta.boardLabel(settings)})` : ""}`), h("p.arc-top-load", "Checking the class board..."), h("p.arc-top-mine", mine ? `Your best: ${scoreText(meta, mine, board)} on ${fmtDate(mine.at)}` : "Your best: no ranked shift yet."));
       const rows = await classRows(game);
       if (!dialog.isConnected || meta.board(settings) !== board) return;
       const top = rows ? AC.classTop(rows, board, meta.tie.better) : null;
       const line = topCard.querySelector(".arc-top-load");
       if (!rows) line.replaceWith(h("p.arc-top-none", "Class scores show up when you play with your class."));
       else if (!top) line.replaceWith(h("p.arc-top-none", "No class score yet. Be the first."));
-      else line.replaceWith(h("p.arc-top-best", h("strong.arc-top-num", scoreText(meta, top.best)), h("span", ` held by ${top.creatureName}, ${fmtDate(top.best.at)}`)));
+      else line.replaceWith(h("p.arc-top-best", h("strong.arc-top-num", scoreText(meta, top.best, board)), h("span", ` held by ${top.creatureName}, ${fmtDate(top.best.at)}`)));
     };
 
     const paintRanked = () => {
@@ -351,13 +355,13 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
     const scoreLine = h("p.arc-res-compare");
     const top = h("p.arc-res-class");
     if (training) fill(scoreLine, "Training shifts don't count toward your best.");
-    else if (!report.ranked) fill(scoreLine, `Not ranked (${meta.rankedHint}). `, prev ? `Your ranked best is ${scoreText(meta, prev)}.` : "");
-    else if (rec.newBest) fill(scoreLine, icon("star", { size: 16 }), prev ? ` New personal best! Your old best was ${scoreText(meta, prev)}.` : " Your first ranked score. That's your best so far.");
-    else fill(scoreLine, `Your best is ${scoreText(meta, prev)}.`);
+    else if (!report.ranked) fill(scoreLine, `Not ranked (${meta.rankedHint}). `, prev ? `Your ranked best is ${scoreText(meta, prev, report.board)}.` : "");
+    else if (rec.newBest) fill(scoreLine, icon("star", { size: 16 }), prev ? ` New personal best! Your old best was ${scoreText(meta, prev, report.board)}.` : " Your first ranked score. That's your best so far.");
+    else fill(scoreLine, `Your best is ${scoreText(meta, prev, report.board)}.`);
     if (report.ranked) {
       classRows(game).then((rows) => {
         const t = rows ? AC.classTop(rows, report.board, meta.tie.better) : null;
-        if (t) fill(top, icon("trophy", { size: 16 }), ` Class top: ${scoreText(meta, t.best)} by ${t.creatureName}.`);
+        if (t) fill(top, icon("trophy", { size: 16 }), ` Class top: ${scoreText(meta, t.best, report.board)} by ${t.creatureName}.`);
         else if (rows) fill(top, icon("trophy", { size: 16 }), " No class top yet. Yours could be first.");
       });
     }
@@ -454,7 +458,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
           "div.arc-res-grid",
           h(
             "div.arc-res-main",
-            h("div.arc-res-top", h("div.arc-res-score", h("small", meta.metric), h("strong.big-number", meta.format ? meta.format(report.score) : String(report.score)), scoreLine, top), money2),
+            h("div.arc-res-top", h("div.arc-res-score", h("small", metricName(meta, settings)), h("strong.big-number", scoreText(meta, { s: report.score }, report.board)), scoreLine, top), money2),
             firedBox,
             mistakeBox,
             result.reveal ? h("section.arc-reveal", h("h4", meta.revealTitle || "The reveal"), result.reveal) : null
