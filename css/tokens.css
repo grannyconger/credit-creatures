@@ -592,6 +592,7 @@
   --arc-checks-ink: #17327f;
   --arc-checks-red: #b3261e;
   --arc-checks-edge: #8f9abd;
+  --arc-checks-tint: #d9d8e0;
 
   --arc-atm-bg: #04120a;
   --arc-atm-screen: #072510;
@@ -634,7 +635,7 @@
   --arc-bill-bg: #1b2b3a;
   --arc-bill-desk: #f3efe4;
   --arc-bill-ink: #1d2733;
-  --arc-bill-ping: #2f7de1;
+  --arc-bill-ping: #1f66c2;
   --arc-bill-ping-ink: #ffffff;
   --arc-bill-good: #17703a;
   --arc-bill-bad: #b42318;
@@ -703,11 +704,26 @@
   --arc-rd-good: #11744a;
   --arc-rd-bad: #b3261e;
   --arc-rd-soft: #e2e9f2;
+  /* Money Tree: a cottage garden at dusk, with storms rolling through. */
+  --arc-mt-bg: #1e3a24;
+  --arc-mt-sky: #2c4d33;
+  --arc-mt-card: #f3f7ec;
+  --arc-mt-ink: #182515;
+  --arc-mt-soft: #dfe9d3;
+  --arc-mt-leaf: #4f9a3c;
+  --arc-mt-trunk: #6b4628;
+  --arc-mt-soil: #5a3b22;
+  --arc-mt-sun: #ffd25a;
+  --arc-mt-sun-ink: #2a1f00;
+  --arc-mt-coin: #b07cff;
+  --arc-mt-storm: #46505e;
+  --arc-mt-good: #1b7339;
+  --arc-mt-bad: #b3261e;
   /* Market Dash: a bright supermarket with aisle signs. */
   --arc-md-bg: #0f3d2e;
   --arc-md-card: #fffdf6;
   --arc-md-ink: #1c1c1c;
-  --arc-md-sign: #e8402b;
+  --arc-md-sign: #c8321f;
   --arc-md-sign-ink: #ffffff;
   --arc-md-yellow: #ffd23f;
   --arc-md-good: #0c7a37;

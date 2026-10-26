@@ -46,6 +46,13 @@ export const JOBS = {
     job: "Risk planner",
     skill: "Pick insurance and an emergency fund, then survive a year of surprises.",
   },
+  tree: {
+    mark: "tree",
+    icon: "🌳",
+    title: "Money Tree",
+    job: "Garden investor",
+    skill: "Grow a garden of savings, a CD, an index fund and a Hype coin for 40 years, and hold through the storms.",
+  },
   dash: {
     mark: "cart",
     icon: "🛒",

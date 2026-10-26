@@ -7,7 +7,7 @@
    Never color alone: every state also has an icon or a word.
    =========================================================================== */
 .arc-v2, .arc-settings { font-family: "Trebuchet MS", system-ui, sans-serif; }
-.arc-v2 kbd, .arc-settings kbd { font: 700 0.75rem ui-monospace, "Courier New", monospace; padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; opacity: 0.85; }
+.arc-v2 kbd, .arc-settings kbd { font: 700 0.75rem ui-monospace, "Courier New", monospace; padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; }
 
 /* ---------- 2.1 The settings modal ---------- */
 dialog.arc-settings { width: min(1120px, 96vw); max-height: 94vh; padding: 0; color: var(--arc-ink); background: var(--arc-floor-2); border: 4px solid var(--arc-cyan); border-radius: 20px; box-shadow: 0 0 40px color-mix(in srgb, var(--arc-cyan) 40%, transparent); overflow: auto; }
@@ -511,7 +511,7 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .bst-guild .arc-frame.skin-checks .cw2-words:focus-visible { outline: 3px dashed var(--arc-checks-ink); }
 .bst-guild .arc-frame.skin-checks .cw2-hint { font-size: 0.85rem; opacity: 0.75; }
 .bst-guild .arc-frame.skin-checks .cw2-tile { padding: 2px 8px; font: 800 0.85rem "Trebuchet MS", sans-serif; letter-spacing: 0.03em; color: var(--arc-checks-ink); background: var(--arc-checks-paper); border: 2px solid var(--arc-checks-ink); border-radius: 6px; cursor: pointer; }
-.bst-guild .arc-frame.skin-checks .cw2-tile.cents { background: color-mix(in srgb, var(--arc-checks-edge) 35%, var(--arc-checks-paper)); }
+.bst-guild .arc-frame.skin-checks .cw2-tile.cents { background: var(--arc-checks-tint); }
 .bst-guild .arc-frame.skin-checks .cw2-tile.placed { padding: 1px 6px; font-size: 0.82rem; }
 .bst-guild .arc-frame.skin-checks .cw2-tray { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px; background: color-mix(in srgb, #000 30%, transparent); border-radius: 10px; }
 .bst-guild .arc-frame.skin-checks .cw2-sep { width: 12px; }
@@ -937,3 +937,74 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .lot-track span { display: block; height: 100%; background: var(--arc-lt-blue); }
 .lot-bar strong { text-align: right; }
 .skin-lot .arc-keys { color: var(--arc-lt-card); }
+
+/* ---------- Money Tree ---------- */
+.bst-guild .arc-frame.skin-tree { --g-bg: var(--arc-mt-bg); --g-accent: var(--arc-mt-sun); --g-accent-ink: var(--arc-mt-sun-ink); --g-ink: var(--arc-mt-card); --g-paper: var(--arc-mt-card); --g-paper-ink: var(--arc-mt-ink); --g-good: var(--arc-mt-good); --g-bad: var(--arc-mt-bad); background-image: radial-gradient(ellipse at 50% 120%, var(--arc-mt-sky), transparent 70%); }
+.arc-cab.cab-tree { --cab: var(--arc-mt-sun); --cab-bg: var(--arc-mt-bg); --cab-ink: var(--arc-mt-sun-ink); }
+.skin-tree .arc-keys { color: var(--arc-mt-card); }
+.mt-goals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.mt-goal { padding: 6px 10px; color: var(--arc-mt-ink); background: var(--arc-mt-card); border-radius: 10px; }
+.mt-goal-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.mt-goal-track { display: block; height: 10px; margin-top: 4px; background: var(--arc-mt-soft); border-radius: 6px; overflow: hidden; }
+.mt-goal-fill { display: block; height: 100%; background: var(--arc-mt-sun); transition: width 0.5s var(--ease-out, ease); }
+.mt-goal-fill.good { background: var(--arc-mt-good); }
+.mt-goal-fill.bad { background: repeating-linear-gradient(45deg, var(--arc-mt-bad) 0 6px, var(--arc-mt-soft) 6px 9px); }
+.mt-main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 12px; align-items: start; }
+.mt-left { display: grid; gap: 10px; }
+.mt-garden { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mt-plot { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 10px; color: var(--arc-mt-ink); background: var(--arc-mt-card); border: 3px solid transparent; border-radius: 14px; cursor: pointer; }
+.mt-plot[aria-selected="true"] { border-color: var(--arc-mt-sun); outline: 2px dashed var(--arc-mt-ink); outline-offset: -6px; }
+.mt-plot-text { display: grid; gap: 1px; min-width: 0; }
+.mt-plot-text strong { font: 900 1rem "Arial Black", sans-serif; }
+.mt-plot-text small { font-size: 0.78rem; }
+.mt-val { font: 900 1.25rem "Arial Black", sans-serif; }
+.mt-lock-note, .mt-growth { display: flex; align-items: center; gap: 3px; font-weight: 800; }
+.mt-growth { color: var(--arc-mt-good); }
+.mt-growth.neg { color: var(--arc-mt-bad); }
+.mt-split { display: grid; justify-items: center; gap: 2px; }
+.mt-split button { display: grid; place-items: center; width: 30px; height: 26px; padding: 0; color: var(--arc-mt-sun-ink); background: var(--arc-mt-sun); border: 2px solid var(--arc-mt-ink); border-radius: 6px; }
+.mt-split strong { font: 900 1rem "Arial Black", sans-serif; }
+.mt-plant { width: 84px; height: 88px; }
+.mt-plant .mt-soil { fill: var(--arc-mt-soil); }
+.mt-plant .mt-stem, .mt-plant .mt-stalk { fill: none; stroke: var(--arc-mt-leaf); stroke-width: 4; stroke-linecap: round; }
+.mt-plant .mt-stalk { stroke: var(--arc-mt-soft); stroke-width: 6; }
+.mt-plant .mt-trunk { fill: none; stroke: var(--arc-mt-trunk); stroke-width: 7; stroke-linecap: round; }
+.mt-plant .mt-leaf { fill: var(--arc-mt-leaf); }
+.mt-plant .mt-bloom { fill: var(--arc-mt-sun); }
+.mt-plant .mt-fence { fill: none; stroke: var(--arc-mt-trunk); stroke-width: 3; }
+.mt-plant .mt-lock { fill: var(--arc-mt-sun); stroke: var(--arc-mt-ink); stroke-width: 1.5; }
+.mt-plant .mt-cap { fill: var(--arc-mt-coin); }
+.mt-plant .mt-dot { fill: var(--arc-mt-card); }
+.mt-plant.stormy { filter: saturate(0.4); animation: mt-shake 0.4s 3; }
+@keyframes mt-shake { 50% { transform: rotate(-3deg); } }
+:root[data-motion="calm"] .mt-plant.stormy { animation: none; }
+@media (prefers-reduced-motion: reduce) { .mt-plant.stormy { animation: none; } }
+.mt-chart { margin: 0; padding: 6px 10px; color: var(--arc-mt-ink); background: var(--arc-mt-card); border-radius: 12px; }
+.mt-chart figcaption { font-weight: 800; font-size: 0.85rem; }
+.mt-chart svg { display: block; width: 100%; height: 90px; }
+.mt-chart-line { fill: none; stroke: var(--arc-mt-good); stroke-width: 3; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.mt-chart-goal { stroke: var(--arc-mt-ink); stroke-width: 1; stroke-dasharray: 4 4; }
+.mt-chart-storm { stroke: var(--arc-mt-storm); stroke-width: 6; opacity: 0.35; }
+.mt-panel { display: grid; gap: 8px; padding: 10px 12px; color: var(--arc-mt-ink); background: var(--arc-mt-card); border-radius: 14px; }
+.mt-panel h4 { margin: 0; font: 900 1.15rem "Arial Black", sans-serif; display: flex; align-items: center; gap: 4px; }
+.mt-panel p { margin: 0; }
+.mt-sum { display: flex; align-items: center; gap: 4px; font-weight: 800; }
+.mt-sum.ok { color: var(--arc-mt-good); }
+.mt-sum.bad { color: var(--arc-mt-bad); }
+.mt-rebal { display: grid; grid-template-columns: auto 1fr; gap: 4px 6px; align-items: start; font-weight: 700; }
+.mt-warn { grid-column: 1 / -1; display: flex; align-items: center; gap: 3px; color: var(--arc-mt-bad); font-weight: 800; }
+.mt-eva { padding: 6px 8px; background: var(--arc-mt-soft); border-radius: 8px; font-size: 0.9rem; }
+.mt-skill { padding: 6px 8px; background: var(--arc-mt-soft); border-radius: 8px; }
+.mt-skill p { margin: 0 0 6px; }
+.mt-skill-row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.mt-skill-row button { padding: 4px 6px; font-weight: 800; text-align: left; color: var(--arc-mt-sun-ink); background: var(--arc-mt-sun); border: 2px solid var(--arc-mt-ink); border-radius: 6px; }
+.mt-storm { border: 4px solid var(--arc-mt-bad); background: var(--arc-mt-soft); }
+.mt-water { display: grid; place-items: center; min-height: 280px; }
+.mt-water-card { display: grid; gap: 8px; justify-items: center; width: min(520px, 100%); padding: 16px 20px; text-align: center; color: var(--arc-mt-ink); background: var(--arc-mt-card); border-radius: 16px; }
+.mt-water-card h4 { margin: 0; font: 900 1.3rem "Arial Black", sans-serif; }
+.mt-water-card p { margin: 0; }
+.mt-tempt { display: grid; gap: 6px; justify-items: center; padding: 8px 10px; background: var(--arc-mt-soft); border-radius: 10px; border: 2px dashed var(--arc-mt-coin); }
+.mt-tempt p { display: flex; align-items: center; gap: 4px; }
+.mt-water-card .arc-ring .arc-ring-num { color: var(--arc-mt-ink); }
+.mt-reveal p { margin: 0 0 6px; }
+.bst-guild .arc-frame.skin-tree .mt-panel button.secondary, .bst-guild .arc-frame.skin-tree .mt-tempt button.secondary { color: var(--arc-mt-ink); background: var(--arc-mt-card); border: 2px solid var(--arc-mt-ink); }
