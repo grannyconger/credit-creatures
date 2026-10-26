@@ -255,10 +255,12 @@ test("you can leave a game for the Arcade library, and a life card shows its cho
   await closePopups(page);
   await open(page, "guild");
   await closePopups(page);
-  await page.locator(".job-card", { hasText: "Ledger Sort" }).click();
-  await page.click(".job-back");
-  await page.locator(".job-leave-ask button", { hasText: "Leave" }).click();
+  await page.locator(".job-card", { hasText: "Cashier Rush" }).click();
+  await page.waitForSelector("dialog.arc-settings[open]");
+  await page.keyboard.press("Escape");
   await expect.poll(() => page.locator(".arc-cab").count()).toBeGreaterThanOrEqual(9);
+  // The Version 1 cabinets are retired (GAME-SPECS.md 4.1).
+  await expect(page.locator(".job-card", { hasText: "Ledger Sort" })).toHaveCount(0);
 
   await page.evaluate(async () => {
     const E = await import("/js/engine/index.js");

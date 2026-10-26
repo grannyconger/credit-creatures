@@ -105,7 +105,11 @@ export function payMethods(play, life) {
 }
 
 // Every Arcade cabinet in the order the hall shows them.
-export const ARCADE_ORDER = ["cashier", "checks", "billdrop", "phish", "grind", "dash", "feed", "lot", "payin4", "scorechase", "rainy", "movein", "tree", "overdraft", "register", "checkhunt", "drawer", "unitprice", "fees", "ledger"];
+export const ARCADE_ORDER = ["cashier", "checks", "billdrop", "phish", "grind", "dash", "feed", "lot", "payin4", "scorechase", "rainy", "movein", "tree", "fees"];
+// Version 1 cabinets retired by GAME-SPECS.md 4.1. Their logic lives on in the
+// new games (overdraft feed in Bill Drop, unit prices in Market Dash and so on),
+// so the code stays, but they no longer appear in the Arcade.
+export const RETIRED_JOBS = ["ledger", "overdraft", "register", "checkhunt", "drawer", "unitprice"];
 
 // The jobs at the Arcade so far.
 export function openJobs(play) {

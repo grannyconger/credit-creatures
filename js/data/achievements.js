@@ -73,10 +73,11 @@ export const ACHIEVEMENTS = [
   // Minigames
   { id: "clockedIn", cat: "minigames", icon: "⏱️", title: "Clocked In", how: "Work your first shift.", xp: 10, check: (f) => f.stats.shifts >= 1 },
   { id: "workhorse", cat: "minigames", icon: "🐴", title: "Workhorse", how: "Work 25 shifts.", xp: 60, check: (f) => f.stats.shifts >= 25 },
-  { id: "ledgerLegend", cat: "minigames", icon: "📒", title: "Ledger Legend", how: "Sort 12 items right in one Ledger Sort shift.", xp: 50, check: (f) => (f.jobs.ledger?.best || 0) >= 12 },
+  // Kept its old id so students who earned it in Ledger Sort keep it (the cabinet retired 2026-10-26).
+  { id: "ledgerLegend", cat: "minigames", icon: "🌳", title: "Garden Legend", how: "Hit the car goal and the retirement target in one Money Tree shift.", xp: 50, check: (f) => (f.jobs.ledger?.best || 0) >= 12 || (f.jobs.tree?.best || 0) >= 1000 },
   { id: "cashMaster", cat: "minigames", icon: "🪙", title: "Cash Master", how: "Make exact change 6 times in one Cashier Rush shift.", xp: 50, check: (f) => (f.jobs.cashier?.best || 0) >= 6 },
   { id: "perfectCheck", cat: "minigames", icon: "✍️", title: "Perfect Check", how: "Fill in every part of a check correctly.", xp: 50, check: (f) => (f.jobs.checks?.best || 0) >= 6 },
-  { id: "allJobs", cat: "minigames", icon: "🧰", title: "Jack of All Trades", how: "Work every job at least once.", xp: 40, check: (f) => ["ledger", "cashier", "checks"].every((j) => f.jobs[j]?.shifts > 0) },
+  { id: "allJobs", cat: "minigames", icon: "🧰", title: "Jack of All Trades", how: "Work every job at least once.", xp: 40, check: (f) => ["cashier", "checks", "billdrop"].every((j) => f.jobs[j]?.shifts > 0) },
 
   // Creature
   { id: "named", cat: "creature", icon: "🏷️", title: "Named Your Creature", how: "Give your creature a name.", xp: 10, check: (f) => Boolean(f.creature?.name) },

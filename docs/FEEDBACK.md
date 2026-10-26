@@ -25,6 +25,7 @@ A new `js/telemetry.js` module (browser side) collects events in memory and flus
 | Minigame results: score, pay, duration, retries | Pay balance against the $40–120 range and the "$600 want" target |
 | Practice Desk / Factor Check: question type, standard, correct, seconds | Shows question types that are too hard or too easy |
 | Shop: item, price, payment method | Shows whether students can afford wants, and BNPL and credit usage |
+| Arcade shifts (GAME-SPECS.md games, 2026-10-26): each game logs its key choices through `ctx.track`, for example `skillMoment` (game, right), Money Tree `treeSplit`, `treeWater`, `treeCrash`, and Move-In Day `moveinSort`, `moveinSchool`, `moveinInspect`, `moveinApply`, `moveinFlag`, `moveinSign`, `moveinPhotos`, `moveinEvent`. The runner adds the shift result, mode and why answer | Shows which choices students get wrong, where they panic-sell or skip inspections, and whether pay is balanced across games |
 | JS errors (`window.onerror`) with screen name, seed and engine version | Bugs reported without anyone filing them |
 
 Storage:
