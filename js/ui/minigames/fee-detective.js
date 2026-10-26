@@ -1,227 +1,219 @@
-// Fee Detective (docs/MINIGAMES.md, doc idea 6). A made-up monthly bank
-// statement. Mark every fee, then say how to avoid each fee you found. One
-// statement a shift has no fees at all, so students can't assume there is
-// always one. Tapping a line again takes the mark off, so nothing counts
-// twice. Every line has words as well as marks (never color alone).
-import { h, fill } from "../dom.js";
+// Fee Detective (GAME-SPECS.md game 12, upgraded 2026-10-25): three cases. Mark
+// every fee, pick how to handle each one (3 calls a shift), pick the habit that
+// stops it. Case 3 is Case 1's client a month later. Keeps the noir skin.
+// Rules: js/arcade/fees.js.
+import { h, fill, money } from "../dom.js";
 import { icon } from "../icons.js";
-import { sfx } from "../arcade-sound.js";
-import { createRng } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
-import { FEE_KINDS, FEE_DECOYS, MONTH_NAMES } from "../../data/minigames.js";
-import { feeStatements, avoidOptions, fmt } from "./gen.js";
+import { createRng } from "../../engine/index.js";
+import * as D from "../../arcade/fees.js";
+import { FD_DOC_NAMES } from "../../data/arcade/fees.js";
+import { docInspector, keyHelp, timerRing } from "../arcade/components.js";
+import { sfx } from "../arcade-sound.js";
 
-export function feeDetective({ seed, timed, onDone, track }) {
-  const cfg = CONFIG.play.jobs.fees;
-  const rng = createRng(seed);
-  const started = Date.now();
-  const { statements } = feeStatements(rng, { statements: cfg.statements, lines: cfg.lines, noFeePoints: cfg.noFeePoints });
-  let k = 0;
-  let right = 0;
-  let wrong = 0;
+const ACTION_LABEL = { refund: "Ask for a refund", dispute: "Dispute", cancel: "Cancel", accept: "Accept" };
+
+export function start(ctx) {
+  const { seed, settings, training } = ctx;
+  const difficulty = training ? "easy" : settings.difficulty;
+  const timed = settings.timer === "timed";
+  const cfg = CONFIG.arcade.games.fees;
+  const deal = D.newShift(seed, difficulty);
+  const s = D.newState(deal);
+  const rng = createRng(`${seed}:habits`);
+  const root = h("div.minigame.fees2");
+  const bar = h("div.mg-bar");
+  const body = h("div.fd2-body");
+  const ring = timed ? timerRing({ label: "Time left this shift" }) : null;
+  let showYearly = false;
   let over = false;
-  let clockTimer = 0;
-  const misses = [];
-  const marked = new Set();
+  let tick = null;
+  let keys = null;
+  fill(root, bar, body);
 
-  const clock = h("span.mg-clock", { role: "timer" });
-  const score = h("span.mg-score");
-  const prompt = h("p.fd-prompt", { "aria-live": "polite" });
-  const stage = h("div.fd-stage");
-  const flash = h("p.mg-flash", { role: "status" });
-  const el = h("div.minigame.fees", h("div.mg-bar", clock, score), prompt, stage, flash);
-  const paintScore = () => (score.textContent = `✓ ${right}   ✗ ${wrong}`);
-  const dateOf = (st, line) => `${MONTH_NAMES[st.month].slice(0, 3)} ${line.day}`;
-  const cur = () => statements[k];
-  const say = (ok, text) => {
-    flash.className = `mg-flash ${ok ? "good" : "bad"}`;
-    flash.textContent = `${ok ? "✓" : "✗"} ${text}`;
-  };
-
-  // ---- 1. Hunt: mark the fees. ----
-  function hunt() {
-    const st = cur();
-    marked.clear();
-    flash.textContent = "";
-    flash.className = "mg-flash";
-    fill(prompt, h("strong", `Statement ${k + 1} of ${statements.length}: mark every fee. If there are none, say so.`));
-    const submit = h("button.big", { type: "button", "data-sound": "none", onclick: () => grade() });
-    const label = () => (submit.textContent = marked.size ? `That's all the fees (${marked.size} marked)` : "No fees this month");
-    const rows = st.lines.map((l) =>
-      h(
-        "li",
-        h(
-          "button.fd-line",
-          {
-            type: "button",
-            "data-sound": "none",
-            "data-boop": "none",
-            "aria-pressed": "false",
-            onclick: (e) => {
-              const b = e.currentTarget;
-              if (marked.has(l.id)) marked.delete(l.id);
-              else marked.add(l.id);
-              const on = marked.has(l.id);
-              b.setAttribute("aria-pressed", String(on));
-              b.querySelector(".fd-mark").textContent = on ? "Marked as a fee" : "";
-              label();
-            },
-          },
-          h("span.fd-date", dateOf(st, l)),
-          h("span.fd-text", l.text),
-          h("span.fd-mark", { "aria-hidden": "false" }),
-          h("span.fd-amount", fmt(l.amount))
-        )
-      )
-    );
-    label();
-    fill(stage, statement(st, rows), h("div.row.fd-actions", submit));
-    paintScore();
+  function paintBar(text) {
+    window.scrollTo(0, 0);
+    fill(bar, h("span.mg-clock", text), ring, h("span.fd2-calls", { role: "img", "aria-label": `${s.calls} calls left` }, Array.from({ length: cfg.calls }, (_, i) => h("span", { class: i < s.calls ? "on" : "off" }, icon("phone", { size: 16 }))), ` ${s.calls} call${s.calls === 1 ? "" : "s"} left`));
   }
 
-  const statement = (st, rows) =>
-    h(
-      "div.fd-paper",
-      { role: "group", "aria-label": `Bank statement for ${MONTH_NAMES[st.month]}` },
-      h("div.fd-head", h("strong", "The Vault, Coinhaven"), h("span", `Checking statement for ${MONTH_NAMES[st.month]}`)),
-      h("ul.fd-lines", rows)
-    );
+  // ---------- The skill moment (Case 1 only) ----------
+  function skill() {
+    paintBar("Before Case 1");
+    const input = h("input", { type: "text", inputmode: "decimal", "aria-label": "Yearly cost, in dollars" });
+    const go = () => {
+      const ok = Number(input.value.replace(/[$,\s]/g, "")) === 144;
+      ctx.track("skillMoment", { game: "fees", right: ok });
+      (ok ? sfx.correct : sfx.error)();
+      showYearly = true;
+      fill(body, h("div.fd2-skill", h("p.mg-flash", { class: ok ? "good" : "bad" }, icon(ok ? "check" : "alert", { size: 18 }), ok ? " Right. $12 times 12 months is $144." : " It's $144. $12 times 12 months."), h("p", "From now on, every fee you mark shows what it costs in a year."), h("button.big", { type: "button", "data-autofocus": "", onclick: () => openCase() }, "Open Case 1")));
+      body.querySelector("button").focus();
+    };
+    input.addEventListener("keydown", (e) => e.key === "Enter" && (e.preventDefault(), go()));
+    fill(body, h("div.fd2-skill", h("h4", "Every fee has a yearly cost"), h("p", "This $12 fee every month costs how much a year?"), h("div.row", h("span", "$"), input, h("button", { type: "button", onclick: go }, "Check"))));
+    input.focus();
+  }
 
-  // ---- 2. Grade the marks and show what each line was. ----
-  function grade() {
-    if (over) return;
-    const st = cur();
-    const found = [];
-    let missed = 0;
-    let falseTaps = 0;
-    const rows = st.lines.map((l) => {
-      const on = marked.has(l.id);
-      const isFee = l.type === "fee";
-      let tag = "";
-      let cls = "";
-      if (isFee && on) {
-        right++;
-        found.push(l);
-        tag = "Fee found";
-        cls = "fd-right";
-      } else if (isFee) {
-        wrong++;
-        missed++;
-        tag = "Missed fee";
-        cls = "fd-missed";
-        misses.push(`${FEE_KINDS[l.fee].line}: ${FEE_KINDS[l.fee].why}`);
-      } else if (on) {
-        wrong++;
-        falseTaps++;
-        tag = "Not a fee";
-        cls = "fd-wrong";
-        misses.push(`${l.text}: ${FEE_DECOYS[l.type]}`);
+  // ---------- A case ----------
+  function openCase() {
+    const k = D.currentCase(s);
+    if (!k) return end();
+    paintBar(`Case ${k.n} of 3: ${k.client}`);
+    const marks = new Set();
+    let callbackAdded = false;
+    const lines = () => k.lines.map((l) => ({ id: l.id, cells: [l.credit ? "+" : "-", l.text, money(l.amount)] }));
+    const yearly = h("div.fd2-yearly", { "aria-live": "polite" });
+    const paintYearly = () => {
+      if (!showYearly) return;
+      const sel = k.lines.filter((l) => marks.has(l.id));
+      fill(yearly, sel.length ? sel.map((l) => h("p", icon("calendar", { size: 14 }), ` ${l.text}: ${money(l.amount)} a month is ${money(l.amount * 12)} a year`)) : null);
+    };
+    let doc = docInspector({ title: `${FD_DOC_NAMES[k.doc]}: ${k.client}`, className: "fd2-doc", lines: lines(), marked: marks, onToggle: paintYearly });
+    const docSlot = h("div.fd2-docslot", doc);
+    const done = () => {
+      // The client calls back mid-case with one more line (once a shift, Case 2).
+      if (k.n === 2 && !callbackAdded && !s.callbackShown) {
+        callbackAdded = true;
+        s.callbackShown = true;
+        k.lines.push({ ...deal.callback });
+        doc = docInspector({ title: `${FD_DOC_NAMES[k.doc]}: ${k.client}`, className: "fd2-doc", lines: lines(), marked: marks, onToggle: paintYearly });
+        fill(docSlot, doc);
+        doc.querySelector(`[data-id="c2cb"]`)?.classList.add("fd2-new");
+        ctx.echo(`${k.client} called back: "Wait, can you check one more line?"`, { kind: "safe" });
+        return;
       }
-      return h(
-        "li",
-        h(
-          "div.fd-line.fd-shown",
-          { class: cls },
-          h("span.fd-date", dateOf(st, l)),
-          h("span.fd-text", l.text, !isFee && on ? h("small", FEE_DECOYS[l.type]) : isFee ? h("small", FEE_KINDS[l.fee].why) : null),
-          h("span.fd-mark", tag ? [icon(cls === "fd-right" ? "check" : "alert", { size: 14 }), ` ${tag}`] : ""),
-          h("span.fd-amount", fmt(l.amount))
-        )
+      if (!marks.size) return ctx.notice("Mark the fees first, or press No fees.");
+      actionsStep(k, marks);
+    };
+    const none = () => {
+      if (k.n === 2 && !callbackAdded && !s.callbackShown) return done();
+      finishCase(k, { marks: new Set(), noFeeClaim: true, actions: {}, habit: null });
+    };
+    fill(body, h("p.fd2-intro", icon("plaza", { size: 18 }), ` ${k.client}: "${k.intro}"`), h("div.fd2-case", docSlot, h("div.fd2-side", yearly, h("button.big", { type: "button", "aria-keyshortcuts": "F", onclick: done }, h("kbd", "F"), " That's all the fees"), h("button.secondary", { type: "button", "aria-keyshortcuts": "N", onclick: none }, h("kbd", "N"), " No fees on this one"))), keyHelp("Tab moves between lines, Enter or Space marks one. F when you're done, N if there are no fees."));
+    keys = (e) => {
+      const k2 = e.key.toLowerCase();
+      if (k2 === "f") (e.preventDefault(), done());
+      else if (k2 === "n") (e.preventDefault(), none());
+    };
+    if (training && k.n === 1) ctx.coach(0, doc);
+    doc.querySelector("button")?.focus();
+  }
+
+  function actionsStep(k, marks) {
+    const actions = {};
+    const marked = k.lines.filter((l) => marks.has(l.id));
+    const callsUsed = () => Object.values(actions).filter((a) => D.COSTS_CALL.has(a)).length;
+    const rows = h("div.fd2-actions");
+    // The habit question only shows when the case's main fee was marked, so it
+    // never hints at a fee the student missed.
+    const habits = k.lines.some((l) => l.fee && l.kind === k.key && marks.has(l.id)) ? D.habitOptions(k, rng) : [];
+    let habit = null;
+    const paint = () => {
+      const left = s.calls - callsUsed();
+      fill(
+        rows,
+        marked.map((l, i) =>
+          h(
+            "div.fd2-row",
+            { tabindex: "0", "data-i": String(i) },
+            h("span.fd2-line", h("strong", l.text), h("small", ` ${money(l.amount)}`)),
+            h(
+              "span.fd2-btns",
+              D.ACTIONS.map((a, j) => {
+                const needCall = D.COSTS_CALL.has(a) && actions[l.id] !== a;
+                const off = needCall && left <= 0;
+                return h("button.fd2-act", { type: "button", "aria-pressed": String(actions[l.id] === a), disabled: off, title: off ? "No calls left" : D.COSTS_CALL.has(a) ? "Costs a call" : "", onclick: () => ((actions[l.id] = a), paint(), rows.querySelector(`[data-i="${i}"]`)?.focus()) }, h("kbd", String(j + 1)), ` ${ACTION_LABEL[a]}`, off ? h("small", " No calls left") : D.COSTS_CALL.has(a) ? h("small", " (1 call)") : null);
+              })
+            )
+          )
+        ),
+        habits.length ? h("fieldset.fd2-habit", h("legend", "Pick the habit that stops the main fee next time"), habits.map((t) => h("button.fd2-hab", { type: "button", "aria-pressed": String(habit === t), onclick: () => ((habit = t), paint()) }, t))) : null,
+        h("button.big", { type: "button", onclick: () => finishCase(k, { marks, noFeeClaim: false, actions, habit }) }, "Close the case")
       );
-    });
-    if (st.noFee && !marked.size) {
-      right += cfg.noFeePoints;
-      say(true, "Right. This statement has no fees, and that's a good month.");
-    } else if (st.noFee) say(false, "This statement has no fees. Interest earned, deposits, transfers and purchases aren't fees.");
-    else say(!missed && !falseTaps, missed || falseTaps ? `You found ${found.length} of ${st.fees.length} fees${falseTaps ? ` and marked ${falseTaps} that aren't fees` : ""}.` : "You found every fee.");
-    (missed || falseTaps ? sfx.error : sfx.correct)();
-    track("feeGrade", { statement: k, fees: st.fees.length, found: found.length, missed, falseTaps });
-    paintScore();
-    fill(stage, statement(st, rows), h("div.row.fd-actions", h("button.big", { type: "button", "data-autofocus": "", onclick: () => avoid(found.map((l) => l.fee), 0) }, found.length ? "Next: how to avoid them" : "Next")));
-    stage.querySelector("button")?.focus();
+      paintBar(`Case ${k.n} of 3: ${k.client}`);
+      const callsSpan = bar.querySelector(".fd2-calls");
+      if (callsSpan) callsSpan.lastChild.textContent = ` ${left} call${left === 1 ? "" : "s"} left`;
+    };
+    fill(body, h("p.fd2-intro", "For each line you marked, pick what to do. Refunds and disputes cost a call."), rows);
+    paint();
+    keys = (e) => {
+      const n = Number(e.key);
+      if (n < 1 || n > 4) return;
+      const row = e.target.closest?.(".fd2-row") || rows.querySelector(".fd2-row");
+      if (!row) return;
+      const l = marked[Number(row.dataset.i)];
+      const a = D.ACTIONS[n - 1];
+      if (D.COSTS_CALL.has(a) && actions[l.id] !== a && s.calls - callsUsed() <= 0) return ctx.notice("No calls left.");
+      e.preventDefault();
+      actions[l.id] = a;
+      paint();
+      rows.querySelector(`[data-i="${row.dataset.i}"]`)?.focus();
+    };
+    if (training && k.n === 1) ctx.coach(1, rows).then(() => (habits.length ? ctx.coach(2, rows.querySelector(".fd2-habit") || rows) : null));
+    rows.querySelector(".fd2-row")?.focus();
   }
 
-  // ---- 3. One "how could you avoid it?" question per fee found. ----
-  function avoid(list, i) {
-    if (over) return;
-    if (i >= list.length) return summary();
-    const fee = list[i];
-    const opts = avoidOptions(rng, fee);
-    flash.textContent = "";
-    flash.className = "mg-flash";
-    fill(prompt, h("small", `Fee ${i + 1} of ${list.length}`), h("strong", `How could you avoid the ${FEE_KINDS[fee].line.toLowerCase()}?`));
-    const buttons = opts.map((o) =>
-      h("button.fd-option", { type: "button", "data-sound": "none", onclick: () => pick(o, buttons) }, o.text)
-    );
-    function pick(o, all) {
-      all.forEach((b) => (b.disabled = true));
-      all[opts.indexOf(o)].classList.add(o.right ? "fd-right" : "fd-wrong");
-      all[opts.findIndex((x) => x.right)].classList.add("fd-answer");
-      if (o.right) right++;
-      else {
-        wrong++;
-        misses.push(`Avoiding the ${FEE_KINDS[fee].line.toLowerCase()}: ${FEE_KINDS[fee].avoid}`);
-      }
-      (o.right ? sfx.correct : sfx.error)();
-      say(o.right, o.right ? FEE_KINDS[fee].avoid : `Better: ${FEE_KINDS[fee].avoid}`);
-      track("feeAvoid", { fee, right: o.right });
-      paintScore();
-      const go = h("button.big", { type: "button", "data-autofocus": "", onclick: () => avoid(list, i + 1) }, "Next");
-      stage.append(h("div.row.fd-actions", go));
-      go.focus();
+  function finishCase(k, pick) {
+    const r = D.closeCase(s, k, pick);
+    ctx.track("feeCase", { n: k.n, found: r.found, fees: r.fees, wrong: r.wrongMarks, recovered: r.recovered, habit: r.habitRight, noFee: k.noFee });
+    (r.missed.length || r.wrongMarks ? sfx.error : sfx.correct)();
+    for (const m of r.missed) ctx.mistake({ type: "missedFee", cost: m.amount, label: `Missed fee: ${m.label}` });
+    for (const l of r.disputedLegit) ctx.mistake({ type: "disputeLegit", cost: cfg.disputeLegitCost, label: `Disputed a real charge: ${l.text}` });
+    const verdicts = {};
+    for (const l of k.lines) {
+      const o = r.outcomes.find((x) => x.line.id === l.id);
+      if (l.fee && !o) verdicts[l.id] = { kind: "wrong", text: `Missed: ${l.label}` };
+      else if (o) verdicts[l.id] = { kind: o.right && l.fee ? "right" : "wrong", text: `${l.fee ? l.label : "Not a fee"}. ${ACTION_LABEL[o.action]}: ${o.note}${o.got ? ` +${money(o.got)}` : ""}` };
     }
-    fill(stage, h("div.fd-options", buttons));
-    buttons[0].focus();
+    const doc = docInspector({ title: `${FD_DOC_NAMES[k.doc]}: ${k.client}`, className: "fd2-doc", lines: k.lines.map((l) => ({ id: l.id, cells: [l.credit ? "+" : "-", l.text, money(l.amount)] })), marked: new Set(r.outcomes.map((o) => o.line.id)), locked: true });
+    doc.grade(verdicts);
+    const next = h("button.big", { type: "button", "data-autofocus": "", onclick: () => openCase() }, D.currentCase(s) ? `Next: Case ${s.at + 1}` : "Close the file");
+    fill(body, h("p.fd2-intro", h("strong", `Case ${k.n}: ${r.score} points. `), k.noFee ? (r.noFeeRight ? "No fees, and you said so. Nice." : "This one had no fees.") : `${r.found} of ${r.fees} fees found, ${money(r.recovered)} recovered.${k.key ? r.habitRight ? " Good habit pick." : " That habit won't stop it." : ""}`), doc, next);
+    if (k.n === 1 && !r.habitRight && r.key) ctx.echo(`${k.client} didn't fix the habit. That fee will be back next month.`);
+    keys = (e) => e.key === "Enter" && !e.target.closest("button") && (e.preventDefault(), next.click());
+    next.focus();
+    const n3 = D.currentCase(s);
+    if (n3?.n === 3 && n3.lines.some((l) => l.repeat)) {
+      const back = n3.lines.find((l) => l.repeat);
+      setTimeout(() => ctx.echo(`${back.label} is back, ${money(back.amount)}. From: Case 1, no habit fix.`), 50);
+    }
   }
 
-  // ---- 4. What the fees cost. ----
-  function summary() {
-    const st = cur();
-    flash.textContent = "";
-    flash.className = "mg-flash";
-    const per = st.total;
-    fill(
-      stage,
-      h(
-        "div.fd-summary",
-        per
-          ? [h("h3", "What these fees cost"), h("p", `These fees cost you ${fmt(per)} a month. That's ${fmt(per * 12)} a year.`), h("p.muted", "Every dollar here is money you could keep.")]
-          : [h("h3", "A fee-free month"), h("p", "Nothing to pay in fees. Keeping it that way saves real money over a year.")]
-      ),
-      h("div.row.fd-actions", h("button.big", { type: "button", "data-autofocus": "", onclick: next }, k + 1 >= statements.length ? "Finish the shift" : "Next statement"))
-    );
-    stage.querySelector("button")?.focus();
-  }
-
-  function next() {
-    k++;
-    if (k >= statements.length) return end();
-    hunt();
-  }
-
+  // ---------- The end ----------
   function end() {
     if (over) return;
     over = true;
-    clearInterval(clockTimer);
-    sfx.questComplete();
-    track("minigameEnd", { game: "fees", right, wrong, timed });
-    onDone({ right, wrong, total: right + wrong, seconds: Math.round((Date.now() - started) / 1000), misses });
+    clearInterval(tick);
+    document.removeEventListener("keydown", onKey);
+    const sc = D.score(s);
+    const reveal = h("div.fd2-reveal", h("p.fd2-big", `These fees would have cost your clients ${money(sc.monthly)} a month, ${money(sc.yearly)} a year. You saved ${money(sc.saved)}.`), h("ul.bd-reveal-list", s.results.map((r) => h("li", icon(r.missed.length ? "alert" : "check", { size: 14 }), ` Case ${r.n}, ${r.client}: ${r.found} of ${r.fees} fees, ${money(r.recovered)} back`))));
+    ctx.finish({ score: sc.score, tie: sc.wrongMarks, tier: difficulty, sub: { saved: sc.saved, missed: sc.missed, wrongMarks: sc.wrongMarks, habits: sc.habits }, perfect: !sc.missed && !sc.wrongMarks, reveal, biggest: D.biggest(s), stats: { difficulty } });
   }
 
+  function onKey(e) {
+    if (over || e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.("input, textarea, select, dialog, .arc-coach")) return;
+    keys?.(e);
+  }
+  document.addEventListener("keydown", onKey);
   if (timed) {
     const endAt = Date.now() + cfg.seconds * 1000;
-    const tick = () => {
-      const left = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
-      clock.textContent = `⏱️ ${left}s`;
-      if (left <= 0 && !over) end();
-    };
-    tick();
-    clockTimer = setInterval(tick, 250);
-  } else clock.textContent = `No timer: ${statements.length} statements`;
-  hunt();
-  el.stop = () => {
+    tick = setInterval(() => {
+      const left = (endAt - Date.now()) / 1000;
+      ring.set(left, cfg.seconds);
+      if (left <= 0) {
+        // Time's up: any open cases close with nothing marked.
+        while (D.currentCase(s)) D.closeCase(s, D.currentCase(s), { marks: new Set(), noFeeClaim: false, actions: {}, habit: null });
+        end();
+      }
+    }, 250);
+  }
+  if (training) {
+    showYearly = true;
+    openCase();
+  } else skill();
+  root.stop = () => {
     over = true;
-    clearInterval(clockTimer);
+    clearInterval(tick);
+    document.removeEventListener("keydown", onKey);
   };
-  return el;
+  return root;
 }

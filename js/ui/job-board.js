@@ -14,7 +14,6 @@ import { registerBalancer } from "./minigames/register-balancer.js";
 import { checkHunt } from "./minigames/check-hunt.js";
 import { countDrawer } from "./minigames/count-drawer.js";
 import { unitPriceShowdown } from "./minigames/unit-price.js";
-import { feeDetective } from "./minigames/fee-detective.js";
 import { hasGuide, openGameGuide } from "./game-guide.js";
 import { cabinetArt } from "./arcade-art.js";
 import { setArcadeVoice } from "./arcade-sound.js";
@@ -24,7 +23,7 @@ import { arcadeRunner } from "./arcade/runner.js";
 import { minutesLeft } from "../arcade/core.js";
 
 // The games that only need the shared options (seed, timed, onDone, track).
-const GAMES = { ledger: ledgerSort, overdraft: spotOverdraft, register: registerBalancer, checkhunt: checkHunt, drawer: countDrawer, unitprice: unitPriceShowdown, fees: feeDetective };
+const GAMES = { ledger: ledgerSort, overdraft: spotOverdraft, register: registerBalancer, checkhunt: checkHunt, drawer: countDrawer, unitprice: unitPriceShowdown };
 
 const REACTIONS = [
   ["up", "👍", "I liked this job"],

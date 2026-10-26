@@ -670,3 +670,40 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .gr-panel .gr-offer { box-shadow: none; border: 2px solid var(--arc-gr-ink); }
 .gr-stub { --doc-cols: 1fr 10px 90px; }
 .skin-grind .arc-keys { color: var(--arc-gr-card); }
+
+/* ===========================================================================
+   Fee Detective (upgrade): the noir skin from css/arcade.css, with the
+   document inspector, calls, actions and habits.
+   =========================================================================== */
+.bst-guild .arc-frame.skin-fees { --g-paper: var(--arc-noir-paper); --g-paper-ink: var(--arc-noir-ink); --g-accent: var(--arc-noir-red); --g-accent-ink: var(--arc-noir-paper); --g-good: var(--arc-shop-green); --g-bad: var(--arc-noir-red); }
+.fees2 { display: grid; gap: 8px; }
+.fd2-calls { display: inline-flex; align-items: center; gap: 2px; padding: 2px 10px; color: var(--arc-noir-light); background: color-mix(in srgb, #000 55%, transparent); border-radius: 999px; font-weight: 800; }
+.fd2-calls .off { opacity: 0.3; }
+.fd2-skill { max-width: 620px; margin: 20px auto; padding: 16px 20px; color: var(--arc-noir-ink); background: var(--arc-noir-paper); border-radius: 6px; }
+.fd2-skill h4 { margin: 0 0 6px; font: 900 1.25rem Georgia, serif; }
+.fd2-skill .row { display: flex; align-items: center; gap: 8px; }
+.fd2-skill input { width: 120px; padding: 6px 10px; font-size: 1.1rem; border: 2px solid var(--arc-noir-ink); border-radius: 4px; color: var(--arc-noir-ink); background: #fff; }
+.fd2-skill .row button { padding: 6px 16px; font-weight: 800; color: var(--arc-noir-paper); background: var(--arc-noir-red); border: 2px solid var(--arc-noir-ink); border-radius: 999px; }
+.fd2-skill .mg-flash.good { color: var(--arc-shop-green); }
+.fd2-skill .mg-flash.bad { color: var(--arc-noir-red); }
+.fd2-intro { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0; padding: 6px 12px; color: var(--arc-noir-light); font: 700 1.05rem Georgia, serif; font-style: italic; }
+.fd2-case { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 12px; align-items: start; }
+.fd2-doc { --doc-cols: 18px 1fr 90px; font-size: 0.95rem; }
+.fd2-doc .arc-doc-line { padding: 2px 8px; }
+.fd2-new { outline: 3px dashed var(--arc-noir-red) !important; }
+.fd2-new::after { content: "NEW"; position: absolute; right: -40px; font: 900 0.7rem "Trebuchet MS", sans-serif; color: var(--arc-noir-light); }
+.fd2-side { display: grid; gap: 8px; }
+.fd2-yearly p { display: flex; align-items: center; gap: 4px; margin: 0 0 2px; color: var(--arc-noir-light); font-size: 0.9rem; }
+.fd2-actions { display: grid; gap: 6px; }
+.fd2-row { display: grid; grid-template-columns: minmax(0, 260px) 1fr; gap: 8px; align-items: center; padding: 6px 10px; color: var(--arc-noir-ink); background: var(--arc-noir-paper); border-radius: 4px; }
+.fd2-row:focus-visible { outline: 3px dashed var(--arc-noir-light); }
+.fd2-line strong { font-family: ui-monospace, "Courier New", monospace; }
+.fd2-btns { display: flex; flex-wrap: wrap; gap: 4px; }
+.fd2-act, .fd2-hab { padding: 3px 10px; font: 700 0.85rem "Trebuchet MS", sans-serif; color: var(--arc-noir-ink); background: #fff; border: 2px solid var(--arc-noir-ink); border-radius: 999px; cursor: pointer; }
+.fd2-act[aria-pressed="true"], .fd2-hab[aria-pressed="true"] { color: var(--arc-noir-paper); background: var(--arc-noir-ink); }
+.fd2-act[aria-pressed="true"]::before, .fd2-hab[aria-pressed="true"]::before { content: "✓ "; }
+.fd2-act:disabled { opacity: 0.5; cursor: not-allowed; }
+.fd2-habit { display: grid; gap: 4px; margin: 0; padding: 8px 10px; color: var(--arc-noir-ink); background: var(--arc-noir-paper); border: 0; border-radius: 4px; }
+.fd2-habit legend { font-weight: 800; float: left; margin-bottom: 4px; }
+.fd2-hab { text-align: left; border-radius: 8px; }
+.fd2-big { font: 800 1.1rem Georgia, serif; }

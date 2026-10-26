@@ -94,7 +94,7 @@ export const JOBS = {
     icon: "🕵️",
     title: "Fee Detective",
     job: "Statement auditor at the Vault",
-    skill: "Tap every fee on a bank statement, then say how to avoid each one.",
+    skill: "Find every fee on three clients' statements, fight it, and fix the habit.",
   },
   unitprice: {
     mark: "market",

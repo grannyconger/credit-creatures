@@ -283,6 +283,25 @@ export const CONFIG = {
           stubBonus: 40,
         },
       },
+      // Fee Detective (game 12, upgrade). Three cases, three calls.
+      fees: {
+        maxPayScore: { easy: 170, medium: 170, hard: 170 },
+        band: [140, 200],
+        seconds: 210,
+        lines: [10, 13],
+        fees: [2, 4],
+        noFeeChance: 0.4,
+        calls: 3,
+        refundOdds: { first: 0.85, repeat: 0.35 },
+        perFound: 10,
+        perWrong: 5,
+        perMissed: 10,
+        habit: 15,
+        noFee: 2,
+        // The thoughtful bot only spends a call on a charge this big or more.
+        callWorth: 8,
+        disputeLegitCost: 10,
+      },
       // Score Chase (game 7). 18 months, a card at a time.
       scorechase: {
         maxPayScore: 660,

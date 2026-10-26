@@ -145,7 +145,7 @@ test("Decorate: change a slot, preview an unowned piece, and it saves", async ({
   expect(errors).toEqual([]);
 });
 
-test("Fee Detective: a whole shift plays through and pays", async ({ page }) => {
+test("Fee Detective: three cases with calls, actions and habits, then the results", async ({ page }) => {
   const errors = watchErrors(page);
   await seededStudent(page);
   await open(page, "hub");
@@ -156,13 +156,27 @@ test("Fee Detective: a whole shift plays through and pays", async ({ page }) => 
   await open(page, "guild");
   await closePopups(page);
   await page.locator(".job-card", { hasText: "Fee Detective" }).click();
-  for (let i = 0; i < 60 && !(await page.locator(".arc-collect").count()); i++) {
-    const option = page.locator(".fd-option:not([disabled])").first();
-    if (await option.count()) await option.click();
-    else await page.locator(".fd-stage button.big").first().click();
-    await closePopups(page);
+  await page.locator(".arc-opt", { hasText: "No timer" }).click();
+  await page.click(".arc-start");
+  await page.fill(".fd2-skill input", "144");
+  await page.keyboard.press("Enter");
+  await page.locator(".fd2-skill .big").click();
+  for (let i = 0; i < 30 && !(await page.locator(".arc-results").count()); i++) {
+    if (await page.locator(".fd2-actions").count()) {
+      const rows = page.locator(".fd2-row");
+      for (let r = 0; r < (await rows.count()); r++) await rows.nth(r).locator(".fd2-act").last().click();
+      if (await page.locator(".fd2-hab").count()) await page.locator(".fd2-hab").first().click();
+      await page.locator(".fd2-actions > .big").click();
+    } else if (await page.locator(".fd2-case").count()) {
+      await page.locator(".arc-doc-line").first().click();
+      await page.keyboard.press("f");
+      await page.waitForTimeout(150);
+      if (await page.locator(".fd2-case").count()) await page.keyboard.press("f");
+    } else await page.locator(".fd2-body > .big").click();
+    await page.waitForTimeout(150);
   }
-  await expect(page.locator(".arc-collect")).toBeVisible();
+  await expect(page.locator(".arc-results")).toBeVisible();
+  await expect(page.locator(".fd2-reveal")).toContainText("would have cost your clients");
   expect(errors).toEqual([]);
 });
 
