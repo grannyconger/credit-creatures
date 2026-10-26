@@ -44,7 +44,7 @@ export const JOBS = {
     icon: "✍️",
     title: "Check Writer",
     job: "Scribe at the Vault",
-    skill: "Write a check to pay a bill, then endorse your paycheck.",
+    skill: "Write a careful check, deposit your paycheck, then judge checks at the Vault.",
   },
   // Five more jobs that open in Chapter 1 (teacher request 2026-10-22).
   overdraft: {

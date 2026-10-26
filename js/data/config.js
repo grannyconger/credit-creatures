@@ -207,6 +207,19 @@ export const CONFIG = {
         drawerLimit: 200,
         drawerFine: 5,
       },
+      // Check Writer (game 2, upgrade). Rent in whole dollars, under $1,000.
+      checks: {
+        maxPayScore: 130,
+        seconds: 210,
+        rent: [650, 980],
+        perField: 10,
+        endorse: 10,
+        perCall: 20,
+        noWash: 20,
+        badCash: 50,
+        washedCost: 25,
+        badEndorse: 5,
+      },
       // Score Chase (game 7). 18 months, a card at a time.
       scorechase: {
         maxPayScore: 660,

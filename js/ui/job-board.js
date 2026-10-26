@@ -9,7 +9,6 @@ import { openJobs, opensText, unlockStage } from "../progression.js";
 import { icon } from "./icons.js";
 import * as P from "../play.js";
 import { ledgerSort } from "./minigames/ledger-sort.js";
-import { checkWriter } from "./minigames/check-writer.js";
 import { spotOverdraft } from "./minigames/spot-overdraft.js";
 import { registerBalancer } from "./minigames/register-balancer.js";
 import { checkHunt } from "./minigames/check-hunt.js";
@@ -128,7 +127,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
       finish(key, result);
     };
     const opts = { seed, timed, onDone: done, track };
-    running = key === "checks" ? checkWriter({ ...opts, life: run.life, creature: game.save.creature, payFor: (right) => jobPay(play, "checks", { right }) }) : GAMES[key](opts);
+    running = GAMES[key](opts);
     const leave = h("span.job-leave");
     const askLeave = () =>
       fill(

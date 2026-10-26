@@ -491,3 +491,56 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .cr-steps { display: flex; flex-wrap: wrap; gap: 3px 6px; padding: 0; list-style: none; }
 .cr-steps li { padding: 0 6px; background: color-mix(in srgb, var(--arc-cashier-brass) 25%, var(--arc-cashier-body)); border-radius: 6px; }
 .cr-steps li + li::before { content: "→ "; }
+
+/* ===========================================================================
+   Check Writer (upgrade): blotter desk, word tiles, the line tool, the Vault
+   counter with a signature card. Colors from the --arc-checks-* tokens.
+   =========================================================================== */
+.bst-guild .arc-frame.skin-checks { --g-paper: var(--arc-checks-paper); --g-paper-ink: var(--arc-checks-ink); --g-line: var(--arc-checks-ink); --g-good: var(--arc-shop-green); --g-bad: var(--arc-checks-red); }
+.bst-guild .arc-frame.skin-checks .checks2 { display: grid; gap: 8px; }
+.bst-guild .arc-frame.skin-checks .cw2-desk { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 12px; align-items: start; }
+.bst-guild .arc-frame.skin-checks .cw2-bill p { margin: 2px 0; }
+.bst-guild .arc-frame.skin-checks .cw2-check { position: relative; }
+.bst-guild .arc-frame.skin-checks .cw2-check input { min-width: 0; }
+.bst-guild .arc-frame.skin-checks .cw2-field { position: relative; display: inline-flex; flex: 1; min-width: 0; }
+.bst-guild .arc-frame.skin-checks .cw2-field input { width: 100%; }
+.bst-guild .arc-frame.skin-checks .cw2-line { position: absolute; right: 4px; top: 50%; width: 0; height: 0; border-top: 3px solid var(--arc-checks-ink); transition: width 0.25s; }
+.bst-guild .arc-frame.skin-checks .cw2-line.on { width: 45%; }
+.bst-guild .arc-frame.skin-checks .cw2-wordsrow { position: relative; }
+.bst-guild .arc-frame.skin-checks .cw2-words { position: relative; flex: 1; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-height: 34px; padding: 3px 6px; border-bottom: 2px solid var(--arc-checks-ink); }
+.bst-guild .arc-frame.skin-checks .cw2-words:focus-visible { outline: 3px dashed var(--arc-checks-ink); }
+.bst-guild .arc-frame.skin-checks .cw2-hint { font-size: 0.85rem; opacity: 0.75; }
+.bst-guild .arc-frame.skin-checks .cw2-tile { padding: 2px 8px; font: 800 0.85rem "Trebuchet MS", sans-serif; letter-spacing: 0.03em; color: var(--arc-checks-ink); background: var(--arc-checks-paper); border: 2px solid var(--arc-checks-ink); border-radius: 6px; cursor: pointer; }
+.bst-guild .arc-frame.skin-checks .cw2-tile.cents { background: color-mix(in srgb, var(--arc-checks-edge) 35%, var(--arc-checks-paper)); }
+.bst-guild .arc-frame.skin-checks .cw2-tile.placed { padding: 1px 6px; font-size: 0.82rem; }
+.bst-guild .arc-frame.skin-checks .cw2-tray { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px; background: color-mix(in srgb, #000 30%, transparent); border-radius: 10px; }
+.bst-guild .arc-frame.skin-checks .cw2-sep { width: 12px; }
+.bst-guild .arc-frame.skin-checks .cw2-linebtn { padding: 2px 8px; font: 700 0.8rem "Trebuchet MS", sans-serif; color: var(--arc-checks-ink); background: var(--arc-checks-paper); border: 2px dashed var(--arc-checks-ink); border-radius: 999px; white-space: nowrap; }
+.bst-guild .arc-frame.skin-checks .cw2-linebtn[aria-pressed="true"] { border-style: solid; }
+.bst-guild .arc-frame.skin-checks .cw2-linebtn[aria-pressed="true"]::before { content: "✓ "; }
+.bst-guild .arc-frame.skin-checks .cw2-micr { margin: 4px 0 0; font: 700 0.9rem ui-monospace, "Courier New", monospace; letter-spacing: 0.08em; }
+.bst-guild .arc-frame.skin-checks .cw2-actions { display: flex; justify-content: flex-end; }
+.bst-guild .arc-frame.skin-checks .cw2-grade li { display: block; }
+.bst-guild .arc-frame.skin-checks .cw2-warn { display: flex; align-items: center; gap: 4px; font-weight: 800; color: var(--arc-checks-paper); }
+.bst-guild .arc-frame.skin-checks .cw2-endorse { display: grid; gap: 6px; max-width: 640px; }
+.bst-guild .arc-frame.skin-checks .cw2-opt { display: flex; align-items: center; gap: 6px; padding: 8px 12px; text-align: left; font: 700 1rem "Trebuchet MS", sans-serif; color: var(--arc-checks-ink); background: var(--arc-checks-paper); border: 2px solid var(--arc-checks-ink); border-radius: 10px; cursor: pointer; }
+.bst-guild .arc-frame.skin-checks .cw2-counter { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 12px; align-items: start; }
+.bst-guild .arc-frame.skin-checks .cw2-pair { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 8px; }
+.bst-guild .arc-frame.skin-checks .cw2-push { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; padding: 6px 12px; font-weight: 700; color: var(--arc-checks-ink); background: var(--arc-checks-paper); border-radius: 14px 14px 14px 4px; }
+.bst-guild .arc-frame.skin-checks .cw2-card { display: grid; gap: 4px; padding: 10px; color: var(--arc-checks-ink); background: var(--arc-checks-paper); border: 2px solid var(--arc-checks-ink); border-radius: 8px; }
+.bst-guild .arc-frame.skin-checks .cw2-card h5, .bst-guild .arc-frame.skin-checks .cw2-card p { margin: 0; }
+.bst-guild .arc-frame.skin-checks .cw2-sig { font-family: var(--b-hand), "Patrick Hand", cursive; font-size: 1.25rem; color: var(--arc-checks-ink); }
+.bst-guild .arc-frame.skin-checks .cw2-sig.big { font-size: 1.6rem; padding: 4px 8px; border-bottom: 2px solid var(--arc-checks-ink); }
+.bst-guild .arc-frame.skin-checks .cw2-back { display: grid; align-content: start; gap: 6px; }
+.bst-guild .arc-frame.skin-checks .cw2-blank { font-style: italic; opacity: 0.7; }
+.bst-guild .arc-frame.skin-checks .cw2-added { font-family: var(--b-hand), "Patrick Hand", cursive; color: var(--arc-checks-red); text-decoration: underline wavy var(--arc-checks-red); }
+.bst-guild .arc-frame.skin-checks .cw2-calls { display: flex; gap: 10px; justify-content: center; }
+.bst-guild .arc-frame.skin-checks .cw2-calls .reject { background: var(--arc-checks-red); color: var(--arc-checks-paper); }
+.bst-guild .arc-frame.skin-checks .cw2-calls .hold { background: var(--arc-yellow); color: var(--arc-dark-ink); }
+.bst-guild .arc-frame.skin-checks .cw2-verdict { display: grid; gap: 6px; justify-items: start; }
+.bst-guild .arc-frame.skin-checks .cw2-calls-list { margin: 6px 0 0; padding-left: 20px; }
+.bst-guild .arc-frame.skin-checks .cw2-left { display: grid; gap: 10px; align-content: start; }
+.bst-guild .arc-frame.skin-checks .cw2-left .big { font-size: 1rem; padding: 8px 12px; }
+.bst-guild .arc-frame.skin-checks .cw2-check .check-bottom { margin-top: 4px; }
+.bst-guild .arc-frame.skin-checks .cw2-check .sig-slot { min-height: 44px; }
+.bst-guild .arc-frame.skin-checks .cw2-card p, .bst-guild .arc-frame.skin-checks .cw2-card strong, .bst-guild .arc-frame.skin-checks .cw2-card h5 { color: var(--arc-checks-ink); }
