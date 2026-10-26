@@ -6,7 +6,6 @@ import { CONFIG } from "./data/config.js";
 import { DECOR, ownedDecor } from "./data/cottage.js";
 import { dayKey, streakAfter, loginReward, rollBoxes } from "./engine/daily.js";
 import { receiveCash } from "./engine/index.js";
-import { awardSparkle, sparkleLeft } from "./play.js";
 
 export function ensureDaily(play) {
   play.daily ??= { lastLogin: null, streak: 0, best: 0, pickDay: null, pick: null };
@@ -55,7 +54,6 @@ export function claimPick(play, life, index, now = new Date()) {
   };
   let applied;
   if (prize.kind === "coins") applied = give(prize.amount, "");
-  else if (prize.kind === "sparkle") applied = awardSparkle(play) ? { kind: "sparkle", amount: 1 } : give(CONFIG.daily.sparkleFallback, "Your Sparkle is full for now, so it turned into coins.");
   else if (prize.kind === "coupon") {
     play.coupon = { pct: prize.pct };
     applied = { kind: "coupon", pct: prize.pct };

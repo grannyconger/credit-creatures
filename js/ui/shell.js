@@ -76,7 +76,6 @@ export function paintShell(game) {
   for (const [key, ico, label, value] of [
     ["coins", "coins", "Coins", money(life.checking)],
     ["energy", "energy", "Energy", `${play.energy || 0}/${CONFIG.pacing.rewards.energy.max}`],
-    ["sparkle", "sparkle", "Sparkle", String(play.sparkle?.total || 0)],
     ["xp", "star", "XP", String(play.xp || 0)],
     streak ? ["streak", "flame", "Streak", `${streak} day${streak === 1 ? "" : "s"}`] : null,
   ].filter(Boolean)) {

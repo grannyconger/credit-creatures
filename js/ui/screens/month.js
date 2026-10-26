@@ -194,9 +194,9 @@ export function render(root, { game, go, track, refreshWho }) {
           explain: factorChoice(choice.factor.key, choice.factor.dir),
           onAnswer: async (correct) => {
             const got = P.recordAnswer(play, { type: "factorCheck", standard: 3, correct });
-            track("factorCheck", { id: def.id, correct, sparkle: got.sparkle, xp: got.xp });
+            track("factorCheck", { id: def.id, correct, xp: got.xp });
             await save("factorCheck");
-            return got.sparkle;
+            return got.xp;
           },
         };
       },

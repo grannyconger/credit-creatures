@@ -4,7 +4,7 @@ import { CONFIG } from "./data/config.js";
 import { ACHIEVEMENTS, ACHIEVEMENT_BY_ID, XP, RANKS } from "./data/achievements.js";
 import { SHOP_BY_ID } from "./data/shop.js";
 import { amountOwed } from "./engine/index.js";
-import { addNote, addXp, awardSparkle, awardEnergy } from "./play.js";
+import { addNote, addXp, awardEnergy } from "./play.js";
 import { VEHICLE_BY_ID, HOME_BY_ID } from "./data/garage.js";
 
 export { addXp };
@@ -67,7 +67,6 @@ export function facts(save) {
     debtNow,
     hadDebt: play.stats.hadDebt || debtNow > 0,
     ownedBackgrounds: play.owned.filter((id) => SHOP_BY_ID[id]?.kind === "background").length,
-    sparkleCap: CONFIG.pacing.sparkle.perChapter,
   };
 }
 
@@ -129,9 +128,8 @@ export function jobPay(play, job, score) {
 }
 
 // What a finished shift gives besides coins: Energy for finishing, doing well
-// and a perfect shift, and a Sparkle Point for a perfect one. Both only count with
-// at least minAnswers scored answers, so one lucky tap can't earn them. Sparkle
-// stays inside its usual caps. Returns what was actually given.
+// and a perfect shift. The bonuses only count with at least minAnswers scored
+// answers, so one lucky tap can't earn them. Returns what was actually given.
 // The new Arcade games (GAME-SPECS.md) pass ratio (score over maxPayScore) and
 // perfect instead of right and wrong answers.
 export function shiftRewards(play, { right = 0, wrong = 0, ratio = null, perfect: flawless = false }) {
@@ -141,9 +139,7 @@ export function shiftRewards(play, { right = 0, wrong = 0, ratio = null, perfect
   const strong = scored && (ratio != null ? ratio >= r.strongPct : right / total >= r.strongPct);
   const perfect = scored && (ratio != null ? flawless : wrong === 0);
   const energy = awardEnergy(play, r.energy.finish + (strong ? r.energy.strong : 0) + (perfect ? r.energy.perfect : 0));
-  let sparkle = 0;
-  if (perfect) for (let i = 0; i < r.perfectSparkle; i++) sparkle += awardSparkle(play);
-  return { energy, sparkle, perfect, strong };
+  return { energy, perfect, strong };
 }
 
 export function rideAndHomeBonus(play) {

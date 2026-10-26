@@ -155,7 +155,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     el.closest(".panel")?.classList.remove("playing");
     const pay = jobPay(play, key, result);
     let reaction = "";
-    let rewards = { energy: 0, sparkle: 0 };
+    let rewards = { energy: 0 };
     // The pay is banked and saved the moment the shift ends (bug fix
     // 2026-10-22: leaving before Collect lost the whole shift). Collect is
     // just the coins and the reaction now.
@@ -163,13 +163,13 @@ export function jobBoard({ game, run, track, save, onCollected }) {
     if (r.ok) {
       run.life = r.life;
       recordShift(play, key, { right: result.right, pay });
-      // Side quests pay Coins, Energy and Sparkle. XP is for quests.
+      // Side quests pay Coins and Energy. XP is for quests.
       rewards = shiftRewards(play, result);
     }
     const saved = r.ok ? save("shift") : Promise.resolve();
     logShift = () => {
       logShift = null;
-      track("minigame", { game: key, right: result.right, wrong: result.wrong, total: result.total, pay, energy: rewards.energy, sparkle: rewards.sparkle, seconds: result.seconds, timed, reaction, depositOnly: result.depositOnly ?? null });
+      track("minigame", { game: key, right: result.right, wrong: result.wrong, total: result.total, pay, energy: rewards.energy, seconds: result.seconds, timed, reaction, depositOnly: result.depositOnly ?? null });
     };
     const collect = h("button.big.arc-collect", { type: "button", "data-sound": "none" }, icon("coins", { size: 26 }), ` Collect ${money(pay)}`);
     collect.addEventListener("click", async () => {
@@ -218,8 +218,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
             // The other two things a side quest pays. XP is for quests, so it isn't here.
             h(
               "div.arc-extras",
-              h("span.arc-extra", icon("energy", { size: 20 }), ` +${rewards.energy} Energy${play.energy >= CONFIG.pacing.rewards.energy.max ? " (full)" : ""}`),
-              rewards.sparkle ? h("span.arc-extra", icon("sparkle", { size: 20 }), ` +${rewards.sparkle} Sparkle for a perfect shift`) : null
+              h("span.arc-extra", icon("energy", { size: 20 }), ` +${rewards.energy} Energy${play.energy >= CONFIG.pacing.rewards.energy.max ? " (full)" : ""}`)
             )
           ),
           h("div.arc-tally", h("div.arc-stat", h("strong", String(result.right)), h("small", "Right")), h("div.arc-stat", h("strong", String(result.wrong)), h("small", "Missed")), h("div.arc-stat", h("strong", `${accuracy}%`), h("small", "Accuracy")))

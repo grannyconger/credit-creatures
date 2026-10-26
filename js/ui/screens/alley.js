@@ -109,7 +109,7 @@ export function render(root, { game, go, track, refreshWho }) {
       "div.stall-reveal.al-tag",
       h("span.al-stamp", { class: s.trap ? "trap" : "fair", "aria-hidden": "true", html: inkStampSvg(s.trap ? "TRAP" : "FAIR DEAL", { seed: s.id.length }) }),
       h("p.stall-verdict", icon(done.right ? "check" : "alert", { size: 16 }), done.right ? " You called it. " : " Not quite. ", s.trap ? "This is a trap." : "This is a fair deal."),
-      done.xp ? h("p.sparkle-line", `+${done.xp} XP`) : null,
+      done.xp ? h("p.reward-line", `+${done.xp} XP`) : null,
       h("p.al-tag-title", "The real cost"),
       h("ol.tight.stall-math", s.math.map((m) => h("li", m))),
       h("p.tight", h("strong", "Look for: "), s.clue),

@@ -1,4 +1,4 @@
-// The Academy: practice questions for XP and Sparkle Points, and a door to
+// The Academy: practice questions for XP, and a door to
 // trophies and ranks. Learning is how creatures rise in Coinhaven.
 import { h, fill } from "../dom.js";
 import { icon } from "../icons.js";
@@ -28,7 +28,7 @@ export function render(root, { game, go, track, refreshWho }) {
   function paint() {
     fill(
       panel,
-      placeHeader({ go, iconName: "academy", title: "The Academy", subtitle: "Answer questions to earn XP and Sparkle Points. XP raises your rank and unlocks new looks.", practice: run.practice, aside: h("div.academy-rank", xpBar(run.play.xp), h("button.secondary.small", { type: "button", onclick: () => go("trophies") }, icon("trophy", { size: 16 }), " Trophies and ranks")) }),
+      placeHeader({ go, iconName: "academy", title: "The Academy", subtitle: "Answer questions to earn XP. XP raises your rank and unlocks new looks.", practice: run.practice, aside: h("div.academy-rank", xpBar(run.play.xp), h("button.secondary.small", { type: "button", onclick: () => go("trophies") }, icon("trophy", { size: 16 }), " Trophies and ranks")) }),
       lessonShelf(),
       deskTab(ctx)
     );

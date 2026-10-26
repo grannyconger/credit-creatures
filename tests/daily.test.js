@@ -60,7 +60,7 @@ test("prize odds roughly follow the weights", () => {
   for (let i = 0; i < 3000; i++) for (const b of rollBoxes(`n${i}`, "2026-10-23", CONFIG.daily, ["rug-gold"])) counts[b.kind + (b.tier || "")] = (counts[b.kind + (b.tier || "")] || 0) + 1;
   const total = Object.values(counts).reduce((s, n) => s + n, 0);
   const w = CONFIG.daily.prizes.reduce((s, p) => s + p.weight, 0);
-  assert.ok(Math.abs(counts.coinssmall / total - 38 / w) < 0.03);
+  assert.ok(Math.abs(counts.coinssmall / total - CONFIG.daily.prizes[0].weight / w) < 0.03);
   assert.ok(counts.coinsjackpot / total < 0.08);
 });
 
@@ -99,11 +99,9 @@ test("a coupon takes a percent off and a prize you can't use becomes coins", () 
   assert.equal(couponPrice(play, 50), 40);
   assert.equal(couponPrice({ coupon: null }, 50), 50);
   const { life } = fresh();
-  play.sparkle.total = 30;
   for (let i = 0; i < 60; i++) {
     const l = createLife({ seed: `seed${i}` });
     const p = newPlay();
-    p.sparkle.total = 30;
     const r = claimPick(p, l, 0, at("2026-10-23"));
     assert.notEqual(r.prize.kind, "sparkle");
   }

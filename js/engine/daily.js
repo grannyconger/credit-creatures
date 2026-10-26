@@ -50,7 +50,6 @@ export function rollBoxes(seed, key, cfg, decorPool = []) {
     let r = rng.next() * total;
     const prize = prizes.find((p) => (r -= p.weight) < 0) || prizes[0];
     if (prize.kind === "coins") return { kind: "coins", tier: prize.tier, amount: rng.int(prize.range[0], prize.range[1]) };
-    if (prize.kind === "sparkle") return { kind: "sparkle", amount: prize.amount };
     if (prize.kind === "coupon") return { kind: "coupon", pct: prize.pct };
     return { kind: "decor", id: rng.pick(decorPool) };
   });

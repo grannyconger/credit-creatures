@@ -19,13 +19,13 @@ Decisions already made (teacher, 2026-10-23):
 - Home: `js/ui/screens/hub.js` (creature card, "Places that need you", money chips). Map: `js/ui/bestiary-map.js:242` `kingdomMap()`, `js/places.js` `PLACES` (10 entries), `placeStatus()`. `js/ui/kingdom-map.js` looks like an older duplicate (check imports, delete if unused).
 - Cottage: `js/ui/screens/cottage.js` (rooms dream/wardrobe/home), `HOME_UPGRADES` in `js/data/garage.js`. Saved in `play.owned[]` (shop cosmetics) and `play.home[]` (upgrades), defaults in `ensurePlay` (`js/play.js:28-62`).
 - Shop: `js/ui/screens/shop.js`, `js/data/shop.js` (`SHOP_ITEMS`, seeded `stockFor`).
-- No daily or login streak exists. No Energy field yet. Sparkle is `play.sparkle` with a cap (`CONFIG.pacing.sparkle`). Seeded RNG: `js/engine/rng.js` (`createRng`, `seedFrom`), already used by `stockFor`.
+- No daily or login streak exists. No Energy field yet. Seeded RNG: `js/engine/rng.js` (`createRng`, `seedFrom`), already used by `stockFor`.
 - Tests touching this: `e2e/helpers.js:38` (waits for `#topbar:not([hidden])`), `e2e/game.spec.js:36-45` (opens 15 routes, expects non-empty `main#app`), `tests/places.test.js:77` (asserts `/Guild Hall/`), `tests/progression.test.js:158`.
 
 ## Shell layout (desktop, 1440 wide)
 ```
 +--------------------------------------------------------------------------------+
-| [Coinhaven]  Ch.2 chip      Coins 1,240   Energy 3/5   Sparkle 12   XP 340     |
+| [Coinhaven]  Ch.2 chip      Coins 1,240   Energy 3/5   XP 340     |
 |                                  Streak 4 days            [Friends][Mail][Opts]|
 +--------------------------------------------------------------------------------+
 |                                                                                |
@@ -69,7 +69,7 @@ Phone foundations (no phone work yet): shell is a CSS grid with named areas, sta
 
 ## Slice 4: Daily Pick, streak, challenges
 - State in `ensurePlay` (`js/play.js`): `daily: { lastPickDay, lastLoginDay, streak, bestStreak }`. Day key = local date `YYYY-MM-DD`; midnight reset is local midnight (client clock, accepted risk on Spark; the teacher page can flag implausible streaks later).
-- New pure `js/engine/daily.js`: `dailyKey(date)`, `streakAfter(daily, today)`, `rollDailyPick(seed, dayKey)` using `createRng(\`${seed}:daily:${dayKey}\`)` and a weighted table in `CONFIG.daily` (config.js). Different students get different outcomes via their seed. Reward kinds: coins (small/medium/big), Energy, a Market coupon, a cosmetic or home piece, Sparkle (respect the existing sparkle cap). Money goes through an engine action so `replayLife` stays correct; streak bonuses scale in config (for example day 3, 7, 14 milestones).
+- New pure `js/engine/daily.js`: `dailyKey(date)`, `streakAfter(daily, today)`, `rollDailyPick(seed, dayKey)` using `createRng(\`${seed}:daily:${dayKey}\`)` and a weighted table in `CONFIG.daily` (config.js). Different students get different outcomes via their seed. Reward kinds: coins (small/medium/big), Energy, a Market coupon, a cosmetic or home piece. Money goes through an engine action so `replayLife` stays correct; streak bonuses scale in config (for example day 3, 7, 14 milestones).
 - Choice theater: pick 1 of 3 closed boxes (all seeded, order shuffled), reveal animation, then locked until midnight with a countdown.
 - Login streak: claimed automatically on first load of the day, toast + streak chip in the status bar.
 - Challenges: collapsible stack in the shell fed by quests/dream goals; event-driven counters (`events.emit`-style helper) so screens never poll.

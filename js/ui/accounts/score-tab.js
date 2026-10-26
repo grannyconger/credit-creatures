@@ -1,5 +1,4 @@
-// My Score (SPEC §11, §14, §15): a 300 to 850 gauge with Sparkle Points shown
-// apart, the 5 factors with life-choice explainers, and a score history chart.
+// My Score (SPEC §11, §14): a 300 to 850 gauge, the 5 factors with life-choice explainers, and a score history chart.
 import { h, ageLabel, percent } from "../dom.js";
 import { creditReport, FACTOR_LABELS } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
@@ -16,30 +15,23 @@ const s = (tag, attrs = {}, ...kids) => {
 export function scoreTab({ run }) {
   const life = run.life;
   const rep = creditReport(life);
-  const sparkle = run.play.sparkle.total;
-  return h("div.score-tab", gaugeBlock(life.score, sparkle, rep), factorList(rep.factors), historyChart(life));
+  return h("div.score-tab", gaugeBlock(life.score, rep), factorList(rep.factors), historyChart(life));
 }
 
-function gaugeBlock(score, sparkle, rep) {
-  const cap = CONFIG.pacing.sparkle;
-  const sparkleLine = h(
-    "p.sparkle-line",
-    `✨ ${sparkle} Unicorn Sparkle Point${sparkle === 1 ? "" : "s"} `,
-    h("small", `(classroom bonus for right answers, up to ${cap.perChapter} a chapter and ${cap.total} total. Real scores don't work this way.)`)
-  );
+function gaugeBlock(score, rep) {
   if (score == null) {
     const need = Math.max(0, CONFIG.score.minHistoryMonths - rep.reportedMonths);
     return h(
       "section.gauge-block",
       gauge(null),
-      h("div.gauge-words", h("p.big-score", "No score yet"), h("p", need ? `You need ${need} more month${need === 1 ? "" : "s"} of reported credit history.` : "Your first score comes at the next End Month."), sparkleLine)
+      h("div.gauge-words", h("p.big-score", "No score yet"), h("p", need ? `You need ${need} more month${need === 1 ? "" : "s"} of reported credit history.` : "Your first score comes at the next End Month."))
     );
   }
   const band = bandFor(score);
   return h(
     "section.gauge-block",
     gauge(score),
-    h("div.gauge-words", h("p.big-score", String(score), sparkle ? h("span.sparkle-add", ` + ${sparkle} ✨`) : null), h("p.band-label", `${band.label} (${band.min} to ${band.max})`), sparkleLine)
+    h("div.gauge-words", h("p.big-score", String(score)), h("p.band-label", `${band.label} (${band.min} to ${band.max})`))
   );
 }
 

@@ -68,7 +68,6 @@ export const ACHIEVEMENTS = [
   { id: "factorPro", cat: "learning", icon: "🧠", title: "Factor Pro", how: "Answer 10 Factor Checks right.", xp: 50, check: (f) => (f.desk.byType.factorCheck?.right || 0) >= 10 },
   { id: "wellRounded", cat: "learning", icon: "🌐", title: "Well Rounded", how: "Get 3 right in each of Standards 1, 2 and 3.", xp: 75, check: (f) => ["1", "2", "3"].every((s) => (f.desk.byStandard[s]?.right || 0) >= 3) },
   { id: "trapSpotter", cat: "learning", icon: "🏮", title: "Trap Spotter", how: "Call 8 Lantern Alley offers right.", xp: 60, check: (f) => Object.values(f.play.alley?.checked || {}).filter((c) => c.right).length >= 8 },
-  { id: "sparkleMax", cat: "learning", icon: "✨", title: "Sparkle Collector", how: "Earn every Sparkle Point in one chapter.", xp: 50, hidden: true, check: (f) => Object.values(f.play.sparkle.byChapter).some((n) => n >= f.sparkleCap) },
 
   // Minigames
   { id: "clockedIn", cat: "minigames", icon: "⏱️", title: "Clocked In", how: "Work your first shift.", xp: 10, check: (f) => f.stats.shifts >= 1 },

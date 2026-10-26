@@ -142,26 +142,23 @@ test("Practice Desk visits track perfect runs and streaks", () => {
   assert.equal(play.desk.streak, 0);
 });
 
-test("side quests pay Energy and Sparkle and no XP, and Energy stops at its cap", () => {
+test("side quests pay Energy and no XP, and Energy stops at its cap", () => {
   const play = P.newPlay();
   const r = CONFIG.pacing.rewards;
   // Finishing, doing well and a perfect shift each add Energy.
-  assert.deepEqual(G.shiftRewards(play, { right: 1, wrong: 2 }), { energy: r.energy.finish, sparkle: 0, perfect: false, strong: false });
+  assert.deepEqual(G.shiftRewards(play, { right: 1, wrong: 2 }), { energy: r.energy.finish, perfect: false, strong: false });
   const strong = G.shiftRewards(play, { right: 8, wrong: 2 });
   assert.equal(strong.energy, r.energy.finish + r.energy.strong);
-  assert.equal(strong.sparkle, 0, "only a perfect shift earns Sparkle");
   const perfect = G.shiftRewards(play, { right: 6, wrong: 0 });
-  assert.equal(perfect.sparkle, r.perfectSparkle);
-  assert.equal(play.sparkle.total, r.perfectSparkle);
+  assert.equal(perfect.energy, r.energy.finish + r.energy.strong + r.energy.perfect);
+  assert.equal(perfect.sparkle, undefined);
   // Too few scored answers can't earn a bonus.
   const tiny = G.shiftRewards(P.newPlay(), { right: r.minAnswers - 1, wrong: 0 });
-  assert.deepEqual([tiny.energy, tiny.sparkle], [r.energy.finish, 0]);
+  assert.deepEqual([tiny.energy, tiny.perfect], [r.energy.finish, false]);
   // Energy is held at the cap.
   for (let i = 0; i < 10; i++) G.shiftRewards(play, { right: 6, wrong: 0 });
   assert.equal(play.energy, r.energy.max);
   assert.equal(G.shiftRewards(play, { right: 6, wrong: 0 }).energy, 0, "nothing more at the cap");
-  // Sparkle stays inside the chapter cap.
-  assert.ok(play.sparkle.total <= CONFIG.pacing.sparkle.perChapter);
   // A shift never gives XP.
   const xpPlay = P.newPlay();
   G.recordShift(xpPlay, "ledger", { right: 5, pay: 50 });

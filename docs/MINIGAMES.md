@@ -95,7 +95,7 @@ All rates are simplified teaching values in config, labeled "simplified for lear
 **28. Compound Interest Garden (the doc's flagship)**: G1, G3, G5. Fits as its own place on the map, or as a Cottage room tied to the dream. Battle: no.
 - Strong idea: deposits are seeds, interest is trees dropping seeds, and the ghost line shows starting 5 years later. "Time beats amount" is the lesson.
 - Learning-first change: start with the Early Eva vs. Late Leo prediction (level 4 in the doc), since it's the most memorable lesson, and keep the levels short.
-- Overlap: the doc makes the Garden the main menu and plants "seed money" from every game. Our map, dream and Sparkle Points already do that job. **Don't make it the hub.** Make it one place, and maybe let Subscription Audit and Gig Income Tracker show "what this could grow into".
+- Overlap: the doc makes the Garden the main menu and plants "seed money" from every game. Our map and dream already do that job. **Don't make it the hub.** Make it one place, and maybe let Subscription Audit and Gig Income Tracker show "what this could grow into".
 - Uses the compound-interest helper (monthly loop in cents, unit tested).
 
 **30. Risk/Return Sorter**: G2, G1. Fits as a quest step or Academy lesson. Battle: yes, the scenario-match rounds.

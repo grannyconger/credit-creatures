@@ -3201,8 +3201,8 @@ main#app.app:has(.bestiary) {
 }
 .bst-academy .desk h2 { display: flex; align-items: center; gap: var(--b-s2); margin: 0 0 var(--b-s2); font-size: clamp(2.3rem, 3vw, 3.2rem); color: var(--b-ink); }
 .bst-academy .desk h2 .ico-wrap { color: var(--b-gold-ink); }
-.bst-academy .sparkle-line { display: flex; align-items: center; gap: 6px; color: var(--b-ink); }
-.bst-academy .sparkle-line .ico-wrap { color: var(--b-gold-ink); }
+.bst-academy .reward-line { display: flex; align-items: center; gap: 6px; color: var(--b-ink); }
+.bst-academy .reward-line .ico-wrap { color: var(--b-gold-ink); }
 .bst-academy .desk .step-label {
   font-family: var(--b-hand);
   font-size: var(--b-fs-hand);
@@ -5077,7 +5077,7 @@ main#app.app:has(.bestiary) {
 .bst-alley .stall-reveal .al-stamp svg { width: 170px; height: auto; }
 .bst-alley .al-stamp.trap { color: var(--b-rust-ink); }
 .bst-alley .al-stamp.fair { color: var(--b-fern); }
-.bst-alley .sparkle-line { color: var(--b-gold-ink); font-weight: 700; }
+.bst-alley .reward-line { color: var(--b-gold-ink); font-weight: 700; }
 .bst-alley .al-ask { margin: var(--b-s2) 0 0 var(--b-s4); font-family: var(--b-display); font-size: var(--b-fs-lead); color: var(--b-on-ground); }
 .bst-alley .al-calls { margin-left: var(--b-s4); }
 .bst-alley .stall-close { align-self: flex-start; }
@@ -6240,7 +6240,7 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .dc-tradeoffs > .trade-grid { grid-column: 1 / -1; }
 .dc-tradeoffs > p.muted { margin: 0; }
 .bst-month .dc-xp { display: flex; align-items: center; gap: var(--b-s1); margin: var(--b-s1) 0 0; font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-good-ink); }
-/* Five chips (Coins, Energy, Sparkle, XP, Streak) share the top bar, so they stay on one line and sit a little closer. */
+/* Four chips (Coins, Energy, XP, Streak) share the top bar, so they stay on one line and sit a little closer. */
 .bst-topbar .status-chips { gap: var(--b-s1); }
 .bst-topbar .stat-chip { white-space: nowrap; padding-inline: var(--b-s2); gap: 6px; }
 .bst-topbar .stat-chip strong { white-space: nowrap; }

@@ -13,7 +13,6 @@ export const CONFIG = {
     shiftsPerMonth: 3,
     payPerShift: [10, 120],
     sessionMinutes: 15,
-    sparkle: { perChapter: 10, total: 30 },
     // Quality of Life (teacher request 2026-10-25): the third Tradeoffs spectrum, next
     // to Assets and Liabilities. A meter from min to max that every card choice moves
     // by its points in js/data/card-qol.js. It starts at start and never leaves the range.
@@ -21,14 +20,12 @@ export const CONFIG = {
     // What a side quest shift pays besides Coins (teacher decision 2026-10-23).
     // A shift needs at least minAnswers scored answers to count for a bonus.
     // Energy: finishing pays finish, 80% or better (strongPct) adds strong, a
-    // perfect shift adds perfect. It is held up to max. Sparkle: a perfect shift
-    // earns perfectSparkle, inside the usual Sparkle caps above. Energy is spent
-    // on Battles, which are not built yet.
-    rewards: { minAnswers: 4, strongPct: 0.8, energy: { max: 10, finish: 1, strong: 1, perfect: 1 }, perfectSparkle: 1 },
+    // perfect shift adds perfect. It is held up to max. Energy is spent on Battles.
+    rewards: { minAnswers: 4, strongPct: 0.8, energy: { max: 10, finish: 1, strong: 1, perfect: 1 } },
     // XP (SPEC §16). It never goes down, and there's no lifetime cap. Quests earn
     // it (teacher decision 2026-10-23, built 2026-10-25): each decision card by how
     // well the choice went (card: good, ok, bad, none for news and quiz cards), and a
-    // finished month. Side quests (Arcade shifts) pay Coins, Energy and Sparkle
+    // finished month. Side quests (Arcade shifts) pay Coins and Energy
     // instead, never XP. Only right answers repeat without limit, so their XP is
     // capped per chapter. alleyStall: bonus XP for each Lantern Alley stall called
     // right, once each.
@@ -56,19 +53,17 @@ export const CONFIG = {
   // boxes to choose from. prizes: what a box can hold, by weight. coins prizes
   // roll an amount in range. A coupon takes pct off the next Market buy.
   // decor prizes pick a Cottage piece up to maxPrice. A prize you can't use
-  // (Sparkle past its cap, a piece you already own) turns into coins.
+  // (a piece you already own) turns into coins.
   daily: {
     login: { base: 5, perDay: 1, maxBonus: 10, milestones: { 3: 10, 7: 25, 14: 50, 30: 100 } },
     boxes: 3,
     prizes: [
-      { kind: "coins", tier: "small", weight: 38, range: [5, 15] },
-      { kind: "coins", tier: "nice", weight: 24, range: [20, 40] },
+      { kind: "coins", tier: "small", weight: 44, range: [5, 15] },
+      { kind: "coins", tier: "nice", weight: 30, range: [20, 40] },
       { kind: "coins", tier: "jackpot", weight: 5, range: [75, 120] },
-      { kind: "sparkle", weight: 12, amount: 1 },
       { kind: "coupon", weight: 11, pct: 20 },
       { kind: "decor", weight: 10, maxPrice: 40 },
     ],
-    sparkleFallback: 10,
     // Three challenges a day. Finish all three for challengeBonus coins.
     challengeBonus: 10,
   },

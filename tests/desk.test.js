@@ -60,21 +60,14 @@ test("My Score and inbox text follow the student text rules", () => {
   assert.equal(X.bandFor(850).label, "Excellent");
 });
 
-test("Sparkle Points stop at 10 per chapter and 30 total", () => {
+test("answers count toward accuracy and no Sparkle Points exist anymore", () => {
   const play = P.newPlay();
-  const cap = CONFIG.pacing.sparkle;
-  let got = 0;
-  for (let i = 0; i < 25; i++) got += P.recordAnswer(play, { type: "utilization", standard: 3, correct: true }).sparkle;
-  assert.equal(got, cap.perChapter);
-  assert.equal(P.sparkleLeft(play), 0);
-  for (let ch = 3; ch <= 8; ch++) {
-    play.chapter = ch;
-    for (let i = 0; i < 12; i++) got += P.recordAnswer(play, { type: "tipMath", standard: 2, correct: true }).sparkle;
-  }
-  assert.equal(got, cap.total);
-  assert.deepEqual(P.recordAnswer(play, { type: "tipMath", standard: 2, correct: false }), { sparkle: 0, xp: 0 });
-  assert.equal(play.desk.byStandard["2"].total, 73);
+  for (let i = 0; i < 25; i++) P.recordAnswer(play, { type: "utilization", standard: 3, correct: true });
+  assert.deepEqual(P.recordAnswer(play, { type: "tipMath", standard: 2, correct: false }), { xp: 0 });
   assert.equal(play.desk.byType.utilization.right, 25);
+  assert.equal(play.sparkle, undefined);
+  assert.equal(CONFIG.pacing.sparkle, undefined);
+  assert.ok(!CONFIG.daily.prizes.some((p) => p.kind === "sparkle"));
 });
 
 test("End Month fills the inbox, and due reminders appear for unpaid minimums", () => {
@@ -110,7 +103,7 @@ test("old saves get the new play fields", () => {
   const p = P.ensurePlay(old);
   assert.deepEqual(p.inbox, []);
   assert.equal(p.theme, "royal");
-  assert.equal(p.sparkle.total, 0);
+  assert.equal(P.ensurePlay({ ...old, sparkle: { total: 4, byChapter: {} } }).sparkle, undefined, "old Sparkle is dropped");
 });
 
 test("XP from right answers stops at the chapter cap, but accuracy keeps counting", () => {

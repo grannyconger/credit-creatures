@@ -8,20 +8,18 @@ import { cardArt } from "./card-art.js";
 import { ownCards, amountOwed, utilization } from "../engine/index.js";
 import { fullName } from "../data/creatures.js";
 
-// sparkle: Unicorn Sparkle Points, shown apart from the real score (SPEC §15).
 // Only the numbers a student has learned about so far (js/progression.js):
 // a piggy bank in the prologue, then checking and savings, then debt, a card
 // and finally the score.
 export function moneyChips(life, play) {
   const keys = moneyChipKeys(play, life);
-  const sparkle = play?.sparkle?.total || 0;
   const util = utilization(life);
   const debt = life.accounts.filter((a) => a.owner === "self" && ["open", "collections"].includes(a.status)).reduce((s, a) => s + amountOwed(a), 0);
   const chips = {
     piggy: () => chip("piggy", "Piggy bank", money(life.checking), "", [life.checking, money]),
     checking: () => chip("vault", "Checking", money(life.checking), life.checking < 0 ? "bad" : "", [life.checking, money]),
     savings: () => chip("piggy", "Savings", money(life.savings), "", [life.savings, money]),
-    score: () => chip("gauge", "Score", life.score == null ? "None yet" : sparkle ? `${life.score} + ${sparkle}✨` : life.score, "", life.score == null || sparkle ? null : [life.score, (n) => String(Math.round(n))]),
+    score: () => chip("gauge", "Score", life.score == null ? "None yet" : life.score, "", life.score == null ? null : [life.score, (n) => String(Math.round(n))]),
     util: () => (util != null ? chip("chart", "Card utilization", percent(util), util > 0.3 ? "warn" : "") : null),
     owed: () => chip("receipt", "You owe", money(debt), "", [debt, money]),
   };

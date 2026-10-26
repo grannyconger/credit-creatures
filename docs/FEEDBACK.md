@@ -57,7 +57,7 @@ A **Tuning** tab next to the roster:
   - what the real data says,
   - a suggested new value with the reason. For example: "Months average 6.1 min. Suggest 4 decision cards per month."
 - `npm run replay -- export.json` re-runs every real student's action log through the engine with a candidate `config.js`, then prints how the class's scores, fees and debt would shift. This is the existing `life.log` plus the seed. Tuning is then tested against real play, not only bots.
-- Settings that live in the class doc (months per chapter, cards per month, Sparkle caps) can be changed from the dashboard with no redeploy.
+- Settings that live in the class doc (months per chapter, cards per month) can be changed from the dashboard with no redeploy.
 
 ## Phase-by-phase placement
 - **Phase 3:**

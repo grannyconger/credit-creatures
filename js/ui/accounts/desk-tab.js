@@ -1,6 +1,6 @@
 // Practice Desk (SPEC §14): 5 quick questions with new numbers each visit,
-// instant feedback with the worked math, accuracy by standard, and Unicorn
-// Sparkle Points for right answers (SPEC §15).
+// instant feedback with the worked math, accuracy by standard, and XP for
+// right answers.
 import { icon } from "../icons.js";
 import { burstFrom } from "../motion/particles.js";
 import { h } from "../dom.js";
@@ -25,7 +25,7 @@ function newSession(play) {
     questions: types.slice(0, DESK_QUESTIONS).map((type) => ({ type, ...QUESTION_TYPES[type].make(rng) })),
     k: 0,
     right: 0,
-    sparkle: 0,
+    xp: 0,
     chosen: null,
     shownAt: Date.now(),
   };
@@ -39,13 +39,11 @@ export function deskTab(ctx) {
 }
 
 function startView(play, { track, repaint, run }) {
-  const left = P.sparkleLeft(play);
   return h(
     "div.desk",
     h("h2", icon("scroll", { size: 24 }), " Practice Desk"),
     h("p", `${DESK_QUESTIONS} quick questions with new numbers every time. Real math is fine. Grab a calculator if you want one.`),
-    run.practice ? null : h("p.sparkle-line", icon("star", { size: 16 }), P.answerXpLeft(play) ? ` ${P.answerXpLeft(play)} XP from right answers left this chapter.` : " You've earned all the answer XP for this chapter. Practice still counts for your teacher."),
-    h("p.sparkle-line", icon("sparkle", { size: 16 }), run.practice ? " Practice mode: Sparkle Points and XP aren't saved." : left ? ` Each right answer earns 1 Sparkle Point. ${left} left this chapter.` : " You've earned all the Sparkle Points you can for now. Practice still counts for your teacher."),
+    h("p.reward-line", icon("star", { size: 16 }), run.practice ? " Practice mode: XP isn't saved." : P.answerXpLeft(play) ? ` ${P.answerXpLeft(play)} XP from right answers left this chapter.` : " You've earned all the answer XP for this chapter. Practice still counts for your teacher."),
     h(
       "div.row",
       h(
@@ -91,8 +89,8 @@ function questionView(play, { track, save, repaint }) {
               if (ok) burstFrom(e.currentTarget, "motes");
               if (ok) session.right++;
               const got = P.recordAnswer(play, { type: q.type, standard: meta.standard, correct: ok });
-              session.sparkle += got.sparkle;
-              track("question", { qtype: q.type, standard: meta.standard, correct: ok, seconds: Math.round((Date.now() - session.shownAt) / 1000), sparkle: got.sparkle, xp: got.xp });
+              session.xp += got.xp;
+              track("question", { qtype: q.type, standard: meta.standard, correct: ok, seconds: Math.round((Date.now() - session.shownAt) / 1000), xp: got.xp });
               repaint();
               await save("desk");
             },
@@ -129,14 +127,14 @@ function questionView(play, { track, save, repaint }) {
 
 function doneView(play, { track, repaint, save }) {
   const s = session;
-  track("deskDone", { right: s.right, total: s.questions.length, sparkle: s.sparkle });
+  track("deskDone", { right: s.right, total: s.questions.length, xp: s.xp });
   finishDeskVisit(play, s.right, s.questions.length);
   session = null;
   save("deskDone");
   return h(
     "div.desk",
     h("h2", `You got ${s.right} of ${s.questions.length} right`),
-    s.sparkle ? h("p.sparkle-line", icon("sparkle", { size: 16 }), ` +${s.sparkle} Unicorn Sparkle Point${s.sparkle === 1 ? "" : "s"}`) : null,
+    s.xp ? h("p.reward-line", icon("star", { size: 16 }), ` +${s.xp} XP`) : null,
     h("div.row", h("button.big", { type: "button", onclick: () => repaint() }, "Practice again")),
     accuracy(play)
   );

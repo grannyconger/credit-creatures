@@ -16,19 +16,12 @@ export const STATS = {
     does: "You'll spend Energy on Battles when they open. For now it just builds up, so you'll be ready.",
     gain: "Finish a side quest in the Arcade for 1. Score 80% or better for 1 more, and a perfect shift for 1 more.",
   },
-  sparkle: {
-    title: "Sparkle Points",
-    icon: "sparkle",
-    what: "Sparkle Points are bonus points you win for right answers in the Practice Desk and for perfect side quest shifts.",
-    does: "They're added to your credit score as a small bonus. You can only earn a few per chapter, so they're a nice extra, not a way around good habits.",
-    gain: "Answer Practice Desk questions right at the Academy, or play a perfect shift in the Arcade.",
-  },
   xp: {
     title: "XP",
     icon: "star",
     what: "XP is experience. It measures how much you've learned and done in the game.",
     does: "More XP raises your rank, from Apprentice up. Ranks unlock new looks and show on the leaderboard.",
-    gain: "Earn XP from quests (each decision card and each finished month), lessons from Sage, right answers at the Academy and achievements. Side quests in the Arcade pay coins, Energy and Sparkle instead.",
+    gain: "Earn XP from quests (each decision card and each finished month), lessons from Sage, right answers at the Academy and achievements. Side quests in the Arcade pay coins and Energy instead.",
   },
   streak: {
     title: "Streak",

@@ -400,7 +400,7 @@ function quickCheck(fc) {
             else if (j === i) b.classList.add("wrong");
           });
           const got = await fc.onAnswer(correct);
-          add(box, h("p", { role: "status" }, correct ? `Right! ${got ? "+1 ✨ Sparkle Point" : ""}` : `Not quite. It's ${fc.explain}.`));
+          add(box, h("p", { role: "status" }, correct ? `Right! ${got ? `+${got} XP` : ""}` : `Not quite. It's ${fc.explain}.`));
         },
       },
       c

@@ -364,7 +364,7 @@ Students can visit any time without losing game time.
 - **AutoPay:** optional. If checking runs short, the payment bounces with a fee.
 - **My Score:** 300 to 850 gauge, 5-factor breakdown with life-choice explainers (Section 11), and a history chart.
 - **My Credit Report:** accounts, a 24-month on-time/late grid, inquiries, collections, authorized-user accounts, and "helping you / hurting you" callouts.
-- **Practice Desk:** 5 quick questions per visit with new numbers each time, instant feedback, accuracy tracked by standard. Earns Unicorn Sparkle Points.
+- **Practice Desk:** 5 quick questions per visit with new numbers each time, instant feedback, accuracy tracked by standard. Right answers earn XP (capped per chapter).
 - **Notifications inbox (new):** fees, alerts, payment reminders, statement-ready notices, score changes, achievement unlocks, new chapter released. Each type has its own icon and color, for example:
 
 | Type | Icon | Color |
@@ -398,13 +398,9 @@ Real math is allowed (Section 1). Show the worked math after each answer.
 
 ---
 
-## 15. Unicorn Sparkle Points (formerly Coach Bonus)
+## 15. Unicorn Sparkle Points (removed 2026-10-26)
 
-- Correct Practice Desk and Factor Check answers nudge the displayed score up slightly: +1 per correct answer.
-- Caps: **10 per chapter, 30 total** (teacher-adjustable).
-- Always shown separately, for example "Score 702 + 6 ✨ Unicorn Sparkle Points," and labeled as a classroom bonus so students don't think real scores work this way.
-- Sparkle Points are separate from XP (Section 16).
-- **Also earned from side quests (2026-10-25):** a perfect Arcade shift (no wrong answers, at least 4 scored) earns 1 Sparkle Point, inside the same caps.
+- The teacher removed Sparkle Points from the whole game: the UI, the economy and the guides. The score is never nudged by a classroom bonus. Right answers earn XP (Section 16), side quests earn Coins and Energy, and the Daily Pick no longer holds a Sparkle prize. Old saves drop `play.sparkle` and the Sparkle Collector achievement on load.
 
 ---
 
@@ -463,7 +459,7 @@ This is a core engagement mechanic. Build it out fully.
 
 Quick (30 to 60 seconds), semi-related to the content. Pay depends on performance. Jobs unlock with age and pay rises with experience.
 
-**Side quest rewards (2026-10-25):** Coins for each right answer (a finished shift pays at least 10, no shift pays over 120, and a perfect shift in any game pays the 120 cap), plus Energy (1 for finishing, 1 more for 80% or better, 1 more for a perfect shift, held up to 10, spent on Battles later) and a Sparkle Point for a perfect shift. Experience, a ride and a home workshop still add on top. No XP.
+**Side quest rewards (2026-10-25):** Coins for each right answer (a finished shift pays at least 10, no shift pays over 120, and a perfect shift in any game pays the 120 cap), plus Energy (1 for finishing, 1 more for 80% or better, 1 more for a perfect shift, held up to 10, spent on Battles). Experience, a ride and a home workshop still add on top. No XP.
 
 | Minigame | Job | Skill | Phase |
 |---|---|---|---|
@@ -507,7 +503,6 @@ Tutor Time is cut.
 | XP per decision card | 6 good, 4 ok, 2 bad or unrated |
 | XP per finished month | 10 |
 | Session length | 15 minutes |
-| Sparkle Points cap per chapter / total | 10 / 30 |
 
 - From age 18: phone bill (about $45) and transportation (car payment, or a bus pass about $30).
 - Target: a careful student can afford one $600 "want" every couple of chapters without debt, while carried balances visibly drain money.
@@ -583,7 +578,7 @@ The pilot is Phases 1 to 7. Stop and wait for approval at the end of each.
 | 2 | **Engine:** accounts, month updates, score model, card approvals, collections status. Automated tests that simulate 1,000 creature lives with different play styles and print a score distribution sanity report. |
 | 3 | **Onboarding:** profile, creature creator, class codes, age 16 options, tutorial, lenders-vs-networks explainer, Design Your Card with live tradeoff display, saving. |
 | 4 | **Simulation:** hub, month loop, life events, first ~20 scenarios with a basic "Pay with" picker (debit card or a credit card, with live balances), adult debit card at 18, chapters, teacher chapter release, reflections. |
-| 5 | **Account Management:** wallet with debit card and digital wallet, statements, pay bills, AutoPay, My Score with life-choice explainers, credit report, Practice Desk, Factor Check, notifications inbox, theme picker, Unicorn Sparkle Points. |
+| 5 | **Account Management:** wallet with debit card and digital wallet, statements, pay bills, AutoPay, My Score with life-choice explainers, credit report, Practice Desk, Factor Check, notifications inbox, theme picker. |
 | 6 | **Economy and engagement:** Ledger Sort, Cashier Rush and Check Writer minigames, "Pay with" picker at checkout, shop with backgrounds and creature items, BNPL checkout, achievements (40+), XP, ranks, class leaderboard. |
 | 7 | **Teacher:** dashboard, roster, controls, CSV export, Firestore security rules hardening, school-only sign-in verification. |
 | 8 | **Social and customization (added 2026-10-20):** friend requests between classmates, friend groups, gifts of money or shop items (each student can send up to 4 gifts every 20 hours, changed 2026-10-22), and a much bigger creature customizer. Teacher can turn social features off. |

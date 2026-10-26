@@ -15,11 +15,10 @@ import { progress } from "../../challenges.js";
 // One line for a prize, whether it's opened, passed over or still a surprise.
 export function prizeText(p) {
   if (p.kind === "coins") return `${money(p.amount)} in coins`;
-  if (p.kind === "sparkle") return `${p.amount} Sparkle Point`;
   if (p.kind === "coupon") return `${p.pct}% off your next Market buy`;
   return `${p.name || DECOR_BY_ID[p.id]?.name || "A Cottage piece"} for your Cottage`;
 }
-const PRIZE_ICON = { coins: "coins", sparkle: "sparkle", coupon: "receipt", decor: "cottage" };
+const PRIZE_ICON = { coins: "coins", coupon: "receipt", decor: "cottage" };
 
 const clock = (ms) => {
   const s = Math.max(0, Math.floor(ms / 1000));

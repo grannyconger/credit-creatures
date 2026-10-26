@@ -87,7 +87,7 @@ export const LESSONS = {
     title: "The Academy",
     feature: "academy",
     steps: [
-      { route: "academy", target: [".academy-rank", ".place-header"], title: "Learn and level up", text: ["Practice Desk questions earn XP and Sparkle Points. XP raises your rank, from Apprentice to Grand Vizier, and unlocks new looks."] },
+      { route: "academy", target: [".academy-rank", ".place-header"], title: "Learn and level up", text: ["Practice Desk questions earn XP. XP raises your rank, from Apprentice to Grand Vizier, and unlocks new looks."] },
       { route: "academy", target: [".lesson-shelf", ".place-header"], title: "Your lesson shelf", text: ["Every lesson from me lands here. Replay any of them whenever you need a reminder."] },
     ],
   },

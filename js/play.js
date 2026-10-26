@@ -33,7 +33,8 @@ export function ensurePlay(play) {
   play.nextNote ??= 1;
   play.announced ??= 1;
   play.desk ??= { visits: 0, byStandard: {}, byType: {} };
-  play.sparkle ??= { total: 0, byChapter: {} };
+  // Sparkle Points were removed (teacher decision 2026-10-26). Old saves drop them.
+  delete play.sparkle;
   // Energy (teacher decision 2026-10-23): earned by side quests, held up to a cap, and
   // spent on Battles later.
   play.energy ??= 0;
@@ -61,6 +62,7 @@ export function ensurePlay(play) {
   play.tourSkipped ??= false;
   play.settings ??= play.theme === "night" ? { appearance: "dark", reading: "standard" } : null;
   play.achievements ??= {};
+  delete play.achievements.sparkleMax;
   play.stats ??= { shifts: 0, paidInFull: 0, payoffSprints: 0, hadDebt: false };
   play.jobs ??= {};
   play.owned ??= [];
@@ -379,25 +381,6 @@ export function awardEnergy(play, n) {
   return play.energy - before;
 }
 
-// ---------- Unicorn Sparkle Points (SPEC §15) ----------
-
-// +1 per correct Practice Desk or Factor Check answer, within the caps.
-// Returns how many points were given (0 or 1).
-export function awardSparkle(play) {
-  const cap = CONFIG.pacing.sparkle;
-  const s = play.sparkle;
-  const ch = String(play.chapter);
-  if (s.total >= cap.total || (s.byChapter[ch] || 0) >= cap.perChapter) return 0;
-  s.total++;
-  s.byChapter[ch] = (s.byChapter[ch] || 0) + 1;
-  return 1;
-}
-
-export function sparkleLeft(play) {
-  const cap = CONFIG.pacing.sparkle;
-  return Math.max(0, Math.min(cap.total - play.sparkle.total, cap.perChapter - (play.sparkle.byChapter[String(play.chapter)] || 0)));
-}
-
 // XP still available from right answers this chapter (capped, so replaying the
 // Practice Desk can't flood the leaderboard).
 export function answerXpLeft(play) {
@@ -405,7 +388,7 @@ export function answerXpLeft(play) {
 }
 
 // Practice Desk and Factor Check accuracy, by standard and by question type.
-// Accuracy always counts. Returns the Sparkle Points and XP it gave.
+// Accuracy always counts. Returns the XP it gave.
 export function recordAnswer(play, { type, standard, correct }) {
   const bump = (map, key) => {
     const k = String(key);
@@ -415,14 +398,14 @@ export function recordAnswer(play, { type, standard, correct }) {
   };
   bump(play.desk.byStandard, standard);
   bump(play.desk.byType, type);
-  if (!correct) return { sparkle: 0, xp: 0 };
+  if (!correct) return { xp: 0 };
   const xp = Math.min(XP.rightAnswer, answerXpLeft(play));
   if (xp) {
     const ch = String(play.chapter);
     play.answerXp[ch] = (play.answerXp[ch] || 0) + xp;
     addXp(play, xp);
   }
-  return { sparkle: awardSparkle(play), xp };
+  return { xp };
 }
 
 // ---------- Notifications inbox (SPEC §14) ----------

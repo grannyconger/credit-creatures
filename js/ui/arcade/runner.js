@@ -309,7 +309,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
       const score = Math.round(result.score);
       let coins = 0;
       let pay = 0;
-      let rewards = { energy: 0, sparkle: 0 };
+      let rewards = { energy: 0 };
       if (!training) {
         // payScore: a game whose ranked metric isn't its pay points (Score Chase).
         const payPts = result.payScore ?? score;
@@ -328,7 +328,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
       const rec = AC.recordResult(play, report, { tie: meta.tie.better });
       const saved = training ? Promise.resolve() : save("arcade shift");
       if (rec.newBest && ranked) saved.then(() => shareBest(game));
-      track("arcadeShift", { ...report, mistakes: mistakes.map((m) => ({ type: m.type, cost: m.cost })), energy: rewards.energy, sparkle: rewards.sparkle, fired, ...(result.stats || {}) });
+      track("arcadeShift", { ...report, mistakes: mistakes.map((m) => ({ type: m.type, cost: m.cost })), energy: rewards.energy, fired, ...(result.stats || {}) });
       sfx.questComplete();
       showResults({ result, report, rec, rewards, pay, fired, echoes: echoes.log, training, risky, mode, settings: shiftSettings });
     }
@@ -372,7 +372,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
           "div.arc-res-pay",
           h("small", "You earned"),
           h("strong.big-number", money(pay)),
-          h("div.arc-extras", h("span.arc-extra", icon("energy", { size: 18 }), ` +${rewards.energy} Energy`), rewards.sparkle ? h("span.arc-extra", icon("sparkle", { size: 18 }), ` +${rewards.sparkle} Sparkle`) : null)
+          h("div.arc-extras", h("span.arc-extra", icon("energy", { size: 18 }), ` +${rewards.energy} Energy`))
         );
     const mistakeBox = risky && report.mistakes.length ? h("div.arc-res-mistakes", h("h4", icon("alert", { size: 16 }), ` Risky mode cost ${money(report.mistakes.reduce((s, m) => s + m.cost, 0))}`), h("ul", report.mistakes.map((m) => h("li", `${m.label}: ${money(m.cost)}`)))) : null;
     const firedBox = fired ? h("p.arc-res-fired", { role: "alert" }, icon("lock", { size: 18 }), ` Fired! ${CONFIG.arcade.fireAfter} mistakes in one shift. ${meta.title} is closed to you for ${CONFIG.arcade.cooldownMinutes} minutes.${pay > 0 ? " Your pay for this shift still went into checking." : ""}`) : null;
