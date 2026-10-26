@@ -12,6 +12,7 @@ import { FEES_META, FEES_BONUS } from "./fees.js";
 import { FEED_META, FEED_BONUS } from "./feed.js";
 import { RAINY_META, RAINY_BONUS } from "./rainy.js";
 import { DASH_META, DASH_BONUS } from "./dash.js";
+import { LOT_META, LOT_BONUS } from "./lot.js";
 
 export const ARCADE = {
   billdrop: { ...BILLDROP_META, bonus: BILLDROP_BONUS },
@@ -25,6 +26,7 @@ export const ARCADE = {
   feed: { ...FEED_META, bonus: FEED_BONUS },
   rainy: { ...RAINY_META, bonus: RAINY_BONUS },
   dash: { ...DASH_META, bonus: DASH_BONUS },
+  lot: { ...LOT_META, bonus: LOT_BONUS },
 };
 
 export const isArcade = (key) => Boolean(ARCADE[key]);

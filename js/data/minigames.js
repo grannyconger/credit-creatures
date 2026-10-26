@@ -53,6 +53,13 @@ export const JOBS = {
     job: "Grocery planner",
     skill: "Shop a week of meals on a budget, compare unit prices, and check the receipt.",
   },
+  lot: {
+    mark: "car",
+    icon: "🚗",
+    title: "The Lot",
+    job: "Car buyer",
+    skill: "Out-negotiate a slick salesman and find the real cost of a car loan.",
+  },
   scorechase: {
     mark: "gauge",
     icon: "📈",

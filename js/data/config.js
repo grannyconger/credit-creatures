@@ -355,6 +355,28 @@ export const CONFIG = {
         perMeal: 60,
         catchBonus: 30,
       },
+      // The Lot (game 8). Dollars, APR as a fraction.
+      lot: {
+        maxPayScore: 780,
+        seconds: 210,
+        cuApr: [0.055, 0.075],
+        dealerBump: [0.03, 0.045],
+        maxLoan: 25000,
+        down: 1000,
+        docFee: 199,
+        rounds: 3,
+        minTerm: 36,
+        lowerCut: [0.03, 0.07],
+        managerChance: 0.5,
+        managerOff: 500,
+        secondBuyerChance: 0.5,
+        callbackOdds: { normal: 0.6, secondBuyer: 0.4 },
+        callbackCut: 0.04,
+        renewal: 0.08,
+        perRide: 50,
+        noCarScore: 50,
+        riskyCap: 500,
+      },
       // Score Chase (game 7). 18 months, a card at a time.
       scorechase: {
         maxPayScore: 660,

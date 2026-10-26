@@ -713,6 +713,16 @@
   --arc-md-good: #0c7a37;
   --arc-md-bad: #b8261c;
   --arc-md-soft: #eef3ea;
+  /* The Lot: a used car lot with pennant flags and a showroom desk. */
+  --arc-lt-bg: #2a1f17;
+  --arc-lt-card: #fbf6ec;
+  --arc-lt-ink: #231a12;
+  --arc-lt-red: #d7362b;
+  --arc-lt-blue: #2d5fb3;
+  --arc-lt-gold: #f2c14e;
+  --arc-lt-gold-ink: #2a1d00;
+  --arc-lt-good: #0e7341;
+  --arc-lt-soft: #efe4d0;
 }
 
 /* The parts of a total, for the stacked bars in the Tradeoffs and the Vault Overview

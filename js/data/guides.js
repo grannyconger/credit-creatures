@@ -17,6 +17,7 @@ import { FEES_GUIDE } from "./arcade/fees.js";
 import { FEED_GUIDE } from "./arcade/feed.js";
 import { RAINY_GUIDE } from "./arcade/rainy.js";
 import { DASH_GUIDE } from "./arcade/dash.js";
+import { LOT_GUIDE } from "./arcade/lot.js";
 
 export const GUIDES = {
   billdrop: BILLDROP_GUIDE,
@@ -30,4 +31,5 @@ export const GUIDES = {
   feed: FEED_GUIDE,
   rainy: RAINY_GUIDE,
   dash: DASH_GUIDE,
+  lot: LOT_GUIDE,
 };

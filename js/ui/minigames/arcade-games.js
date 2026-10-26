@@ -11,5 +11,6 @@ import * as fees from "./fee-detective.js";
 import * as feed from "./feed-frenzy.js";
 import * as rainy from "./rainy-day.js";
 import * as dash from "./market-dash.js";
+import * as lot from "./the-lot.js";
 
-export const GAME_UI = { billdrop, payin4, scorechase, cashier, checks, phish, grind, fees, feed, rainy, dash };
+export const GAME_UI = { billdrop, payin4, scorechase, cashier, checks, phish, grind, fees, feed, rainy, dash, lot };
