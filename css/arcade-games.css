@@ -436,3 +436,58 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .sc-gauge svg { width: 140px; }
 .sc-top { grid-template-columns: 140px 1fr auto; }
 .sc-stage { min-height: 200px; }
+
+/* ===========================================================================
+   Cashier Rush (upgrade): the retro register skin from css/arcade.css, plus a
+   line of customers with patience bars, the count-up lesson, the short
+   customer prompt and the drawer reveal.
+   =========================================================================== */
+.bst-guild .arc-frame.skin-cashier { --g-paper: var(--arc-cashier-body); --g-paper-ink: var(--arc-cashier-ink); --g-paper-2: color-mix(in srgb, var(--arc-cashier-brass) 25%, var(--arc-cashier-body)); --g-line: var(--arc-cashier-ink); --g-good: var(--arc-shop-green); --g-bad: var(--arc-cashier-red); }
+.cr2 .cr-shop { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 12px; align-items: start; }
+.cr-line { display: grid; gap: 6px; padding: 8px; color: var(--arc-cashier-ink); background: var(--arc-cashier-body); border: 3px solid var(--arc-cashier-ink); border-radius: 10px; max-height: 470px; overflow: auto; }
+.cr-line h4 { margin: 0; }
+.cr-cust { display: grid; grid-template-columns: 22px 1fr; gap: 2px 6px; align-items: center; padding: 4px 6px; background: color-mix(in srgb, var(--arc-cashier-brass) 18%, var(--arc-cashier-body)); border-radius: 8px; }
+.cr-cust strong { font-size: 0.9rem; }
+.cr-cust .cr-pbar, .cr-cust small { grid-column: 1 / -1; }
+.cr-cust small { font-weight: 700; font-size: 0.78rem; }
+.cr-face { display: inline-grid; place-items: center; color: var(--arc-cashier-ink); vertical-align: middle; }
+.cr-pbar { position: relative; height: 8px; background: color-mix(in srgb, var(--arc-cashier-ink) 15%, transparent); border: 1px solid var(--arc-cashier-ink); border-radius: 5px; overflow: hidden; }
+.cr-pbar > span { display: block; height: 100%; background: var(--arc-shop-green); transition: width 0.2s linear; }
+.cr-pbar.big { height: 22px; margin-top: 6px; }
+.cr-pbar.big small { position: absolute; inset: 0; display: grid; place-items: center; font: 800 0.8rem "Trebuchet MS", sans-serif; color: var(--arc-cashier-ink); }
+.cr-smart { padding: 0 6px; font-size: 0.8rem; font-weight: 800; color: var(--arc-cashier-body); background: var(--arc-cashier-red); border-radius: 999px; }
+.cr-lesson:not(:empty) { margin-top: 6px; padding: 6px 10px; color: var(--arc-cashier-ink); background: var(--arc-cashier-body); border: 2px dashed var(--arc-cashier-ink); border-radius: 8px; }
+.cr-lesson h5 { margin: 0 0 2px; font-size: 0.95rem; }
+.cr-lesson p { margin: 2px 0 0; font-weight: 700; }
+.cr-steps { margin: 0; padding-left: 20px; font: 700 0.9rem ui-monospace, "Courier New", monospace; }
+.cr-steps li { animation: arc-fade-in 0.3s both; animation-delay: calc(var(--d, 0) * 0.35s); }
+:root[data-motion="calm"] .cr-steps li { animation: none; }
+@media (prefers-reduced-motion: reduce) { .cr-steps li { animation: none; } }
+.cr-prompt:not(:empty) { margin-top: 6px; padding: 8px 10px; color: var(--arc-cashier-ink); background: var(--arc-cashier-brass); border: 3px solid var(--arc-cashier-ink); border-radius: 8px; }
+.cr-prompt p { display: flex; align-items: center; gap: 4px; margin: 0 0 6px; font-weight: 800; }
+.cr-prompt .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.cr-prompt button { padding: 4px 12px; font-weight: 800; color: var(--arc-cashier-body); background: var(--arc-cashier-ink); border: 2px solid var(--arc-cashier-ink); border-radius: 999px; }
+.cr-prompt button.secondary { color: var(--arc-cashier-ink) !important; background: var(--arc-cashier-body) !important; }
+.cr-close { max-width: 640px; margin: 20px auto; padding: 16px 20px; color: var(--arc-cashier-ink); background: var(--arc-cashier-body); border: 3px solid var(--arc-cashier-ink); border-radius: 12px; }
+.cr-close h4 { margin: 0 0 8px; font: 900 1.3rem "Arial Black", sans-serif; }
+.cr-guess-q { font-weight: 800; }
+.cr-close .row { display: flex; gap: 10px; flex-wrap: wrap; }
+.cr-drawer-total { display: flex; align-items: center; gap: 4px; margin: 0; font: 900 1.2rem "Arial Black", sans-serif; }
+.cr-reveal ul { margin: 4px 0; padding-left: 20px; }
+.bst-guild .arc-frame.skin-cashier .mg-bar { gap: 10px; }
+.bst-guild .arc-frame.skin-cashier .arc-ring { color: var(--arc-cashier-brass); }
+/* Cashier Rush fits one 1366 by 768 screen with the line of customers beside it. */
+.bst-guild .cr2 .cash-amt strong { font-size: 2.3rem; line-height: 1.05; }
+.bst-guild .cr2 .cash-amt { padding: 4px 10px; }
+.bst-guild .cr2 .drawer-row .cash-piece.bill { min-height: 62px; padding: 4px; }
+.bst-guild .cr2 .drawer-row.coins { min-height: 0; }
+.bst-guild .cr2 .cash-piece.coin { --coin: 80px !important; width: var(--coin); height: var(--coin); }
+.bst-guild .cr2 .cash-tray { min-height: 70px; padding: 6px; }
+.bst-guild .cr2 .cash-tray .cash-piece.bill { min-height: 48px; min-width: 70px; }
+.bst-guild .cr2 .cash-tray .cash-piece.coin { --coin: 60px !important; }
+.bst-guild .cr2 .cash-actions button { padding: 4px 12px; }
+.bst-guild .cr2 .cash-ticket { padding: 6px 10px; }
+.bst-guild .cr2 .cash-item { margin: 0 0 4px; }
+.cr-steps { display: flex; flex-wrap: wrap; gap: 3px 6px; padding: 0; list-style: none; }
+.cr-steps li { padding: 0 6px; background: color-mix(in srgb, var(--arc-cashier-brass) 25%, var(--arc-cashier-body)); border-radius: 6px; }
+.cr-steps li + li::before { content: "→ "; }

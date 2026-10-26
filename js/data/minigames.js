@@ -37,7 +37,7 @@ export const JOBS = {
     icon: "🪙",
     title: "Cashier Rush",
     job: "Shopkeeper",
-    skill: "Count back the exact change for each customer.",
+    skill: "Make change fast, read your line of customers, and close your drawer clean.",
   },
   checks: {
     mark: "scroll",

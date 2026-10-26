@@ -1,314 +1,345 @@
-// Cashier Rush (SPEC §17): count back exact change by tapping bills and coins.
-// Teacher requests 2026-10-22: a cash drawer, a calculator, keyboard keys,
-// tap a piece in the tray to take it back, no wait after a right answer.
-// Teacher requests 2026-10-23: pick a difficulty (Easy whole dollars, Medium
-// cents in multiples of 5, Hard other cents) and a round (Chill: 4 customers,
-// no timer. Speed: as many as possible in 60 seconds, double coins). Coins are
-// paid for each right sale. A wrong answer says how far over or short it was.
-// The sale reads like a subtraction (they hand you, minus the charge). The
-// drawer runs left to right from small to big, coins above bills, no $20.
+// Cashier Rush (GAME-SPECS.md game 1, upgraded 2026-10-25): make change fast,
+// read your customers, close your drawer clean. A line of customers with
+// patience bars, tips for speed, smart payers, one short customer, and a drawer
+// reveal at closing (it replaced Count the Drawer). Rules: js/arcade/cashier.js.
+// The drawer, tray and pieces keep the retro register look from 2026-10-23.
 import { h, fill } from "../dom.js";
+import { icon } from "../icons.js";
 import { sfx } from "../arcade-sound.js";
-import { createRng } from "../../engine/index.js";
-import { CASHIER_ITEMS } from "../../data/minigames.js";
 import { CONFIG } from "../../data/config.js";
+import * as R from "../../arcade/cashier.js";
 import { calculator } from "./calculator.js";
 import { label, pieceButton } from "./money-art.js";
-import { CASH_LEVELS, cashierCustomer, overShortText } from "./gen.js";
+import { keyHelp, timerRing } from "../arcade/components.js";
 
-const fmt = (cents) => `$${(cents / 100).toFixed(2)}`;
+const fmt = R.fmt;
+// A face for each patience state, drawn, plus a word, so it's never color alone.
+const FACES = [
+  ["Grumpy", "M8 16q4-3 8 0"],
+  ["Waiting", "M8 15h8"],
+  ["Happy", "M8 14q4 3 8 0"],
+];
+const faceFor = (f) => (f > 0.6 ? FACES[2] : f > 0.25 ? FACES[1] : FACES[0]);
+const faceSvg = (d) => `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="1.2" fill="currentColor"/><circle cx="15" cy="10" r="1.2" fill="currentColor"/><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
-// The drawer, left to right in each row: penny, nickel, dime, quarter, then $1,
-// $5, $10. There is no $20 bill, because change never reaches $20. Number keys
-// follow this order.
-const ORDER = [1, 5, 10, 25, 100, 500, 1000];
-const SCALE = 1.0;
+export function start(ctx) {
+  const { seed, settings, training } = ctx;
+  const difficulty = training ? "easy" : settings.difficulty;
+  const round = training ? "chill" : settings.round;
+  const speed = round === "speed";
+  const cfg = CONFIG.arcade.games.cashier;
+  const deal = R.newShift(seed, { difficulty, round });
+  const s = R.newState(deal);
+  const mine = R.DRAWERS[difficulty];
+  const t0 = Date.now();
+  const now = () => Date.now() - t0 - pausedFor;
+  let pausedFor = 0;
+  let given = [];
+  let busy = false;
+  let over = false;
+  let tick = null;
+  let calcUses = 0;
+  const coached = new Set();
 
-// Only the money a sale can need is in the drawer (teacher request 2026-10-23):
-// Easy is bills only, Medium adds quarters, dimes and nickels, Hard adds pennies.
-export const DRAWER = { easy: [100, 500, 1000], medium: [5, 10, 25, 100, 500, 1000], hard: ORDER };
+  const root = h("div.minigame.cashier.cr2");
+  const line = h("section.cr-line", { "aria-label": "Customers waiting" });
+  const ticket = h("div.cash-ticket");
+  const changeBox = h("div.cash-amt.change", { "aria-live": "polite" });
+  const flash = h("p.mg-flash", { role: "status" });
+  const tray = h("div.cash-tray");
+  const tips = h("span.mg-score");
+  const clock = h("span.mg-clock", { role: "timer" });
+  const ring = speed ? timerRing({ label: "Time left in the rush" }) : null;
+  const lesson = h("div.cr-lesson");
+  const prompt = h("div.cr-prompt");
+  const calcSlot = h("div.calc-slot");
+  const calcBtn = difficulty === "easy" ? h("button.calc-toggle", { type: "button", "aria-expanded": "false", "aria-keyshortcuts": "K", onclick: () => toggleCalc() }, "Calculator (K)") : null;
 
-// Coins for each right sale: the relative value unit times the difficulty (1, 5
-// or 15), doubled in the Speed Round.
-export const cashierRate = (difficulty, mode) => {
-  const c = CONFIG.play.jobs.cashier;
-  return c.rvu * c.rvuByLevel[difficulty] * (mode === "speed" ? c.speedMultiplier : 1);
-};
+  const piece = (c) => pieceButton(c, { onclick: () => addPiece(c), ariaLabel: `Add ${label(c)}`, key: String(mine.indexOf(c) + 1) });
+  const coinRow = mine.filter((c) => c < 100);
+  const billRow = mine.filter((c) => c >= 100);
+  const drawer = h("div.cash-money.cash-drawer", { role: "group", "aria-label": "Your drawer" }, coinRow.length ? h("div.drawer-row.coins", { style: `--n: ${coinRow.length}` }, coinRow.map(piece)) : null, h("div.drawer-row.bills", { style: `--n: ${billRow.length}` }, billRow.map(piece)));
+  const giveBtn = h("button.big", { type: "button", "data-sound": "none", "data-autofocus": "", "aria-keyshortcuts": "Enter", onclick: () => give() }, "Give change");
 
-export function cashierRush({ seed, timed, onDone, track }) {
-  const cfg = CONFIG.play.jobs.cashier;
-  const host = h("div.cash-host");
-  let game = null;
-  let choice = { difficulty: "easy", mode: timed ? "speed" : "chill" };
-
-  // ---- Setup: pick a difficulty and a round, then start. ----
-  function setup() {
-    const rate = () => cashierRate(choice.difficulty, choice.mode);
-    const summary = h("p.cash-summary", { "aria-live": "polite" });
-    const paintSummary = () => {
-      const lvl = CASH_LEVELS[choice.difficulty];
-      summary.textContent = `${lvl.label} ${choice.mode === "speed" ? "Speed Round" : "Chill Round"}: ${rate()} coin${rate() === 1 ? "" : "s"} for each right sale. ${choice.mode === "speed" ? `Serve as many customers as you can in ${cfg.seconds} seconds. Double coins!` : `Serve ${cfg.untimedCustomers} customers with no timer.`}`;
-    };
-    const group = (title, key, options) => {
-      const buttons = options.map(([value, name, detail, pays, badge]) =>
-        h(
-          "button.cash-choice",
-          {
-            type: "button",
-            "data-sound": "none",
-            "aria-pressed": String(choice[key] === value),
-            onclick: () => {
-              choice[key] = value;
-              buttons.forEach((b, i) => b.setAttribute("aria-pressed", String(options[i][0] === value)));
-              refresh();
-            },
-          },
-          h("strong", name, badge ? h("span.cash-badge", badge) : null),
-          h("span", detail),
-          pays ? h("small", pays()) : null
-        )
-      );
-      return h("fieldset.cash-group", h("legend", title), h("div.cash-choices", buttons));
-    };
-    const pay = (d) => () => `${cashierRate(d, "chill")} coin${cashierRate(d, "chill") === 1 ? "" : "s"} a sale (${cashierRate(d, "speed")} in Speed)`;
-    const levels = group("Pick a difficulty", "difficulty", Object.entries(CASH_LEVELS).map(([d, l]) => [d, l.label, l.text, pay(d)]));
-    const rounds = group("Pick a round", "mode", [
-      ["chill", "Chill Round", `Serve ${cfg.untimedCustomers} customers. No timer.`, null, null],
-      ["speed", "Speed Round", `Serve as many as you can in ${cfg.seconds} seconds.`, null, "2× COINS"],
-    ]);
-    const refresh = paintSummary;
-    const start = h("button.big", { type: "button", "data-autofocus": "", onclick: () => begin() }, "Open the register");
-    paintSummary();
-    fill(host, h("div.minigame.cashsetup", h("div.cash-setup", levels, rounds, summary, h("div.row", start))));
-  }
-
-  function begin() {
-    track("cashierSetup", { difficulty: choice.difficulty, mode: choice.mode });
-    game = play(choice);
-    fill(host, game);
-    (game.querySelector("[data-autofocus]") || game.querySelector("button"))?.focus();
-  }
-
-  // ---- The register. ----
-  function play({ difficulty, mode }) {
-    const speed = mode === "speed";
-    const rng = createRng(`${seed}:${difficulty}:${mode}`);
-    const started = Date.now();
-    const perSale = cashierRate(difficulty, mode);
-    let right = 0;
-    let wrong = 0;
-    let served = 0;
-    const misses = [];
-    let over = false;
-    let timer = null;
-    let customer = null;
-    let given = [];
-    // True from "Give change" until the next customer is at the counter.
-    let busy = false;
-    let lastGive = 0;
-    let calcUses = 0;
-    let keyUses = 0;
-
-    const clock = h("span.mg-clock", { role: "timer" });
-    const score = h("span.mg-score");
-    const ticket = h("div.cash-ticket");
-    const tray = h("div.cash-tray");
-    const changeBox = h("div.cash-amt.change", { "aria-live": "polite" });
-    const flash = h("p.mg-flash", { role: "status" });
-    // A cash drawer: coins in the top row, bills below, in fixed slots that
-    // never move, so hands learn where each is. Each slot has a number key.
-    const mine = DRAWER[difficulty];
-    const piece = (c) => pieceButton(c, { onclick: () => addPiece(c), ariaLabel: `Add ${label(c)}`, key: String(mine.indexOf(c) + 1), scale: SCALE });
-    const coinRow = mine.filter((c) => c < 100);
-    const billRow = mine.filter((c) => c >= 100);
-    const money = h(
-      "div.cash-money.cash-drawer",
-      { role: "group", "aria-label": difficulty === "easy" ? "Bills" : "Coins and bills" },
-      coinRow.length ? h("div.drawer-row.coins", { style: `--n: ${coinRow.length}` }, coinRow.map(piece)) : null,
-      h("div.drawer-row.bills", { style: `--n: ${billRow.length}` }, billRow.map(piece))
-    );
-    const giveBtn = h("button.big", { type: "button", "data-sound": "none", "data-autofocus": "", "aria-keyshortcuts": "Enter", onclick: () => give() }, "Give change");
-    const undo = () => busy || ((given = given.slice(0, -1)), paintTray());
-    const clear = () => busy || ((given = []), paintTray());
-
-    // The calculator opens beside the counter, on top of everything else. The
-    // clock keeps running while it's open.
-    const calcSlot = h("div.calc-slot");
-    const calcBtn = h("button.calc-toggle", { type: "button", "aria-expanded": "false", onclick: () => toggleCalc() }, "Calculator");
-    function toggleCalc() {
-      const open = calcBtn.getAttribute("aria-expanded") !== "true";
-      calcBtn.setAttribute("aria-expanded", String(open));
-      calcBtn.textContent = open ? "Hide calculator" : "Calculator";
-      calcSlot.replaceChildren(...(open ? [calculator({ onUse: () => calcUses++ })] : []));
-      if (open) {
-        track("calcOpen", { game: "cashier" });
-        calcSlot.querySelector(".calc")?.focus();
-      }
-    }
-
-    const el = h(
-      "div.minigame.cashier",
-      h("div.mg-bar", clock, score, calcBtn),
+  fill(
+    root,
+    h("div.mg-bar", clock, ring, tips, calcBtn),
+    h(
+      "div.cr-shop",
+      line,
       h(
         "div.cash-counter",
-        h("div.cash-left", ticket, changeBox, flash),
-        // The buttons sit between the drawer and the tray, so they're close to both.
+        h("div.cash-left", ticket, changeBox, lesson, prompt, flash),
         h(
           "div.cash-right",
-          money,
-          h("div.cash-actions", h("div.cash-actions-left", h("button.secondary", { type: "button", "aria-keyshortcuts": "Backspace", onclick: undo }, "Undo"), h("button.secondary", { type: "button", "aria-keyshortcuts": "Escape", onclick: clear }, "Clear")), giveBtn, h("span")),
+          drawer,
+          h("div.cash-actions", h("div.cash-actions-left", h("button.secondary", { type: "button", "aria-keyshortcuts": "U", onclick: () => undo() }, "Undo (U)"), h("button.secondary", { type: "button", "aria-keyshortcuts": "C", onclick: () => clear() }, "Clear (C)")), giveBtn, h("span")),
           tray
         ),
         calcSlot
-      ),
-      h("p.cash-keys-help", `Keys: 1 to ${mine.length} add money, Enter gives change, Backspace undoes, Esc clears. Tap money in the tray to take it back.`)
-    );
+      )
+    ),
+    keyHelp(`1 to ${mine.length} add money, U undo, C clear, Enter give change${calcBtn ? ", K calculator" : ""}, Y or N for a short customer. Tap money in the tray to take it back.`)
+  );
 
-    function newCustomer() {
-      customer = cashierCustomer(rng, difficulty, CASHIER_ITEMS);
-      given = [];
-      // The sale reads like a subtraction: what they hand you, minus the charge.
-      fill(
-        ticket,
-        h("p.cash-item", `A customer buys ${customer.item}.`),
-        h("div.cash-amounts", h("div.cash-amt.paid", h("small", "They hand you"), h("strong", fmt(customer.paid))), h("div.cash-amt.price", h("small", h("span.cash-op", { "aria-hidden": "true" }, "− "), "Charged"), h("strong", fmt(customer.price)))),
-        h("p.cash-ask", "Count back the change.")
-      );
-      paintTray();
-    }
-
-    function paintTray() {
-      const sum = given.reduce((a, b) => a + b, 0);
-      fill(changeBox, h("small", "Your change so far"), h("strong", fmt(sum)));
-      // The same bills and coins as the drawer, at the same size and color.
-      fill(
-        tray,
-        given.length
-          ? h("div.tray-pieces", given.map((c, i) => pieceButton(c, { onclick: () => takeBack(i), ariaLabel: `Take back ${label(c)}`, scale: SCALE, quiet: true })))
-          : h("p.tray-empty", "Tap coins and bills to count out the change.")
-      );
-      paintScore();
-    }
-
-    function paintScore() {
-      score.textContent = `✓ ${right}   ✗ ${wrong}   ${right * perSale} coins`;
-    }
-
-    function addPiece(c) {
-      if (over || busy) return;
-      given.push(c);
-      paintTray();
-    }
-
-    function takeBack(i) {
-      if (over || busy) return;
-      given = given.filter((_, k) => k !== i);
-      paintTray();
-    }
-
-    // The give button locks until the next customer is at the counter, so a
-    // double click can't skip anyone. A right answer brings the next customer
-    // right away. A wrong one pauses so the student can read how far off it was.
-    function give() {
-      if (over || !customer || busy) return;
-      const want = customer.paid - customer.price;
-      const sum = given.reduce((a, b) => a + b, 0);
-      if (!sum) {
-        // A second click just after a give: ignore it and keep the result showing.
-        if (Date.now() - lastGive < 700) return;
-        flash.className = "mg-flash";
-        flash.textContent = "Tap bills and coins to count out the change first.";
-        return;
-      }
-      busy = true;
-      giveBtn.disabled = true;
-      lastGive = Date.now();
-      served++;
-      const ok = sum === want;
-      if (ok) {
-        right++;
-        sfx.correct();
-      } else {
-        wrong++;
-        sfx.error();
-        misses.push(`${fmt(customer.paid)} − ${fmt(customer.price)} = ${fmt(want)} (you gave ${fmt(sum)}, ${overShortText(sum, want)})`);
-      }
-      paintScore();
-      flash.className = `mg-flash ${ok ? "good" : "bad"}`;
-      flash.textContent = ok ? `✓ Exact! ${fmt(customer.paid)} − ${fmt(customer.price)} = ${fmt(want)}` : `✗ ${sum > want ? "Too much" : "Not enough"}: ${fmt(sum)} is ${overShortText(sum, want)}. The change was ${fmt(want)}.`;
-      track("cashierSale", { difficulty, mode, right: ok, off: sum - want });
-      if (!speed && served >= cfg.untimedCustomers) return end();
-      const next = () => {
-        if (over) return;
-        newCustomer();
-        busy = false;
-        giveBtn.disabled = false;
-      };
-      if (ok) next();
-      else setTimeout(next, cfg.nextCustomerMs);
-    }
-
-    // Keys work while the shift is on screen, but never while the calculator or
-    // a text box has the keyboard.
-    const KEYS = { Enter: give, Backspace: undo, Escape: clear };
-    function onKey(e) {
-      if (over || e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.("input, textarea, select, .calc, dialog")) return;
-      const n = Number(e.key);
-      if (Number.isInteger(n) && n >= 1 && n <= mine.length) {
-        e.preventDefault();
-        keyUses++;
-        addPiece(mine[n - 1]);
-        // The drawer's slots are in the same order as ORDER.
-        const btn = money.querySelectorAll(".cash-piece")[n - 1];
-        btn?.classList.add("pressed");
-        setTimeout(() => btn?.classList.remove("pressed"), 90);
-        return;
-      }
-      const act = KEYS[e.key];
-      if (!act) return;
-      // Enter on Give, Undo, Clear or the calculator button clicks that button.
-      // Anywhere else (even on a bill just tapped) it gives the change.
-      if (e.key === "Enter" && e.target.closest?.("button") && !e.target.closest(".cash-drawer, .cash-tray")) return;
-      e.preventDefault();
-      keyUses++;
-      act();
-    }
-    document.addEventListener("keydown", onKey);
-
-    function end() {
-      if (over) return;
-      over = true;
-      clearInterval(timer);
-      document.removeEventListener("keydown", onKey);
-      sfx.questComplete();
-      const coins = right * perSale;
-      track("minigameEnd", { game: "cashier", right, wrong, timed: speed, difficulty, mode, coins, calcUses, keyUses });
-      onDone({ right, wrong, total: served, seconds: Math.round((Date.now() - started) / 1000), misses, coins, difficulty, mode });
-    }
-
-    if (speed) {
-      clock.after(h("span.cash-badge.cash-double", "2× COINS"));
-      const endAt = Date.now() + cfg.seconds * 1000;
-      const tick = () => {
-        const left = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
-        clock.textContent = `⏱️ ${left}s`;
-        if (left <= 0 && !over) end();
-      };
-      tick();
-      timer = setInterval(tick, 250);
-    } else {
-      clock.textContent = `${CASH_LEVELS[difficulty].label} Chill Round: ${cfg.untimedCustomers} customers`;
-    }
-    newCustomer();
-    el.stop = () => {
-      over = true;
-      clearInterval(timer);
-      document.removeEventListener("keydown", onKey);
-    };
-    return el;
+  function toggleCalc() {
+    if (!calcBtn) return;
+    const open = calcBtn.getAttribute("aria-expanded") !== "true";
+    calcBtn.setAttribute("aria-expanded", String(open));
+    calcBtn.textContent = open ? "Hide calculator" : "Calculator (K)";
+    calcSlot.replaceChildren(...(open ? [calculator({ onUse: () => calcUses++ })] : []));
+    if (open) ctx.track("calcOpen", { game: "cashier" });
   }
 
-  setup();
-  host.stop = () => game?.stop?.();
-  return host;
+  // ---------- Drawing ----------
+  function paintLine() {
+    const t = now();
+    const waiting = s.line.slice(0, 6);
+    fill(
+      line,
+      h("h4", `In line (${s.line.length})`),
+      waiting.length
+        ? waiting.map((c) => {
+            const f = R.patience(s, c, t);
+            const [word, d] = faceFor(f);
+            return h("div.cr-cust", h("span.cr-face", { html: faceSvg(d), title: word }), h("strong", c.name), h("div.cr-pbar", { role: "img", "aria-label": `Patience ${Math.round(f * 100)} percent, ${word}` }, h("span", { style: `width: ${Math.round(f * 100)}%` })), h("small", `${Math.ceil((f * s.patienceMs) / 1000)}s ${word}`));
+          })
+        : h("p.muted", speed ? "More customers are on the way." : "That's everyone.")
+    );
+  }
+
+  function paintCustomer() {
+    const c = s.current;
+    if (!c) return fill(ticket, h("p.cash-item", speed ? "Waiting for the next customer..." : "No one left in line."));
+    const f = R.patience(s, c, now());
+    const [word, d] = faceFor(f);
+    fill(
+      ticket,
+      h("p.cash-item", h("span.cr-face", { html: faceSvg(d), title: word }), ` ${c.name} buys ${c.item}.`, c.smart ? h("span.cr-smart", " Odd amount!") : null),
+      h("div.cash-amounts", h("div.cash-amt.paid", h("small", "They hand you"), h("strong", fmt(c.paid))), h("div.cash-amt.price", h("small", h("span.cash-op", { "aria-hidden": "true" }, "− "), "Charged"), h("strong", fmt(c.price)))),
+      h("div.cr-pbar.big", { role: "img", "aria-label": `Patience ${Math.round(f * 100)} percent, ${word}` }, h("span", { style: `width: ${Math.round(f * 100)}%` }), h("small", `Tip if right now: ${R.tipFor(f)}`))
+    );
+    if (c.short) showShort(c);
+    else fill(prompt);
+  }
+
+  function paintTray() {
+    const sum = given.reduce((a, b) => a + b, 0);
+    fill(changeBox, h("small", "Your change so far"), h("strong", fmt(sum)));
+    fill(tray, given.length ? h("div.tray-pieces", given.map((c, i) => pieceButton(c, { onclick: () => takeBack(i), ariaLabel: `Take back ${label(c)}`, quiet: true }))) : h("p.tray-empty", "Tap coins and bills to count out the change."));
+    tips.textContent = `✓ ${s.right}  ✗ ${s.wrong}  Tips ${s.tips}`;
+  }
+
+  // The skill moment: the first customer shows the count-up method step by step.
+  function showLesson() {
+    const c = s.current;
+    if (!c || c.short) return;
+    const steps = R.countUp(c.price, c.paid, mine);
+    fill(
+      lesson,
+      h("h5", "Count up from the charge"),
+      h("ol.cr-steps", h("li", `Start at ${fmt(c.price)}`), steps.map((st, i) => h("li", { style: `--d: ${i}` }, `+ ${label(st.piece)} makes ${fmt(st.total)}`))),
+      h("p", `So the change is ${fmt(R.changeDue(c))}. Now tap those pieces.`)
+    );
+  }
+
+  function showShort(c) {
+    fill(
+      prompt,
+      h("p", icon("alert", { size: 18 }), ` ${c.name} is ${fmt(c.short)} short. Cover it from your tips?`),
+      h("div.row", h("button", { type: "button", "aria-keyshortcuts": "Y", onclick: () => short(true) }, "Y: Cover it"), h("button.secondary", { type: "button", "aria-keyshortcuts": "N", onclick: () => short(false) }, "N: Turn them away"))
+    );
+    giveBtn.disabled = true;
+  }
+
+  // ---------- Actions ----------
+  const addPiece = (c) => !busy && !over && s.current && !s.current.short && (given.push(c), paintTray());
+  const takeBack = (i) => !busy && ((given = given.filter((_, k) => k !== i)), paintTray());
+  const undo = () => !busy && ((given = given.slice(0, -1)), paintTray());
+  const clear = () => !busy && ((given = []), paintTray());
+
+  function give() {
+    if (busy || over || !s.current || s.current.short) return;
+    const sum = given.reduce((a, b) => a + b, 0);
+    if (!sum) {
+      flash.className = "mg-flash";
+      flash.textContent = "Tap bills and coins to count out the change first.";
+      return;
+    }
+    const sale = R.give(s, sum, now());
+    given = [];
+    ctx.track("cashierSale", { difficulty, round, right: sale.ok, off: sale.diff, smart: sale.smart, tip: sale.tip });
+    fill(lesson);
+    if (sale.ok) {
+      sfx.correct();
+      flash.className = "mg-flash good";
+      flash.textContent = `✓ Exact! +${cfg.points[difficulty]} and a ${sale.tip}-point tip. ${sale.why}`;
+    } else {
+      sfx.error();
+      flash.className = "mg-flash bad";
+      flash.textContent = `✗ ${sale.diff > 0 ? "Too much" : "Not enough"}: ${fmt(Math.abs(sale.diff))} ${sale.diff > 0 ? "over" : "short"}. ${sale.why}`;
+      ctx.mistake({ type: "wrongChange", cost: Math.max(1, Math.abs(sale.diff) / 100), label: `Wrong change for ${sale.name}` });
+    }
+    if (!sale.ok) {
+      // A wrong answer pauses for 2 seconds so the student can read it.
+      busy = true;
+      giveBtn.disabled = true;
+      setTimeout(() => {
+        busy = false;
+        giveBtn.disabled = false;
+        afterServe();
+      }, cfg.wrongPauseMs);
+    } else afterServe();
+  }
+
+  function short(cover) {
+    if (!s.current?.short || over) return;
+    const r = R.decideShort(s, cover, now());
+    ctx.track("cashierShort", { cover, cents: r.cents, returned: r.returned });
+    // The outcome is uncertain and shows later, in the echo recap.
+    ctx.echo(r.text, { kind: cover && r.returned ? "good" : "safe" });
+    giveBtn.disabled = false;
+    fill(prompt);
+    afterServe();
+  }
+
+  async function afterServe() {
+    paintTray();
+    paintCustomer();
+    paintLine();
+    if (!speed && !s.current) return closeUp();
+    if (training && !coached.has(2) && s.served >= 1) {
+      coached.add(2);
+      await hold(ctx.coach(2, root.querySelector(".cr-pbar.big") || line));
+    }
+  }
+
+  async function hold(p) {
+    const at = Date.now();
+    busy = true;
+    await p;
+    pausedFor += Date.now() - at;
+    busy = false;
+  }
+
+  // ---------- Keys ----------
+  function onKey(e) {
+    if (over || e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.("input, textarea, select, .calc, dialog, .arc-coach")) return;
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    const n = Number(k);
+    if (Number.isInteger(n) && n >= 1 && n <= mine.length) {
+      e.preventDefault();
+      addPiece(mine[n - 1]);
+      const btn = drawer.querySelectorAll(".cash-piece")[n - 1];
+      btn?.classList.add("pressed");
+      setTimeout(() => btn?.classList.remove("pressed"), 90);
+      return;
+    }
+    const act = { u: undo, Backspace: undo, c: clear, Escape: clear, k: toggleCalc, y: () => short(true), n: () => short(false) }[k];
+    if (act) return e.preventDefault(), act();
+    if (k === "Enter" && !(e.target.closest?.("button") && !e.target.closest(".cash-drawer, .cash-tray"))) return e.preventDefault(), give();
+  }
+  document.addEventListener("keydown", onKey);
+
+  // ---------- The clock ----------
+  function loop() {
+    if (over || busy) return;
+    const t = now();
+    if (speed) {
+      const r = R.tick(s, t);
+      if (r.rush) ctx.echo("Rush! Three customers just walked in at once.", { kind: "safe" });
+      const left = cfg.speedSeconds - t / 1000;
+      ring.set(left, cfg.speedSeconds);
+      clock.textContent = "Speed round";
+      if (left <= 0) return closeUp();
+      if (!ticket.querySelector(".cash-amounts") && s.current) paintCustomer();
+    } else clock.textContent = `${difficulty[0].toUpperCase()}${difficulty.slice(1)} Chill: ${s.served + (s.short ? 1 : 0)} of ${deal.customers.length} served`;
+    paintLine();
+    const bar = ticket.querySelector(".cr-pbar.big");
+    if (bar && s.current) {
+      const f = R.patience(s, s.current, t);
+      bar.firstChild.style.width = `${Math.round(f * 100)}%`;
+      bar.lastChild.textContent = `Tip if right now: ${R.tipFor(f)}`;
+    }
+  }
+
+  // ---------- Closing: the drawer reveal ----------
+  function closeUp() {
+    if (over) return;
+    over = true;
+    clearInterval(tick);
+    document.removeEventListener("keydown", onKey);
+    const pick = (g) => {
+      document.removeEventListener("keydown", guessKey);
+      const right = R.guessDrawer(s, g);
+      (right ? sfx.correct : sfx.error)();
+      ctx.track("cashierDrawerGuess", { guess: g, right, drawer: s.drawer });
+      finish();
+    };
+    const guessKey = (e) => {
+      const g = { o: "over", s: "short", e: "exact", 1: "over", 2: "short", 3: "exact" }[e.key.toLowerCase()];
+      if (g) (e.preventDefault(), pick(g));
+    };
+    document.addEventListener("keydown", guessKey);
+    root.stop = () => document.removeEventListener("keydown", guessKey);
+    fill(
+      root,
+      h(
+        "div.cr-close",
+        h("h4", "Closing time. Before you count the drawer..."),
+        h("p", `You served ${s.served} customer${s.served === 1 ? "" : "s"} and got ${s.wrong} wrong. Every change mistake is still in the drawer.`),
+        h("p.cr-guess-q", `Is the drawer over, short or exact? A right guess is +${cfg.guessBonus}.`),
+        h("div.row", h("button.big", { type: "button", onclick: () => pick("over") }, h("kbd", "O"), " Over"), h("button.big", { type: "button", onclick: () => pick("short") }, h("kbd", "S"), " Short"), h("button.big", { type: "button", onclick: () => pick("exact") }, h("kbd", "E"), " Exact"))
+      )
+    );
+    root.querySelector("button")?.focus();
+  }
+
+  function finish() {
+    const sc = R.score(s);
+    const lines = R.drawerLines(s);
+    const state = R.drawerState(s);
+    if (Math.abs(s.drawer) > cfg.drawerLimit) ctx.mistake({ type: "drawer", cost: cfg.drawerFine, label: `Drawer ${state} by ${fmt(Math.abs(s.drawer))} at closing` });
+    for (const l of lines) ctx.echo(l);
+    const reveal = h(
+      "div.cr-reveal",
+      h("p.cr-drawer-total", icon(state === "exact" ? "check" : "alert", { size: 20 }), state === "exact" ? " The drawer is exact." : ` The drawer is ${state} ${fmt(Math.abs(s.drawer))}.`),
+      h("p", `You guessed ${s.guess}. ${s.guessRight ? `Right! +${cfg.guessBonus}` : "Not this time."}`),
+      lines.length ? h("ul", lines.map((l) => h("li", l))) : h("p", "Every sale was exact."),
+      h("ul.bd-reveal-list", h("li", icon("check", { size: 14 }), ` ${sc.right} right sales`), h("li", icon("coins", { size: 14 }), ` ${sc.tips} tip points`), speed ? h("li", icon("star", { size: 14 }), " Speed round: double coins") : null)
+    );
+    ctx.finish({
+      score: sc.score,
+      tie: sc.wrong,
+      tier: difficulty,
+      multiplier: speed ? 2 : 1,
+      sub: { right: sc.right, wrong: sc.wrong, tips: sc.tips, drawer: s.drawer, guessRight: sc.guessRight },
+      perfect: sc.wrong === 0 && sc.right >= 4,
+      reveal,
+      biggest: R.biggest(s),
+      stats: { difficulty, round, calcUses, served: sc.served },
+    });
+  }
+
+  // ---------- Start ----------
+  paintCustomer();
+  paintLine();
+  paintTray();
+  showLesson();
+  tick = setInterval(loop, 200);
+  loop();
+  if (training) {
+    (async () => {
+      coached.add(0);
+      await hold(ctx.coach(0, ticket));
+      coached.add(1);
+      await hold(ctx.coach(1, lesson));
+    })();
+  }
+  root.stop = () => {
+    over = true;
+    clearInterval(tick);
+    document.removeEventListener("keydown", onKey);
+  };
+  return root;
 }

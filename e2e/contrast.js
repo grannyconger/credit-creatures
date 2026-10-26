@@ -119,10 +119,13 @@ for (const theme of themes) {
           await page.locator(".job-leave-ask button", { hasText: "Leave" }).click();
         }
         await page.locator(".job-card", { hasText: name }).click();
-        if (key === "cashier") {
+        // GAME-SPECS.md games open the shared settings modal first: audit it, then start.
+        if (await page.locator("dialog.arc-settings[open]").count()) {
           await page.waitForTimeout(250);
-          await page.evaluate(audit, args.includes("--gradients")).then((fs) => fs.forEach((f) => all.push({ theme, route: "game-cashier-setup", ...f })));
-          await page.click(".cash-setup .big");
+          await page.evaluate(audit, args.includes("--gradients")).then((fs) => fs.forEach((f) => all.push({ theme, route: `game-${key}-settings`, ...f })));
+          await page.locator(".arc-opt", { hasText: "No timer" }).first().click().catch(() => {});
+          await page.click(".arc-start");
+          await page.waitForTimeout(300);
         }
       });
     }

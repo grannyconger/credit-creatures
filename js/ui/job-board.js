@@ -9,7 +9,6 @@ import { openJobs, opensText, unlockStage } from "../progression.js";
 import { icon } from "./icons.js";
 import * as P from "../play.js";
 import { ledgerSort } from "./minigames/ledger-sort.js";
-import { cashierRush, cashierRate } from "./minigames/cashier-rush.js";
 import { checkWriter } from "./minigames/check-writer.js";
 import { spotOverdraft } from "./minigames/spot-overdraft.js";
 import { registerBalancer } from "./minigames/register-balancer.js";
@@ -26,7 +25,7 @@ import { arcadeRunner } from "./arcade/runner.js";
 import { minutesLeft } from "../arcade/core.js";
 
 // The games that only need the shared options (seed, timed, onDone, track).
-const GAMES = { ledger: ledgerSort, cashier: cashierRush, overdraft: spotOverdraft, register: registerBalancer, checkhunt: checkHunt, drawer: countDrawer, unitprice: unitPriceShowdown, fees: feeDetective };
+const GAMES = { ledger: ledgerSort, overdraft: spotOverdraft, register: registerBalancer, checkhunt: checkHunt, drawer: countDrawer, unitprice: unitPriceShowdown, fees: feeDetective };
 
 const REACTIONS = [
   ["up", "👍", "I liked this job"],
@@ -77,7 +76,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
           // Classic games only pay from the month's safe shifts.
           const closed = !isArcade(key) && P.shiftsLeft(play) <= 0;
           const guide = hasGuide(key) ? h("button.job-guide.arc-guide", { type: "button", onclick: () => openGameGuide(key, { track }) }, icon("scroll", { size: 14 }), " Guide") : null;
-          const pay = isArcade(key) ? `Up to ${money(CONFIG.arcade.payCap + xp)} a shift` : key === "cashier" ? `${cashierRate("easy", "chill")} to ${cashierRate("hard", "speed")} coins a sale` : `Up to ${money(j.pay.max + xp)} a shift`;
+          const pay = isArcade(key) ? `Up to ${money(CONFIG.arcade.payCap + xp)} a shift` : `Up to ${money(j.pay.max + xp)} a shift`;
           const fired = minutesLeft(play, key);
           const card = h(
             "button.job-card.arc-cab-front",

@@ -166,7 +166,7 @@ test("Fee Detective: a whole shift plays through and pays", async ({ page }) => 
   expect(errors).toEqual([]);
 });
 
-test("Cashier Rush: pick a difficulty and a Chill Round, serve 4 customers, then collect", async ({ page }) => {
+test("Cashier Rush: settings, a Medium Chill round with a line and a short customer, then the drawer reveal", async ({ page }) => {
   const errors = watchErrors(page);
   await seededStudent(page);
   await open(page, "hub");
@@ -177,26 +177,30 @@ test("Cashier Rush: pick a difficulty and a Chill Round, serve 4 customers, then
   await open(page, "guild");
   await closePopups(page);
   await page.locator(".job-card", { hasText: "Cashier Rush" }).click();
-  await page.locator(".cash-choice", { hasText: "Medium" }).click();
-  await page.locator(".cash-choice", { hasText: "Chill Round" }).click();
-  await page.click(".cash-setup .big");
-  // The sale reads as a subtraction: what they hand you comes first. Coins are above bills, small to big.
+  await page.locator(".arc-opt", { hasText: "Medium" }).click();
+  await page.locator(".arc-opt", { hasText: "Chill" }).click();
+  await page.click(".arc-start");
+  // The sale reads as a subtraction: what they hand you comes first. Medium has no pennies.
   const amounts = await page.locator(".cash-amounts .cash-amt small").allTextContents();
   expect(amounts[0]).toContain("They hand you");
   expect(amounts[1]).toContain("Charged");
-  // Medium is bills and coins with no pennies: coins on top, small to big, then the bills.
-  expect(await page.locator(".cash-drawer .drawer-row.coins .cash-piece").allTextContents()).toEqual(["5¢nickel1", "10¢dime2", "25¢quarter3"]);
   expect(await page.locator(".cash-drawer .cash-piece").count()).toBe(6);
-  for (let i = 0; i < 4; i++) {
+  await expect(page.locator(".cr-line .cr-cust").first()).toBeVisible();
+  await expect(page.locator(".cr-lesson")).toContainText("Count up");
+  for (let i = 0; i < 12 && !(await page.locator(".cr-close").count()); i++) {
+    if (await page.locator(".cr-prompt button").count()) {
+      await page.keyboard.press("n");
+      continue;
+    }
     await page.locator(".cash-drawer .cash-piece").first().click();
     await page.locator(".cash-actions .big").click();
-    await page.waitForTimeout(1100);
+    await page.waitForTimeout(2300);
   }
-  await closePopups(page);
-  await expect(page.locator(".arc-collect")).toBeVisible();
+  await page.keyboard.press("o");
+  await expect(page.locator(".arc-results")).toBeVisible();
+  await expect(page.locator(".cr-reveal")).toContainText("The drawer is");
   expect(errors).toEqual([]);
 });
-
 
 test("the top bar numbers explain themselves, and settings is a pop-up that keeps your place", async ({ page }) => {
   const errors = watchErrors(page);

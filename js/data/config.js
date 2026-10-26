@@ -184,6 +184,29 @@ export const CONFIG = {
         // Thoughtful play's score must land in this band (1.6).
         band: [180, 420],
       },
+      // Cashier Rush (game 1, upgrade). Money in cents. Speed doubles coins.
+      cashier: {
+        maxPayScore: { easy: 240, medium: 300, hard: 340 },
+        speedSeconds: 180,
+        chillCustomers: 6,
+        speedPool: 60,
+        lineSize: 3,
+        arriveMs: 6000,
+        rushAt: [50, 120],
+        smartShare: 0.2,
+        short: [25, 60],
+        returnOdds: 0.5,
+        returnTip: 9,
+        tipMax: 5,
+        points: { easy: 10, medium: 20, hard: 30 },
+        // Seconds of patience before a customer's tip is gone.
+        patience: { easy: 30, medium: 35, hard: 45 },
+        guessBonus: 10,
+        wrongPauseMs: 2000,
+        // Risky mode: a drawer off by more than drawerLimit cents costs drawerFine dollars.
+        drawerLimit: 200,
+        drawerFine: 5,
+      },
       // Score Chase (game 7). 18 months, a card at a time.
       scorechase: {
         maxPayScore: 660,
