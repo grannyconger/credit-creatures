@@ -43,6 +43,8 @@ export function echoHost() {
     if (keep) log.push({ text, kind });
     const tag = h("p.arc-echo", { class: kind }, icon(kind === "good" ? "up" : "alert", { size: 16 }), h("span", text));
     el.append(tag);
+    // Never more than two tags on screen, so they don't cover the game.
+    while (el.children.length > 2) el.firstElementChild.remove();
     setTimeout(() => tag.classList.add("leaving"), CONFIG.arcade.echoMs);
     setTimeout(() => tag.remove(), CONFIG.arcade.echoMs + 400);
   };
@@ -162,22 +164,25 @@ export function eventCard({ title, text, choices = [], timer = null, tag = null,
     el.querySelectorAll(".arc-ev-choice").forEach((b, k) => b.setAttribute("aria-pressed", String(k === i)));
     onPick(i);
   };
-  const keys = choices.length === 1 ? ["Space"] : ["Left arrow", "Right arrow"];
+  // One choice flips with Space, two use the arrows, more use number keys.
+  const many = choices.length > 2;
+  const keys = choices.length === 1 ? ["Space"] : many ? choices.map((_, i) => String(i + 1)) : ["Left arrow", "Right arrow"];
   const btns = choices.map((c, i) =>
     h(
       "button.arc-ev-choice",
-      { type: "button", "aria-keyshortcuts": choices.length === 1 ? "Space" : i === 0 ? "ArrowLeft" : "ArrowRight", onclick: () => pick(i) },
-      choices.length > 1 ? icon(i === 0 ? "back" : "next", { size: 18 }) : null,
+      { type: "button", "aria-keyshortcuts": choices.length === 1 ? "Space" : many ? String(i + 1) : i === 0 ? "ArrowLeft" : "ArrowRight", onclick: () => pick(i) },
+      choices.length === 2 ? icon(i === 0 ? "back" : "next", { size: 18 }) : null,
       h("strong", c.label),
       c.detail ? h("small", c.detail) : null,
       h("kbd", keys[i] || "")
     )
   );
-  const el = h("article.arc-event", reduced() ? { class: "still" } : {}, h("header.arc-ev-head", tag ? h("span.arc-ev-tag", tag) : null, h("h4", title), ring), h("p.arc-ev-text", text), h("div.arc-ev-choices", { class: choices.length === 1 ? "one" : "" }, btns));
+  const el = h("article.arc-event", reduced() ? { class: "still" } : {}, h("header.arc-ev-head", tag ? h("span.arc-ev-tag", tag) : null, h("h4", title), ring), h("p.arc-ev-text", text), h("div.arc-ev-choices", { class: choices.length === 1 ? "one" : many ? "many" : "" }, btns));
   function onKey(e) {
     if (e.target.closest?.("input, textarea, select, dialog") || e.altKey || e.ctrlKey || e.metaKey) return;
-    if (choices.length > 1 && e.key === "ArrowLeft") (e.preventDefault(), pick(0));
-    else if (choices.length > 1 && e.key === "ArrowRight") (e.preventDefault(), pick(1));
+    if (many && /^[1-9]$/.test(e.key) && Number(e.key) <= choices.length) (e.preventDefault(), pick(Number(e.key) - 1));
+    else if (choices.length === 2 && e.key === "ArrowLeft") (e.preventDefault(), pick(0));
+    else if (choices.length === 2 && e.key === "ArrowRight") (e.preventDefault(), pick(1));
     else if (choices.length === 1 && e.key === " ") (e.preventDefault(), pick(0));
   }
   document.addEventListener("keydown", onKey);

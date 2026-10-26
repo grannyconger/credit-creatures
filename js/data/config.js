@@ -184,6 +184,21 @@ export const CONFIG = {
         // Thoughtful play's score must land in this band (1.6).
         band: [180, 420],
       },
+      // Score Chase (game 7). 18 months, a card at a time.
+      scorechase: {
+        maxPayScore: 660,
+        cardSeconds: 10,
+        startCash: 500,
+        income: 120,
+        baseSpend: 25,
+        minPay: 25,
+        apr: 0.24,
+        lateFee: 25,
+        scamCost: 199,
+        goal: 700,
+        goalBonus: 100,
+        goodwillOdds: 0.5,
+      },
     },
   },
 

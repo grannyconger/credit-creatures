@@ -6,7 +6,8 @@
 // A game's UI module exports start(ctx) and returns an element with stop().
 // ctx: { seed, settings, training, risky, track, frame, mistake, echo, coach, finish }.
 // It calls ctx.finish(result) once, with result:
-//   { score, tie, sub, perfect, multiplier, reveal (Element), biggest: { text, reasons }, stats }
+//   { score, tie, sub, perfect, multiplier, tier, payScore, reveal (Element), biggest: { text, reasons }, stats }
+// score is the ranked metric. payScore (optional) is what pay is figured from.
 import { h, add, fill, money, toast } from "../dom.js";
 import { icon } from "../icons.js";
 import { CONFIG } from "../../data/config.js";
@@ -306,13 +307,15 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
       let pay = 0;
       let rewards = { energy: 0, sparkle: 0 };
       if (!training) {
-        coins = AC.payFor(key, score, { multiplier: result.multiplier || 1, tier: result.tier });
+        // payScore: a game whose ranked metric isn't its pay points (Score Chase).
+        const payPts = result.payScore ?? score;
+        coins = AC.payFor(key, payPts, { multiplier: result.multiplier || 1, tier: result.tier });
         pay = coins + experienceBonus(play, key) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
         const r = P.workShift(play, run.life, pay, `Arcade: ${meta.title}`, key, { risky });
         if (r.ok) {
           run.life = r.life;
           recordShift(play, key, { right: score, pay });
-          rewards = shiftRewards(play, { ratio: AC.payRatio(key, score, result.tier), perfect: Boolean(result.perfect) && !mistakes.length });
+          rewards = shiftRewards(play, { ratio: AC.payRatio(key, payPts, result.tier), perfect: Boolean(result.perfect) && !mistakes.length });
         } else pay = 0;
       }
       const ranked = !training && meta.ranked(shiftSettings);

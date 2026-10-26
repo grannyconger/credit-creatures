@@ -2,5 +2,6 @@
 // Each exports start(ctx) (see js/ui/arcade/runner.js).
 import * as billdrop from "./bill-drop.js";
 import * as payin4 from "./pay-in-4.js";
+import * as scorechase from "./score-chase.js";
 
-export const GAME_UI = { billdrop, payin4 };
+export const GAME_UI = { billdrop, payin4, scorechase };

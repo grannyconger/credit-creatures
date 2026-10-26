@@ -652,6 +652,16 @@
   --arc-p4-afirm: #6b6bff;
   --arc-p4-good: #11733f;
   --arc-p4-bad: #b4231d;
+  /* Score Chase: a climbing gauge on graph paper. */
+  --arc-sc-bg: #0d2230;
+  --arc-sc-paper: #f4f8fb;
+  --arc-sc-ink: #0f2533;
+  --arc-sc-grid: #cfe1ec;
+  --arc-sc-teal: #19b3a6;
+  --arc-sc-teal-ink: #062b28;
+  --arc-sc-gold: #f2b632;
+  --arc-sc-good: #0f7a4a;
+  --arc-sc-bad: #b52a1f;
 }
 
 /* The parts of a total, for the stacked bars in the Tradeoffs and the Vault Overview

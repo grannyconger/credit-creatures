@@ -18,6 +18,13 @@ export const JOBS = {
     job: "Shopping app tester",
     skill: "Pay cash, split it or skip it, and watch where the payments land.",
   },
+  scorechase: {
+    mark: "gauge",
+    icon: "📈",
+    title: "Score Chase",
+    job: "Credit climber",
+    skill: "Go from no score to 700 in 18 months, one choice at a time.",
+  },
   ledger: {
     mark: "report",
     icon: "📒",
