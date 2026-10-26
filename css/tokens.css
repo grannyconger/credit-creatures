@@ -683,6 +683,16 @@
   --arc-gr-good: #157244;
   --arc-gr-bad: #b3261e;
   --arc-gr-soft: #efe4d2;
+  /* Feed Frenzy: a neon social feed with hearts and fire. */
+  --arc-ff-bg: #120d24;
+  --arc-ff-card: #ffffff;
+  --arc-ff-ink: #1b1530;
+  --arc-ff-soft: #f1ecfb;
+  --arc-ff-pink: #ff3d8b;
+  --arc-ff-pink-ink: #2b0516;
+  --arc-ff-yellow: #ffd23f;
+  --arc-ff-good: #127a46;
+  --arc-ff-bad: #b62020;
 }
 
 /* The parts of a total, for the stacked bars in the Tradeoffs and the Vault Overview

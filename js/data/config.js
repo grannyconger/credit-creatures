@@ -302,6 +302,24 @@ export const CONFIG = {
         callWorth: 8,
         disputeLegitCost: 10,
       },
+      // Feed Frenzy (game 6). Four weeks, three posts a week.
+      feed: {
+        maxPayScore: 380,
+        seconds: 150,
+        postSeconds: 11,
+        fakeSale: [1.15, 1.4],
+        outOfStock: 0.3,
+        surprise: 40,
+        savingsCap: 300,
+        perNeed: 50,
+        perTrick: 10,
+        perRegret: 40,
+        perUnmet: 60,
+        perWrongTap: 5,
+        usedIfInterest: 0.85,
+        usedOtherwise: 0.2,
+        band: [300, 420],
+      },
       // Score Chase (game 7). 18 months, a card at a time.
       scorechase: {
         maxPayScore: 660,

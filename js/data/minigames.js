@@ -32,6 +32,13 @@ export const JOBS = {
     job: "Delivery driver or store clerk",
     skill: "Deliver food or work store shifts, and find what each job really pays per hour.",
   },
+  feed: {
+    mark: "heart",
+    icon: "📱",
+    title: "Feed Frenzy",
+    job: "Social media scroller",
+    skill: "Scroll a month of posts, spot the marketing tricks, and buy only what you need.",
+  },
   scorechase: {
     mark: "gauge",
     icon: "📈",

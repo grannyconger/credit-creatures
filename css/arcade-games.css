@@ -707,3 +707,63 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .fd2-habit legend { font-weight: 800; float: left; margin-bottom: 4px; }
 .fd2-hab { text-align: left; border-radius: 8px; }
 .fd2-big { font: 800 1.1rem Georgia, serif; }
+
+/* ===========================================================================
+   Feed Frenzy: a neon social feed with heart and fire effects.
+   =========================================================================== */
+.bst-guild .arc-frame.skin-feed { --g-bg: var(--arc-ff-bg); --g-accent: var(--arc-ff-pink); --g-accent-ink: var(--arc-ff-pink-ink); --g-ink: var(--arc-ff-card); --g-paper: var(--arc-ff-card); --g-paper-ink: var(--arc-ff-ink); --g-good: var(--arc-ff-good); --g-bad: var(--arc-ff-bad); }
+.arc-cab.cab-feed { --cab: var(--arc-ff-pink); --cab-bg: var(--arc-ff-bg); --cab-ink: var(--arc-ff-pink-ink); }
+.ff-skill { max-width: 680px; margin: 14px auto; display: grid; gap: 10px; }
+.ff-skill-q { margin: 0; font-weight: 800; color: var(--arc-ff-card); font-size: 1.15rem; }
+.ff-skill-opts { display: grid; gap: 6px; }
+.ff-skill-opts button { padding: 8px 12px; text-align: left; font: 700 1.05rem "Trebuchet MS", sans-serif; color: var(--arc-ff-ink); background: var(--arc-ff-card); border: 2px solid var(--arc-ff-pink); border-radius: 12px; cursor: pointer; }
+.ff-skill .mg-flash.good { color: #8ff7b8; }
+.ff-skill .mg-flash.bad { color: var(--arc-ff-yellow); }
+.ff-card { display: grid; gap: 4px; padding: 10px 12px; color: var(--arc-ff-ink); background: var(--arc-ff-card); border-radius: 16px; }
+.ff-card-head { display: grid; }
+.ff-card-head strong { font: 900 1.2rem "Arial Black", sans-serif; }
+.ff-card p { margin: 0; }
+.ff-needs { margin: 2px 0; padding: 0; list-style: none; display: grid; gap: 2px; font-size: 0.92rem; }
+.ff-needs li { display: flex; align-items: center; gap: 4px; }
+.ff-needs li.met { font-weight: 800; color: var(--arc-ff-good); }
+.ff-goal small { font-weight: 700; }
+.ff-goalbar { height: 10px; margin: 2px 0; background: var(--arc-ff-soft); border-radius: 5px; overflow: hidden; }
+.ff-goalbar span { display: block; height: 100%; background: var(--arc-ff-pink); }
+.ff-grid { display: grid; grid-template-columns: 260px minmax(0, 1fr) 230px; gap: 12px; align-items: start; }
+.ff-stage { display: grid; gap: 10px; justify-items: center; }
+.ff-post { width: min(440px, 100%); display: grid; gap: 6px; padding: 10px 12px; color: var(--arc-ff-ink); background: var(--arc-ff-card); border-radius: 20px; box-shadow: 0 0 22px color-mix(in srgb, var(--arc-ff-pink) 45%, transparent); }
+.ff-post.returned { box-shadow: none; outline: 3px dashed var(--arc-ff-pink); }
+.ff-post-head { display: flex; align-items: center; gap: 8px; }
+.ff-post-head strong { flex: 1; }
+.ff-post-head .arc-ring { color: var(--arc-ff-ink); }
+.ff-avatar { display: grid; place-items: center; width: 30px; height: 30px; font-weight: 900; color: var(--arc-ff-pink-ink); background: var(--arc-ff-pink); border-radius: 50%; }
+.ff-back { display: flex; align-items: center; gap: 4px; margin: 0; font-weight: 800; color: var(--arc-ff-good); }
+.ff-photo { display: grid; place-items: center; gap: 4px; min-height: 140px; color: var(--arc-ff-ink); background: var(--arc-ff-soft); border: 0; border-radius: 12px; font: 800 1rem "Trebuchet MS", sans-serif; cursor: pointer; }
+.ff-caption { margin: 0; }
+.ff-caption strong { font: 900 1.4rem "Arial Black", sans-serif; }
+.ff-tricks { display: flex; flex-wrap: wrap; gap: 6px; }
+.ff-trick { padding: 3px 10px; font: 900 0.85rem "Trebuchet MS", sans-serif; color: var(--arc-ff-pink-ink); background: var(--arc-ff-yellow); border: 2px solid var(--arc-ff-ink); border-radius: 999px; cursor: pointer; }
+.ff-trick.t-wasNow { text-decoration: line-through; }
+.ff-trick.t-hiddenAd { padding: 0 4px; font-size: 0.6rem; background: transparent; border: 1px dotted color-mix(in srgb, var(--arc-ff-ink) 40%, transparent); color: color-mix(in srgb, var(--arc-ff-ink) 70%, transparent); }
+.ff-trick.spotted { text-decoration: none; font-size: 0.82rem; font-weight: 700; color: var(--arc-ff-ink); background: #fff; border-style: dashed; }
+.ff-trick:focus-visible { outline: 3px dashed var(--arc-ff-pink); }
+.ff-btns { display: flex; gap: 8px; }
+.bst-guild .arc-frame.skin-feed .ff-btns .buy { background: var(--arc-ff-pink); color: var(--arc-ff-pink-ink); }
+.bst-guild .arc-frame.skin-feed .ff-btns .skip { background: var(--arc-ff-soft); color: var(--arc-ff-ink); }
+.bst-guild .arc-frame.skin-feed .ff-btns .wish { background: var(--arc-ff-yellow); color: var(--arc-ff-ink); }
+.ff-side { display: grid; gap: 8px; padding: 12px; color: var(--arc-ff-ink); background: var(--arc-ff-card); border-radius: 16px; }
+.ff-stat { display: grid; }
+.ff-stat strong { font: 900 1.5rem "Arial Black", sans-serif; }
+.bst-guild .arc-frame.skin-feed .ff-side button.secondary { color: var(--arc-ff-ink); border-color: var(--arc-ff-ink); }
+.ff-subs { display: grid; gap: 4px; }
+.ff-sub { display: grid; gap: 2px; padding: 6px; background: var(--arc-ff-soft); border-radius: 8px; font-size: 0.88rem; }
+.ff-sub small { display: inline-flex; align-items: center; gap: 2px; font-weight: 800; color: var(--arc-ff-good); }
+.ff-reveal { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ff-reveal > p { grid-column: 1 / -1; margin: 0; font-weight: 700; }
+.ff-reveal h5 { display: flex; align-items: center; gap: 4px; margin: 0 0 4px; }
+.ff-reveal ul { margin: 0; padding-left: 18px; font-size: 0.9rem; }
+.ff-stamps { list-style: none; padding: 0 !important; display: grid; gap: 4px; }
+.ff-stamp { display: inline-block; padding: 0 6px; font: 900 0.7rem "Arial Black", sans-serif; border: 2px solid currentColor; transform: rotate(-4deg); }
+.ff-stamps .used .ff-stamp { color: var(--arc-ff-good); }
+.ff-stamps .never .ff-stamp { color: var(--arc-ff-bad); border-style: dashed; }
+.skin-feed .arc-keys { color: var(--arc-ff-card); }
