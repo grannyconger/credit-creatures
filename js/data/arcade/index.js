@@ -6,6 +6,7 @@ import { PAYIN4_META, PAYIN4_BONUS } from "./payin4.js";
 import { SCORECHASE_META, SCORECHASE_BONUS } from "./scorechase.js";
 import { CASHIER_META, CASHIER_BONUS } from "./cashier.js";
 import { CHECKS_META, CHECKS_BONUS } from "./checks.js";
+import { PHISH_META, PHISH_BONUS } from "./phish.js";
 
 export const ARCADE = {
   billdrop: { ...BILLDROP_META, bonus: BILLDROP_BONUS },
@@ -13,6 +14,7 @@ export const ARCADE = {
   scorechase: { ...SCORECHASE_META, bonus: SCORECHASE_BONUS },
   cashier: { ...CASHIER_META, bonus: CASHIER_BONUS },
   checks: { ...CHECKS_META, bonus: CHECKS_BONUS },
+  phish: { ...PHISH_META, bonus: PHISH_BONUS },
 };
 
 export const isArcade = (key) => Boolean(ARCADE[key]);

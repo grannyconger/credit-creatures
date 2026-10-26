@@ -544,3 +544,61 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .bst-guild .arc-frame.skin-checks .cw2-check .check-bottom { margin-top: 4px; }
 .bst-guild .arc-frame.skin-checks .cw2-check .sig-slot { min-height: 44px; }
 .bst-guild .arc-frame.skin-checks .cw2-card p, .bst-guild .arc-frame.skin-checks .cw2-card strong, .bst-guild .arc-frame.skin-checks .cw2-card h5 { color: var(--arc-checks-ink); }
+
+/* ===========================================================================
+   Phish Tank: a dark aquarium with a buzzing phone and fish hooks.
+   =========================================================================== */
+.bst-guild .arc-frame.skin-phish { --g-bg: var(--arc-ph-bg); --g-accent: var(--arc-ph-glow); --g-accent-ink: var(--arc-ph-glow-ink); --g-ink: var(--arc-ph-glass); --g-paper: var(--arc-ph-glass); --g-paper-ink: var(--arc-ph-ink); --g-good: var(--arc-ph-good); --g-bad: var(--arc-ph-bad); background-image: radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--arc-ph-water) 60%, transparent) 0 30%, transparent 31%), radial-gradient(circle at 80% 30%, color-mix(in srgb, var(--arc-ph-water) 50%, transparent) 0 20%, transparent 21%); }
+.arc-cab.cab-phish { --cab: var(--arc-ph-glow); --cab-bg: var(--arc-ph-bg); --cab-ink: var(--arc-ph-glow-ink); }
+.ph-skill { max-width: 640px; margin: 20px auto; padding: 16px 20px; color: var(--arc-ph-ink); background: var(--arc-ph-glass); border-radius: 18px; }
+.ph-skill h4 { margin: 0 0 8px; font: 900 1.3rem "Arial Black", sans-serif; }
+.ph-sample { display: flex; flex-wrap: wrap; gap: 6px; }
+.ph-chunk { padding: 6px 10px; font: 700 1.05rem "Trebuchet MS", sans-serif; color: var(--arc-ph-ink); background: #fff; border: 2px dashed var(--arc-ph-ink); border-radius: 8px; cursor: pointer; }
+.ph-skill .mg-flash.good { color: var(--arc-ph-good); }
+.ph-skill .mg-flash.bad { color: var(--arc-ph-bad); }
+.ph-grid { display: grid; grid-template-columns: minmax(0, 560px) 240px; justify-content: center; gap: 16px; align-items: start; }
+.ph-phone { padding: 10px 12px 14px; color: var(--arc-ph-ink); background: var(--arc-ph-glass); border: 6px solid var(--arc-ph-ink); border-radius: 30px; box-shadow: 0 0 24px color-mix(in srgb, var(--arc-ph-glow) 50%, transparent); }
+.ph-status { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.85rem; padding: 0 8px 6px; }
+.ph-status span { display: inline-flex; align-items: center; gap: 4px; }
+.ph-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.ph-msg { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; column-gap: 8px; width: 100%; padding: 6px 10px; text-align: left; color: var(--arc-ph-ink); background: #fff; border: 2px solid color-mix(in srgb, var(--arc-ph-ink) 18%, transparent); border-radius: 14px; font: inherit; cursor: pointer; }
+.ph-msg strong { font-size: 0.92rem; }
+.ph-msg span { grid-column: 1; font-size: 0.85rem; opacity: 0.85; }
+.ph-msg .arc-ring { grid-row: 1 / span 2; grid-column: 2; color: var(--arc-ph-ink); }
+.ph-msg .arc-ring.low { color: var(--arc-ph-bad); }
+.ph-msg[aria-pressed="true"] { border: 3px solid var(--arc-ph-glow-ink); background: color-mix(in srgb, var(--arc-ph-glow) 25%, #fff); }
+.ph-more { padding: 2px 10px; font-weight: 800; font-size: 0.85rem; }
+.ph-view { margin-top: 8px; min-height: 170px; }
+.ph-open { padding: 10px 12px; background: #fff; border-radius: 16px; border: 2px solid var(--arc-ph-ink); }
+.ph-open.flags { border-style: dashed; }
+.ph-from { margin: 0 0 4px; }
+.ph-text { margin: 0 0 8px; font-size: 1.08rem; line-height: 1.4; }
+.ph-link { color: var(--arc-ph-ink); }
+.ph-actions { display: flex; gap: 8px; }
+.bst-guild .arc-frame.skin-phish .ph-actions .big { flex: 1; font-size: 1rem; padding: 8px; }
+.bst-guild .arc-frame.skin-phish .ph-actions .block { background: var(--arc-ph-bad); color: #fff; }
+.bst-guild .arc-frame.skin-phish .ph-actions .trust { background: var(--arc-ph-good); color: #fff; }
+.ph-flag { padding: 0 4px; font: inherit; font-weight: 800; color: var(--arc-ph-ink); background: color-mix(in srgb, var(--arc-ph-hook) 40%, #fff); border: 2px dashed var(--arc-ph-ink); border-radius: 6px; cursor: pointer; }
+.ph-flag[aria-pressed="true"] { border-style: solid; background: var(--arc-ph-hook); }
+.ph-flag[aria-pressed="true"]::before { content: "✓ "; }
+.ph-flag small { font-size: 0.75rem; }
+.ph-bonus { display: flex; align-items: center; gap: 4px; margin: 0 0 6px; font-weight: 800; }
+.ph-verify { display: grid; gap: 8px; padding: 12px; background: #fff; border-radius: 16px; border: 2px solid var(--arc-ph-ink); }
+.ph-verify p { display: flex; align-items: center; gap: 6px; margin: 0; font-weight: 800; }
+.ph-verify-bar { height: 12px; background: color-mix(in srgb, var(--arc-ph-ink) 15%, transparent); border-radius: 6px; overflow: hidden; }
+.ph-verify-bar span { display: block; height: 100%; width: 0; background: var(--arc-ph-glow); }
+.ph-lock { display: grid; gap: 8px; padding: 12px; color: #fff; background: var(--arc-ph-bad); border-radius: 16px; }
+.ph-lock h4 { display: flex; align-items: center; gap: 6px; margin: 0; }
+.ph-lock p { margin: 0; }
+.ph-empty { padding: 20px; text-align: center; opacity: 0.8; }
+.ph-side { display: grid; gap: 8px; padding: 12px; color: var(--arc-ph-ink); background: var(--arc-ph-glass); border-radius: 16px; }
+.ph-side p { display: flex; align-items: center; gap: 4px; margin: 0; font-weight: 700; }
+.ph-clock { display: flex; align-items: center; gap: 8px; color: var(--arc-ph-ink); }
+.ph-stat { display: grid; }
+.ph-stat strong { font: 900 1.6rem "Arial Black", sans-serif; }
+.ph-stat strong.neg { color: var(--arc-ph-bad); }
+.ph-reveal .ph-totals { display: flex; align-items: center; gap: 6px; font-weight: 800; }
+.ph-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ph-cols h5 { display: flex; align-items: center; gap: 4px; margin: 0; }
+.ph-cols ul { margin: 4px 0; padding-left: 18px; font-size: 0.9rem; }
+.skin-phish .arc-keys { color: var(--arc-ph-glass); }

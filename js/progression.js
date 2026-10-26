@@ -17,6 +17,7 @@ export const FEATURES = {
   billdrop: { at: 0 },
   payin4: { at: 3 },
   scorechase: { at: 4 },
+  phish: { at: 1 },
   checking: { at: 1 },
   savings: { at: 1 },
   debit: { at: 1 },
@@ -97,7 +98,7 @@ export function payMethods(play, life) {
 }
 
 // Every Arcade cabinet in the order the hall shows them.
-export const ARCADE_ORDER = ["cashier", "checks", "billdrop", "payin4", "scorechase", "overdraft", "register", "checkhunt", "drawer", "unitprice", "fees", "ledger"];
+export const ARCADE_ORDER = ["cashier", "checks", "billdrop", "phish", "payin4", "scorechase", "overdraft", "register", "checkhunt", "drawer", "unitprice", "fees", "ledger"];
 
 // The jobs at the Arcade so far.
 export function openJobs(play) {

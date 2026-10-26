@@ -48,6 +48,9 @@ export function initShell({ getGame, go, track }) {
   // T opens Things To Do, unless the student is typing.
   addEventListener("keydown", (e) => {
     if (e.key.toLowerCase() !== "t" || e.ctrlKey || e.metaKey || e.altKey) return;
+    // An Arcade game uses T too (Phish Tank's Trust, Bill Drop's autopay), so a key a
+    // game already handled, or any key during a shift, stays with the game.
+    if (e.defaultPrevented || document.querySelector(".panel.playing .arc-frame")) return;
     if (e.target.closest?.("input, textarea, select, [contenteditable]") || document.querySelector("dialog[open]")) return;
     if (!getGame() || bottombar.hidden) return;
     openThingsToDo();

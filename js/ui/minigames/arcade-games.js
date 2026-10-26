@@ -5,5 +5,6 @@ import * as payin4 from "./pay-in-4.js";
 import * as scorechase from "./score-chase.js";
 import * as cashier from "./cashier-rush.js";
 import * as checks from "./check-writer.js";
+import * as phish from "./phish-tank.js";
 
-export const GAME_UI = { billdrop, payin4, scorechase, cashier, checks };
+export const GAME_UI = { billdrop, payin4, scorechase, cashier, checks, phish };

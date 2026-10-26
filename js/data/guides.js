@@ -11,6 +11,7 @@ import { PAYIN4_GUIDE } from "./arcade/payin4.js";
 import { SCORECHASE_GUIDE } from "./arcade/scorechase.js";
 import { CASHIER_GUIDE } from "./arcade/cashier.js";
 import { CHECKS_GUIDE } from "./arcade/checks.js";
+import { PHISH_GUIDE } from "./arcade/phish.js";
 
 export const GUIDES = {
   billdrop: BILLDROP_GUIDE,
@@ -18,6 +19,7 @@ export const GUIDES = {
   scorechase: SCORECHASE_GUIDE,
   cashier: CASHIER_GUIDE,
   checks: CHECKS_GUIDE,
+  phish: PHISH_GUIDE,
   fees: {
     how: {
       goal: "Find every fee on a bank statement, then say how you could avoid each one.",

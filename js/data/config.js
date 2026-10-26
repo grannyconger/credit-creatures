@@ -220,6 +220,26 @@ export const CONFIG = {
         washedCost: 25,
         badEndorse: 5,
       },
+      // Phish Tank (game 5). Times in milliseconds.
+      phish: {
+        maxPayScore: 440,
+        seconds: 150,
+        messages: 18,
+        legit: [0.35, 0.4],
+        firstMs: 1500,
+        gapStart: 9500,
+        gapEnd: 3500,
+        expiryMs: 20000,
+        verifyMs: 5000,
+        flagShowMs: 3000,
+        lockTaps: 4,
+        tapMs: 900,
+        perRight: 20,
+        perFlag: 10,
+        perWrong: 15,
+        perMissed: 5,
+        takeoverCost: 20,
+      },
       // Score Chase (game 7). 18 months, a card at a time.
       scorechase: {
         maxPayScore: 660,

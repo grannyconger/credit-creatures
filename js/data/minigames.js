@@ -18,6 +18,13 @@ export const JOBS = {
     job: "Shopping app tester",
     skill: "Pay cash, split it or skip it, and watch where the payments land.",
   },
+  phish: {
+    mark: "phone",
+    icon: "🎣",
+    title: "Phish Tank",
+    job: "Phone safety tester",
+    skill: "Trust, Block or Verify a flood of messages. Some are scams.",
+  },
   scorechase: {
     mark: "gauge",
     icon: "📈",
