@@ -214,7 +214,7 @@ export function start(ctx) {
       waters[g.cp] = watered;
       if (treat) g.treats++;
       ctx.track("treeWater", { year: g.year, watered, treat });
-      if (!watered) ctx.echo(treat ? `Treat taken. ${money(cfg.yearly)} a year skipped until year ${nextCp()}.` : `Missed watering. ${money(cfg.yearly)} a year skipped until year ${nextCp()}.`, { kind: "alert" });
+      if (!watered) ctx.echo(treat ? `Treat taken. ${money(cfg.yearly)} a year skipped until year ${nextCp()}.` : `Missed watering. ${money(cfg.yearly)} a year skipped until year ${nextCp()}.`, { kind: "bad" });
       grow(watered);
     };
     const wRing = timerRing({ label: "Time to water" });
@@ -247,17 +247,17 @@ export function start(ctx) {
     lastGrowth = { savings: yearly((m) => 1 + m.savings), cd: g.mkt.cdRate, index: yearly((m) => 1 + m.index), coin: yearly((m) => m.coin) };
     for (const ev of r.events) {
       if (ev.type === "car") {
-        if (ev.hit) (sfx.correct(), ctx.echo(`Year 3: you had the ${money(cfg.carGoal)} for the car.`, { kind: "up" }));
+        if (ev.hit) (sfx.correct(), ctx.echo(`Year 3: you had the ${money(cfg.carGoal)} for the car.`, { kind: "good" }));
         else {
           sfx.error();
-          ctx.echo(`Year 3: you were ${money(ev.short)} short for the car.`, { kind: "alert" });
+          ctx.echo(`Year 3: you were ${money(ev.short)} short for the car.`, { kind: "bad" });
           ctx.mistake({ type: "carShort", cost: Math.min(cfg.riskyCap, ev.short), label: "Car goal short" });
         }
-      } else if (ev.type === "surprise") ctx.echo(`Year 15: a ${money(ev.amount)} surprise expense came out of your garden.`, { kind: "alert" });
+      } else if (ev.type === "surprise") ctx.echo(`Year 15: a ${money(ev.amount)} surprise expense came out of your garden.`, { kind: "bad" });
       else if (ev.type === "mania") ctx.notice("Hype coin mania! The coin is spiking and everyone is talking about it.");
     }
     if (pendingGhost && r.at !== "crash") {
-      ctx.echo(`Ghost line: ${pendingGhost.sold ? "holding" : "selling"} would have left ${money(pendingGhost.value)}. You have ${money(T.total(g))}.`, { kind: "info" });
+      ctx.echo(`Ghost line: ${pendingGhost.sold ? "holding" : "selling"} would have left ${money(pendingGhost.value)}. You have ${money(T.total(g))}.`, { kind: "safe" });
       pendingGhost = null;
     }
     const after = () => {
@@ -283,7 +283,7 @@ export function start(ctx) {
       ctx.track("treeCrash", { year: g.year, sell });
       if (sell) {
         sfx.error();
-        ctx.echo(`Sold ${money(moved)} into savings at the storm price.`, { kind: "alert" });
+        ctx.echo(`Sold ${money(moved)} into savings at the storm price.`, { kind: "bad" });
         ctx.mistake({ type: "panicSell", cost: cfg.sellCost, label: "Sold in a storm" });
       } else sfx.correct();
       pendingGhost = { sold: sell, value: ghostValue };
@@ -324,7 +324,7 @@ export function start(ctx) {
     const sav = T.simulate(seed, T.POLICIES.allSavings);
     const coin = T.simulate(seed, T.POLICIES.allCoin);
     const full = sc.missed ? T.score(T.play(seed, { ...mine, waterAt: () => true })).final : sc.final;
-    if (sc.missed) ctx.echo(`Missed watering cost you ${money(sc.missed)} in deposits and ${money(Math.max(0, full - sc.final - sc.missed))} more in lost growth.`, { kind: "alert" });
+    if (sc.missed) ctx.echo(`Missed watering cost you ${money(sc.missed)} in deposits and ${money(Math.max(0, full - sc.final - sc.missed))} more in lost growth.`, { kind: "bad" });
     const reveal = h(
       "div.mt-reveal",
       h("p", `At 62 your garden is worth ${money(sc.final)}. That's your net worth from investing, since the garden holds no debt. ${sc.carHit ? "You hit the car goal." : `You missed the car goal by ${money(sc.carShort)}.`} ${sc.retired ? "You reached the retirement target." : `The retirement target was ${money(cfg.retireTarget)}.`}`),

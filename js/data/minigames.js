@@ -46,6 +46,13 @@ export const JOBS = {
     job: "Risk planner",
     skill: "Pick insurance and an emergency fund, then survive a year of surprises.",
   },
+  movein: {
+    mark: "key",
+    icon: "🔑",
+    title: "Move-In Day",
+    job: "College planner",
+    skill: "Compare two schools' aid letters by net price, then rent your first apartment and get your deposit back.",
+  },
   tree: {
     mark: "tree",
     icon: "🌳",

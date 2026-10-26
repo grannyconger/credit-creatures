@@ -704,6 +704,16 @@
   --arc-rd-good: #11744a;
   --arc-rd-bad: #b3261e;
   --arc-rd-soft: #e2e9f2;
+  /* Move-In Day: an apartment listing app, keys and a clipboard. */
+  --arc-mi-bg: #163f44;
+  --arc-mi-card: #f6f7f4;
+  --arc-mi-ink: #172326;
+  --arc-mi-soft: #dfeae7;
+  --arc-mi-line: #8aa5a1;
+  --arc-mi-key: #ff9a5c;
+  --arc-mi-key-ink: #2a1205;
+  --arc-mi-good: #17703f;
+  --arc-mi-bad: #b3261e;
   /* Money Tree: a cottage garden at dusk, with storms rolling through. */
   --arc-mt-bg: #1e3a24;
   --arc-mt-sky: #2c4d33;

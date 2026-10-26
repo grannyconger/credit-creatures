@@ -17,6 +17,7 @@ import { FEES_GUIDE } from "./arcade/fees.js";
 import { FEED_GUIDE } from "./arcade/feed.js";
 import { RAINY_GUIDE } from "./arcade/rainy.js";
 import { TREE_GUIDE } from "./arcade/tree.js";
+import { MI_GUIDE } from "./arcade/movein.js";
 import { DASH_GUIDE } from "./arcade/dash.js";
 import { LOT_GUIDE } from "./arcade/lot.js";
 
@@ -32,6 +33,7 @@ export const GUIDES = {
   feed: FEED_GUIDE,
   rainy: RAINY_GUIDE,
   tree: TREE_GUIDE,
+  movein: MI_GUIDE,
   dash: DASH_GUIDE,
   lot: LOT_GUIDE,
 };

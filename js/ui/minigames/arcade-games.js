@@ -13,5 +13,6 @@ import * as rainy from "./rainy-day.js";
 import * as dash from "./market-dash.js";
 import * as lot from "./the-lot.js";
 import * as tree from "./money-tree.js";
+import * as movein from "./move-in-day.js";
 
-export const GAME_UI = { billdrop, payin4, scorechase, cashier, checks, phish, grind, fees, feed, rainy, dash, lot, tree };
+export const GAME_UI = { billdrop, payin4, scorechase, cashier, checks, phish, grind, fees, feed, rainy, dash, lot, tree, movein };

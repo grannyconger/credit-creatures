@@ -377,6 +377,34 @@ export const CONFIG = {
         noCarScore: 50,
         riskyCap: 500,
       },
+      // Move-In Day (game 14, Lease Life re-themed for standard E). Dollars, game seconds.
+      movein: {
+        maxPayScore: 1700,
+        // Lease Score divisors. The spec divides surprises by 10, but then inspecting
+        // barely mattered, so surprises count half.
+        savingsDiv: 10,
+        surpriseDiv: 2,
+        schoolSeconds: 60,
+        tourSeconds: 75,
+        leaseSeconds: 30,
+        photoSeconds: 20,
+        cardSeconds: 8,
+        income: 2700,
+        incomeRule: 3,
+        appFee: 50,
+        viewSeconds: 10,
+        inspectSeconds: 6,
+        warnSeconds: 15,
+        takenAt: [[45, 60], [65, 75]],
+        breakOdds: 0.85,
+        flagWorks: 0.5,
+        leaveMonth: 6,
+        sortPoints: 10,
+        schoolPoints: 150,
+        wrongSchool: 50,
+        events: 4,
+        riskyCap: 500,
+      },
       // Money Tree (game 11). 40 years, dollars.
       tree: {
         maxPayScore: 1150,

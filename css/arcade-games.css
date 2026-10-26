@@ -168,7 +168,7 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .arc-reveal h4 { margin: 0 0 6px; }
 .arc-res-echo, .arc-why, .arc-bonus { padding: 8px 12px; color: var(--arc-ink); background: color-mix(in srgb, #000 45%, transparent); border-radius: 12px; }
 .arc-res-echo h4, .arc-why h4 { margin: 0 0 6px; font-size: 1rem; }
-.arc-res-echo ol { margin: 0; padding-left: 20px; max-height: 96px; overflow: auto; font-size: 0.92rem; }
+.arc-res-echo ol { margin: 0; padding-left: 20px; max-height: 160px; overflow: auto; font-size: 0.92rem; }
 .arc-res-echo li { margin: 2px 0; }
 .arc-res-echo li.good::marker { content: "+ "; }
 .arc-why-opts { display: grid; gap: 6px; }
@@ -1008,3 +1008,87 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .mt-water-card .arc-ring .arc-ring-num { color: var(--arc-mt-ink); }
 .mt-reveal p { margin: 0 0 6px; }
 .bst-guild .arc-frame.skin-tree .mt-panel button.secondary, .bst-guild .arc-frame.skin-tree .mt-tempt button.secondary { color: var(--arc-mt-ink); background: var(--arc-mt-card); border: 2px solid var(--arc-mt-ink); }
+
+/* ---------- Move-In Day ---------- */
+.bst-guild .arc-frame.skin-movein { --g-bg: var(--arc-mi-bg); --g-accent: var(--arc-mi-key); --g-accent-ink: var(--arc-mi-key-ink); --g-ink: var(--arc-mi-card); --g-paper: var(--arc-mi-card); --g-paper-ink: var(--arc-mi-ink); --g-good: var(--arc-mi-good); --g-bad: var(--arc-mi-bad); }
+.arc-cab.cab-movein { --cab: var(--arc-mi-key); --cab-bg: var(--arc-mi-bg); --cab-ink: var(--arc-mi-key-ink); }
+.skin-movein .arc-keys, .mi-lead { color: var(--arc-mi-card); }
+.mi-lead { margin: 0 0 8px; font-weight: 700; }
+.mi-letters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+.mi-letter, .mi-side, .mi-card, .mi-skill, .mi-doc li, .mi-reveal .mi-sheet { color: var(--arc-mi-ink); background: var(--arc-mi-card); border-radius: 12px; }
+.mi-letter { display: grid; gap: 6px; padding: 10px 14px; border-top: 6px solid var(--arc-mi-key); }
+.mi-letter header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.mi-letter h4 { margin: 0; font: 900 1.1rem "Arial Black", sans-serif; }
+.mi-letter h5 { margin: 4px 0 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.mi-lines, .mi-aid { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+.mi-lines li, .mi-aid li.total { display: flex; justify-content: space-between; font-size: 0.92rem; }
+.mi-lines li.total, .mi-aid li.total { padding-top: 3px; border-top: 2px solid var(--arc-mi-ink); font-weight: 900; }
+.mi-aid li:not(.total) { display: grid; gap: 3px; padding: 4px 6px; background: var(--arc-mi-soft); border-radius: 8px; }
+.mi-aid-name { display: flex; justify-content: space-between; gap: 8px; font-size: 0.92rem; }
+.mi-sort { display: flex; gap: 4px; }
+.bst-guild .arc-frame.skin-movein .mi-sort button, .bst-guild .arc-frame.skin-movein .mi-mate button { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; font-size: 0.8rem; font-weight: 800; color: var(--arc-mi-ink); background: var(--arc-mi-card); border: 2px solid var(--arc-mi-line); border-radius: 999px; }
+.bst-guild .arc-frame.skin-movein .mi-sort button[aria-pressed="true"], .bst-guild .arc-frame.skin-movein .mi-mate button[aria-pressed="true"] { color: var(--arc-mi-key-ink); background: var(--arc-mi-key); border-color: var(--arc-mi-ink); }
+.mi-net { margin: 0; padding: 6px 8px; background: var(--arc-mi-soft); border-radius: 8px; }
+.mi-net small { display: block; }
+.mi-skill { display: grid; gap: 8px; max-width: 560px; margin: 20px auto; padding: 16px 20px; }
+.mi-skill h4 { margin: 0; font: 900 1.2rem "Arial Black", sans-serif; }
+.mi-skill p { margin: 0; }
+.mi-skill .row, .mi-side .row, .mi-card .row, .mi-mate .row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.mi-skill input { width: 110px; padding: 4px 8px; border: 2px solid var(--arc-mi-ink); border-radius: 6px; color: var(--arc-mi-ink); background: var(--arc-mi-card); }
+.bst-guild .arc-frame.skin-movein .mi-skill .row button { padding: 4px 12px; font-weight: 800; color: var(--arc-mi-key-ink); background: var(--arc-mi-key); border: 2px solid var(--arc-mi-ink); border-radius: 999px; }
+.mi-skill .mg-flash.good { color: var(--arc-mi-good); }
+.mi-skill .mg-flash.bad { color: var(--arc-mi-bad); }
+.mi-tabs { display: flex; gap: 6px; margin-bottom: 6px; }
+.mi-tabs span { padding: 2px 12px; font-weight: 800; color: var(--arc-mi-card); border: 2px solid var(--arc-mi-line); border-radius: 999px; }
+.mi-tabs span.on { color: var(--arc-mi-key-ink); background: var(--arc-mi-key); border-color: var(--arc-mi-key); }
+.mi-tabs span.gone { text-decoration: line-through; }
+.mi-tour { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 12px; align-items: start; }
+.mi-plan { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-areas: "kitchen walls bath" "kitchen windows locks"; gap: 8px; padding: 12px; background: var(--arc-mi-card); border: 4px solid var(--arc-mi-ink); border-radius: 6px; min-height: 280px; }
+.bst-guild .arc-frame.skin-movein .mi-spot { display: grid; gap: 3px; align-content: center; justify-items: start; padding: 10px; text-align: left; color: var(--arc-mi-ink); background: var(--arc-mi-soft); border: 2px dashed var(--arc-mi-line); border-radius: 8px; }
+.mi-spot.spot-kitchen { grid-area: kitchen; }
+.mi-spot.spot-bath { grid-area: bath; }
+.mi-spot.spot-windows { grid-area: windows; }
+.mi-spot.spot-locks { grid-area: locks; }
+.mi-spot.spot-walls { grid-area: walls; }
+.bst-guild .arc-frame.skin-movein .mi-spot[disabled] { opacity: 1; cursor: default; border-style: solid; }
+.bst-guild .arc-frame.skin-movein .mi-spot.ok { border-color: var(--arc-mi-good); }
+.bst-guild .arc-frame.skin-movein .mi-spot.bad { border-color: var(--arc-mi-bad); border-width: 3px; }
+.mi-spot.bad small { color: var(--arc-mi-bad); font-weight: 800; }
+.mi-side { display: grid; gap: 6px; padding: 10px 12px; }
+.mi-side h4, .mi-card h4 { margin: 0; font: 900 1.1rem "Arial Black", sans-serif; }
+.mi-side p { margin: 0; }
+.mi-side dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 0; }
+.mi-side dt { font-weight: 700; }
+.mi-side dd { margin: 0; text-align: right; font-weight: 900; }
+.mi-income { display: flex; align-items: center; gap: 4px; font-weight: 800; }
+.mi-income.ok { color: var(--arc-mi-good); }
+.mi-income.bad { color: var(--arc-mi-bad); }
+.mi-mate { margin: 0; padding: 6px 8px; border: 2px solid var(--arc-mi-line); border-radius: 8px; }
+.mi-mate legend { font-weight: 800; }
+.mi-mate ul { margin: 4px 0; padding-left: 18px; font-size: 0.85rem; }
+.mi-warn { display: flex; align-items: center; gap: 4px; padding: 4px 8px; font-weight: 800; background: var(--arc-mi-soft); border-radius: 6px; }
+.mi-warn.hot { color: var(--arc-mi-key-ink); background: var(--arc-mi-key); }
+.bst-guild .arc-frame.skin-movein .mi-side button.secondary, .bst-guild .arc-frame.skin-movein .mi-card button.secondary, .bst-guild .arc-frame.skin-movein .mi-doc button.secondary { color: var(--arc-mi-ink); background: var(--arc-mi-card); border: 2px solid var(--arc-mi-ink); }
+.mi-lease { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: start; }
+.mi-doc { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; counter-reset: clause; }
+.mi-doc li { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 10px 12px; border: 2px solid transparent; font-family: Georgia, serif; }
+.mi-doc li.sel { border: 2px dashed var(--arc-mi-ink); }
+.mi-doc li p { margin: 0; }
+.mi-note { padding: 6px 8px; background: var(--arc-mi-soft); border-radius: 8px; font-weight: 700; }
+.mi-card { display: grid; gap: 8px; max-width: 560px; margin: 20px auto; padding: 16px 20px; }
+.mi-card p { margin: 0; }
+.mi-photos { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 10px; }
+.bst-guild .arc-frame.skin-movein .mi-photo { display: grid; gap: 4px; justify-items: start; padding: 10px; text-align: left; color: var(--arc-mi-ink); background: var(--arc-mi-card); border: 3px solid transparent; border-radius: 10px; }
+.bst-guild .arc-frame.skin-movein .mi-photo[aria-pressed="true"] { border-color: var(--arc-mi-key); background: var(--arc-mi-soft); }
+.mi-tag { padding: 0 6px; font-size: 0.75rem; font-weight: 800; border: 1px solid currentColor; border-radius: 999px; }
+.mi-photo[aria-pressed="true"] .mi-tag { color: var(--arc-mi-key-ink); background: var(--arc-mi-key); }
+.mi-year { display: grid; place-items: center; min-height: 260px; }
+.mi-sheet { width: 100%; border-collapse: collapse; padding: 6px; }
+.mi-sheet caption { text-align: left; font-weight: 900; padding-bottom: 4px; }
+.mi-sheet th { text-align: left; font-weight: 600; padding: 3px 6px; }
+.mi-sheet td { text-align: right; padding: 3px 6px; font-weight: 800; }
+.mi-sheet tr.bad td { color: var(--arc-mi-bad); }
+.mi-sheet tr.total { border-top: 2px solid var(--arc-mi-ink); }
+.mi-sheet tr.total th, .mi-sheet tr.total td { font-weight: 900; }
+.mi-reveal p { margin: 6px 0 0; }
+.minigame.movein { min-height: 460px; }

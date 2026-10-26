@@ -12,6 +12,7 @@ import { FEES_META, FEES_BONUS } from "./fees.js";
 import { FEED_META, FEED_BONUS } from "./feed.js";
 import { RAINY_META, RAINY_BONUS } from "./rainy.js";
 import { TREE_META, TREE_BONUS } from "./tree.js";
+import { MI_META, MI_BONUS } from "./movein.js";
 import { DASH_META, DASH_BONUS } from "./dash.js";
 import { LOT_META, LOT_BONUS } from "./lot.js";
 
@@ -27,6 +28,7 @@ export const ARCADE = {
   feed: { ...FEED_META, bonus: FEED_BONUS },
   rainy: { ...RAINY_META, bonus: RAINY_BONUS },
   tree: { ...TREE_META, bonus: TREE_BONUS },
+  movein: { ...MI_META, bonus: MI_BONUS },
   dash: { ...DASH_META, bonus: DASH_BONUS },
   lot: { ...LOT_META, bonus: LOT_BONUS },
 };
