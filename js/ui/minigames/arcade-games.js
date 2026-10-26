@@ -9,5 +9,6 @@ import * as phish from "./phish-tank.js";
 import * as grind from "./the-grind.js";
 import * as fees from "./fee-detective.js";
 import * as feed from "./feed-frenzy.js";
+import * as rainy from "./rainy-day.js";
 
-export const GAME_UI = { billdrop, payin4, scorechase, cashier, checks, phish, grind, fees, feed };
+export const GAME_UI = { billdrop, payin4, scorechase, cashier, checks, phish, grind, fees, feed, rainy };

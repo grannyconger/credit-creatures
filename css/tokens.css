@@ -693,6 +693,16 @@
   --arc-ff-yellow: #ffd23f;
   --arc-ff-good: #127a46;
   --arc-ff-bad: #b62020;
+  /* Rainy Day: a stormy sky, umbrellas and a trading card pack. */
+  --arc-rd-bg: #1d2a3d;
+  --arc-rd-cloud: #3a4b63;
+  --arc-rd-card: #f6f8fb;
+  --arc-rd-ink: #142033;
+  --arc-rd-sun: #ffcc4d;
+  --arc-rd-sun-ink: #2a1d00;
+  --arc-rd-good: #11744a;
+  --arc-rd-bad: #b3261e;
+  --arc-rd-soft: #e2e9f2;
 }
 
 /* The parts of a total, for the stacked bars in the Tradeoffs and the Vault Overview

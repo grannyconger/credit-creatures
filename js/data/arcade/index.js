@@ -10,6 +10,7 @@ import { PHISH_META, PHISH_BONUS } from "./phish.js";
 import { GRIND_META, GRIND_BONUS } from "./grind.js";
 import { FEES_META, FEES_BONUS } from "./fees.js";
 import { FEED_META, FEED_BONUS } from "./feed.js";
+import { RAINY_META, RAINY_BONUS } from "./rainy.js";
 
 export const ARCADE = {
   billdrop: { ...BILLDROP_META, bonus: BILLDROP_BONUS },
@@ -21,6 +22,7 @@ export const ARCADE = {
   grind: { ...GRIND_META, bonus: GRIND_BONUS },
   fees: { ...FEES_META, bonus: FEES_BONUS },
   feed: { ...FEED_META, bonus: FEED_BONUS },
+  rainy: { ...RAINY_META, bonus: RAINY_BONUS },
 };
 
 export const isArcade = (key) => Boolean(ARCADE[key]);

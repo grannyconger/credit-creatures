@@ -1,0 +1,132 @@
+// Rainy Day (GAME-SPECS.md game 10): buy insurance, set aside an emergency fund,
+// then open a year of life one card at a time. Plain words, no em-dashes, no
+// semicolons. Simplified for learning, not insurance advice.
+
+// Monthly premiums and deductibles. "none" means no coverage.
+export const RD_POLICIES = {
+  car: { name: "Car insurance", icon: "car", low: { premium: 140, deductible: 250 }, high: { premium: 95, deductible: 1000 }, note: "Most states require at least basic car insurance. This game lets you skip it so you can see why." },
+  renters: { name: "Renters insurance", icon: "home", low: { premium: 22, deductible: 250 }, high: { premium: 12, deductible: 1000 } },
+  health: { name: "Health insurance", icon: "heart", low: { premium: 260, deductible: 500 }, high: { premium: 150, deductible: 3000 } },
+  phone: { name: "Phone protection", icon: "phone", low: { premium: 14, deductible: 50 }, high: { premium: 8, deductible: 200 } },
+};
+
+// 40 event cards. tier: quiet, good, small, medium, cat. policy: what covers it
+// (none means nothing does). cost: a range. atFault raises the car premium at renewal.
+export const RD_EVENTS = [
+  { id: "q1", tier: "quiet", title: "A quiet month", text: "Nothing broke, nobody got sick. Enjoy it." },
+  { id: "q2", tier: "quiet", title: "Smooth sailing", text: "Work, school, sleep, repeat. Not a single surprise." },
+  { id: "q3", tier: "quiet", title: "Calm skies", text: "The forecast said storms. The forecast was wrong." },
+  { id: "q4", tier: "quiet", title: "Boring is good", text: "Your bank account had a boring month. Boring is great." },
+  { id: "q5", tier: "quiet", title: "All clear", text: "Your car started every morning. Your phone stayed in one piece." },
+  { id: "q6", tier: "quiet", title: "Nothing to report", text: "A month so calm your creature took up knitting." },
+  { id: "g1", tier: "good", title: "Small refund", text: "A store refunded an overcharge.", gain: [40, 120] },
+  { id: "g2", tier: "good", title: "Safe driver discount", text: "Your car insurer sent a small check for a clean record.", gain: [50, 100] },
+  { id: "g3", tier: "good", title: "Birthday money", text: "Your aunt sent a card with cash in it.", gain: [50, 150] },
+  { id: "g4", tier: "good", title: "Sold old stuff", text: "You sold your old bike online.", gain: [60, 140] },
+  { id: "s1", tier: "small", policy: "phone", title: "Cracked phone screen", text: "It slid off the bus seat. Face down, of course.", cost: [180, 320] },
+  { id: "s2", tier: "small", policy: "phone", title: "Phone took a swim", text: "Into the sink. It did not survive.", cost: [300, 600] },
+  { id: "s3", tier: "small", policy: "car", title: "Minor scrape", text: "A pole jumped out in the parking lot. Your bumper lost.", cost: [350, 600], atFault: true },
+  { id: "s4", tier: "small", policy: "health", title: "Urgent care visit", text: "A fever that wouldn't quit. The clinic fixed you up.", cost: [150, 300] },
+  { id: "s5", tier: "small", policy: "health", title: "Sprained ankle", text: "Pickup basketball. An x-ray and a brace.", cost: [250, 550] },
+  { id: "s6", tier: "small", policy: "renters", title: "Stolen bike", text: "Someone cut the lock outside your apartment.", cost: [250, 500] },
+  { id: "s7", tier: "small", policy: "renters", title: "Laptop knocked off the table", text: "The cat did it. The cat feels nothing.", cost: [400, 600] },
+  { id: "s8", tier: "small", policy: "none", title: "Vet bill", text: "Your dog ate a sock. Pet bills aren't covered by any of your policies.", cost: [200, 450] },
+  { id: "s9", tier: "small", policy: "none", title: "Broken glasses", text: "Sat on them. Not covered.", cost: [150, 250] },
+  { id: "s10", tier: "small", policy: "car", title: "Cracked windshield", text: "A rock on the highway. A long crack across the glass.", cost: [250, 450] },
+  { id: "s11", tier: "small", policy: "health", title: "Dentist surprise", text: "A cavity that couldn't wait.", cost: [200, 400] },
+  { id: "s12", tier: "small", policy: "none", title: "Tire blowout", text: "Tires wear out. Insurance doesn't pay for wear and tear.", cost: [150, 300] },
+  { id: "m1", tier: "medium", policy: "car", title: "Fender bender", text: "You rolled into someone at a stop sign. Your fault.", cost: [2000, 4000], atFault: true },
+  { id: "m2", tier: "medium", policy: "health", title: "ER visit", text: "A bad fall needed stitches and a scan.", cost: [2000, 4000] },
+  { id: "m3", tier: "medium", policy: "renters", title: "Burglary", text: "Someone broke in and took your TV and game console.", cost: [2000, 3500] },
+  { id: "m4", tier: "medium", policy: "car", title: "Hail storm", text: "Golf ball hail. Your car looks like a dimpled golf ball now.", cost: [2000, 3500] },
+  { id: "m5", tier: "medium", policy: "health", title: "Broken arm", text: "Skateboard, meet curb. A cast for six weeks.", cost: [2500, 4000] },
+  { id: "m6", tier: "medium", policy: "renters", title: "Water heater burst", text: "Your furniture soaked up the whole tank.", cost: [2000, 3000] },
+  { id: "m7", tier: "medium", policy: "car", title: "Hit and run", text: "Someone hit your parked car and drove off.", cost: [2000, 3500] },
+  { id: "x1", tier: "medium", policy: "renters", excluded: true, title: "Flood damage", text: "A storm flooded the ground floor. Renters insurance doesn't cover floods. That takes separate flood insurance.", cost: [2500, 4000] },
+  { id: "c1", tier: "cat", policy: "car", title: "Major accident", text: "A bad crash on a rainy night. Everyone lived. The car didn't.", cost: [25000, 45000], atFault: true },
+  { id: "c2", tier: "cat", policy: "health", title: "Hospital stay", text: "Appendix surgery and three nights in the hospital.", cost: [30000, 50000] },
+  { id: "c3", tier: "cat", policy: "renters", title: "Apartment fire", text: "A kitchen fire next door spread. Your stuff is gone.", cost: [20000, 32000] },
+  { id: "c4", tier: "cat", policy: "health", title: "Serious illness", text: "Weeks of treatment, tests and specialists.", cost: [35000, 60000] },
+  { id: "c5", tier: "cat", policy: "car", title: "You hit a parked truck", text: "Ice, a hill, and a very expensive truck.", cost: [22000, 38000], atFault: true },
+  { id: "q7", tier: "quiet", title: "Lucky month", text: "You stepped over a puddle you didn't see. Lucky." },
+  { id: "q8", tier: "quiet", title: "Nothing happened", text: "And that's the best news of all." },
+  { id: "s13", tier: "small", policy: "phone", title: "Phone stolen", text: "Left on a cafe table for one minute.", cost: [400, 700] },
+  { id: "s14", tier: "small", policy: "renters", title: "Spilled juice on the laptop", text: "Sticky keys and a dark screen.", cost: [350, 600] },
+  { id: "g5", tier: "good", title: "Rebate check", text: "A rebate you forgot about finally came.", gain: [30, 80] },
+];
+
+export const RAINY_META = {
+  title: "Rainy Day",
+  pitch: "Buy insurance, set aside an emergency fund, then open a year of life one card at a time. Will you be covered when it storms?",
+  skill: "insurance",
+  standards: ["B1", "B2", "B3", "B4", "B5", "B7", "G8"],
+  metric: "Plan Strength",
+  tie: { label: "a better worst 5 percent", better: "high" },
+  rankedHint: "only Timed shifts are ranked",
+  ranked: (s) => s.timer === "timed",
+  board: () => "rainy",
+  format: (v) => `${v < 0 ? "-" : ""}$${Math.abs(Math.round(v)).toLocaleString("en-US")}`,
+  timer: { timed: "60 seconds to shop, then 8 seconds a card.", none: "Space flips each card." },
+  settings: () => [],
+  mistakes: ["Each uncovered cost over $1,000: the uncovered amount, added as debt (up to $500 a cost in this game)."],
+  beats: ["A premium is what you pay every month for insurance.", "A deductible is what you pay first when something happens.", "Your emergency fund pays for anything insurance doesn't."],
+  why: { weak: "I didn't think anything would happen.", okay: "I wanted to be safe.", strong: "I can cover small stuff from my fund, so I only insured the big risks." },
+  revealTitle: "Your plan, played 100 times",
+  unlock: 5,
+};
+
+export const RAINY_BONUS = [
+  { id: "r1", type: "number", q: "Your deductible is $500. A $2,000 repair happens. How much do you pay?", answer: 500, why: "You pay the deductible, $500. Insurance pays the other $1,500." },
+  { id: "r2", type: "choice", q: "A premium is...", choices: ["What you pay for insurance every month", "What you pay when something happens", "A refund"], answer: 0, why: "You pay premiums whether or not anything happens." },
+  { id: "r3", type: "choice", q: "A higher deductible usually means...", choices: ["A lower premium", "A higher premium", "No coverage"], answer: 0, why: "You agree to pay more of a claim, so the monthly price drops." },
+  { id: "r4", type: "number", q: "A $300 repair with a $500 deductible. How much does insurance pay?", answer: 0, why: "The cost is less than the deductible, so you pay it all." },
+  { id: "r5", type: "choice", q: "Renters insurance usually does NOT cover...", choices: ["Flood damage", "A stolen laptop", "A fire"], answer: 0, why: "Floods need separate flood insurance. That's an exclusion." },
+  { id: "r6", type: "choice", q: "An emergency fund is best for...", choices: ["Small surprises and deductibles", "Vacations", "Monthly bills you know about"], answer: 0, why: "Self-cover the small stuff. Insure the big stuff." },
+  { id: "r7", type: "choice", q: "Paying someone to take on a risk is called...", choices: ["Risk transfer", "Risk avoidance", "Risk assumption"], answer: 0, why: "Insurance transfers a big risk to the insurer for a premium." },
+  { id: "r8", type: "choice", q: "Choosing not to ride a motorcycle to avoid crashes is...", choices: ["Risk avoidance", "Risk transfer", "A premium"], answer: 0, why: "You avoid the risk entirely." },
+  { id: "r9", type: "choice", q: "Keeping a fund to pay small repairs yourself is...", choices: ["Risk assumption (retention)", "Risk transfer", "An exclusion"], answer: 0, why: "You keep the small risks and pay them yourself." },
+  { id: "r10", type: "choice", q: "An at-fault accident usually makes your car premium...", choices: ["Go up", "Go down", "Stay the same"], answer: 0, why: "Insurers charge more when you've caused a claim." },
+  { id: "r11", type: "number", q: "Premiums of $95 a month for a year cost how much?", answer: 1140, why: "$95 times 12 is $1,140." },
+  { id: "r12", type: "choice", q: "Collision coverage pays for...", choices: ["Damage to your car from a crash", "Your medical bills", "Your phone"], answer: 0, why: "Liability covers other people. Collision covers your car." },
+  { id: "r13", type: "choice", q: "Liability car insurance pays for...", choices: ["Damage you cause to other people and their things", "Your own car's repairs", "Your groceries"], answer: 0, why: "Most states require liability coverage." },
+  { id: "r14", type: "choice", q: "A copay is...", choices: ["A set amount you pay for a doctor visit", "Your yearly premium", "A refund"], answer: 0, why: "Like $30 for a doctor visit, with insurance paying the rest." },
+  { id: "r15", type: "number", q: "A $20,000 hospital stay with a $3,000 deductible. What do you pay (simplified, no coinsurance)?", answer: 3000, why: "You pay the deductible. Insurance pays $17,000." },
+  { id: "r16", type: "choice", q: "Which is the riskiest to leave uninsured?", choices: ["Health care", "Your phone", "A $15 umbrella"], answer: 0, why: "One hospital stay can cost more than a year of pay." },
+  { id: "r17", type: "choice", q: "An exclusion is...", choices: ["Something a policy won't cover", "A discount", "A premium"], answer: 0, why: "Read the exclusions before something happens." },
+  { id: "r18", type: "choice", q: "Who is the insured?", choices: ["The person covered by the policy", "The insurance company", "The agent"], answer: 0, why: "You're the insured. The insurer is the company." },
+  { id: "r19", type: "number", q: "Low deductible plan: $260 a month. High deductible: $150 a month. How much do you save in a year with high?", answer: 1320, why: "$110 a month times 12 is $1,320." },
+  { id: "r20", type: "choice", q: "A claim is...", choices: ["Asking your insurer to pay for a loss", "Paying your premium", "Canceling a policy"], answer: 0, why: "You file a claim after something happens." },
+  { id: "r21", type: "choice", q: "Why look at the worst 5 percent of outcomes, not just the average?", choices: ["Insurance is about surviving the rare bad year", "Averages are always wrong", "It's more fun"], answer: 0, why: "One catastrophe can matter more than many good years." },
+];
+
+export const RAINY_GUIDE = {
+  how: {
+    goal: "Build a plan that leaves you with the most money across many possible years, not just a lucky one.",
+    steps: [
+      "Shop: for each policy pick No coverage, a low [[deductible]] (higher [[premium]]) or a high deductible (lower premium).",
+      "Set your [[emergency fund]] with the slider. It's money you won't touch except for surprises.",
+      "Open the Life Pack: 12 cards, one a month. Each shows what happened, what insurance paid, and what you paid.",
+      "You pay from your fund first, then checking, then debt. Debt grows with interest.",
+      "Watch for an [[exclusion]]: some things a policy just won't cover.",
+      "Your score is your plan played 100 times. Insurance is about the [[risk]] of a terrible year, not about winning one year.",
+    ],
+    example: "High deductibles cost less every month. If your fund can cover a $1,000 deductible, you keep the savings and you're still [[covered]] when a $20,000 hospital stay comes.",
+  },
+  vocab: [
+    { term: "premium", def: "What you pay for insurance every month, whether or not anything happens.", example: "Her renters insurance premium is $12 a month." },
+    { term: "deductible", def: "What you pay first on a claim before insurance pays the rest.", example: "With a $500 deductible, a $2,000 repair costs you $500." },
+    { term: "covered", def: "A loss the policy will pay for, after the deductible.", example: "The stolen laptop was covered by renters insurance." },
+    { term: "exclusion", def: "Something a policy won't pay for.", example: "Floods are an exclusion in most renters policies." },
+    { term: "emergency fund", def: "Savings set aside only for surprises.", example: "His emergency fund paid the deductible." },
+    { term: "risk", def: "The chance that something bad and costly happens.", example: "Driving every day raises the risk of a crash." },
+  ],
+  irl: {
+    checked: "2026-10-25",
+    intro: "Real insurance numbers, for a sense of scale.",
+    facts: [
+      { stat: "Renters insurance averaged $171 a year in 2022. That's about $14 a month to protect everything you own.", source: "Insurance Information Institute, using NAIC data", year: 2026, url: "https://www.iii.org/fact-statistic/facts-statistics-renters-insurance" },
+      { stat: "Family health insurance through an employer averaged $26,993 a year in 2025. Workers paid $6,850 of that and employers paid the rest.", source: "KFF Employer Health Benefits Survey", year: 2025, url: "https://www.kff.org/health-costs/annual-family-premiums-for-employer-coverage-rise-6-in-2025-nearing-27000-with-workers-paying-6850-toward-premiums-out-of-their-paychecks/" },
+      { stat: "Workers with a deductible on single health coverage faced an average deductible of $1,886 in 2025.", source: "KFF Employer Health Benefits Survey", year: 2025, url: "https://www.kff.org/health-costs/annual-family-premiums-for-employer-coverage-rise-6-in-2025-nearing-27000-with-workers-paying-6850-toward-premiums-out-of-their-paychecks/" },
+    ],
+  },
+};

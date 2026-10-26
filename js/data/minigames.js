@@ -39,6 +39,13 @@ export const JOBS = {
     job: "Social media scroller",
     skill: "Scroll a month of posts, spot the marketing tricks, and buy only what you need.",
   },
+  rainy: {
+    mark: "umbrella",
+    icon: "☔",
+    title: "Rainy Day",
+    job: "Risk planner",
+    skill: "Pick insurance and an emergency fund, then survive a year of surprises.",
+  },
   scorechase: {
     mark: "gauge",
     icon: "📈",

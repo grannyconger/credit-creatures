@@ -320,6 +320,28 @@ export const CONFIG = {
         usedOtherwise: 0.2,
         band: [300, 420],
       },
+      // Rainy Day (game 10). One year, 12 cards. Simplified insurance math.
+      rainy: {
+        maxPayScore: 110,
+        shopSeconds: 60,
+        cardSeconds: 8,
+        start: [2500, 3500],
+        income: [380, 480],
+        tierWeights: { quiet: 0.42, good: 0.12, small: 0.37, medium: 0.07, cat: 0.012 },
+        renewalMonth: 6,
+        // Checking above creepFloor loses creep each month to everyday extras.
+        creep: 0.08,
+        creepFloor: 300,
+        lapseFee: 35,
+        renewalBump: 0.3,
+        debtApr: 0.2,
+        sims: 100,
+        payDivisor: 20,
+        // Risky mode: an uncovered cost over threshold goes on the creature's
+        // debt, capped per cost so one catastrophe can't bury a creature.
+        riskyThreshold: 1000,
+        riskyCap: 500,
+      },
       // Score Chase (game 7). 18 months, a card at a time.
       scorechase: {
         maxPayScore: 660,

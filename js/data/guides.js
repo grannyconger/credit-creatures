@@ -15,6 +15,7 @@ import { PHISH_GUIDE } from "./arcade/phish.js";
 import { GRIND_GUIDE } from "./arcade/grind.js";
 import { FEES_GUIDE } from "./arcade/fees.js";
 import { FEED_GUIDE } from "./arcade/feed.js";
+import { RAINY_GUIDE } from "./arcade/rainy.js";
 
 export const GUIDES = {
   billdrop: BILLDROP_GUIDE,
@@ -26,4 +27,5 @@ export const GUIDES = {
   grind: GRIND_GUIDE,
   fees: FEES_GUIDE,
   feed: FEED_GUIDE,
+  rainy: RAINY_GUIDE,
 };

@@ -767,3 +767,50 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .ff-stamps .used .ff-stamp { color: var(--arc-ff-good); }
 .ff-stamps .never .ff-stamp { color: var(--arc-ff-bad); border-style: dashed; }
 .skin-feed .arc-keys { color: var(--arc-ff-card); }
+
+/* ===========================================================================
+   Rainy Day: a stormy sky, umbrella icons and a trading card pack opening.
+   =========================================================================== */
+.bst-guild .arc-frame.skin-rainy { --g-bg: var(--arc-rd-bg); --g-accent: var(--arc-rd-sun); --g-accent-ink: var(--arc-rd-sun-ink); --g-ink: var(--arc-rd-card); --g-paper: var(--arc-rd-card); --g-paper-ink: var(--arc-rd-ink); --g-good: var(--arc-rd-good); --g-bad: var(--arc-rd-bad); background-image: repeating-linear-gradient(105deg, transparent 0 22px, color-mix(in srgb, var(--arc-rd-soft) 7%, transparent) 22px 23px); }
+.arc-cab.cab-rainy { --cab: var(--arc-rd-sun); --cab-bg: var(--arc-rd-bg); --cab-ink: var(--arc-rd-sun-ink); }
+.rd-shop { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 12px; align-items: start; }
+.rd-policies { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rd-policy { margin: 0; padding: 8px 10px; color: var(--arc-rd-ink); background: var(--arc-rd-card); border: 0; border-radius: 12px; display: grid; gap: 4px; }
+.rd-policy legend { float: left; display: flex; align-items: center; gap: 4px; margin-bottom: 4px; font-weight: 900; }
+.rd-opt { display: grid; gap: 1px; padding: 4px 8px; text-align: left; color: var(--arc-rd-ink); background: var(--arc-rd-soft); border: 2px solid transparent; border-radius: 8px; font: inherit; cursor: pointer; }
+.rd-opt strong { font-size: 0.95rem; }
+.rd-opt small { font-size: 0.8rem; }
+.rd-opt[aria-pressed="true"] { border-color: var(--arc-rd-ink); background: var(--arc-rd-sun); color: var(--arc-rd-sun-ink); }
+.rd-opt[aria-pressed="true"] strong::after { content: "  ✓ chosen"; font-size: 0.75rem; }
+.rd-note { font-size: 0.78rem; color: var(--arc-rd-bad); }
+.rd-side, .rd-stats { display: grid; gap: 8px; padding: 10px 12px; color: var(--arc-rd-ink); background: var(--arc-rd-card); border-radius: 14px; }
+.rd-side p { margin: 0; }
+.rd-skill { padding: 6px 8px; background: var(--arc-rd-soft); border-radius: 8px; }
+.rd-skill p { margin: 0 0 4px; }
+.rd-skill .row { display: flex; align-items: center; gap: 6px; }
+.rd-skill input { width: 90px; padding: 4px 8px; border: 2px solid var(--arc-rd-ink); border-radius: 6px; color: var(--arc-rd-ink); background: #fff; }
+.rd-skill .row button { padding: 4px 12px; font-weight: 800; color: var(--arc-rd-sun-ink); background: var(--arc-rd-sun); border: 2px solid var(--arc-rd-ink); border-radius: 999px; }
+.rd-skill .mg-flash.good { color: var(--arc-rd-good); }
+.rd-skill .mg-flash.bad { color: var(--arc-rd-bad); }
+.rd-fund { display: grid; gap: 2px; font-weight: 800; }
+.rd-slider { width: 100%; accent-color: var(--arc-rd-sun); }
+.rd-warn { display: flex; align-items: center; gap: 4px; font-weight: 800; color: var(--arc-rd-bad); }
+.rd-year { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 12px; align-items: start; }
+.rd-cardslot { min-height: 220px; display: grid; place-items: center; }
+.rd-result { display: grid; gap: 4px; max-width: 620px; padding: 14px 18px; color: var(--arc-rd-ink); background: var(--arc-rd-card); border: 4px solid var(--arc-rd-ink); border-radius: 16px; animation: arc-flip-in 0.35s ease-out; }
+.rd-result.tier-cat { border-color: var(--arc-rd-bad); }
+.rd-result.tier-medium { border-style: dashed; }
+.rd-result h4 { margin: 0; font: 900 1.3rem "Arial Black", sans-serif; }
+.rd-result p { margin: 0; }
+.rd-result ul { margin: 4px 0; padding-left: 20px; display: grid; gap: 2px; }
+.rd-result li.bad { color: var(--arc-rd-bad); font-weight: 800; }
+.rd-tier { justify-self: start; padding: 0 8px; font: 900 0.75rem "Arial Black", sans-serif; letter-spacing: 0.06em; color: var(--arc-rd-sun-ink); background: var(--arc-rd-sun); border-radius: 999px; }
+:root[data-motion="calm"] .rd-result { animation: arc-fade-in 0.2s; }
+@media (prefers-reduced-motion: reduce) { .rd-result { animation: arc-fade-in 0.2s; } }
+.rd-stats > div { display: grid; }
+.rd-stats strong { font: 900 1.2rem "Arial Black", sans-serif; }
+.rd-stats strong.neg { color: var(--arc-rd-bad); }
+.rd-stats strong.neg::before { content: "! "; }
+.rd-reveal p { margin: 0 0 6px; }
+.skin-rainy .arc-keys { color: var(--arc-rd-card); }
+.rd-year > .rd-result { justify-self: center; width: min(620px, 100%); }
