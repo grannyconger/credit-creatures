@@ -188,8 +188,8 @@ export function start(ctx) {
   function useFix(kind) {
     const r = B.applyFix(s, kind, kind === "shift" ? s.day : selected);
     ctx.track("billFix", { game: "billdrop", kind, ok: r.ok });
-    if (!r.ok) ctx.echo(r.message, { kind: "safe" });
-    else ctx.echo(kind === "move" ? "Due date moved 5 days later." : kind === "cancel" ? "Subscription canceled. No charge this month." : "Extra shift booked. The pay lands in 7 days.", { kind: "good" });
+    if (!r.ok) ctx.notice(r.message);
+    else ctx.echo(kind === "move" ? `Fix: ${B.billOf(s, selected)?.company} due date moved 5 days later.` : kind === "cancel" ? "Fix: subscription canceled. No charge this month." : "Fix: extra shift booked. The pay lands in 7 days.", { kind: "good" });
     fixMenu = false;
     paint();
   }

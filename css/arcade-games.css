@@ -271,3 +271,88 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .bst-guild .arc-results.arc-v2 .big-number { font-size: 2.6rem; text-shadow: 0 0 8px var(--arc-yellow); }
 .bst-guild .arc-results.arc-v2 .arc-title { font-size: 1.3rem; }
 .arc-res-top { grid-template-columns: 1fr 1fr; }
+
+/* ===========================================================================
+   Pay in 4: a glossy shopping app. Cha-ching that slowly turns into buzzes.
+   Each app has its own color AND pattern AND name, so color is never alone.
+   =========================================================================== */
+.bst-guild .arc-frame.skin-payin4 { --g-bg: var(--arc-p4-bg); --g-accent: var(--arc-p4-hot); --g-accent-ink: var(--arc-p4-hot-ink); --g-ink: var(--arc-p4-card); --g-paper: var(--arc-p4-card); --g-paper-2: var(--arc-p4-soft); --g-paper-ink: var(--arc-p4-ink); --g-line: var(--arc-p4-ink); --g-good: var(--arc-p4-good); --g-bad: var(--arc-p4-bad); }
+.arc-cab.cab-payin4 { --cab: var(--arc-p4-hot); --cab-bg: var(--arc-p4-bg); --cab-ink: var(--arc-p4-hot-ink); }
+.payin4 { position: relative; }
+.app-klarma { --app: var(--arc-p4-klarma); --app-pat: radial-gradient(circle, color-mix(in srgb, var(--arc-p4-ink) 35%, transparent) 1.5px, transparent 2px) 0 0 / 7px 7px; }
+.app-afterplay { --app: var(--arc-p4-afterplay); --app-pat: repeating-linear-gradient(45deg, color-mix(in srgb, var(--arc-p4-ink) 30%, transparent) 0 2px, transparent 2px 7px); }
+.app-afirm { --app: var(--arc-p4-afirm); --app-pat: repeating-linear-gradient(0deg, color-mix(in srgb, #fff 35%, transparent) 0 2px, transparent 2px 6px); }
+.p4-skill { max-width: 640px; margin: 20px auto; padding: 16px 20px; color: var(--arc-p4-ink); background: var(--arc-p4-card); border-radius: 18px; }
+.p4-skill h4 { margin: 0 0 8px; font: 900 1.3rem "Arial Black", sans-serif; }
+.p4-skill-q { font-size: 1.15rem; font-weight: 700; }
+.p4-skill-row { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; }
+.p4-skill-row label { display: grid; gap: 2px; font-weight: 800; }
+.p4-skill input { width: 120px; padding: 6px 10px; font-size: 1.1rem; border: 2px solid var(--arc-p4-ink); border-radius: 10px; color: var(--arc-p4-ink); background: #fff; }
+.p4-skill .row button, .p4-skill-row button { padding: 6px 16px; font-weight: 800; color: var(--arc-p4-hot-ink); background: var(--arc-p4-hot); border: 2px solid var(--arc-p4-ink); border-radius: 999px; }
+.p4-skill .mg-flash.good { color: var(--arc-p4-good); }
+.p4-skill .mg-flash.bad { color: var(--arc-p4-bad); }
+.p4-main { display: grid; grid-template-columns: 220px minmax(0, 1fr) 230px; gap: 12px; align-items: start; }
+.p4-apps, .p4-side { display: grid; gap: 8px; padding: 10px; color: var(--arc-p4-ink); background: var(--arc-p4-card); border-radius: 16px; }
+.p4-apps h4 { margin: 0; }
+.p4-app { display: grid; grid-template-columns: 36px 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; padding: 8px; background: var(--arc-p4-soft); border-radius: 12px; }
+.p4-app-logo { grid-row: span 2; display: grid; place-items: center; width: 36px; height: 36px; font: 900 1.2rem "Arial Black", sans-serif; color: var(--arc-p4-ink); background: var(--app-pat), var(--app); border-radius: 10px; }
+.p4-app.app-afirm .p4-app-logo { color: #fff; }
+.p4-app small { display: flex; align-items: center; gap: 2px; font-weight: 700; }
+.p4-app.locked { opacity: 0.75; outline: 2px dashed var(--arc-p4-bad); }
+.p4-app.locked small { color: var(--arc-p4-bad); }
+.p4-stage { display: grid; gap: 12px; }
+.p4-item { position: relative; display: grid; gap: 4px; justify-items: center; padding: 18px; text-align: center; color: var(--arc-p4-ink); background: var(--arc-p4-card); border-radius: 22px; box-shadow: 0 10px 0 color-mix(in srgb, #000 35%, transparent); }
+.p4-item h3 { margin: 0; font: 900 1.6rem "Arial Black", sans-serif; }
+.p4-item.flash { outline: 4px dashed var(--arc-p4-hot); }
+.p4-flash { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; font-weight: 900; color: var(--arc-p4-hot-ink); background: var(--arc-p4-hot); border-radius: 999px; }
+.p4-store { font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.8; }
+.p4-price { font: 900 2.4rem "Arial Black", sans-serif; }
+.p4-vibes { display: inline-flex; align-items: center; gap: 4px; font: 800 1.2rem "Trebuchet MS", sans-serif; }
+.p4-plan { display: flex; align-items: center; gap: 4px; margin: 0; font-weight: 700; }
+.p4-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.p4-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; font: 900 1.1rem "Trebuchet MS", sans-serif; border: 3px solid var(--arc-p4-ink); border-radius: 999px; cursor: pointer; }
+.p4-btn.cash { color: var(--arc-p4-ink); background: var(--arc-p4-card); }
+.p4-btn.split { color: var(--arc-p4-hot-ink); background: var(--arc-p4-hot); }
+.p4-btn.skip { color: var(--arc-p4-card); background: transparent; border-color: var(--arc-p4-card); }
+.p4-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.p4-done { padding: 30px; text-align: center; color: var(--arc-p4-ink); background: var(--arc-p4-card); border-radius: 22px; }
+.p4-done p { display: flex; justify-content: center; align-items: center; gap: 4px; }
+.p4-creature { display: grid; place-items: center; }
+.p4-creature svg { max-height: 96px; }
+.p4-mood { display: flex; align-items: center; justify-content: center; gap: 2px; margin: 0; }
+.p4-cash { display: grid; text-align: center; }
+.p4-cash strong { font: 900 1.8rem "Arial Black", sans-serif; }
+.p4-cash strong.neg { color: var(--arc-p4-bad); }
+.p4-cash strong.neg::before { content: "! "; }
+.p4-week { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-weight: 800; }
+.p4-side > button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.bst-guild .arc-frame.skin-payin4 .p4-side button.secondary { color: var(--arc-p4-ink); background: var(--arc-p4-soft); border-color: var(--arc-p4-ink); }
+.p4-overlay:not(:empty) { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; padding: 10px; background: color-mix(in srgb, var(--arc-p4-bg) 75%, transparent); border-radius: 16px; }
+.p4-wallet { width: min(900px, 100%); display: grid; gap: 8px; padding: 12px; color: var(--arc-p4-ink); background: var(--arc-p4-card); border-radius: 18px; }
+.p4-wallet-head { display: flex; justify-content: space-between; align-items: center; }
+.p4-wallet-head h4 { display: flex; align-items: center; gap: 6px; margin: 0; }
+.bst-guild .arc-frame.skin-payin4 .p4-wallet button.secondary { color: var(--arc-p4-ink); background: var(--arc-p4-soft); border-color: var(--arc-p4-ink); }
+.p4-drafts { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; max-height: 120px; overflow: auto; }
+.p4-draft { display: inline-block; margin-left: 6px; padding: 1px 8px; font-weight: 800; color: var(--arc-p4-ink); background: var(--app-pat), var(--app); border-radius: 999px; }
+.p4-draft.app-afirm { color: #fff; }
+.p4-phantom { display: grid; gap: 6px; }
+.p4-bars { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; align-items: end; height: 150px; }
+.p4-bar { position: relative; display: grid; justify-items: center; align-content: end; height: 100%; }
+.p4-stack { display: flex; flex-direction: column-reverse; width: 100%; max-width: 30px; }
+.p4-stack span { display: block; width: 100%; background: var(--app-pat), var(--app); border: 1px solid var(--arc-p4-ink); }
+.p4-bar small { font-weight: 800; }
+.p4-bar em { position: absolute; top: 0; font: 800 0.7rem "Trebuchet MS", sans-serif; color: var(--arc-p4-bad); }
+.p4-bar.heavy .p4-stack { outline: 3px dashed var(--arc-p4-bad); outline-offset: 2px; }
+.p4-cashdot { position: absolute; width: 10px; height: 10px; background: var(--arc-p4-ink); border-radius: 50%; border: 2px solid var(--arc-p4-card); }
+.p4-legend { display: flex; flex-wrap: wrap; gap: 12px; font-weight: 700; }
+.p4-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.p4-legend i { display: inline-block; width: 16px; height: 12px; background: var(--app-pat), var(--app); border: 1px solid var(--arc-p4-ink); }
+.p4-legend i.cashdot { width: 10px; height: 10px; background: var(--arc-p4-ink); border-radius: 50%; }
+.skin-payin4 .arc-keys { color: var(--arc-p4-card); }
+.p4-cashdot.over { border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); width: 12px; height: 12px; }
+.p4-cashdot.neg { background: var(--arc-p4-bad); }
+.p4-over { position: absolute; top: -14px; font-size: 0.68rem; font-weight: 800; }
+.p4-bars { height: 140px; margin-top: 14px; }
+.p4-bars { height: 118px; }
+.p4-cashdot.neg { border-radius: 0; }
+.p4-phantom > p { margin: 0; }

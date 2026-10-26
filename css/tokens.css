@@ -640,6 +640,18 @@
   --arc-bill-bad: #b42318;
   --arc-bill-warn: #8a5a00;
   --arc-bill-soft: #dfe6ee;
+  /* Pay in 4: a glossy shopping app. Each BNPL app has a color and a pattern. */
+  --arc-p4-bg: #12161f;
+  --arc-p4-card: #ffffff;
+  --arc-p4-ink: #191b24;
+  --arc-p4-soft: #eef0f5;
+  --arc-p4-hot: #ff4f6d;
+  --arc-p4-hot-ink: #1a0b10;
+  --arc-p4-klarma: #ffb3c7;
+  --arc-p4-afterplay: #8ff0cf;
+  --arc-p4-afirm: #6b6bff;
+  --arc-p4-good: #11733f;
+  --arc-p4-bad: #b4231d;
 }
 
 /* The parts of a total, for the stacked bars in the Tradeoffs and the Vault Overview

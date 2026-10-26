@@ -164,6 +164,26 @@ export const CONFIG = {
         // The thoughtful plan's ending balance must land in this band (1.6).
         endBand: { easy: [100, 900], medium: [50, 650], hard: [0, 450] },
       },
+      // Pay in 4 (game 4). Money in dollars, 12 weeks.
+      payin4: {
+        maxPayScore: 290,
+        weekMs: 10000,
+        start: [250, 350],
+        paycheck: [260, 300],
+        living: [80, 100],
+        bnplOver: 50,
+        cut: 0.3,
+        gift: 50,
+        emergency: [150, 250],
+        lateFee: 8,
+        feeWeight: 3,
+        emergencyPenalty: 150,
+        // The thoughtful bot's cushion and its Vibes per dollar bar.
+        cushion: 230,
+        worth: 0.27,
+        // Thoughtful play's score must land in this band (1.6).
+        band: [180, 420],
+      },
     },
   },
 

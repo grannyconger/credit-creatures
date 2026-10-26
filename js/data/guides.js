@@ -7,9 +7,11 @@
 // against that source on the date in `checked`. Never invent one.
 
 import { BILLDROP_GUIDE } from "./arcade/billdrop.js";
+import { PAYIN4_GUIDE } from "./arcade/payin4.js";
 
 export const GUIDES = {
   billdrop: BILLDROP_GUIDE,
+  payin4: PAYIN4_GUIDE,
   fees: {
     how: {
       goal: "Find every fee on a bank statement, then say how you could avoid each one.",

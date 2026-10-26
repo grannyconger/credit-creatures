@@ -253,6 +253,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
       frame,
       play,
       life: run.life,
+      creature: game.save.creature,
       // A risky mistake costs real money the moment it happens (2.3).
       // quiet: the game already showed its own echo for this mistake.
       mistake({ type, cost, label, quiet = false }) {
@@ -272,6 +273,8 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
         } else if (!training && !quiet) echoes.push(`${label}. Free in safe mode, ${money(c)} in risky mode.`, { kind: "safe" });
       },
       echo: (text, opts) => echoes.push(text, opts),
+      // A quick note that isn't a consequence, so it stays out of the echo recap.
+      notice: (text) => echoes.push(text, { kind: "safe", log: false }),
       coach: (i, target) => (training ? coachMark(frame, target, meta.beats[i]) : Promise.resolve()),
       finish: (result) => {
         if (ended) return;

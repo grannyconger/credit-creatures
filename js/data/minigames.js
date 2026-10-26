@@ -11,6 +11,13 @@ export const JOBS = {
     job: "Month manager",
     skill: "Log every bill, schedule it, and keep your balance above $0 all month.",
   },
+  payin4: {
+    mark: "card",
+    icon: "🛍️",
+    title: "Pay in 4",
+    job: "Shopping app tester",
+    skill: "Pay cash, split it or skip it, and watch where the payments land.",
+  },
   ledger: {
     mark: "report",
     icon: "📒",
