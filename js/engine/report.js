@@ -35,7 +35,10 @@ export function buildReport(life) {
     .filter((t) => t.status === "collections" || t.status === "collectionPaid")
     .map((t) => ({ id: t.id, name: t.name, balance: t.balance, paid: t.status === "collectionPaid" }));
 
-  return { month: life.month, tradelines, inquiries, collections, reportedMonths: months.size };
+  // A fresh start after going broke (js/engine/arcade.js) stays on the report like a bankruptcy.
+  const publicRecords = (life.marks || []).map((m) => ({ type: m.type, month: m.month }));
+
+  return { month: life.month, tradelines, inquiries, collections, publicRecords, reportedMonths: months.size };
 }
 
 // The last 24 months as a grid row per account, oldest first.

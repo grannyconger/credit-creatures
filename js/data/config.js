@@ -115,6 +115,58 @@ export const CONFIG = {
     monthRecordsKept: 6,
   },
 
+  // Going broke (GAME-SPECS.md 2.4, teacher decisions 2026-10-25). At a month's
+  // end, checking below $0 that savings can't cover is broke. The first time is a
+  // RED ALERT warning. Still broke at the next month's end means a fresh start:
+  // back to the start of the previous chapter (never before fromChapter), every
+  // debt wiped, checking set to resetChecking and a mark on the credit report.
+  broke: { fromChapter: 2, resetChecking: 500 },
+
+  // The Arcade side quests (GAME-SPECS.md Part 2). Pay for a shift is
+  // round(payCap x min(1, score / maxPayScore)), plus experience, ride and home
+  // bonuses on top. Safe mode uses the month's shifts and mistakes cost nothing.
+  // Risky mode is unlimited, mistakes cost real money, and fireAfter mistakes in
+  // one shift locks that game for cooldownMinutes of real time.
+  arcade: {
+    payCap: 120,
+    bonusCoins: 50,
+    fireAfter: 3,
+    cooldownMinutes: 15,
+    // A cost never below this, so a 5 cent slip still means something.
+    minMistake: 1,
+    whyMaxChars: 140,
+    echoMs: 3000,
+    resultsKept: 25,
+    iouName: "Owed to the Arcade",
+    // Each game's own numbers. maxPayScore is the score that pays the full
+    // payCap. Some games set it per difficulty.
+    games: {
+      // Bill Drop (game 3). Money in dollars, days in a 30-day month.
+      billdrop: {
+        maxPayScore: { easy: 360, medium: 450, hard: 450 },
+        dayMs: 4000,
+        start: [300, 500],
+        paycheck: [600, 700],
+        payDays: [[5, 19], [6, 20], [7, 21], [4, 18]],
+        lateFee: { rent: 50, other: [10, 35] },
+        overdraftFee: 35,
+        forgotten: { easy: 0, medium: 1, hard: 2 },
+        chaos: [2, 3],
+        fixes: 2,
+        moveDays: 5,
+        shiftDelay: 7,
+        extraShift: [80, 120],
+        cardApr: 0.24,
+        perOnTime: 50,
+        perUnpaid: 75,
+        balanceCap: 500,
+        balanceDivisor: 5,
+        // The thoughtful plan's ending balance must land in this band (1.6).
+        endBand: { easy: [100, 900], medium: [50, 650], hard: [0, 450] },
+      },
+    },
+  },
+
   // Age 16 to 18 (SPEC §6). The tutorial plays a few months, then a time skip runs the rest.
   onboarding: {
     startAgeMonths: 16 * 12,
@@ -206,6 +258,10 @@ export const CONFIG = {
     lateRecency: [[0, 1], [12, 0.8], [24, 0.55], [48, 0.35]],
     openCollectionPenalty: 0.3,
     paidCollectionPenalty: 0.1,
+    // A fresh start after going broke (teacher decision 2026-10-25) hurts payment
+    // history like a bankruptcy, fading over about four chapters.
+    freshStartPenalty: 0.6,
+    freshStartRecency: [[0, 1], [6, 0.75], [12, 0.45], [18, 0.2], [24, 0]],
     // A short record proves less than a long one. Payment history starts at
     // `floor` and reaches full value after `fullMonths` of reports on one account.
     // A parent's card counts at `authorizedShare` of its months.

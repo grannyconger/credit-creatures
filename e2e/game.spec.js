@@ -240,7 +240,7 @@ test("you can leave a game for the Arcade library, and a life card shows its cho
   await page.locator(".job-card", { hasText: "Ledger Sort" }).click();
   await page.click(".job-back");
   await page.locator(".job-leave-ask button", { hasText: "Leave" }).click();
-  await expect(page.locator(".arc-cab")).toHaveCount(9);
+  await expect.poll(() => page.locator(".arc-cab").count()).toBeGreaterThanOrEqual(9);
 
   await page.evaluate(async () => {
     const E = await import("/js/engine/index.js");
@@ -403,5 +403,59 @@ test("the Vault is organised by money jobs: an Overview with assets, liabilities
   // Something that needs attention has a button to the tab that fixes it.
   await page.locator("nav.acct-tabs button", { hasText: "Overview" }).click();
   await expect(page.locator(".nw-attention")).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+// GAME-SPECS.md (2026-10-25): the shared settings modal, a whole Bill Drop month,
+// the results with the why capture and the bonus round, and risky mode firing.
+test("Bill Drop: settings modal, a full untimed month, results, why and bonus", async ({ page }) => {
+  const errors = watchErrors(page);
+  await seededStudent(page);
+  await open(page, "hub");
+  await page.click(".bst-seal-btn").catch(() => {});
+  await page.waitForTimeout(600);
+  await closePopups(page);
+  await open(page, "guild");
+  await page.locator(".job-card", { hasText: "Bill Drop" }).click();
+  await expect(page.locator("dialog.arc-settings[open]")).toBeVisible();
+  await expect(page.locator(".arc-ranked")).toContainText("Ranked");
+  await page.locator(".arc-opt", { hasText: "No timer" }).click();
+  await expect(page.locator(".arc-ranked")).toContainText("Not ranked");
+  await page.click(".arc-start");
+  await page.locator(".bd-skill button", { hasText: "No" }).click();
+  await page.fill(".bd-skill-num", "100");
+  await page.keyboard.press("Enter");
+  await page.locator(".bd-skill button", { hasText: "Start the month" }).click();
+  for (let d = 0; d < 45 && !(await page.locator(".arc-results").count()); d++) {
+    if (await page.locator(".bd-overlay button").count()) {
+      await page.locator(".bd-overlay button").click();
+      continue;
+    }
+    await page.keyboard.press("m");
+    for (let k = 0; k < 3; k++) {
+      await page.keyboard.press("n");
+      await page.keyboard.press("a");
+      await page.keyboard.press("Enter");
+    }
+    await page.locator(".bd-next").click();
+  }
+  await expect(page.locator(".arc-results")).toBeVisible();
+  for (let i = 0; i < 4; i++) {
+    const c = page.locator(".celebrate button, dialog[open] button").last();
+    if (await c.isVisible().catch(() => false)) await c.click();
+    await page.waitForTimeout(250);
+  }
+  await page.locator(".arc-why-opt").first().click();
+  await page.fill(".arc-why-text", "<b>my words</b>");
+  await page.click(".arc-why-save");
+  await expect(page.locator(".arc-why")).toContainText("<b>my words</b>");
+  await page.click(".arc-bonus-go");
+  if (await page.locator(".arc-bonus-num").count()) {
+    await page.fill(".arc-bonus-num", "1");
+    await page.locator(".arc-bonus-row button").click();
+  } else await page.locator(".arc-bonus-choice").first().click();
+  await expect(page.locator(".arc-bonus-result")).toBeVisible();
+  const play = await page.evaluate(() => JSON.parse(localStorage.getItem("credit-life:saves/local-student")).play);
+  expect(play.arcade.log.at(-1).why.text).toBe("<b>my words</b>");
   expect(errors).toEqual([]);
 });

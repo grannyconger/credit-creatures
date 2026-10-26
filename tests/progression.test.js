@@ -21,7 +21,7 @@ test("a new game starts with only a piggy bank and three places", () => {
   assert.deepEqual(G.moneyChipKeys(play, null), ["piggy"]);
   for (const f of ["piggy", "guild", "market", "cottage", "cashier"]) assert.ok(G.hasFeature(play, f), f);
   for (const f of ["checking", "vault", "townhall", "loans", "card", "score", "checks", "ledger"]) assert.ok(!G.hasFeature(play, f), f);
-  assert.deepEqual(G.openJobs(play), ["cashier", "checks", "overdraft"], "the prologue is exactly these three jobs");
+  assert.deepEqual(G.openJobs(play), ["cashier", "checks", "billdrop"], "the prologue is exactly these three jobs");
   assert.equal(P.canPlay(play, 5), false, "no chapter until the prologue is done");
   assert.equal(G.opensText("garage"), "Opens in Chapter 2");
 });
@@ -187,7 +187,7 @@ test("the roster sorts by last name, then first name, with the Google name as a 
   assert.ok(rosterCsv(rows).startsWith("Last name,First name,"));
 });
 
-test("the prologue allows exactly 3 shifts, one each of cashier, checks and overdraft", () => {
+test("the prologue allows exactly 3 shifts, one each of cashier, checks and billdrop", () => {
   const play = phased();
   assert.deepEqual(G.openJobs(play), G.PROLOGUE_JOBS);
   let life = E.createLife({ seed: "pro", ageMonths: CONFIG.onboarding.startAgeMonths });
@@ -196,7 +196,7 @@ test("the prologue allows exactly 3 shifts, one each of cashier, checks and over
     assert.ok(r.ok, job);
     life = r.life;
   }
-  assert.deepEqual(play.prologue.worked, ["cashier", "checks", "overdraft"]);
+  assert.deepEqual(play.prologue.worked, ["cashier", "checks", "billdrop"]);
   assert.equal(P.shiftsLeft(play), 0);
   assert.equal(P.workShift(play, life, 60, "one more", "cashier").ok, false, "no fourth shift");
   play.prologue.welcomed = true;

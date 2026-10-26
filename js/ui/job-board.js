@@ -21,6 +21,9 @@ import { hasGuide, openGameGuide } from "./game-guide.js";
 import { cabinetArt } from "./arcade-art.js";
 import { setArcadeVoice } from "./arcade-sound.js";
 import { watchJuice } from "./arcade-juice.js";
+import { isArcade } from "../data/arcade/index.js";
+import { arcadeRunner } from "./arcade/runner.js";
+import { minutesLeft } from "../arcade/core.js";
 
 // The games that only need the shared options (seed, timed, onDone, track).
 const GAMES = { ledger: ledgerSort, cashier: cashierRush, overdraft: spotOverdraft, register: registerBalancer, checkhunt: checkHunt, drawer: countDrawer, unitprice: unitPriceShowdown, fees: feeDetective };
@@ -38,6 +41,8 @@ export function jobBoard({ game, run, track, save, onCollected }) {
   // New players start untimed (Phase 10 prologue).
   let timed = !(play.prologue && !play.prologue.done);
   let running = null;
+  // A GAME-SPECS.md game runs through the shared runner (settings, results, why, bonus).
+  let runner = null;
   // The finished shift's telemetry, sent on Collect or when the student leaves.
   let logShift = null;
 
@@ -69,26 +74,47 @@ export function jobBoard({ game, run, track, save, onCollected }) {
           const xp = experienceBonus(play, key) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
           const stats = play.jobs[key];
           const worked = Boolean(play.prologue && !play.prologue.done && (play.prologue.worked || []).includes(key));
+          // Classic games only pay from the month's safe shifts.
+          const closed = !isArcade(key) && P.shiftsLeft(play) <= 0;
           const guide = hasGuide(key) ? h("button.job-guide.arc-guide", { type: "button", onclick: () => openGameGuide(key, { track }) }, icon("scroll", { size: 14 }), " Guide") : null;
-          const pay = key === "cashier" ? `${cashierRate("easy", "chill")} to ${cashierRate("hard", "speed")} coins a sale` : `Up to ${money(j.pay.max + xp)} a shift`;
+          const pay = isArcade(key) ? `Up to ${money(CONFIG.arcade.payCap + xp)} a shift` : key === "cashier" ? `${cashierRate("easy", "chill")} to ${cashierRate("hard", "speed")} coins a sale` : `Up to ${money(j.pay.max + xp)} a shift`;
+          const fired = minutesLeft(play, key);
           const card = h(
             "button.job-card.arc-cab-front",
-            { type: "button", disabled: worked, onclick: () => start(key) },
+            { type: "button", disabled: worked || closed, onclick: () => start(key) },
             h("span.arc-cab-marquee", h("span.arc-cab-icon", { "aria-hidden": "true" }, job.mark ? icon(job.mark, { size: 26 }) : job.icon), h("strong", job.title)),
-            h("span.arc-cab-screen", { html: cabinetArt(key) }, worked ? h("span.arc-stamp.done", "WORKED") : !stats ? h("span.arc-stamp", "NEW") : null),
+            h("span.arc-cab-screen", { html: cabinetArt(key) }, worked ? h("span.arc-stamp.done", "WORKED") : closed ? h("span.arc-stamp.done", "NO SHIFTS") : fired ? h("span.arc-stamp.fired", `FIRED ${fired} MIN`) : !stats ? h("span.arc-stamp", "NEW") : null),
             h("span.arc-cab-info", h("small.arc-job", job.job), h("span.arc-skill", job.skill), h("span.arc-pay", icon("coins", { size: 16 }), ` ${pay}`), xp ? h("small.arc-bonus", `+${money(xp)} for experience`) : null, stats && !worked ? h("small.arc-stats", `${stats.shifts} shift${stats.shifts === 1 ? "" : "s"} worked. Best: ${stats.best}.`) : null),
-            h("span.arc-play", worked ? "Done for now" : "PLAY")
+            h("span.arc-play", worked ? "Done for now" : closed ? "Next month" : "PLAY")
           );
           return h("div.job-slot.arc-cab", { class: `cab-${key}` }, card, guide);
         })
       ),
       lockedJobs(),
-      h("label.untimed.arc-untimed", timer, " No timer (fewer items, same pay for each right answer)")
+      h("label.untimed.arc-untimed", timer, " No timer for the classic games (fewer items, same pay for each right answer). New games pick their timer before each shift.")
     );
   }
 
   function start(key) {
     if (play.prologue && !play.prologue.done && (play.prologue.worked || []).includes(key)) return;
+    if (isArcade(key)) {
+      runner?.stop();
+      runner = arcadeRunner({
+        key,
+        host: el,
+        game,
+        run,
+        track,
+        save,
+        onBack: () => {
+          runner?.stop();
+          runner = null;
+          onCollected(null);
+        },
+      });
+      runner.open();
+      return;
+    }
     const shifts = play.active ? play.active.month.shifts : `p${play.prologue?.shifts ?? 0}`;
     const seed = `${run.life.seed}:job:${run.life.month}:${shifts}`;
     track("minigameStart", { game: key, timed });
@@ -214,6 +240,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
   el.stop = () => {
     el.closest(".panel")?.classList.remove("playing");
     running?.stop?.();
+    runner?.stop();
     logShift?.();
   };
   return el;

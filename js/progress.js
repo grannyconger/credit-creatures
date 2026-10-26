@@ -132,12 +132,14 @@ export function jobPay(play, job, score) {
 // and a perfect shift, and a Sparkle Point for a perfect one. Both only count with
 // at least minAnswers scored answers, so one lucky tap can't earn them. Sparkle
 // stays inside its usual caps. Returns what was actually given.
-export function shiftRewards(play, { right, wrong }) {
+// The new Arcade games (GAME-SPECS.md) pass ratio (score over maxPayScore) and
+// perfect instead of right and wrong answers.
+export function shiftRewards(play, { right = 0, wrong = 0, ratio = null, perfect: flawless = false }) {
   const r = CONFIG.pacing.rewards;
   const total = right + wrong;
-  const scored = total >= r.minAnswers;
-  const strong = scored && right / total >= r.strongPct;
-  const perfect = scored && wrong === 0;
+  const scored = ratio != null || total >= r.minAnswers;
+  const strong = scored && (ratio != null ? ratio >= r.strongPct : right / total >= r.strongPct);
+  const perfect = scored && (ratio != null ? flawless : wrong === 0);
   const energy = awardEnergy(play, r.energy.finish + (strong ? r.energy.strong : 0) + (perfect ? r.energy.perfect : 0));
   let sparkle = 0;
   if (perfect) for (let i = 0; i < r.perfectSparkle; i++) sparkle += awardSparkle(play);

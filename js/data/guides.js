@@ -6,7 +6,10 @@
 // IRL facts are real. Each names its source, year and link, and was checked
 // against that source on the date in `checked`. Never invent one.
 
+import { BILLDROP_GUIDE } from "./arcade/billdrop.js";
+
 export const GUIDES = {
+  billdrop: BILLDROP_GUIDE,
   fees: {
     how: {
       goal: "Find every fee on a bank statement, then say how you could avoid each one.",

@@ -13,6 +13,8 @@ export const FEATURES = {
   guild: { at: 0 },
   market: { at: 0 },
   cashier: { at: 0 },
+  // GAME-SPECS.md games, opened by chapter topic (teacher decision 2026-10-25).
+  billdrop: { at: 0 },
   checking: { at: 1 },
   savings: { at: 1 },
   debit: { at: 1 },
@@ -92,10 +94,13 @@ export function payMethods(play, life) {
   return ["debit", hasFeature(play, "card", life) && "card", hasFeature(play, "bnpl", life) && "bnpl"].filter(Boolean);
 }
 
+// Every Arcade cabinet in the order the hall shows them.
+export const ARCADE_ORDER = ["cashier", "checks", "billdrop", "overdraft", "register", "checkhunt", "drawer", "unitprice", "fees", "ledger"];
+
 // The jobs at the Arcade so far.
 export function openJobs(play) {
   if (play.prologue && !play.prologue.done) return PROLOGUE_JOBS;
-  return ["cashier", "checks", "overdraft", "register", "checkhunt", "drawer", "unitprice", "fees", "ledger"].filter((j) => hasFeature(play, j));
+  return ARCADE_ORDER.filter((j) => hasFeature(play, j));
 }
 
 // One celebration per stage, shown when the stage starts.
@@ -158,7 +163,8 @@ export const PROLOGUE_STEPS = [
 ];
 
 // The three shifts of the prologue, one of each, in any order.
-export const PROLOGUE_JOBS = ["cashier", "checks", "overdraft"];
+// Bill Drop on Easy replaced Spot the Overdraft (teacher decision 2026-10-25).
+export const PROLOGUE_JOBS = ["cashier", "checks", "billdrop"];
 
 export function newPrologue() {
   return { done: false, welcomed: false, shifts: 0, worked: [], marketVisited: false, cottageVisited: false, bankOpened: false };

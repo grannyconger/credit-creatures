@@ -174,7 +174,17 @@ export function studentDetail(raw) {
     decisions: decisionsOf(play),
     reflections: (play?.history || []).filter((h) => h.reflection).map((h) => ({ chapter: h.chapter, title: h.title, text: h.reflection, fun: h.fun, clear: h.clear, startScore: h.startScore, endScore: h.endScore })),
     achievements: ACHIEVEMENTS.filter((a) => play?.achievements[a.id]).map((a) => ({ ...a, ...play.achievements[a.id] })),
+    arcade: arcadeShifts(play),
   };
+}
+
+// The newest Arcade shifts with their why answers (GAME-SPECS.md 2.7), for the
+// teacher to read next to the graded assessments.
+export function arcadeShifts(play) {
+  return (play?.arcade?.log || [])
+    .slice()
+    .reverse()
+    .map((e) => ({ at: e.at, game: e.g, mode: e.mode, ranked: e.rk, score: e.sc, coins: e.coins, settings: e.set, mistakes: (e.mistakes || []).reduce((t, m) => t + m.cost, 0), why: e.why || null }));
 }
 
 // Lantern Alley for the whole class: which offers fool students, and whether

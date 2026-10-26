@@ -6418,3 +6418,19 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .bst-book-place .save-goal h3 { margin: 0; }
 .bst-book-place .save-top .nw-card { max-width: 320px; }
 .bst-book-place .vault-debt > .nw-card { max-width: 480px; }
+
+/* ---------- Going broke: the RED ALERT (GAME-SPECS.md 2.4, 2026-10-25) ---------- */
+dialog.broke-alert { max-width: 560px; padding: var(--b-s4) var(--b-s5); color: var(--b-ink); background: var(--b-paper); border: 4px solid var(--b-rust); border-radius: var(--b-r-sheet); box-shadow: var(--b-shadow-lift); font-family: var(--b-body); }
+dialog.broke-alert::backdrop { background: color-mix(in srgb, var(--b-rust) 45%, transparent); }
+dialog.broke-alert h2 { margin: 0 0 var(--b-s2); font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-rust-ink); letter-spacing: 0.02em; }
+dialog.broke-alert p { margin: 0 0 var(--b-s2); font-size: var(--b-text); }
+.broke-siren { display: inline-grid; place-items: center; width: 72px; height: 72px; margin-bottom: var(--b-s2); color: var(--b-paper); background: var(--b-rust); border-radius: 50%; animation: broke-pulse 1s ease-in-out infinite; }
+dialog.broke-alert.reset .broke-siren { animation: none; }
+@keyframes broke-pulse { 50% { box-shadow: 0 0 0 12px color-mix(in srgb, var(--b-rust) 25%, transparent); } }
+:root[data-motion="calm"] .broke-siren { animation: none; }
+@media (prefers-reduced-motion: reduce) { .broke-siren { animation: none; } }
+.broke-steps { margin: var(--b-s2) 0; padding: var(--b-s2) var(--b-s3); background: var(--b-paper-2); border: 2px dashed var(--b-rust); border-radius: var(--b-r-insert); }
+.broke-steps ul { margin: var(--b-s1) 0 0; padding-left: 1.2em; }
+.broke-banner { display: flex; align-items: center; gap: 4px; border: 3px solid var(--b-rust); }
+.iou-card { margin: var(--b-s3) 0; padding: var(--b-s2) var(--b-s3); border: 2px dashed var(--b-rust); border-radius: var(--b-r-insert); background: var(--b-paper-2); }
+.iou-card h3 { display: flex; align-items: center; gap: 4px; margin: 0 0 var(--b-s1); }

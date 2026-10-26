@@ -2,6 +2,15 @@
 // Plain language for a 15-year-old. No em-dashes, no semicolons.
 
 export const JOBS = {
+  // The GAME-SPECS.md games (2026-10-25). Their settings, rules and results
+  // run through js/ui/arcade/runner.js.
+  billdrop: {
+    mark: "calendar",
+    icon: "📅",
+    title: "Bill Drop",
+    job: "Month manager",
+    skill: "Log every bill, schedule it, and keep your balance above $0 all month.",
+  },
   ledger: {
     mark: "report",
     icon: "📒",

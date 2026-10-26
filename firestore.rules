@@ -158,6 +158,22 @@ service cloud.firestore {
         && shortString('palette', 30);
     }
 
+    // ---------- Arcade class top scores (GAME-SPECS.md 2.1, 2026-10-25) ----------
+    // One doc per student: their creature name (never their real name) and their
+    // personal bests by board. Classmates and the class's teacher can read them.
+    match /arcade/{classId}/players/{uid} {
+      function inArcadeClass() {
+        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('classId', '') == classId;
+      }
+      allow read: if isSchool() && (inArcadeClass() || teachesClass(classId));
+      allow delete: if teachesClass(classId);
+      allow create, update: if isMe(uid) && inArcadeClass()
+        && request.resource.data.keys().hasOnly(['creatureName', 'best', 'updatedAt'])
+        && shortString('creatureName', 41)
+        && request.resource.data.best is map
+        && request.resource.data.best.size() <= 60;
+    }
+
     // ---------- Social (Phase 8): friends, groups and gifts ----------
     // Everything lives under the class, so the class check comes from the path.
     // Only classmates take part, and only while the teacher has Social on.

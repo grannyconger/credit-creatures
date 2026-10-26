@@ -27,6 +27,12 @@ const SCENES = {
   fees: () => `<rect width="200" height="110" ${f("noir-bg")}/><path d="M100 0l60 110H40z" ${f("noir-light")} fill-opacity=".16"/><rect x="52" y="16" width="96" height="80" rx="2" ${f("noir-paper")}/><path d="M62 32h60M62 44h76M62 56h50M62 68h68" ${st("noir-ink", 2)}/><g transform="rotate(-14 130 74)"><rect x="98" y="62" width="62" height="24" rx="3" ${fs("noir-paper", "noir-red", 3)} fill-opacity="0"/><text x="129" y="80" text-anchor="middle" font-size="17" font-weight="900" font-family="Georgia, serif" ${f("noir-red")}>FEE!</text></g>`,
 };
 
+// GAME-SPECS.md games (2026-10-25).
+Object.assign(SCENES, {
+  // A phone buzzing with bill notices beside a mailbox with its flag up.
+  billdrop: () => `<rect width="200" height="110" ${f("bill-bg")}/><rect x="0" y="86" width="200" height="24" ${f("bill-soft")}/><rect x="22" y="10" width="58" height="92" rx="9" ${fs("bill-ink", "bill-desk", 3)}/><rect x="28" y="20" width="46" height="18" rx="5" ${f("bill-ping")}/><rect x="28" y="42" width="46" height="18" rx="5" ${f("bill-desk")}/><rect x="28" y="64" width="46" height="18" rx="5" ${f("bill-desk")}/><text x="51" y="33" text-anchor="middle" font-size="10" font-weight="800" font-family="Trebuchet MS, sans-serif" ${f("bill-ping-ink")}>$850 DUE</text><text x="51" y="55" text-anchor="middle" font-size="9" font-weight="700" font-family="Trebuchet MS, sans-serif" ${f("bill-ink")}>Electric $92</text><text x="51" y="77" text-anchor="middle" font-size="9" font-weight="700" font-family="Trebuchet MS, sans-serif" ${f("bill-ink")}>Phone $45</text><rect x="112" y="40" width="58" height="34" rx="16" ${fs("bill-desk", "bill-ink", 3)}/><path d="M126 74v24" ${st("bill-ink", 4)}/><path d="M164 30v28M164 30h16v10h-16" ${fs("bill-bad", "bill-ink", 2)}/><path d="M118 52h30" ${st("bill-ink", 2)}/><circle cx="88" cy="16" r="7" ${fs("bill-bad", "bill-desk", 2)}/><text x="88" y="20" text-anchor="middle" font-size="10" font-weight="900" font-family="Arial, sans-serif" ${f("bill-desk")}>3</text>`,
+});
+
 export function cabinetArt(key) {
   return svg((SCENES[key] || SCENES.ledger)());
 }

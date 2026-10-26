@@ -10,7 +10,7 @@ import { chapterInfo } from "./data/chapters.js";
 import { INBOX_KEPT } from "./data/explainers.js";
 import { XP } from "./data/achievements.js";
 import { qolFor } from "./data/card-qol.js";
-import { drawLifeEvent, drawDecisionCards, resolveChoice, endMonth, earn, replayLife, ownCards, dollars, utilization, balanceSheet } from "./engine/index.js";
+import { drawLifeEvent, drawDecisionCards, resolveChoice, endMonth, earn, replayLife, ownCards, dollars, utilization, balanceSheet, freshStart } from "./engine/index.js";
 import { vehicleValue } from "./data/garage.js";
 
 // "Cosign for a friend?" reads badly as "Cosign for a friend?: ...".
@@ -210,9 +210,15 @@ export function shiftsLeft(play) {
 
 // Pay comes from the minigame (js/progress.js jobPay). It goes into checking as income.
 // job: which game was played. The prologue lets each of its three jobs be worked once.
-export function workShift(play, life, pay, source = "work shift", job = null) {
+// risky: a risky mode Arcade shift (GAME-SPECS.md 2.3) is unlimited, so it
+// doesn't use the month's shifts.
+export function workShift(play, life, pay, source = "work shift", job = null, { risky = false } = {}) {
+  if (risky) {
+    if (play.prologue && !play.prologue.done) return { life, ok: false, message: "Risky mode opens once your bank account does." };
+    return pay > 0 ? { ...earn(life, pay, source), pay } : { life, ok: true, pay: 0 };
+  }
   if (shiftsLeft(play) <= 0) return { life, ok: false, message: "No shifts left this month." };
-  const r = earn(life, pay, source);
+  const r = pay > 0 ? earn(life, pay, source) : { life, ok: true };
   if (play.prologue && !play.prologue.done) {
     play.prologue.shifts++;
     if (job) (play.prologue.worked ||= []).push(job);
@@ -239,6 +245,8 @@ export function finishMonth(play, life) {
   play.lastChange = { delta: record.delta, factor: record.factor, message: record.change };
   notesFromMonth(play, r, month);
   const xp = addXp(play, XP.month);
+  const broke = brokeStep(play, r.life, a.chapter, month);
+  if (broke?.type === "reset") return { life: broke.life, ok: true, record, chapterDone: false, events: r.events, scoreChange: r.scoreChange, xp, broke };
   a.monthIndex++;
   const chapterDone = a.monthIndex >= (a.months || CONFIG.pacing.monthsPerChapter);
   if (chapterDone) {
@@ -247,7 +255,42 @@ export function finishMonth(play, life) {
   } else {
     startMonth(play, r.life);
   }
-  return { life: r.life, ok: true, record, chapterDone, events: r.events, scoreChange: r.scoreChange, xp };
+  return { life: r.life, ok: true, record, chapterDone, events: r.events, scoreChange: r.scoreChange, xp, broke };
+}
+
+// ---------- Going broke (GAME-SPECS.md 2.4, teacher decisions 2026-10-25) ----------
+
+// Broke: at a month's end, checking is below $0 and savings can't cover it.
+export function isBroke(life) {
+  return life.checking < 0 && life.checking + life.savings < 0;
+}
+
+// The first broke month is a RED ALERT warning. Still broke at the next month's
+// end means a fresh start: back to the start of the previous chapter (never
+// before Chapter 2), every debt wiped, checking reset, a mark on the report.
+// Chapter 1 can't go broke. Getting back above $0 clears the warning.
+// Returns null, { type: "warning" }, { type: "recovered" } or { type: "reset", life, ... }.
+function brokeStep(play, life, chapter, month) {
+  const B = CONFIG.broke;
+  if (chapter < B.fromChapter) return null;
+  if (!isBroke(life)) {
+    if (!play.broke) return null;
+    play.broke = null;
+    return { type: "recovered" };
+  }
+  if (!play.broke) {
+    play.broke = { warnedMonth: month, chapter };
+    return { type: "warning", shortBy: Math.round(-(life.checking + life.savings) * 100) / 100 };
+  }
+  const to = Math.max(B.fromChapter, chapter - 1);
+  const fs = freshStart(life, B.resetChecking);
+  (play.brokeHistory ??= []).push({ month, from: chapter, to, wiped: fs.wiped });
+  play.broke = null;
+  // The unfinished chapter is dropped. Its cards can come back later.
+  play.active = null;
+  play.summary = null;
+  play.chapter = to;
+  return { type: "reset", life: fs.life, from: chapter, to, wiped: fs.wiped, checking: B.resetChecking };
 }
 
 const RANK = { good: 2, ok: 1, bad: 0 };

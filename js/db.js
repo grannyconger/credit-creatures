@@ -144,6 +144,18 @@ export async function readLeaderboard(classId) {
   return snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
 }
 
+// ---------- Arcade class top scores (GAME-SPECS.md 2.1) ----------
+// One doc per student: their creature name and their personal bests by board.
+// Needs the 2026-10-25 rules block for arcade/{classId}/players/{uid}.
+export async function writeArcadeBest(classId, uid, entry) {
+  await setDoc(doc(db, "arcade", classId, "players", uid), { ...plain(entry), updatedAt: serverTimestamp() });
+}
+
+export async function readArcadeBoard(classId) {
+  const snap = await getDocs(query(collection(db, "arcade", classId, "players"), limit(60)));
+  return snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
+}
+
 export async function setLeaderboardOn(classId, on) {
   await updateDoc(doc(db, "classes", classId), { leaderboard: on });
 }
@@ -274,6 +286,9 @@ export async function sendResets(teacherEmail, emails) {
 export async function deleteClass(classId, code, saveUids) {
   const players = await getDocs(collection(db, "leaderboards", classId, "players"));
   for (const d of players.docs) await deleteDoc(d.ref);
+  // Arcade scores need the 2026-10-25 rules. Before then, skip them quietly.
+  const arcade = await getDocs(collection(db, "arcade", classId, "players")).catch(() => ({ docs: [] }));
+  for (const d of arcade.docs) await deleteDoc(d.ref).catch(() => {});
   for (const uid of saveUids) await deleteDoc(doc(db, "saves", uid));
   if (code) await deleteDoc(doc(db, "classCodes", code));
   await deleteDoc(doc(db, "classes", classId));
@@ -283,6 +298,7 @@ export async function deleteClass(classId, code, saveUids) {
 export async function deleteStudentSave(uid, classId) {
   await deleteDoc(doc(db, "saves", uid));
   await deleteDoc(doc(db, "leaderboards", classId, "players", uid)).catch(() => {});
+  await deleteDoc(doc(db, "arcade", classId, "players", uid)).catch(() => {});
 }
 
 export async function listEvents(uid, max = 300) {

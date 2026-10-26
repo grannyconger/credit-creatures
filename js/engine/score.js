@@ -47,6 +47,8 @@ function paymentFactor(report) {
   const open = report.collections.filter((c) => !c.paid).length;
   const paid = report.collections.length - open;
   penalty += open * S.openCollectionPenalty + paid * S.paidCollectionPenalty;
+  const records = report.publicRecords || [];
+  for (const r of records) penalty += S.freshStartPenalty * curve(S.freshStartRecency, report.month - r.month);
   const d = S.historyDepth;
   const depthMonths = Math.max(0, ...report.tradelines.map((t) => t.history.length * (t.owner === "authorized" ? d.authorizedShare : 1)));
   const depth = d.floor + (1 - d.floor) * Math.min(1, depthMonths / d.fullMonths);
@@ -58,6 +60,7 @@ function paymentFactor(report) {
     latestLate: latest,
     openCollections: open,
     paidCollections: paid,
+    freshStarts: records.length,
   };
 }
 
@@ -151,9 +154,10 @@ function reason(factor, up, before, after) {
       if (!up && late && (!before.latestLate || late.month !== before.latestLate.month || late.code !== before.latestLate.code)) {
         return late.code === "CO" ? `${late.name} went to collections` : `${late.name} was reported ${late.code} days late`;
       }
+      if (!up && (after.freshStarts || 0) > (before.freshStarts || 0)) return "you went broke and needed a fresh start";
       if (!up && after.openCollections > before.openCollections) return "an account went to collections";
       if (up && after.paidCollections > before.paidCollections) return "you paid off a collection";
-      return up ? (after.lateEpisodes ? "your late payments are getting older" : "you added another month of on-time payments") : "your payment record got worse";
+      return up ? (after.lateEpisodes || after.freshStarts ? "your old marks are getting older" : "you added another month of on-time payments") : "your payment record got worse";
     }
     case "length":
       if (!up && after.oldestMonths < before.oldestMonths) return "your oldest account is no longer counted";

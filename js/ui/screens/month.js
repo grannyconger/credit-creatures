@@ -22,6 +22,7 @@ import { ASKS } from "../../data/card-asks.js";
 import { HINTS } from "../../data/card-hints.js";
 import { vehicleValue } from "../../data/garage.js";
 import { sealSvg } from "../bestiary-art.js";
+import { showBrokeAlert } from "../broke-alert.js";
 
 export function render(root, { game, go, track, refreshWho }) {
   const run = game.run;
@@ -100,6 +101,7 @@ export function render(root, { game, go, track, refreshWho }) {
         practice: run.practice,
       }),
       moneyChips(life, play),
+      brokeBanner(),
       fresh && a.records.length ? monthSummary(a.records.at(-1), "Last month") : null,
       agenda(),
       h("div.month-main", view === "end" ? endView() : cardView(view))
@@ -256,6 +258,13 @@ export function render(root, { game, go, track, refreshWho }) {
     return wrap;
   }
 
+  // While a broke warning stands, Town Hall says so at the top.
+  function brokeBanner() {
+    const b = run.play.broke;
+    if (!b) return null;
+    return h("p.callout.bad.broke-banner", { role: "alert" }, icon("alert", { size: 20 }), h("strong", " RED ALERT: "), "You're broke. Get checking above $0 before this month ends, or time travels back a chapter.");
+  }
+
   function endButton(label) {
     const btn = h(
       "button.big.bst-seal-btn",
@@ -301,6 +310,11 @@ export function render(root, { game, go, track, refreshWho }) {
       if (delta) setTimeout(delta > 0 ? sfx.creditScoreUp : sfx.creditScoreDown, fees > 0 ? 600 : 0);
       await save("endMonth");
       view = null;
+      // Going broke (GAME-SPECS.md 2.4): a RED ALERT warning, or the time travel.
+      if (r.broke?.type === "warning" || r.broke?.type === "reset") {
+        sfx.coinLoss();
+        await showBrokeAlert(r.broke, { name: game.save.creature.name, chapter, track });
+      }
       if (r.chapterDone) go("chapterEnd");
       else paint();
       window.scrollTo(0, 0);

@@ -11,7 +11,7 @@ import { pickState } from "./daily.js";
 export const PROLOGUE_TEXT = {
   welcome: "Say hi to Sage, then head to the Arcade.",
   firstShift: "Work your first shift at the Arcade to earn coins. You'll work 3 shifts, one of each job.",
-  moreShifts: "Finish all 3 shifts: Cashier Rush, Check Writer and Spot the Overdraft. Your piggy bank is filling up!",
+  moreShifts: "Finish all 3 shifts: Cashier Rush, Check Writer and Bill Drop. Your piggy bank is filling up!",
   market: "Visit the Market. Will you spend or save?",
   cottage: "Check on your creature and its dream at your Cottage.",
   bank: "Take your coins to the Vault and open a bank account.",

@@ -629,6 +629,17 @@
   --arc-noir-ink: #211a12;
   --arc-noir-red: #b3261e;
   --arc-noir-light: #fff3bd;
+
+  /* GAME-SPECS.md games (2026-10-25). Bill Drop: a desk with a phone and a mailbox. */
+  --arc-bill-bg: #1b2b3a;
+  --arc-bill-desk: #f3efe4;
+  --arc-bill-ink: #1d2733;
+  --arc-bill-ping: #2f7de1;
+  --arc-bill-ping-ink: #ffffff;
+  --arc-bill-good: #17703a;
+  --arc-bill-bad: #b42318;
+  --arc-bill-warn: #8a5a00;
+  --arc-bill-soft: #dfe6ee;
 }
 
 /* The parts of a total, for the stacked bars in the Tradeoffs and the Vault Overview

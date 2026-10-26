@@ -4,7 +4,7 @@
 // appears only when it has something real to show, and a tab with several views
 // (Build Credit) has sub-tabs. The screen is js/ui/screens/accounts.js.
 import { hasFeature } from "./progression.js";
-import { amountOwed, upcomingPayments, dollars } from "./engine/index.js";
+import { amountOwed, upcomingPayments, dollars, arcadeIou } from "./engine/index.js";
 import { unreadCount } from "./play.js";
 
 // What counts as insurance, shared accounts and collections on the student's life.
@@ -27,7 +27,7 @@ export const VAULT_LAYOUT = [
   { key: "overview", label: "Overview", icon: "vault", show: feature("vault") },
   { key: "paybills", label: "Pay Bills", icon: "receipt", show: feature("bills") },
   { key: "save", label: "Save for Goals", icon: "piggy", show: feature("savings") },
-  { key: "debt", label: "Manage Debt", icon: "chart", show: (play, life) => hasFeature(play, "loans", life) || hasFeature(play, "bnpl", life) },
+  { key: "debt", label: "Manage Debt", icon: "chart", show: (play, life) => hasFeature(play, "loans", life) || hasFeature(play, "bnpl", life) || Boolean(arcadeIou(life) && amountOwed(arcadeIou(life)) > 0) },
   {
     key: "credit",
     label: "Build Credit",
@@ -81,6 +81,8 @@ export function vaultAttention(play, life) {
   for (const c of up.cardsDue) out.push({ id: `due-${c.accountId}`, tone: "warn", text: `Your ${c.name} payment is due. Pay it before End Month.`, tab: "paybills" });
   if (up.short > 0) out.push({ id: "short", tone: "warn", text: `Checking is ${dollars(up.short)} short for what comes out at End Month.`, tab: "paybills" });
   for (const a of life.accounts.filter((x) => x.status === "collections" && amountOwed(x) > 0)) out.push({ id: `col-${a.id}`, tone: "warn", text: `${a.name} is in collections. Paying it hurts your credit less.`, tab: "debt" });
+  const iou = arcadeIou(life);
+  if (iou && amountOwed(iou) > 0) out.push({ id: "iou", tone: "warn", text: `You owe the Arcade ${dollars(amountOwed(iou))} from risky mode mistakes.`, tab: "debt" });
   for (const a of life.accounts.filter((x) => x.owner === "cosigned" && x.status === "open" && x.pastDue > 0)) out.push({ id: `cos-${a.id}`, tone: "warn", text: `A cosigned loan is behind, and it shows on your report.`, tab: "protect" });
   const unread = unreadCount(play);
   if (unread) out.push({ id: "mail", tone: "calm", text: `${unread} new letter${unread === 1 ? "" : "s"} waiting.`, tab: "messages" });

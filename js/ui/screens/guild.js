@@ -6,6 +6,8 @@ import { jobBoard } from "../job-board.js";
 import { moneyChips } from "../wallet.js";
 import { firstVisitLesson } from "../guide.js";
 import { icon } from "../icons.js";
+import { settleAbandoned } from "../../arcade/core.js";
+import { CONFIG } from "../../data/config.js";
 
 export function render(root, { game, go, track, refreshWho }) {
   const run = game.run;
@@ -20,6 +22,14 @@ export function render(root, { game, go, track, refreshWho }) {
     refreshWho();
     await run.persist(reason);
   };
+
+  // A risky shift left running when the tab closed still counts (GAME-SPECS.md 2.3).
+  const abandoned = settleAbandoned(play);
+  if (abandoned) {
+    track("arcadeAbandoned", abandoned);
+    save("abandoned shift");
+    if (abandoned.fired) toast(`Your last risky shift had ${abandoned.mistakes} mistakes. You're fired from that game for ${CONFIG.arcade.cooldownMinutes} minutes.`, "bad");
+  }
 
   function paint() {
     board?.stop();
@@ -46,21 +56,19 @@ export function render(root, { game, go, track, refreshWho }) {
       return;
     }
     const left = P.shiftsLeft(play);
-    if (left <= 0) {
-      add(panel, h("p.callout", "You've worked every shift you can this month. Head to Town Hall when you're ready to end the month."), h("div.row", h("button", { type: "button", onclick: () => go("month") }, "Go to Town Hall")));
-      return;
-    }
+    // With no safe shifts left, the classic games close but risky mode stays open (GAME-SPECS.md 2.3).
+    if (left <= 0) add(panel, h("p.callout", icon("info", { size: 18 }), " No safe shifts left this month. Risky mode is open in the new games, or head to Town Hall to finish the month and refill your shifts."));
     board = jobBoard({
       game,
       run,
       track,
       save,
       onCollected: (pay) => {
-        toast(`${money(pay)} went into ${prologue ? "your piggy bank" : "checking"}.`, "good");
+        if (pay != null) toast(`${money(pay)} went into ${prologue ? "your piggy bank" : "checking"}.`, "good");
         paint();
       },
     });
-    panel.querySelector(".arc-hall-head")?.append(h("span.arc-shifts", prologue ? `${left} shift${left === 1 ? "" : "s"} left before the bank opens` : `${left} shift${left === 1 ? "" : "s"} left this month`));
+    panel.querySelector(".arc-hall-head")?.append(h("span.arc-shifts", prologue ? `${left} shift${left === 1 ? "" : "s"} left before the bank opens` : `${left} safe shift${left === 1 ? "" : "s"} left this month`));
     add(panel, board);
   }
 

@@ -4,6 +4,7 @@ import * as accounts from "./accounts.js";
 import { applyForCard } from "./approval.js";
 import { endMonth } from "./month.js";
 import { getTeenDebitCard } from "./onboarding.js";
+import { arcadeCharge, freshStart } from "./arcade.js";
 
 export const ACTIONS = {
   earn: accounts.earn,
@@ -35,4 +36,6 @@ export const ACTIONS = {
   applyForCard,
   endMonth,
   getTeenDebitCard,
+  arcadeCharge,
+  freshStart,
 };

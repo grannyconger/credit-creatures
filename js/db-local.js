@@ -101,6 +101,17 @@ export async function readLeaderboard() {
   return [...CLASSMATES, ...(read("teacherDemoBoard") || []), ...(me ? [me] : [])].sort((a, b) => b.xp - a.xp);
 }
 
+// Arcade class top scores: the student's own bests plus one pretend classmate.
+export async function writeArcadeBest(classId, uid, entry) {
+  write("arcade/me", { uid, ...entry, updatedAt: Date.now() });
+}
+
+export async function readArcadeBoard() {
+  const me = read("arcade/me");
+  const demo = { uid: "c3", creatureName: "Ember Lanternby", best: { "billdrop:easy": { s: 300, t: 0, at: Date.UTC(2026, 9, 20) } } };
+  return [demo, ...(me ? [me] : [])];
+}
+
 export async function setLeaderboardOn(classId, on) {
   write("class/leaderboard", on);
 }

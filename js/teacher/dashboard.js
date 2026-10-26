@@ -20,6 +20,8 @@ import { STALLS } from "../data/alley.js";
 import { STANDARD_LABELS } from "../data/practice-questions.js";
 import { CONFIG } from "../data/config.js";
 import { chapterInfo } from "../data/chapters.js";
+import { ARCADE } from "../data/arcade/index.js";
+import { JOBS } from "../data/minigames.js";
 
 const LOCAL = new URLSearchParams(location.search).has("local") && ["localhost", "127.0.0.1"].includes(location.hostname);
 const VIEW_KEY = "credit-creatures:teacherView";
@@ -706,6 +708,7 @@ function detail(uid) {
     ["overview", "Overview", () => overviewTab(d)],
     ["reflections", `Reflections (${d.reflections.length})`, () => reflectionsTab(d)],
     ["decisions", `Decisions (${d.decisions.length})`, () => decisionsTab(d)],
+    ["arcade", `Arcade (${d.arcade.length})`, () => arcadeTab(d)],
     ["credit", "Credit", () => creditTab(d)],
     ["timeline", "Timeline", () => timelineTab(uid, d)],
     ["friends", "Friends", () => friendsTab(uid)],
@@ -786,6 +789,30 @@ function reflectionsTab(d) {
       h("h3", `Chapter ${x.chapter}: ${x.title}`),
       h("p.t-muted.t-small", `Fun ${x.fun}/5. Clear ${x.clear}/5. Score ${x.startScore ?? "none"} to ${x.endScore ?? "none"}.`),
       h("p", x.text)
+    )
+  );
+}
+
+// Arcade shifts and the "why" each student picked (GAME-SPECS.md 2.7). Student
+// words are set as text, never as HTML.
+const WHY_LABEL = { weak: "Weak reason", okay: "Okay reason", strong: "Strong reason" };
+function arcadeTab(d) {
+  if (!d.arcade.length) return h("p.t-muted", "No Arcade shifts in the new games yet.");
+  return h(
+    "table.t-table",
+    h("thead", h("tr", h("th", "When"), h("th", "Game"), h("th", "Score"), h("th", "Mode"), h("th", "Their biggest decision and why"))),
+    h(
+      "tbody",
+      d.arcade.map((x) =>
+        h(
+          "tr",
+          h("td", new Date(x.at).toLocaleDateString([], { month: "short", day: "numeric" })),
+          h("td", ARCADE[x.game]?.title || JOBS[x.game]?.title || x.game),
+          h("td", `${x.score}${x.ranked ? " (ranked)" : ""}`),
+          h("td", x.mode === "risky" ? `Risky${x.mistakes ? `, mistakes cost $${x.mistakes}` : ""}` : "Safe"),
+          h("td", x.why ? [h("strong", `${WHY_LABEL[x.why.q] || ""}: `), `"${x.why.pick}" about ${x.why.d}.`, x.why.text ? h("div.t-small", `In their words: ${x.why.text}`) : null] : h("span.t-muted", "No answer"))
+        )
+      )
     )
   );
 }
