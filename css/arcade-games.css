@@ -226,7 +226,7 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .bd-notices, .bd-cal-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; max-height: 196px; overflow: auto; }
 .bd-notice, .bd-cal-item { display: grid; gap: 1px; width: 100%; padding: 6px 8px; text-align: left; color: var(--arc-bill-ink); background: #fff; border: 2px solid var(--arc-bill-soft); border-radius: 10px; font: inherit; cursor: pointer; }
 .bd-notice.ch-text { border-radius: 14px 14px 14px 4px; }
-.bd-notice.ch-app { border-left: 6px solid var(--arc-bill-ping); }
+.bd-notice.ch-app { border-radius: 4px; border-color: var(--arc-bill-ping); }
 .bd-notice.ch-mail { background: var(--arc-bill-soft); border-style: dashed; border-color: var(--arc-bill-ink); }
 .bd-notice[aria-pressed="true"], .bd-cal-item[aria-pressed="true"] { border: 3px solid var(--arc-bill-ping); }
 .bd-ch { display: inline-flex; align-items: center; gap: 2px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--arc-bill-ping); }
@@ -1016,7 +1016,8 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .mi-lead { margin: 0 0 8px; font-weight: 700; }
 .mi-letters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
 .mi-letter, .mi-side, .mi-card, .mi-skill, .mi-doc li, .mi-reveal .mi-sheet { color: var(--arc-mi-ink); background: var(--arc-mi-card); border-radius: 12px; }
-.mi-letter { display: grid; gap: 6px; padding: 10px 14px; border-top: 6px solid var(--arc-mi-key); }
+.mi-letter { display: grid; gap: 6px; padding: 10px 14px; }
+.mi-letter header { padding-bottom: 4px; border-bottom: 2px solid var(--arc-mi-ink); }
 .mi-letter header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .mi-letter h4 { margin: 0; font: 900 1.1rem "Arial Black", sans-serif; }
 .mi-letter h5 { margin: 4px 0 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
