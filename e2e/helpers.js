@@ -99,7 +99,8 @@ export async function seedRichVault(page) {
     const { openCard } = await import("/js/engine/accounts.js");
     const { copyLife } = await import("/js/engine/life.js");
     const save = JSON.parse(localStorage.getItem(k));
-    let life = E.earn(save.life, 1200, "seeded pay").life;
+    // Checking lands on $1,205 even if a one-time grant (CONFIG.grants) already paid in.
+    let life = E.earn(save.life, 1205 - save.life.checking, "seeded pay").life;
     life = E.moveToSavings(life, 414).life;
     const next = copyLife(life);
     const a = openCard(next, { product: "student", name: "Student Card", issuer: "chase", network: "visa", icon: "🏛️", limit: 800, apr: 0.24, annualFee: 0 });

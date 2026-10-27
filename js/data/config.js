@@ -68,6 +68,11 @@ export const CONFIG = {
     challengeBonus: 10,
   },
 
+  // One-time coin gifts for students who already had a save. A save gets a
+  // grant once if its last login day was on or before the grant's day, so
+  // students who join later never get it. id must be new for each grant.
+  grants: [{ id: "coins-2026-10-27", amount: 1000, upTo: "2026-10-27", from: "Kingdom of Coinhaven" }],
+
   // The month loop after Chapter 1 (SPEC §8).
   play: {
     raiseBonus: 10,

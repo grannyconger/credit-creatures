@@ -2,10 +2,10 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-27 (Teacher requests round 3: Check Writer tray, Map button, closet, Phish Tank in the prologue, 2:30 timers, Battle calculator, one-word creature names, uncapped Arcade shifts. Pushed, awaiting review)
+Last updated: 2026-10-27 (Round 4: Check Writer in dyslexia mode, a calculator on the Grind's opening question, a one-time 1,000-coin gift. Before that, teacher requests round 3: Check Writer tray, Map button, closet, Phish Tank in the prologue, 2:30 timers, Battle calculator, one-word creature names, uncapped Arcade shifts. Pushed, awaiting review)
 
 ## Start here next session
-- **Baseline:** `npm test` is 375 passing and `npm run e2e` is 19 passing (checked 2026-10-27, after the Bill Drop test was removed).
+- **Baseline:** `npm test` is 376 passing and `npm run e2e` is 19 passing (checked 2026-10-27, after round 4).
 - **Teacher to do in Firebase:** paste the whole `firestore.rules` (covers the Battle wins leaderboard field, the Arcade class top scores and live classmate battles). Add a budget alert now that the project is on Blaze (upgraded 2026-10-26).
 - **Suggested next (teacher to pick):**
   1. Two-tab save protection (`docs/BATTLE-SCALING.md` item 3). More urgent now that a battle win pays $200.
@@ -18,6 +18,10 @@ Last updated: 2026-10-27 (Teacher requests round 3: Check Writer tray, Map butto
 
 ## Next step
 
+- **Teacher requests of 2026-10-27, round 4 (done and pushed, awaiting review):**
+  - **Check Writer in dyslexia mode** no longer runs off the screen. The ten tile columns share the width, the tiles are a bit smaller and lowercase (narrower in OpenDyslexic), and the top bar wraps. Checked at 1280, 1366 and 1536 wide.
+  - **The Grind:** the "true hourly rate" question before your first order has a calculator beside it. Logged as `calcUse` with `game: "grind"`.
+  - **1,000-coin gift:** `CONFIG.grants` holds one-time gifts. A save gets each once, through `receiveCash` (not income), if its last login was on or before the grant's `upTo` day (2026-10-27). So every current student gets $1,000 the next time they reach Home, and students who join later don't. Paid ids are kept in `play.grants`. Logged as `grantClaim`. No Firebase data was changed. The e2e rich-Vault helper now tops checking up to $1,205 so the gift can't change its totals.
 - **Teacher requests of 2026-10-27, round 3 (done and pushed, awaiting review):**
   - **Check Writer:** the word tiles sit in labeled, lined-up rows (1 to 9, 10 to 19, Tens), with Big words, Cents (smallest first) and Undo last tile / Clear words in a strip below. Groups live in `CW_TILE_GROUPS` (`js/data/arcade/checks.js`).
   - **The Dock is gone.** A Map button took its spot at the bottom left. Clothes are worn from the Wardrobe (`#/creature`), room pieces placed with Decorate your room. `js/ui/dock.js` deleted.

@@ -38,6 +38,18 @@ export function claimLogin(play, life, now = new Date()) {
   return { life: r.life, streak: next.streak, coins, milestone, total, lostStreak };
 }
 
+// One-time gifts from CONFIG.grants. Run before claimLogin, which moves
+// lastLogin to today. Returns null when nothing is owed.
+export function claimGrants(play, life, grants = CONFIG.grants) {
+  const last = play.daily?.lastLogin;
+  const owed = last ? grants.filter((g) => !play.grants?.includes(g.id) && last <= g.upTo) : [];
+  if (!owed.length) return null;
+  let next = life;
+  for (const g of owed) next = receiveCash(next, g.amount, g.from).life;
+  (play.grants ||= []).push(...owed.map((g) => g.id));
+  return { life: next, total: owed.reduce((t, g) => t + g.amount, 0), ids: owed.map((g) => g.id) };
+}
+
 // Opens box `index`. One pick per day. Returns { life, prize, shown, others }.
 export function claimPick(play, life, index, now = new Date()) {
   const state = pickState(play, now);

@@ -72,6 +72,8 @@ export function ensurePlay(play) {
   // Daily Pick, the login streak and a coupon from it (js/daily.js).
   play.daily ??= { lastLogin: null, streak: 0, best: 0, pickDay: null, pick: null };
   play.coupon ??= null;
+  // One-time gifts already paid (CONFIG.grants, js/daily.js).
+  play.grants ??= [];
   play.records ??= { highestScore: null, longestOnTime: 0 };
   Object.assign(play.desk, { finished: play.desk.finished ?? 0, perfect: play.desk.perfect ?? 0, streak: play.desk.streak ?? 0, bestStreak: play.desk.bestStreak ?? 0 });
   return play;

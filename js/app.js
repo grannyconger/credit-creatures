@@ -44,7 +44,7 @@ import * as alley from "./ui/screens/alley.js";
 import * as map from "./ui/screens/map.js";
 import * as daily from "./ui/screens/daily.js";
 import { initShell, paintShell } from "./ui/shell.js";
-import { claimLogin } from "./daily.js";
+import { claimLogin, claimGrants } from "./daily.js";
 import { onEvent as challengeEvent } from "./challenges.js";
 import { watchSentences } from "./ui/sentences.js";
 import { publishSpringTokens, motionOn } from "./ui/motion/spring.js";
@@ -80,6 +80,14 @@ onTrack((type, data) => {
 async function dailyLogin() {
   if (game.practice) return;
   const run = game.run;
+  const g = claimGrants(run.play, run.life);
+  if (g) {
+    run.life = g.life;
+    track("grantClaim", { ids: g.ids, coins: g.total });
+    await run.persist("grant");
+    updateWho();
+    toast(`A gift from the Kingdom! ${money(g.total)} went into your checking.`, "good");
+  }
   const r = claimLogin(run.play, run.life);
   if (!r) return;
   run.life = r.life;

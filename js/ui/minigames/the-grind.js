@@ -7,6 +7,7 @@ import { CONFIG } from "../../data/config.js";
 import * as G from "../../arcade/grind.js";
 import { docInspector, keyHelp, simplified, timerRing } from "../arcade/components.js";
 import { sfx } from "../arcade-sound.js";
+import { calculator } from "./calculator.js";
 
 const clockText = (min) => {
   const total = 17 * 60 + Math.round(min);
@@ -18,9 +19,11 @@ export function start(ctx) {
   return ctx.settings.mode === "store" ? store(ctx) : delivery(ctx);
 }
 
-// A typed skill question. onDone() continues.
+// A typed skill question, with a calculator beside it (teacher request
+// 2026-10-27). onDone() continues.
 function skillQ(root, ctx, { title, q, answer, right, wrong, cont, onDone }) {
   const box = h("div.gr-skill");
+  const calc = calculator({ onUse: () => ctx.track("calcUse", { game: "grind" }) });
   const input = h("input", { type: "text", inputmode: "decimal", "aria-label": "Your answer, in dollars" });
   const go = () => {
     const n = Number(input.value.replace(/[$,\s]/g, ""));
@@ -32,7 +35,7 @@ function skillQ(root, ctx, { title, q, answer, right, wrong, cont, onDone }) {
   };
   input.addEventListener("keydown", (e) => e.key === "Enter" && (e.preventDefault(), go()));
   fill(box, h("h4", title), h("p.gr-skill-q", q), h("div.row", h("span", "$"), input, h("button", { type: "button", onclick: go }, "Check")));
-  fill(root, box);
+  fill(root, h("div.gr-skill-wrap", box, calc));
   input.focus();
 }
 

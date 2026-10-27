@@ -4,7 +4,7 @@ import { dayKey, dayDiff, msUntilMidnight, streakAfter, loginReward, rollBoxes }
 import { CONFIG } from "../js/data/config.js";
 import { createLife } from "../js/engine/index.js";
 import { newPlay } from "../js/play.js";
-import { claimLogin, claimPick, pickState, couponPrice } from "../js/daily.js";
+import { claimLogin, claimGrants, claimPick, pickState, couponPrice } from "../js/daily.js";
 import { tasksFor, onEvent, progress } from "../js/challenges.js";
 
 const at = (s) => new Date(`${s}T12:00:00`);
@@ -81,6 +81,20 @@ test("login pays once a day through the engine, and the activity log shows it", 
   const r3 = claimLogin(play, r2.life, at("2026-10-30"));
   assert.equal(r3.lostStreak, 2);
   assert.equal(r3.streak, 1);
+});
+
+test("a one-time grant pays existing saves once and skips new students", () => {
+  const grants = [{ id: "g1", amount: 1000, upTo: "2026-10-27", from: "Kingdom of Coinhaven" }];
+  const { life, play } = fresh();
+  assert.equal(claimGrants(play, life, grants), null);
+  const later = claimLogin(play, life, at("2026-10-28"));
+  assert.equal(claimGrants(play, later.life, grants), null);
+  const old = fresh();
+  const r = claimLogin(old.play, old.life, at("2026-10-20"));
+  const g = claimGrants(old.play, r.life, grants);
+  assert.equal(g.life.checking, r.life.checking + 1000);
+  assert.equal(g.life.incomeThisMonth, r.life.incomeThisMonth);
+  assert.equal(claimGrants(old.play, g.life, grants), null);
 });
 
 test("one Daily Pick a day, and the saved pick stays after a reload", () => {

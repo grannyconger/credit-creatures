@@ -1114,3 +1114,19 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 /* The results' side column is only the bonus round now (2026-10-26). */
 .arc-bonus-head { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 1.05rem; color: var(--arc-yellow); }
 .arc-res-grid:not(:has(.arc-res-side)) { grid-template-columns: 1fr; }
+
+/* Check Writer in dyslexia mode (teacher report 2026-10-27): OpenDyslexic's
+   wide letters made the ten tile columns wider than the screen. The columns
+   share the width instead, the tiles are smaller and in lowercase (narrower
+   than capitals), and the top bar wraps. */
+:root[data-reading="dyslexia"] .bst-guild .arc-frame.skin-checks .mg-bar { flex-wrap: wrap; row-gap: 6px; }
+:root[data-reading="dyslexia"] .bst-guild .arc-frame.skin-checks .cw2-traycol.numbers { grid-template-columns: max-content repeat(10, minmax(0, 1fr)); gap: 4px; }
+:root[data-reading="dyslexia"] .bst-guild .arc-frame.skin-checks .cw2-tray .cw2-tile { min-width: 0; padding: 4px 1px; font-size: 0.76rem; letter-spacing: -0.04em !important; overflow-wrap: anywhere; }
+:root[data-reading="dyslexia"] .bst-guild .arc-frame.skin-checks .cw2-tile { text-transform: lowercase; }
+:root[data-reading="dyslexia"] .bst-guild .arc-frame.skin-checks .cw2-rowlabel { font-size: 0.7rem; }
+:root[data-reading="dyslexia"] .bst-guild .arc-frame.skin-checks :is(.cw2-desk, .cw2-check, .check-top, .cw2-wordsrow) { min-width: 0; }
+
+/* The Grind's opening question has a calculator beside it (2026-10-27). */
+.gr-skill-wrap { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: center; gap: 16px; margin: 14px auto; }
+.gr-skill-wrap .gr-skill { flex: 1 1 360px; margin: 0; }
+.gr-skill-wrap .calc { flex: none; }
