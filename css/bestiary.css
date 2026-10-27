@@ -6907,3 +6907,186 @@ dialog.arc-settings.bst-scope::backdrop { background: color-mix(in srgb, var(--b
 @media (prefers-reduced-motion: reduce) { .battle-end :is(.be-glow, .be-body, .be-creature, .be-stamp) { animation: none; } }
 :root[data-reading="dyslexia"] .battle-end :is(.be-body, .be-stamp) { rotate: none; transform: none; }
 .arena-board-link { margin: var(--b-s2) 0; }
+
+/* Chapter 4 touch-ups (2026-10-26): the score parts get drawn icons in their
+   factor color, and the report's accounts sit on inset paper, not white. */
+.bst-book-place .factor-icon { color: var(--f, var(--b-ink)); }
+.bst-book-place .tradeline { background: var(--b-paper-insert); border: 0; border-top: 3px solid var(--b-rule); border-radius: var(--b-r-sheet); box-shadow: var(--b-shadow-card); }
+.bst-book-place .tradeline .badge { color: var(--b-plum); background: var(--b-plum-wash); }
+.bst-book-place .callout strong .ico-wrap, .bst-book-place ul.plain li .ico-wrap { vertical-align: -3px; }
+
+/* ===========================================================================
+   Applying for a credit card (Chapter 3, 2026-10-26): js/ui/screens/networks.js,
+   design.js and result.js. The lesson is a bank leaflet pinned on the moss,
+   the form is ruled application paper beside a specimen plate holding the
+   card, and the answer is a letter from the issuer with an ink stamp.
+   =========================================================================== */
+.bst-cardapp { padding: var(--b-s5) var(--b-s4) var(--b-s6); }
+.bst-cardapp .ci-kicker { margin: 0 0 var(--b-s2); font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-plum); }
+.bst-cardapp :is(h1, h2, h3) { font-family: var(--b-display); font-weight: 400; color: var(--b-ink); }
+.bst-cardapp button:not(.bst-seal-btn, .cd-pick, .cd-look, .ci-option) { font-family: var(--b-body); }
+
+/* The leaflet. */
+.bst-cardintro .ci-sheet {
+  position: relative;
+  max-width: 720px;
+  margin: var(--b-s4) auto 0;
+  padding: var(--b-s6) var(--b-s6) var(--b-s5);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  rotate: -0.6deg;
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-cardintro .bst-attach { position: absolute; top: -11px; left: 50%; translate: -50% 0; }
+.bst-cardintro .ci-mark { display: grid; place-items: center; width: 84px; height: 84px; margin: var(--b-s2) 0 var(--b-s3); color: var(--b-rust-ink); border: 3px double var(--b-rule); border-radius: 50%; background: var(--b-paper-insert); }
+.bst-cardintro h1 { margin: 0 0 var(--b-s3); font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.05; }
+.bst-cardintro .ci-body p, .bst-cardintro .ci-question { margin: 0 0 var(--b-s3); font-size: var(--b-text); line-height: 1.6; max-width: 58ch; }
+.bst-cardintro .ci-count { margin: var(--b-s4) 0 0; font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink-soft); }
+.bst-cardintro .ci-actions { display: flex; justify-content: space-between; align-items: center; margin-top: var(--b-s3); padding-top: var(--b-s3); border-top: 1px dashed var(--b-rule); }
+.bst-cardintro .ci-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-s3); margin: var(--b-s3) 0; }
+.bst-cardintro .ci-option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--b-s2) var(--b-s3);
+  padding: var(--b-s3) var(--b-s4);
+  text-align: left;
+  font-family: var(--b-body);
+  font-size: var(--b-fs-title);
+  color: var(--b-ink);
+  background: var(--b-paper-2);
+  border: 1.5px solid var(--b-rule);
+  border-radius: var(--b-r-tag);
+  box-shadow: none;
+  cursor: pointer;
+}
+.bst-cardintro .ci-option:hover:not(:disabled) { border-color: var(--b-plum); }
+.bst-cardintro .ci-option:disabled { opacity: 1; cursor: default; }
+.bst-cardintro .ci-box { width: 22px; height: 22px; border: 2px solid var(--b-ink); border-radius: 4px; }
+.bst-cardintro .ci-option.right { border: 2px solid var(--b-good-ink); }
+.bst-cardintro .ci-option.wrong { border: 2px solid var(--b-rust); }
+.bst-cardintro .ci-option.right .ci-box { background: var(--b-good-ink); }
+.bst-cardintro .ci-option.wrong .ci-box { background: var(--b-rust); }
+.bst-cardintro .ci-verdict { grid-column: 2; display: inline-flex; align-items: center; gap: 4px; font-size: var(--b-small); font-weight: 700; }
+.bst-cardintro .ci-option.right .ci-verdict { color: var(--b-good-ink); }
+.bst-cardintro .ci-option.wrong .ci-verdict { color: var(--b-rust-ink); }
+.bst-cardintro .ci-answer { padding: var(--b-s3) var(--b-s4); background: var(--b-paper-insert); border-top: 3px solid var(--b-rule); border-radius: var(--b-r-sheet); }
+.bst-cardintro .ci-answer.good { border-top-color: var(--b-good-ink); }
+.bst-cardintro .ci-answer.bad { border-top-color: var(--b-rust); }
+
+/* The application form and the specimen plate. */
+.bst-carddesign .design { max-width: 1240px; margin: 0 auto; grid-template-columns: minmax(0, 1fr) 420px; gap: var(--b-s5); }
+.bst-carddesign .panel { color: var(--b-ink); border: 0; box-shadow: var(--b-shadow-page); }
+.bst-carddesign .cd-form {
+  padding: var(--b-s5) var(--b-s6);
+  background:
+    linear-gradient(90deg, transparent 40px, color-mix(in srgb, var(--b-rust) 45%, transparent) 40px 42px, transparent 42px),
+    var(--b-fibers), var(--b-grain), var(--b-paper);
+  border-radius: var(--b-r-paper);
+}
+.bst-carddesign .cd-form h1 { margin: 0; font-size: clamp(2rem, 3vw, 2.8rem); }
+.bst-carddesign .cd-lead { margin: var(--b-s2) 0 var(--b-s4); color: var(--b-ink-soft); }
+.bst-carddesign .cd-form h3 { display: flex; align-items: center; gap: var(--b-s2); margin: var(--b-s5) 0 var(--b-s2); padding-bottom: var(--b-s1); font-size: var(--b-fs-title); border-bottom: 1px solid var(--b-rule); }
+.bst-carddesign .cd-num { display: inline-grid; place-items: center; width: 28px; height: 28px; font-family: var(--b-display); font-size: var(--b-fs-ui); color: var(--b-paper); background: var(--b-rust); border-radius: 50%; }
+.bst-carddesign .tile-row { gap: var(--b-s3); }
+.bst-carddesign .cd-pick {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  padding: var(--b-s3);
+  text-align: left;
+  font-family: var(--b-body);
+  color: var(--b-ink);
+  background: var(--b-paper-2);
+  border: 1.5px solid var(--b-rule);
+  border-radius: var(--b-r-tag);
+  box-shadow: none;
+  cursor: pointer;
+}
+.bst-carddesign .cd-pick strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+.bst-carddesign .cd-pick small { color: var(--b-ink-soft); font-size: var(--b-small); }
+.bst-carddesign :is(.cd-pick, .cd-look):hover { border-color: var(--b-plum); }
+.bst-carddesign :is(.cd-pick, .cd-look)[aria-pressed="true"] { background: var(--b-plum-wash); border: 2px solid var(--b-plum); box-shadow: inset 0 0 0 1.5px var(--b-plum); }
+.bst-carddesign .cd-pick[aria-pressed="true"] strong::after, .bst-carddesign .cd-look[aria-pressed="true"]::after { content: " (chosen)"; font-family: var(--b-body); font-size: var(--b-fs-tiny); color: var(--b-plum); }
+.bst-carddesign .slider-box { padding: var(--b-s3) var(--b-s4); background: var(--b-paper-insert); border-radius: var(--b-r-sheet); }
+.bst-carddesign .slider-box label { font-weight: 700; }
+.bst-carddesign .slider-row input { accent-color: var(--b-plum); }
+.bst-carddesign .slider-value { display: block; text-align: center; font-family: var(--b-display); font-size: var(--b-fs-lead); color: var(--b-ink); }
+.bst-carddesign .cd-looks { display: flex; flex-wrap: wrap; gap: var(--b-s2); }
+.bst-carddesign .cd-look { display: inline-flex; align-items: center; padding: var(--b-s1) var(--b-s3); font-family: var(--b-body); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); box-shadow: none; cursor: pointer; }
+.bst-carddesign #nickname { width: 100%; padding: var(--b-s2) var(--b-s3); font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink); background: transparent; border: 0; border-bottom: 2px dashed var(--b-rule); border-radius: 0; }
+.bst-carddesign #nickname:focus { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
+.bst-carddesign .cd-plate {
+  position: sticky;
+  top: 84px;
+  padding: var(--b-s5) var(--b-s4) var(--b-s4);
+  background: var(--b-grain), var(--b-paper-2);
+  border: 4px double var(--b-rule);
+  border-radius: var(--b-r-sheet);
+  rotate: 0.6deg;
+}
+.bst-carddesign .cd-tape { position: absolute; top: -14px; left: 50%; translate: -50% 0; }
+.bst-carddesign .cd-plate h3 { margin: var(--b-s4) 0 var(--b-s2); font-size: var(--b-fs-title); }
+.bst-carddesign .you-stats div { background: var(--b-paper-insert); border-radius: var(--b-r-tag); }
+.bst-carddesign .you-stats strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-ink); }
+.bst-carddesign .you-stats small { color: var(--b-ink-soft); }
+.bst-carddesign .tradeoff { padding: var(--b-s2) 0; border-radius: 0; border-bottom: 1px dashed var(--b-rule); }
+.bst-carddesign .tradeoff dt { font-weight: 700; }
+.bst-carddesign .tradeoff dt small { color: var(--b-ink-soft); }
+.bst-carddesign .tradeoff dd { display: grid; justify-items: end; font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-ink); }
+.bst-carddesign .tradeoff dd:is(.bad, .warn) { color: var(--b-rust-ink); }
+.bst-carddesign .tradeoff dd.good { color: var(--b-good-ink); }
+.bst-carddesign .cd-dir { display: inline-flex; align-items: center; gap: 2px; font-family: var(--b-body); font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+.bst-carddesign .odds-bar { height: 12px; background: var(--b-paper-insert); border: 1.5px solid var(--b-rule); }
+.bst-carddesign .odds-bar span { background: var(--b-good-ink); }
+.bst-carddesign .odds-bar span:is(.bad, .warn) { background: var(--b-rust); }
+.bst-carddesign .reasons { padding-left: var(--b-s4); }
+.bst-carddesign .reasons li { margin: var(--b-s1) 0; }
+.bst-carddesign .reasons li.error { color: var(--b-rust-ink); font-weight: 700; }
+.bst-carddesign .cd-plate .bst-actions { justify-content: center; margin-top: var(--b-s3); }
+.bst-carddesign .note { color: var(--b-ink-soft); }
+
+/* The letter from the issuer. */
+.bst-cardresult .cr-letter {
+  position: relative;
+  max-width: 760px;
+  margin: var(--b-s4) auto 0;
+  padding: var(--b-s5) var(--b-s6);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+  animation: bst-page-in 0.6s var(--ease-gentle) both;
+}
+.bst-cardresult .cr-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--b-s3); padding-bottom: var(--b-s2); border-bottom: 3px double var(--b-rule); }
+.bst-cardresult .cr-from { margin: 0; font-family: var(--b-display); font-size: var(--b-fs-title); }
+.bst-cardresult .cr-stamp { position: absolute; top: 118px; right: var(--b-s5); width: 200px; rotate: -10deg; pointer-events: none; animation: bst-stamp-word 0.55s var(--ease-bouncy) 0.35s both; }
+.bst-cardresult .cr-stamp svg { width: 100%; height: auto; }
+.bst-cardresult .approved .cr-stamp { color: var(--b-good-ink); }
+.bst-cardresult .denied .cr-stamp { color: var(--b-rust-ink); }
+.bst-cardresult h1 { margin: var(--b-s4) 0 0; font-size: clamp(2.2rem, 3.4vw, 3rem); }
+.bst-cardresult .cr-lead { margin: var(--b-s1) 0 var(--b-s4); }
+.bst-cardresult .cr-card { display: flex; justify-content: center; margin: var(--b-s3) 0; }
+.bst-cardresult .cr-terms { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-s4); margin: var(--b-s3) 0; }
+.bst-cardresult .cr-line { padding: var(--b-s2) 0; border-bottom: 1px solid var(--b-rule); }
+.bst-cardresult .cr-line dt { color: var(--b-ink-soft); font-size: var(--b-small); }
+.bst-cardresult .cr-line dd { margin: 0; font-family: var(--b-display); font-size: var(--b-fs-lead); }
+.bst-cardresult h3 { margin: var(--b-s4) 0 var(--b-s2); font-size: var(--b-fs-title); }
+.bst-cardresult .reasons { padding-left: var(--b-s4); }
+.bst-cardresult .cr-tip { padding: var(--b-s3) var(--b-s4); background: var(--b-paper-insert); border-top: 3px solid var(--b-gold); border-radius: var(--b-r-sheet); }
+.bst-cardresult .cr-tip p { margin: var(--b-s1) 0; }
+.bst-cardresult .note { color: var(--b-ink-soft); }
+.bst-cardresult .bst-actions, .bst-cardresult .cr-actions { display: flex; justify-content: center; gap: var(--b-s3); margin-top: var(--b-s4); }
+
+:root[data-motion="calm"] .bst-cardapp :is(.ci-sheet, .cr-letter, .cr-stamp) { animation: none; }
+@media (prefers-reduced-motion: reduce) { .bst-cardapp :is(.ci-sheet, .cr-letter, .cr-stamp) { animation: none; } }
+:root[data-reading="dyslexia"] .bst-cardapp :is(.ci-sheet, .cd-plate, .cr-stamp) { rotate: none; }
+:root[data-reading="dyslexia"] .bst-carddesign #nickname { font-family: inherit; }
+.bst-carddesign .tradeoff.changed { animation: cd-flash 1s ease-out; }
+@keyframes cd-flash { from { background: color-mix(in srgb, var(--b-gold) 30%, transparent); } to { background: transparent; } }
+:root[data-motion="calm"] .bst-carddesign .tradeoff.changed { animation: none; }
+.bst-cardresult .cr-terms .cr-line { padding: var(--b-s2) 0; background: none; border: 0; border-bottom: 1px solid var(--b-rule); border-radius: 0; box-shadow: none; }

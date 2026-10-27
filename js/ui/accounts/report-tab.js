@@ -19,8 +19,8 @@ export function reportTab({ run }) {
     r.helping.length || r.hurting.length
       ? h(
           "div.best-worst",
-          h("div.callout.good", h("p", h("strong", "👍 Helping you")), r.helping.length ? h("ul", r.helping.map((x) => h("li", `${FACTOR_LABELS[x.factor]}: ${x.text}`))) : h("p", "Nothing stands out yet.")),
-          h("div.callout.bad", h("p", h("strong", "👎 Hurting you")), r.hurting.length ? h("ul", r.hurting.map((x) => h("li", `${FACTOR_LABELS[x.factor]}: ${x.text}`))) : h("p", "Nothing major. Nice."))
+          h("div.callout.good", h("p", h("strong", icon("up", { size: 18 }), " Helping you")), r.helping.length ? h("ul", r.helping.map((x) => h("li", `${FACTOR_LABELS[x.factor]}: ${x.text}`))) : h("p", "Nothing stands out yet.")),
+          h("div.callout.bad", h("p", h("strong", icon("down", { size: 18 }), " Hurting you")), r.hurting.length ? h("ul", r.hurting.map((x) => h("li", `${FACTOR_LABELS[x.factor]}: ${x.text}`))) : h("p", "Nothing major. Nice."))
         )
       : null,
     h("h2", "Accounts"),
@@ -48,7 +48,7 @@ export function reportTab({ run }) {
     h("p.grid-key", h("span.grid-cell.code-OK", "✓"), " on time ", h("span.grid-cell.code-30", "30"), " days late ", h("span.grid-cell.code-CO", "CO"), " collections ", h("span.grid-cell.empty"), " not reported. Oldest month on the left."),
     h("h2", "Inquiries"),
     r.inquiries.length
-      ? h("ul.plain", r.inquiries.slice().reverse().map((q) => h("li", `🔎 Hard: ${q.source}, at ${ageAt(q.month)}. ${q.counts ? "Counts against your score for now." : "Too old to count anymore."}`)))
+      ? h("ul.plain", r.inquiries.slice().reverse().map((q) => h("li", icon("search", { size: 16 }), ` Hard: ${q.source}, at ${ageAt(q.month)}. ${q.counts ? "Counts against your score for now." : "Too old to count anymore."}`)))
       : h("p.muted", "No hard inquiries."),
     soft.length ? h("ul.plain", soft.map((q) => h("li", `👀 Soft: ${q.source}, at ${ageAt(q.month)}. Never changes your score.`))) : null,
     h("h2", "Collections"),

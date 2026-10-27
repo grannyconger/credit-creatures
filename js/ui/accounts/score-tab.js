@@ -2,6 +2,7 @@
 import { h, ageLabel, percent } from "../dom.js";
 import { creditReport, FACTOR_LABELS } from "../../engine/index.js";
 import { CONFIG } from "../../data/config.js";
+import { icon } from "../icons.js";
 import { FACTOR_EXPLAINERS, SCORE_BANDS, bandFor } from "../../data/explainers.js";
 
 const SVG = "http://www.w3.org/2000/svg";
@@ -11,6 +12,9 @@ const s = (tag, attrs = {}, ...kids) => {
   el.append(...kids.filter((k) => k != null));
   return el;
 };
+
+// A drawn icon for each part of the score (no emoji on bestiary pages).
+const FACTOR_MARK = { payment: "clock", owed: "chart", length: "tree", mix: "card", newCredit: "search" };
 
 export function scoreTab({ run }) {
   const life = run.life;
@@ -110,7 +114,7 @@ function factorList(factors) {
         { class: `f${i}` },
         h(
           "div.factor-row-head",
-          h("span.factor-icon", { "aria-hidden": "true" }, x.icon),
+          h("span.factor-icon", { "aria-hidden": "true" }, icon(FACTOR_MARK[key] || "chart", { size: 22 })),
           h("div", h("h3", FACTOR_LABELS[key]), h("small", `${Math.round(weights[key] * 100)}% of your score`)),
           h("span.strength", { class: cls }, `${mark} ${word}`)
         ),

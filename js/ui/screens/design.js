@@ -1,6 +1,12 @@
 // Design Your Card (SPEC §7): pick an issuer, product, limit and look, and watch
 // approval risk, APR, fee, income and score needs change live.
+// A page of the Mossy Bestiary (2026-10-26): a bank's application form on
+// ruled paper (left), and the card pinned to a specimen plate with the live
+// numbers as ledger lines (right). Choices are index cards that turn plum and
+// say "chosen". Changes are shown with an arrow and a word, never color alone.
 import { h, clear, money, percent } from "../dom.js";
+import { icon } from "../icons.js";
+import { sealSvg, tapeSvg } from "../bestiary-art.js";
 import { fullName } from "../../data/creatures.js";
 import { quoteApplication, applyForCard, monthlyIncome, buildReport, hardInquiriesInWindow } from "../../engine/index.js";
 import { OFFERS, PRODUCTS, ISSUERS, NETWORKS, DESIGNS, TERMS_NOTE } from "../../data/products.js";
@@ -21,12 +27,12 @@ export function render(root, { game, go, track }) {
   const issuerRow = h("div.tile-row.issuers");
   const productRow = h("div.tile-row.products");
   const sliderBox = h("div.slider-box");
-  const designRow = h("div.chip-group");
+  const designRow = h("div.cd-looks");
   const nick = h("input", { type: "text", maxlength: NICK_MAX, value: app.nickname, id: "nickname", placeholder: "Optional" });
   const preview = h("div.preview-slot");
   const tradeoffs = h("dl.tradeoffs");
   const reasons = h("ul.reasons");
-  const applyBtn = h("button.big", { type: "button" }, "Apply for this card");
+  const applyBtn = h("button.bst-seal-btn", { type: "button" }, h("span.bst-seal-wax", { html: sealSvg({ seed: 64, size: 80 }) }), h("span.bst-seal-text", "Apply for this card"));
 
   const report = buildReport(life);
   const inquiries = hardInquiriesInWindow(life);
@@ -66,9 +72,8 @@ export function render(root, { game, go, track }) {
       const names = offersFor(key).map((o) => PRODUCTS[o.product].label.replace(/ card$/, ""));
       issuerRow.append(
         h(
-          "button.tile.wide",
+          "button.cd-pick",
           { type: "button", "aria-pressed": String(app.issuer === key), onclick: () => setIssuer(key) },
-          h("span.tile-emoji", iss.icon),
           h("strong", iss.brand ? h("span.brand-pill", { style: brandStyle(iss.brand) }, iss.name) : iss.name),
           iss.local ? h("small", "Local credit union") : null,
           h("small", names.join(" · "))
@@ -82,11 +87,11 @@ export function render(root, { game, go, track }) {
       const net = NETWORKS[o.network];
       productRow.append(
         h(
-          "button.tile.wide",
+          "button.cd-pick",
           { type: "button", "aria-pressed": String(app.product === o.product), onclick: () => setProduct(o.product) },
-          h("strong", `${o.icon || ""} ${o.name}`.trim()),
+          h("strong", o.name),
           h("small", p.blurb),
-          h("small.muted", `Runs on ${net.icon} ${net.name}`)
+          h("small.muted", `Runs on ${net.name}`)
         )
       );
     }
@@ -113,7 +118,7 @@ export function render(root, { game, go, track }) {
       const extra = d.feeBump ? ` (+${money(d.feeBump)} fee)` : "";
       designRow.append(
         h(
-          "button.chip.design-chip",
+          "button.cd-look",
           {
             type: "button",
             "aria-pressed": String(app.design === key),
@@ -165,7 +170,7 @@ export function render(root, { game, go, track }) {
           "div.tradeoff",
           { class: dir ? `changed ${dir}` : "" },
           h("dt", label, h("small", TRADEOFF_HELP[key])),
-          h("dd", { class: cls || "" }, dir === "up" ? "▲ " : dir === "down" ? "▼ " : "", String(text))
+          h("dd", { class: cls || "" }, String(text), dir ? h("small.cd-dir", icon(dir, { size: 14 }), dir === "up" ? " higher" : " lower") : null)
         )
       );
     }
@@ -229,36 +234,40 @@ export function render(root, { game, go, track }) {
 
   root.append(
     h(
-      "section.design",
+      "div.bestiary.bst-cardapp.bst-carddesign",
       h(
-        "div.design-left.panel",
-        h("p.step-label", "The Vault: Design Your Card"),
-        h("h1", "Design your first card"),
-        h("p", "Pick a lender and a card. Watch how each choice changes your chances and your costs."),
-        h("h3", "1. Issuer (the lender)"),
-        issuerRow,
-        h("h3", "2. Card"),
-        productRow,
-        h("h3", "3. Limit"),
-        sliderBox,
-        h("h3", "4. Look"),
-        designRow,
-        h("p.note.tight", "Fancy materials cost more each year, and the issuer wants a stronger application."),
-        h("h3", h("label", { for: "nickname" }, "5. Card nickname")),
-        nick
-      ),
-      h(
-        "aside.design-right.panel",
-        preview,
-        h("h3", "You right now"),
-        you,
-        h("h3", "Live tradeoffs"),
-        tradeoffs,
-        h("h3", "What the issuer will look at"),
-        reasons,
-        h("div.row", applyBtn),
-        h("p.note.tight", "Every application adds a hard inquiry to your report, approved or not."),
-        h("p.note.tight", TERMS_NOTE)
+        "section.design",
+        h(
+          "div.design-left.panel.cd-form",
+          h("p.ci-kicker", "The Vault: credit card application"),
+          h("h1", "Design your first card"),
+          h("p.cd-lead", "Pick a lender and a card. Watch how each choice changes your chances and your costs."),
+          h("h3", h("span.cd-num", "1"), "Issuer (the lender)"),
+          issuerRow,
+          h("h3", h("span.cd-num", "2"), "Card"),
+          productRow,
+          h("h3", h("span.cd-num", "3"), "Limit"),
+          sliderBox,
+          h("h3", h("span.cd-num", "4"), "Look"),
+          designRow,
+          h("p.note.tight", "Fancy materials cost more each year, and the issuer wants a stronger application."),
+          h("h3", h("span.cd-num", "5"), h("label", { for: "nickname" }, "Card nickname")),
+          nick
+        ),
+        h(
+          "aside.design-right.panel.cd-plate",
+          h("span.cd-tape", { "aria-hidden": "true", html: tapeSvg(7) }),
+          preview,
+          h("h3", "You right now"),
+          you,
+          h("h3", "Live tradeoffs"),
+          tradeoffs,
+          h("h3", "What the issuer will look at"),
+          reasons,
+          h("div.bst-actions", applyBtn),
+          h("p.note.tight", "Every application adds a hard inquiry to your report, approved or not."),
+          h("p.note.tight", TERMS_NOTE)
+        )
       )
     )
   );

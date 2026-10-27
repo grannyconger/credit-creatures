@@ -92,27 +92,30 @@ export const FACTOR_TOUR = [
 export const NETWORK_SLIDES = [
   {
     icon: "🛣️",
+    mark: "contactless",
     title: "The network is the road",
     body: [
-      "Visa 🔷 and Mastercard 🟠 are payment networks.",
+      "Visa and Mastercard are payment networks.",
       "When you tap your card, the network carries the payment from the store to your bank, like a road carries cars.",
       "Networks do not lend you money. They never decide if you get a card.",
     ],
   },
   {
     icon: "🏦",
+    mark: "vault",
     title: "The issuer is the lender",
     body: [
-      "Capital One ⛵, Chase 🏛️, and two local credit unions, Greenville Federal Credit Union 🌲 and Truliant 🌟, are issuers.",
+      "Capital One, Chase, and two local credit unions, Greenville Federal Credit Union and Truliant, are issuers.",
       "The issuer looks at your application, decides yes or no, and sets your limit and your APR (the yearly interest rate).",
       "The issuer is who sends your bill each month.",
     ],
   },
   {
     icon: "🚗",
+    mark: "car",
     title: "Putting it together",
     body: [
-      "Some companies do both. American Express 🛡️ and Discover 🧭 run their own network and also lend.",
+      "Some companies do both. American Express and Discover run their own network and also lend.",
       "Think of it this way. The network is the highway. The issuer is the car company that decides whether to sell you a car, and on what terms.",
       "On the next screen you will design a card and apply to an issuer.",
     ],
