@@ -374,7 +374,7 @@ async function studentRun(browser, [w, h], mode) {
       await check("popup:settings");
     });
     await page.keyboard.press("Escape");
-    for (const name of [/Wallet/, /Dock/, /Today/, /Bugs/]) {
+    for (const name of [/Wallet/, /Today/, /Bugs/]) {
       await S(`popup:${name.source}`, async () => {
         const b = page.getByRole("button", { name }).first();
         if (!(await b.count())) return;

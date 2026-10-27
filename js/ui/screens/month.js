@@ -236,7 +236,7 @@ export function render(root, { game, go, track, refreshWho }) {
       wrap,
       h("p", "When the month ends, statements close, interest and fees are charged, automatic payments come out of checking, lenders report to the credit bureau, and your score updates."),
       left > 0
-        ? h("p.callout", icon("guild", { size: 18 }), ` You can still work ${left} shift${left === 1 ? "" : "s"} at the Arcade this month. `, h("button.small.secondary", { type: "button", onclick: () => go("guild") }, "Go to the Arcade"))
+        ? h("p.callout", icon("guild", { size: 18 }), ` You have ${left} shift${left === 1 ? "" : "s"} to go at the Arcade this month. `, h("button.small.secondary", { type: "button", onclick: () => go("guild") }, "Go to the Arcade"))
         : null,
       warnings.length ? h("div.callout.warn", { role: "alert" }, warnings.map((w) => h("p", icon("alert", { size: 16 }), " ", w))) : h("p.callout.good", icon("check", { size: 16 }), " Your bills are covered."),
       h(

@@ -41,7 +41,7 @@ export function roomSvg(cottage, crop = null) {
   return svg("0 0 800 520", body, "room-bg").replace('preserveAspectRatio="xMidYMid meet"', 'preserveAspectRatio="none"');
 }
 
-// A small picture of one piece, for the Dock and the Market. Window and shelf
+// A small picture of one piece, for Decorate mode and the Market. Window and shelf
 // pieces use their own drawings. The rest show a crop of the room.
 const CROP = { wallpaper: "0 0 800 520", floor: "0 0 800 520", rug: "180 360 440 160", art: "430 150 110 100", lamp: "556 200 90 170", plant: "670 335 110 120" };
 export function decorThumb(decor) {
@@ -109,6 +109,7 @@ export const OBJECT_ART = {
   },
   mailbox: () => svg("0 0 50 57", `<path d="M25 44v12" ${s("peg-line", 4)}/><path d="M6 44V22a19 19 0 0 1 38 0v22z" ${fs("rust", "seal-deep", 3)}/><path d="M12 28h26" ${s("seal-deep", 2.5)}/><path d="M44 18V6h-9v12" ${fs("gold", "gold-ink", 2)}/>`),
   door: () => svg("0 0 50 128", `<path d="M4 126V30C4 10 14 3 25 3s21 7 21 27v96z" ${fs("peg", "peg-line", 3.5)}/><path d="M10 120V32c0-14 6-22 15-22s15 8 15 22v88z" ${fs("peg", "peg-line", 1.5)} opacity=".7"/><circle cx="37" cy="72" r="3.5" ${f("gold")}/><circle cx="25" cy="34" r="8" ${fs("paper-insert", "peg-line", 2)}/><path d="m27.5 31.5-2 5-5 2 2-5z" ${f("rust")}/>`),
+  closet: () => svg("0 0 60 140", `<path d="M4 18h52v116H4z" ${fs("peg", "peg-line", 3.5)}/><path d="M2 18 8 6h44l6 12z" ${fs("peg", "peg-line", 3)}/><path d="M30 24v104" ${s("peg-line", 2.5)}/><rect x="9" y="28" width="17" height="44" rx="3" ${fs("peg", "peg-line", 1.5)} opacity=".7"/><rect x="34" y="28" width="17" height="44" rx="3" ${fs("peg", "peg-line", 1.5)} opacity=".7"/><rect x="9" y="80" width="17" height="44" rx="3" ${fs("peg", "peg-line", 1.5)} opacity=".7"/><rect x="34" y="80" width="17" height="44" rx="3" ${fs("peg", "peg-line", 1.5)} opacity=".7"/><circle cx="26" cy="76" r="2.5" ${f("gold")}/><circle cx="34" cy="76" r="2.5" ${f("gold")}/><path d="M8 134v4M52 134v4" ${s("peg-line", 4)}/>`),
   arcade: () => svg("0 0 50 97", `<path d="M5 95V12c0-6 4-9 9-9h22c5 0 9 3 9 9v83z" ${fs("plum", "ink", 3)}/><rect x="11" y="10" width="28" height="26" rx="3" ${fs("ink", "ink-soft", 2)}/><path d="M18 26l6-10 6 10" ${s("foxfire", 2.5)}/><rect x="9" y="50" width="32" height="10" ${fs("ink-soft", "ink", 2)}/><circle cx="19" cy="48" r="4" ${f("rust")}/><circle cx="32" cy="48" r="3" ${f("gold")}/><path d="M25 62v10M16 76h18v19H16z" ${s("ink", 2)}/>`),
   desk: () => svg("0 0 100 91", `<rect x="4" y="34" width="92" height="9" ${fs("peg", "peg-line", 3)}/><path d="M10 43v46M90 43v46M10 62h24v27" ${s("peg-line", 4)}/><path d="M26 34l-2-12 24 3 24-3-2 12z" ${fs("paper", "ink-soft", 2.5)}/><path d="M48 25v9M32 28l12 1M64 28l-12 1" ${s("ink-soft", 1.5)}/><path d="M74 34l6-20 4 20" ${fs("gold", "gold-ink", 2)}/>`),
   chest: () => svg("0 0 100 80", `<path d="M8 38a42 30 0 0 1 84 0v34H8z" ${fs("peg", "peg-line", 4)}/><path d="M8 44h84M30 12v60M70 12v60" ${s("gold-ink", 4)}/><rect x="42" y="36" width="16" height="18" rx="3" ${fs("gold", "gold-ink", 3)}/><circle cx="50" cy="45" r="2.5" ${f("ink")}/>`),

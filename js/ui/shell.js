@@ -1,5 +1,5 @@
 // The persistent shell (docs/UI-REBUILD.md, slice 1): status chips in the top
-// bar, and a bottom bar with the creature, three shortcuts and Things To Do.
+// bar, and a bottom bar with the creature, the Map, three shortcuts and Things To Do.
 // Screens render only in the middle (#app), so these never rebuild per screen.
 import { h, clear, money } from "./dom.js";
 import { icon } from "./icons.js";
@@ -15,6 +15,8 @@ const status = document.getElementById("status");
 const bottombar = document.getElementById("bottombar");
 const shortcuts = document.getElementById("shortcuts");
 const thingsBtn = document.getElementById("things-btn");
+// The Map shortcut took the Dock's spot (teacher request 2026-10-27).
+const mapBtn = document.getElementById("map-btn");
 
 let api = null;
 
@@ -36,6 +38,11 @@ const EXTRAS = [
 export function initShell({ getGame, go, track }) {
   api = { getGame, go, track };
   thingsBtn.addEventListener("click", () => openThingsToDo());
+  mapBtn.addEventListener("click", () => {
+    if (!getGame()) return;
+    track("shortcutClick", { to: "map", from: location.hash.replace(/^#\/?/, "") || getGame().step });
+    go("map");
+  });
   shortcuts.addEventListener("click", (e) => {
     const b = e.target.closest("button[data-route]");
     const game = getGame();
@@ -67,9 +74,11 @@ export function paintShell(game) {
   const inKingdom = game?.step === "hub";
   bottombar.hidden = !inKingdom;
   status.hidden = !inKingdom;
+  mapBtn.hidden = !inKingdom;
   if (!inKingdom) return void (pill.hidden = true);
   const { play, life } = game.run;
   const here = location.hash.replace(/^#\/?/, "") || "hub";
+  mapBtn.setAttribute("aria-current", here === "map" ? "page" : "false");
 
   clear(status);
   const streak = ensureDaily(play).streak;

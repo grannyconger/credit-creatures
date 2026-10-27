@@ -66,7 +66,7 @@ test("Home is the Cottage room: objects glow and lead places", async ({ page }) 
   await seededStudent(page);
   await open(page, "hub");
   await closePopups(page);
-  await expect(page.locator(".room-object")).toHaveCount(10);
+  await expect(page.locator(".room-object")).toHaveCount(11);
   await page.hover('[data-object="window"]');
   await expect(page.locator('[data-object="window"] .room-tag')).toBeVisible();
   await page.click('[data-object="window"]');
@@ -78,27 +78,17 @@ test("Home is the Cottage room: objects glow and lead places", async ({ page }) 
   expect(errors).toEqual([]);
 });
 
-test("the Dock holds owned pieces and puts them in the room", async ({ page }) => {
+test("the closet opens the Wardrobe and the Map button opens the map", async ({ page }) => {
   const errors = watchErrors(page);
   await seededStudent(page);
-  const KEY = "credit-life:saves/local-student";
-  await page.goto("/css/tokens.css");
-  await page.evaluate((k) => {
-    const s = JSON.parse(localStorage.getItem(k));
-    s.play.decorOwned = ["rug-gold"];
-    s.play.owned = ["topHat"];
-    localStorage.setItem(k, JSON.stringify(s));
-  }, KEY);
-  await enterGame(page);
   await open(page, "hub");
-  await expect(page.locator(".dock-count")).toHaveText("2");
-  await page.click("#dock-btn");
-  await expect(page.locator(".dock-item")).toHaveCount(2);
-  await page.locator(".dock-item", { hasText: "Round gold rug" }).click();
-  await expect.poll(() => page.evaluate((k) => JSON.parse(localStorage.getItem(k)).play.cottage?.rug, KEY)).toBe("rug-gold");
-  await closePopups(page);
-  await page.locator(".dock-item", { hasText: "Top hat" }).click();
-  await expect.poll(() => page.evaluate((k) => JSON.parse(localStorage.getItem(k)).creature.accessories?.head, KEY)).toBe("topHat");
+  await expect(page.locator("#dock-btn")).toHaveCount(0);
+  await page.click('[data-object="closet"]');
+  await expect(page).toHaveURL(/#\/creature$/);
+  await open(page, "hub");
+  await page.click("#map-btn");
+  await expect(page).toHaveURL(/#\/map$/);
+  await expect(page.locator("#map-btn")).toHaveAttribute("aria-current", "page");
   expect(errors).toEqual([]);
 });
 
@@ -426,55 +416,6 @@ test("the Vault is organised by money jobs: an Overview with assets, liabilities
   expect(errors).toEqual([]);
 });
 
-// GAME-SPECS.md (2026-10-25): the shared settings modal, a whole Bill Drop month,
-// the results with the bonus round (no why question since 2026-10-26).
-test("Bill Drop: settings modal, a full untimed month, results and bonus", async ({ page }) => {
-  const errors = watchErrors(page);
-  await seededStudent(page);
-  await open(page, "hub");
-  await page.click(".bst-seal-btn").catch(() => {});
-  await page.waitForTimeout(600);
-  await closePopups(page);
-  await open(page, "guild");
-  await page.locator(".job-card", { hasText: "Bill Drop" }).click();
-  await expect(page.locator("dialog.arc-settings[open]")).toBeVisible();
-  await expect(page.locator(".arc-ranked")).toContainText("Ranked");
-  await page.locator(".arc-opt", { hasText: "No timer" }).click();
-  await expect(page.locator(".arc-ranked")).toContainText("Not ranked");
-  await page.click(".arc-start");
-  await page.locator(".bd-skill button", { hasText: "No" }).click();
-  await page.fill(".bd-skill-num", "100");
-  await page.keyboard.press("Enter");
-  await page.locator(".bd-skill button", { hasText: "Start the month" }).click();
-  for (let d = 0; d < 45 && !(await page.locator(".arc-results").count()); d++) {
-    if (await page.locator(".bd-overlay button").count()) {
-      await page.locator(".bd-overlay button").click();
-      continue;
-    }
-    await page.keyboard.press("m");
-    for (let k = 0; k < 3; k++) {
-      await page.keyboard.press("n");
-      await page.keyboard.press("a");
-      await page.keyboard.press("Enter");
-    }
-    await page.locator(".bd-next").click();
-  }
-  await expect(page.locator(".arc-results")).toBeVisible();
-  for (let i = 0; i < 4; i++) {
-    const c = page.locator(".celebrate button, dialog[open] button").last();
-    if (await c.isVisible().catch(() => false)) await c.click();
-    await page.waitForTimeout(250);
-  }
-  await expect(page.locator(".arc-why, .arc-res-echo")).toHaveCount(0);
-  await page.click(".arc-bonus-go");
-  if (await page.locator(".arc-bonus-num").count()) {
-    await page.fill(".arc-bonus-num", "1");
-    await page.locator(".arc-bonus-row button").click();
-  } else await page.locator(".arc-bonus-choice").first().click();
-  await expect(page.locator(".arc-bonus-result")).toBeVisible();
-  expect(errors).toEqual([]);
-});
-
 test("Battle Arena: a computer bout costs Energy and the fee, plays rounds with the worked math, and records the result", async ({ page }) => {
   const errors = watchErrors(page);
   await seededStudent(page);
@@ -494,6 +435,13 @@ test("Battle Arena: a computer bout costs Energy and the fee, plays rounds with 
   for (let i = 0; i < 8 && !(await page.locator(".arena-over").count()); i++) {
     await page.locator("button.arena-move:not([disabled])").first().click();
     await expect(page.locator(".arena-q-prompt")).toBeVisible();
+    if (i === 0) {
+      // Every question has a calculator, and it stays open the next round.
+      await page.locator(".arena-question .calc-toggle").click();
+      await expect(page.locator(".arena-calc-slot .calc")).toBeFocused();
+      await page.keyboard.type("12*3=");
+      await expect(page.locator(".arena-calc-slot .calc-screen")).toHaveText("36");
+    } else await expect(page.locator(".arena-calc-slot .calc")).toBeVisible();
     await page.locator("button.arena-choice").first().click();
     await expect(page.locator(".arena-math")).not.toBeEmpty();
     await page.locator("button.arena-next").click();

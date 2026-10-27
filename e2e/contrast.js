@@ -202,10 +202,6 @@ for (const theme of themes) {
       await page.click("#settings-btn");
     });
     await page.keyboard.press("Escape");
-    await run("dock", async () => {
-      await page.click("#dock-btn");
-    });
-    await page.keyboard.press("Escape");
     await run("challenges", async () => {
       await page.click(".challenge-toggle");
     });

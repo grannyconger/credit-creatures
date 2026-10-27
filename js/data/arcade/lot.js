@@ -43,7 +43,7 @@ export const LOT_META = {
   rankedHint: "only Timed shifts are ranked",
   ranked: (s) => s.timer === "timed",
   board: () => "lot",
-  timer: { timed: "3:30 for the whole deal.", none: "Take your time." },
+  timer: { timed: "2:30 for the whole deal.", none: "Take your time." },
   settings: () => [],
   mistakes: ["Signing with an add-on left in: its price.", "Signing at a rate above your preapproval: the extra interest, added as debt (up to $500 in this game)."],
   beats: ["He talks about monthly payments. Turn on Total cost to see the real price.", "Counter, accept or walk away. Walking away is a gamble.", "Read the contract. Strike add-ons you don't want."],

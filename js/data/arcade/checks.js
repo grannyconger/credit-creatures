@@ -76,12 +76,15 @@ export const CW_ENDORSE = [
 ];
 
 // The word tiles under the check.
-export const CW_TILES = [
-  "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
-  "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
-  "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety",
-  "hundred", "thousand", "and",
+// The tray shows them in labeled rows so a word is easy to find (teacher
+// request 2026-10-27: one long jumble was hard to use).
+export const CW_TILE_GROUPS = [
+  { label: "1 to 9", tiles: ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"] },
+  { label: "10 to 19", tiles: ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"] },
+  { label: "Tens", tiles: ["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"] },
+  { label: "Big words", tiles: ["hundred", "thousand", "and"] },
 ];
+export const CW_TILES = CW_TILE_GROUPS.flatMap((g) => g.tiles);
 
 export const CHECKS_META = {
   title: "Check Writer",
@@ -93,7 +96,7 @@ export const CHECKS_META = {
   rankedHint: "only Timed shifts are ranked",
   ranked: (s) => s.timer === "timed",
   board: () => "checks",
-  timer: { timed: "3:30 for the whole shift.", none: "Take your time." },
+  timer: { timed: "2:30 for the whole shift.", none: "Take your time." },
   settings: () => [],
   mistakes: ["Cashing a bad check: $50.", "Your own check gets washed: $25.", "A wrong endorsement: $5."],
   beats: ["Write the payee exactly as the bill says.", "Build the amount in words from these tiles.", "Draw a line through empty space so no one can add to it."],

@@ -80,7 +80,7 @@ test("during a month: decisions first, then shifts, then End Month", () => {
 
   play.active.month.shifts = 99;
   s = placeStatus({ life: l, play, creature: { dream: "home" }, classInfo: ci });
-  assert.equal(s.guild.text, "Done for this month");
+  assert.equal(s.guild.text, "Shifts done. Work more any time");
   assert.match(nextStep({ play, classInfo: ci, status: s }), /End the month at Town Hall/);
 });
 

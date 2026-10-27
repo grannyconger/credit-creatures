@@ -499,8 +499,19 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .bst-guild .arc-frame.skin-checks .cw2-tile { padding: 2px 8px; font: 800 0.85rem "Trebuchet MS", sans-serif; letter-spacing: 0.03em; color: var(--arc-checks-ink); background: var(--arc-checks-paper); border: 2px solid var(--arc-checks-ink); border-radius: 6px; cursor: pointer; }
 .bst-guild .arc-frame.skin-checks .cw2-tile.cents { background: var(--arc-checks-tint); }
 .bst-guild .arc-frame.skin-checks .cw2-tile.placed { padding: 1px 6px; font-size: 0.82rem; }
-.bst-guild .arc-frame.skin-checks .cw2-tray { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px; background: color-mix(in srgb, #000 30%, transparent); border-radius: 10px; }
-.bst-guild .arc-frame.skin-checks .cw2-sep { width: 12px; }
+.bst-guild .arc-frame.skin-checks .cw2-tray { display: grid; gap: 10px; padding: 10px 12px; background: color-mix(in srgb, #000 30%, transparent); border-radius: 10px; }
+/* Number rows share one grid, so the columns line up and fit the longest word. */
+.bst-guild .arc-frame.skin-checks .cw2-traycol.numbers { display: grid; grid-template-columns: 6em repeat(10, max-content); align-items: center; gap: 6px; }
+.bst-guild .arc-frame.skin-checks .cw2-traycol.numbers .cw2-row, .bst-guild .arc-frame.skin-checks .cw2-rowtiles.grid { display: contents; }
+.bst-guild .arc-frame.skin-checks .cw2-traycol.numbers .cw2-rowlabel { grid-column: 1; }
+.bst-guild .arc-frame.skin-checks .cw2-traycol.extras { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; padding-top: 10px; border-top: 2px dashed color-mix(in srgb, var(--arc-checks-paper) 35%, transparent); }
+.bst-guild .arc-frame.skin-checks .cw2-row { display: flex; align-items: center; gap: 8px; }
+.bst-guild .arc-frame.skin-checks .cw2-rowlabel { font: 700 0.78rem "Trebuchet MS", sans-serif; letter-spacing: 0.04em; text-transform: uppercase; color: var(--arc-checks-paper); opacity: 0.85; white-space: nowrap; }
+.bst-guild .arc-frame.skin-checks .cw2-rowtiles { display: flex; flex-wrap: wrap; gap: 6px; }
+.bst-guild .arc-frame.skin-checks .cw2-tray .cw2-tile { padding: 4px 10px; }
+.bst-guild .arc-frame.skin-checks .cw2-trayedit { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.bst-guild .arc-frame.skin-checks .cw2-edit { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; font: 700 0.8rem "Trebuchet MS", sans-serif; color: var(--arc-checks-paper); background: none; border: 2px solid color-mix(in srgb, var(--arc-checks-paper) 60%, transparent); border-radius: 999px; cursor: pointer; }
+.bst-guild .arc-frame.skin-checks .cw2-edit:hover, .bst-guild .arc-frame.skin-checks .cw2-edit:focus-visible { border-color: var(--arc-checks-paper); }
 .bst-guild .arc-frame.skin-checks .cw2-linebtn { padding: 2px 8px; font: 700 0.8rem "Trebuchet MS", sans-serif; color: var(--arc-checks-ink); background: var(--arc-checks-paper); border: 2px dashed var(--arc-checks-ink); border-radius: 999px; white-space: nowrap; }
 .bst-guild .arc-frame.skin-checks .cw2-linebtn[aria-pressed="true"] { border-style: solid; }
 .bst-guild .arc-frame.skin-checks .cw2-linebtn[aria-pressed="true"]::before { content: "✓ "; }

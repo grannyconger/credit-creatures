@@ -73,7 +73,7 @@ export const FEES_META = {
   ranked: (s) => s.timer === "timed",
   board: (s) => `fees:${s.difficulty}`,
   boardLabel: (s) => ({ easy: "Easy", medium: "Medium", hard: "Hard" })[s.difficulty],
-  timer: { timed: "3:30 for three cases.", none: "Take your time." },
+  timer: { timed: "2:30 for three cases.", none: "Take your time." },
   settings: () => [
     {
       key: "difficulty",

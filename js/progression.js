@@ -16,10 +16,10 @@ export const FEATURES = {
   market: { at: 0 },
   cashier: { at: 0 },
   // GAME-SPECS.md games, opened by chapter topic (teacher decision 2026-10-25).
-  billdrop: { at: 0 },
   payin4: { at: 3 },
   scorechase: { at: 4 },
-  phish: { at: 1 },
+  // Phish Tank replaced Bill Drop in the prologue (teacher decision 2026-10-27).
+  phish: { at: 0 },
   grind: { at: 1 },
   feed: { at: 2 },
   rainy: { at: 5 },
@@ -107,11 +107,12 @@ export function payMethods(play, life) {
 }
 
 // Every Arcade cabinet in the order the hall shows them.
-export const ARCADE_ORDER = ["cashier", "checks", "billdrop", "phish", "grind", "dash", "feed", "lot", "payin4", "scorechase", "rainy", "movein", "tree", "fees"];
+export const ARCADE_ORDER = ["cashier", "checks", "phish", "grind", "dash", "feed", "lot", "payin4", "scorechase", "rainy", "movein", "tree", "fees"];
 // Version 1 cabinets retired by GAME-SPECS.md 4.1. Their logic lives on in the
 // new games (overdraft feed in Bill Drop, unit prices in Market Dash and so on),
-// so the code stays, but they no longer appear in the Arcade.
-export const RETIRED_JOBS = ["ledger", "overdraft", "register", "checkhunt", "drawer", "unitprice"];
+// so the code stays, but they no longer appear in the Arcade. Bill Drop is off
+// too (teacher decision 2026-10-27).
+export const RETIRED_JOBS = ["ledger", "overdraft", "register", "checkhunt", "drawer", "unitprice", "billdrop"];
 
 // The jobs at the Arcade so far.
 export function openJobs(play) {
@@ -179,8 +180,8 @@ export const PROLOGUE_STEPS = [
 ];
 
 // The three shifts of the prologue, one of each, in any order.
-// Bill Drop on Easy replaced Spot the Overdraft (teacher decision 2026-10-25).
-export const PROLOGUE_JOBS = ["cashier", "checks", "billdrop"];
+// Phish Tank replaced Bill Drop (teacher decision 2026-10-27).
+export const PROLOGUE_JOBS = ["cashier", "checks", "phish"];
 
 export function newPrologue() {
   return { done: false, welcomed: false, shifts: 0, worked: [], marketVisited: false, cottageVisited: false, bankOpened: false };

@@ -272,7 +272,7 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
   paint();
   refreshRelease();
   autoLessons();
-  // Putting a piece in the room from the Dock repaints the room.
+  // Buying or placing a piece in the room repaints it.
   const repaint = () => paint();
   addEventListener("cc:decor", repaint);
   return () => removeEventListener("cc:decor", repaint);

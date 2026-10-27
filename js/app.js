@@ -44,7 +44,6 @@ import * as alley from "./ui/screens/alley.js";
 import * as map from "./ui/screens/map.js";
 import * as daily from "./ui/screens/daily.js";
 import { initShell, paintShell } from "./ui/shell.js";
-import { initDock, paintDockButton } from "./ui/dock.js";
 import { claimLogin } from "./daily.js";
 import { onEvent as challengeEvent } from "./challenges.js";
 import { watchSentences } from "./ui/sentences.js";
@@ -91,7 +90,6 @@ async function dailyLogin() {
   toast(`${start}Day ${r.streak} streak! You earned ${money(r.coins)} for signing in${r.milestone ? `, plus a ${money(r.milestone)} streak bonus` : ""}.`, "good");
 }
 
-initDock({ getGame: () => game, go: (step) => (location.hash = `#/${step}`), track });
 // Set once the student is in the game this tab, so a refresh skips the title.
 const ENTERED = "credit-creatures:entered";
 // Google's own "G", as on a standard Google sign-in button.
@@ -200,7 +198,6 @@ function signedOut(error = "", user = null) {
   game = null;
   topbar.hidden = true;
   paintShell(null);
-  paintDockButton(null);
   bug.hide();
   const err = h("p.error", { role: "alert" }, error);
   // Looks like a standard Google sign-in button (teacher request 2026-10-21).
@@ -406,7 +403,6 @@ function updateWho() {
   paintChapter();
   paintNav();
   paintShell(game);
-  paintDockButton(game);
   if (game.step === "hub" && !game.dailyChecked) {
     game.dailyChecked = true;
     dailyLogin();

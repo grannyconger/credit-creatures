@@ -52,6 +52,7 @@ const P = {
   palette: '<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-.8-.5-1.2-.5-2s.7-1.5 1.5-1.5H17a4 4 0 0 0 4-4c0-5-4-9-9-9z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/>',
   dream: '<path d="M12 3 9.5 9H3l5 4-2 7 6-4.5 6 4.5-2-7 5-4h-6.5z"/><path d="M12 3v13.5"/>',
   pause: '<path d="M9 5v14M15 5v14"/>',
+  map: '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
   compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/>',
   lantern: '<path d="M12 2v2M9 4h6"/><path d="M8 7h8l-1.2 11H9.2z"/><path d="M7 7h10M7 21h10M12 18v3"/><path d="M12 10.5c1 1 1 2.5 0 3.5-1-1-1-2.5 0-3.5z"/>',
   volume: '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',

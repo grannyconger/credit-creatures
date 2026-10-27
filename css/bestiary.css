@@ -3662,7 +3662,7 @@ main#app.app:has(.bestiary) {
 .bst-guild .tray-piece.coin { border-radius: 999px; background: var(--b-coin-silver); }
 .bst-guild .cash-actions { justify-content: flex-end; gap: var(--b-s2); }
 .bst-guild .cash-actions button { min-height: 56px; touch-action: manipulation; }
-:is(.bst-guild, .bst-month) .calc-toggle {
+:is(.bst-guild, .bst-month, .bst-arena) .calc-toggle {
   margin-left: auto;
   font-family: var(--b-body);
   font-weight: 700;
@@ -3673,8 +3673,8 @@ main#app.app:has(.bestiary) {
   box-shadow: var(--b-shadow-card);
   min-height: 48px;
 }
-:is(.bst-guild, .bst-month) .calc-toggle[aria-expanded="true"] { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
-:is(.bst-guild, .bst-month) .calc {
+:is(.bst-guild, .bst-month, .bst-arena) .calc-toggle[aria-expanded="true"] { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
+:is(.bst-guild, .bst-month, .bst-arena) .calc {
   width: 272px;
   padding: var(--b-s3);
   color: var(--b-ink);
@@ -3683,20 +3683,20 @@ main#app.app:has(.bestiary) {
   box-shadow: var(--b-shadow-lift);
   touch-action: manipulation;
 }
-:is(.bst-guild, .bst-month) .calc:focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
-:is(.bst-guild, .bst-month) .calc-top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--b-s2); margin-bottom: var(--b-s2); }
-:is(.bst-guild, .bst-month) .calc-screen { display: block; padding: 8px 12px; overflow: hidden; text-align: right; font-family: var(--b-body); font-size: var(--b-fs-lead); font-variant-numeric: tabular-nums; background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; }
-:is(.bst-guild, .bst-month) .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--b-s2); }
-:is(.bst-guild, .bst-month) .calc-key { min-height: 54px; padding: 0; font-family: var(--b-body); font-weight: 700; font-size: var(--b-fs-title); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; touch-action: manipulation; user-select: none; }
-:is(.bst-guild, .bst-month) .calc-key:active { transform: translateY(2px); }
-:is(.bst-guild, .bst-month) .calc-key.calc-op { color: var(--b-on-rust); background: var(--b-rust); border-color: transparent; }
-:is(.bst-guild, .bst-month) .calc-key.calc-fn { min-width: 52px; }
+:is(.bst-guild, .bst-month, .bst-arena) .calc:focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
+:is(.bst-guild, .bst-month, .bst-arena) .calc-top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--b-s2); margin-bottom: var(--b-s2); }
+:is(.bst-guild, .bst-month, .bst-arena) .calc-screen { display: block; padding: 8px 12px; overflow: hidden; text-align: right; font-family: var(--b-body); font-size: var(--b-fs-lead); font-variant-numeric: tabular-nums; background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; }
+:is(.bst-guild, .bst-month, .bst-arena) .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--b-s2); }
+:is(.bst-guild, .bst-month, .bst-arena) .calc-key { min-height: 54px; padding: 0; font-family: var(--b-body); font-weight: 700; font-size: var(--b-fs-title); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; touch-action: manipulation; user-select: none; }
+:is(.bst-guild, .bst-month, .bst-arena) .calc-key:active { transform: translateY(2px); }
+:is(.bst-guild, .bst-month, .bst-arena) .calc-key.calc-op { color: var(--b-on-rust); background: var(--b-rust); border-color: transparent; }
+:is(.bst-guild, .bst-month, .bst-arena) .calc-key.calc-fn { min-width: 52px; }
 @media (max-width: 1100px) {
   .bst-guild .cash-counter { grid-template-columns: minmax(0, 1fr); }
 }
 .bst-guild .cash-drawer { justify-content: stretch; flex-wrap: nowrap; }
 .bst-guild .drawer-row .cash-piece.bill { width: 100%; }
-:is(.bst-guild, .bst-month) .calc-key.calc-op { font-family: system-ui, sans-serif; font-size: 1.6rem; line-height: 1; }
+:is(.bst-guild, .bst-month, .bst-arena) .calc-key.calc-op { font-family: system-ui, sans-serif; font-size: 1.6rem; line-height: 1; }
 .bst-guild .cashier .cash-actions button.secondary { color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
 /* Pet the creature in the Cottage (Phase 16). */
 .bst-cottage .cottage-pet { padding: 0; background: none; border: 0; border-radius: var(--b-r-blob); cursor: var(--b-cursor-lens), pointer; }
@@ -5519,9 +5519,9 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
 .home-stage .room-object:hover, .home-stage .room-object:focus-visible { z-index: 6; }
 
 /* ===========================================================================
-   The Dock (slice 3): a tray above the bottom bar holding what you own.
+   The Map shortcut (took the Dock's spot 2026-10-27), bottom left.
    =========================================================================== */
-.bst-bottombar .dock-btn {
+.bst-bottombar .map-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -5536,58 +5536,11 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
   border: 1.5px solid color-mix(in srgb, var(--b-on-ground) 35%, transparent);
   border-radius: var(--b-r-tag);
 }
-.bst-bottombar .dock-btn[hidden] { display: none; }
-.bst-bottombar .dock-btn .ico-wrap, .bst-bottombar .dock-btn .ico { color: var(--b-gold); }
-.bst-bottombar .dock-btn[aria-expanded="true"] { border-style: dashed; border-color: var(--b-foxfire); color: var(--b-foxfire); }
-.bst-bottombar .dock-count:not(:empty) {
-  min-width: 22px;
-  padding: 0 5px;
-  font-size: var(--b-fs-tiny);
-  line-height: 22px;
-  text-align: center;
-  color: var(--b-on-rust);
-  background: var(--b-rust);
-  border-radius: var(--b-r-round);
-}
-.bst-bottombar .dock-btn.flash { animation: dock-flash 0.7s ease-out; }
-@keyframes dock-flash { 0% { transform: scale(1); } 30% { transform: scale(1.15) rotate(-3deg); box-shadow: 0 0 14px var(--b-foxfire); } 100% { transform: scale(1); } }
-@media (prefers-reduced-motion: reduce) { .bst-bottombar .dock-btn.flash { animation: none; } }
-:root[data-motion="calm"] .bst-bottombar .dock-btn.flash { animation: none; }
+.bst-bottombar .map-btn[hidden] { display: none; }
+.bst-bottombar .map-btn .ico { color: var(--b-gold); }
+.bst-bottombar .map-btn:hover, .bst-bottombar .map-btn:focus-visible { border-color: var(--b-foxfire); }
+.bst-bottombar .map-btn[aria-current="page"] { border-style: dashed; border-color: var(--b-foxfire); color: var(--b-foxfire); }
 .bst-bottombar { flex-wrap: nowrap; }
-.dock {
-  position: absolute;
-  left: var(--b-s4);
-  right: var(--b-s4);
-  bottom: calc(100% + 2px);
-  z-index: 30;
-  padding: var(--b-s2) var(--b-s3) var(--b-s3);
-  color: var(--b-ink);
-  background: var(--b-fibers), var(--b-paper);
-  border: 1.5px solid var(--b-paper-edge);
-  border-radius: var(--b-r-paper);
-  box-shadow: var(--b-shadow-lift);
-}
-.dock[hidden] { display: none; }
-.dock-tabs { display: flex; gap: var(--b-s1); }
-.dock-tabs button { padding: 4px 14px; font-weight: 700; color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-paper-edge); border-bottom: 0; border-radius: var(--b-r-tab); }
-.dock-tabs button[aria-selected="true"] { background: var(--b-paper-insert); border-color: var(--b-rust); text-decoration: underline wavy var(--b-rust); text-underline-offset: 4px; }
-.dock-tabs small { color: var(--b-ink-soft); }
-.dock-row { display: flex; align-items: center; gap: var(--b-s2); padding-top: var(--b-s2); min-height: 150px; }
-.dock-items { display: flex; flex: 1; gap: var(--b-s2); margin: 0; padding: 0; list-style: none; }
-.dock-items li { flex: 1; min-width: 0; }
-.dock-page { padding: 8px; color: var(--b-ink); background: none; border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
-.dock-page:disabled { opacity: 0.35; }
-.dock-item { display: grid; justify-items: center; gap: 2px; width: 100%; height: 100%; padding: var(--b-s2); text-align: center; color: var(--b-ink); background: var(--b-paper-insert); border: 1.5px solid var(--b-paper-edge); border-radius: var(--b-r-insert); }
-.dock-item:hover, .dock-item:focus-visible { border-color: var(--b-rust); transform: translateY(-2px); }
-.dock-item[aria-pressed="true"] { border: 2px dashed var(--b-plum); background: var(--b-plum-wash); }
-.dock-item[aria-pressed="true"]::before { content: "In use"; font-size: var(--b-fs-tiny); font-weight: 700; color: var(--b-plum); }
-.dock-item > span { display: block; width: 100%; max-width: 96px; height: 64px; }
-.dock-item > span svg { display: block; width: 100%; height: 100%; }
-.dock-item strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-ui); line-height: 1.1; }
-.dock-item small { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
-.dock-bg { border-radius: var(--b-r-tag); overflow: hidden; display: grid !important; place-items: center; }
-.dock-empty { display: grid; justify-items: start; gap: var(--b-s2); margin: 0; flex: 1; }
-.dock-close { position: absolute; right: 10px; top: 6px; padding: 4px; color: var(--b-ink); background: none; border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); }
 
 /* Market shelves (slice 3). */
 .bst-shop .shop-tabs { display: flex; gap: var(--b-s1); margin: var(--b-s3) 0; }
@@ -5737,7 +5690,7 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .bst-topbar::after, .bst-bottombar::before { display: none; }
 /* The chapter chip and Save and exit sit on the bar like tags, so they get a border. */
 .bst-topbar .chapter-chip, .bst-topbar #sign-out { border: 1.5px solid var(--b-on-bar-soft); background: var(--b-paper); color: var(--b-ink); }
-.bst-topbar .status-chips li, .bst-bottombar .shortcuts button, .bst-bottombar .dock-btn, .challenge-toggle { border-color: var(--b-on-bar-soft); }
+.bst-topbar .status-chips li, .bst-bottombar .shortcuts button, .bst-bottombar .map-btn, .challenge-toggle { border-color: var(--b-on-bar-soft); }
 .bst-bottombar .things-btn { color: var(--b-on-rust); border-color: var(--b-seal-deep); }
 .bst-bottombar .who-art { border-color: var(--b-bar-accent); }
 
@@ -6523,6 +6476,9 @@ dialog.broke-alert.reset .broke-siren { animation: none; }
 .arena-question .arc-ring { color: var(--b-ink); }
 .arena-question .arc-ring.low { color: var(--b-rust-ink); }
 .arena-q-prompt p { margin: 0 0 var(--b-s1); font-size: var(--b-fs-lead); }
+.arena-q-tools { display: inline-flex; align-items: center; gap: var(--b-s3); }
+.arena-question.has-calc .arena-q-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--b-s4); align-items: start; }
+.arena-question.has-calc .arena-choices { grid-template-columns: minmax(0, 1fr); }
 .arena-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-s2); margin-top: var(--b-s3); }
 .bestiary button.arena-choice { display: flex; align-items: center; gap: var(--b-s2); text-align: left; padding: var(--b-s2) var(--b-s3); color: var(--b-ink); background: var(--b-paper-insert); border: 2px solid var(--b-paper-edge); border-radius: var(--b-r-insert); }
 .bestiary button.arena-choice:hover, .bestiary button.arena-choice:focus-visible { border-color: var(--b-plum); }
@@ -6592,7 +6548,7 @@ dialog.broke-alert.reset .broke-siren { animation: none; }
 .bst-bottombar > *, .bst-bottombar .shortcuts button { flex: none; }
 .bst-bottombar:is([data-fit="1"], [data-fit="2"], [data-fit="3"]) .who-text small { display: none; }
 .bst-bottombar:is([data-fit="2"], [data-fit="3"]) .shortcuts button > span:not(.ico-wrap),
-.bst-bottombar[data-fit="3"] :is(.dock-btn > span:not(.ico-wrap), .bug-word) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.bst-bottombar[data-fit="3"] :is(.map-btn > span, .bug-word) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .bst-home .room-caption .decorate-btn { margin-top: var(--b-s3); }
 /* Arena fit (layout audit 2026-10-26): the round sheet gets most of the width
    and the six moves sit in three columns, so they fit on a 768px-tall laptop

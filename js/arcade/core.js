@@ -58,14 +58,13 @@ function fire(play, game, now) {
 
 // ---------- A shift in progress ----------
 
-// Safe mode uses the month's shifts. Risky mode is unlimited, but never in the
-// prologue (the piggy bank year is for learning) or during training.
-// shiftsLeft: the month's safe shifts left (js/play.js shiftsLeft).
+// Safe mode is always open, so a student can always earn (teacher request
+// 2026-10-27). Risky mode never opens in the prologue (the piggy bank year is
+// for learning). shiftsLeft is kept for callers but no longer limits play.
 export function canStart(play, game, { mode, training, shiftsLeft, prologue = false, now = Date.now() }) {
   if (firedUntil(play, game, now)) return { ok: false, reason: `You were fired from this game. It opens again in ${minutesLeft(play, game, now)} minute${minutesLeft(play, game, now) === 1 ? "" : "s"}.` };
   if (training) return { ok: true };
   if (mode === "risky" && prologue) return { ok: false, reason: "Risky mode opens once your bank account does." };
-  if (mode === "safe" && shiftsLeft <= 0) return { ok: false, reason: "No safe shifts left this month. Finish the month to refill them, or play in risky mode." };
   return { ok: true };
 }
 

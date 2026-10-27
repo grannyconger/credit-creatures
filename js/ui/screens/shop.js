@@ -13,7 +13,6 @@ import { firstVisitLesson } from "../guide.js";
 import { sfx } from "../sound.js";
 import { DECOR, SLOTS, ownedDecor, cottageOf } from "../../data/cottage.js";
 import { decorThumb } from "../cottage-art.js";
-import { flashDock } from "../dock.js";
 import { couponPrice } from "../../daily.js";
 import { icon } from "../icons.js";
 
@@ -53,7 +52,7 @@ export function render(root, { game, go, track }) {
       placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `Chapter ${chapter} stock`, title: "Market", subtitle: "Spend money on things for your creature and your Cottage. Time is paused while you shop.", practice: run.practice, aside: moneyChips(run.life, play) }),
       buying ? null : tabs(),
       buying ? checkout(buying, c) : tab === "home" ? homeShelf() : h("div.shop-grid", stock.map((item) => card(item, c))),
-      h("p.note.center", "Wants are fun, but check your bills first. Everything you buy goes into your Dock at the bottom of the screen.")
+      h("p.note.center", "Wants are fun, but check your bills first. Clothes you buy go in the closet at home. Room pieces go in Decorate your room.")
     );
   }
 
@@ -99,7 +98,7 @@ export function render(root, { game, go, track }) {
                 h("h3", d.name),
                 priceTag(d.price),
                 own.has(d.id)
-                  ? h("p.good-text", placed[d.slot] === d.id ? "✓ In your room" : "✓ You own this. It's in your Dock")
+                  ? h("p.good-text", placed[d.slot] === d.id ? "✓ In your room" : "✓ You own this. Place it with Decorate your room")
                   : h("button", { type: "button", onclick: () => (track("shopView", { id: d.id }), paint(d)) }, "Buy")
               )
             )
@@ -137,7 +136,6 @@ export function render(root, { game, go, track }) {
           sfx.purchase();
           toast(`You bought the ${item.name.toLowerCase()} with ${methodLabel(method, run.life)}.`, "good");
           await run.persist("shop");
-          flashDock();
           dispatchEvent(new CustomEvent("cc:decor"));
           paint();
           if (!run.practice) wear(item);
@@ -158,7 +156,7 @@ export function render(root, { game, go, track }) {
         dispatchEvent(new CustomEvent("cc:decor"));
         paint();
       });
-      panel.querySelector(".shop-home")?.before(h("div.callout.good.center", h("p", icon("sparkle", { size: 18 }), ` The ${item.name.toLowerCase()} is yours. It's in your Dock.`), h("div.row", put)));
+      panel.querySelector(".shop-home")?.before(h("div.callout.good.center", h("p", icon("sparkle", { size: 18 }), ` The ${item.name.toLowerCase()} is yours. You can move it any time with Decorate your room.`), h("div.row", put)));
       return;
     }
     const c = game.save.creature;

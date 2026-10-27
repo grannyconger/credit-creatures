@@ -203,6 +203,9 @@ export function choose(play, life, item, key, method = null) {
   return { life: r.life, ok: true, choice, outcome, results: r.results, message: r.message, denied: Boolean(r.denied), xp, qol: play.qol - qolBefore, qolNow: play.qol };
 }
 
+// Shifts are a goal, not a cap (teacher request 2026-10-27): each month asks for
+// shiftsPerMonth shifts, and a student can keep working safe shifts after that
+// to earn more. shiftsLeft is how many are still to go toward the goal.
 export function shiftsLeft(play) {
   // The prologue has no months yet, just a few shifts to fill the piggy bank.
   if (play.prologue && !play.prologue.done) return Math.max(0, CONFIG.onboarding.prologueShifts - play.prologue.shifts);
@@ -211,21 +214,27 @@ export function shiftsLeft(play) {
 }
 
 // Pay comes from the minigame (js/progress.js jobPay). It goes into checking as income.
-// job: which game was played. The prologue lets each of its three jobs be worked once.
-// risky: a risky mode Arcade shift (GAME-SPECS.md 2.3) is unlimited, so it
-// doesn't use the month's shifts.
+// job: which game was played. The prologue's first three shifts are one of each
+// job. After that any job can be worked again.
+// risky: a risky mode Arcade shift (GAME-SPECS.md 2.3) doesn't count toward the goal.
 export function workShift(play, life, pay, source = "work shift", job = null, { risky = false } = {}) {
   if (risky) {
     if (play.prologue && !play.prologue.done) return { life, ok: false, message: "Risky mode opens once your bank account does." };
     return pay > 0 ? { ...earn(life, pay, source), pay } : { life, ok: true, pay: 0 };
   }
-  if (shiftsLeft(play) <= 0) return { life, ok: false, message: "No shifts left this month." };
+  if (job && prologueRepeat(play, job)) return { life, ok: false, message: "Try a job you haven't worked yet first." };
   const r = pay > 0 ? earn(life, pay, source) : { life, ok: true };
   if (play.prologue && !play.prologue.done) {
     play.prologue.shifts++;
     if (job) (play.prologue.worked ||= []).push(job);
   } else play.active.month.shifts++;
   return { ...r, pay };
+}
+
+// In the prologue, a job already worked waits until all three have been tried.
+export function prologueRepeat(play, job) {
+  const p = play.prologue;
+  return Boolean(p && !p.done && shiftsLeft(play) > 0 && (p.worked || []).includes(job));
 }
 
 export function monthReady(play) {

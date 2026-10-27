@@ -32,11 +32,11 @@ test("pay is payCap times the score ratio, capped, never negative", () => {
   delete A.games.__t;
 });
 
-test("safe mode uses the month's shifts, risky mode is unlimited, training is free", () => {
+test("safe mode is always open, risky mode never in the prologue, training is free", () => {
   const play = P.newPlay();
   P.startChapter(play, lifeWith());
   assert.ok(AC.canStart(play, "billdrop", { mode: "safe", shiftsLeft: 1 }).ok);
-  assert.equal(AC.canStart(play, "billdrop", { mode: "safe", shiftsLeft: 0 }).ok, false);
+  assert.ok(AC.canStart(play, "billdrop", { mode: "safe", shiftsLeft: 0 }).ok, "a student can always earn");
   assert.ok(AC.canStart(play, "billdrop", { mode: "risky", shiftsLeft: 0 }).ok);
   assert.ok(AC.canStart(play, "billdrop", { mode: "safe", training: true, shiftsLeft: 0 }).ok);
   assert.equal(AC.canStart(play, "billdrop", { mode: "risky", shiftsLeft: 3, prologue: true }).ok, false, "no risky mode in the prologue");

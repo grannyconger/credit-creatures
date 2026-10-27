@@ -47,17 +47,13 @@ export function render(root, { game, go, track, refreshWho }) {
       run.practice ? h("p.callout.warn.practice", "Practice mode. Nothing you do here is saved.") : null
     );
     const prologue = play.prologue && !play.prologue.done;
-    if (prologue && P.shiftsLeft(play) <= 0) {
-      add(panel, h("p.callout", icon("piggy", { size: 18 }), " Your piggy bank is filling up nicely. That's all the shifts for now. Check what Sage says to do next."), h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back home")));
-      return;
-    }
     if (!play.active && !prologue) {
       add(panel, h("p.callout", "The Arcade is open while a chapter is going. Start the next chapter at Town Hall."), h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back home")));
       return;
     }
     const left = P.shiftsLeft(play);
-    // With no safe shifts left, the classic games close but risky mode stays open (GAME-SPECS.md 2.3).
-    if (left <= 0) add(panel, h("p.callout", icon("info", { size: 18 }), " No safe shifts left this month. Risky mode is open in the new games, or head to Town Hall to finish the month and refill your shifts."));
+    // The goal is met, but the Arcade stays open so a student can always earn.
+    if (left <= 0) add(panel, h("p.callout", icon("check", { size: 18 }), prologue ? " Your piggy bank is filling up nicely. You worked all three jobs. Keep working for more coins, or check what Sage says to do next." : " You worked this month's shifts. You can keep working for more coins any time."));
     board = jobBoard({
       game,
       run,
@@ -68,7 +64,7 @@ export function render(root, { game, go, track, refreshWho }) {
         paint();
       },
     });
-    panel.querySelector(".arc-hall-head")?.append(h("span.arc-shifts", prologue ? `${left} shift${left === 1 ? "" : "s"} left before the bank opens` : `${left} safe shift${left === 1 ? "" : "s"} left this month`));
+    panel.querySelector(".arc-hall-head")?.append(h("span.arc-shifts", prologue ? (left ? `${left} shift${left === 1 ? "" : "s"} to go before the bank opens` : "All 3 jobs worked") : left ? `${left} shift${left === 1 ? "" : "s"} to go this month` : "This month's shifts done"));
     add(panel, board);
   }
 

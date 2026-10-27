@@ -261,7 +261,7 @@ export const CONFIG = {
       // Check Writer (game 2, upgrade). Rent in whole dollars, under $1,000.
       checks: {
         maxPayScore: 130,
-        seconds: 210,
+        seconds: 150,
         rent: [650, 980],
         perField: 10,
         endorse: 10,
@@ -338,7 +338,7 @@ export const CONFIG = {
       fees: {
         maxPayScore: { easy: 170, medium: 170, hard: 170 },
         band: [140, 200],
-        seconds: 210,
+        seconds: 150,
         lines: [10, 13],
         fees: [2, 4],
         noFeeChance: 0.4,
@@ -409,7 +409,7 @@ export const CONFIG = {
       // The Lot (game 8). Dollars, APR as a fraction.
       lot: {
         maxPayScore: 780,
-        seconds: 210,
+        seconds: 150,
         cuApr: [0.055, 0.075],
         dealerBump: [0.03, 0.045],
         maxLoan: 25000,

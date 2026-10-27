@@ -70,9 +70,8 @@ export function jobBoard({ game, run, track, save, onCollected }) {
           .map(([key, job]) => {
           const xp = experienceBonus(play, key) + (play.shiftBonus || 0) + rideAndHomeBonus(play);
           const stats = play.jobs[key];
-          const worked = Boolean(play.prologue && !play.prologue.done && (play.prologue.worked || []).includes(key));
-          // Classic games only pay from the month's safe shifts.
-          const closed = !isArcade(key) && P.shiftsLeft(play) <= 0;
+          const worked = P.prologueRepeat(play, key);
+          const closed = false;
           const guide = hasGuide(key) ? h("button.job-guide.arc-guide", { type: "button", onclick: () => openGameGuide(key, { track }) }, icon("scroll", { size: 14 }), " Guide") : null;
           const pay = isArcade(key) ? `Up to ${money(CONFIG.arcade.payCap + xp)} a shift` : `Up to ${money(j.pay.max + xp)} a shift`;
           const fired = minutesLeft(play, key);
@@ -93,7 +92,7 @@ export function jobBoard({ game, run, track, save, onCollected }) {
   }
 
   function start(key) {
-    if (play.prologue && !play.prologue.done && (play.prologue.worked || []).includes(key)) return;
+    if (P.prologueRepeat(play, key)) return;
     if (isArcade(key)) {
       runner?.stop();
       runner = arcadeRunner({

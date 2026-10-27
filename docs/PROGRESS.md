@@ -2,10 +2,10 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-27 (Later chapters in the bestiary look, Battle wins board, big wins, Arena on the map, no naturalist, no reflections. Everything is pushed. Awaiting the teacher's review)
+Last updated: 2026-10-27 (Teacher requests round 3: Check Writer tray, Map button, closet, Phish Tank in the prologue, 2:30 timers, Battle calculator, one-word creature names, uncapped Arcade shifts. Pushed, awaiting review)
 
 ## Start here next session
-- **Baseline:** `npm test` is 375 passing and `npm run e2e` is 20 passing (checked 2026-10-27).
+- **Baseline:** `npm test` is 375 passing and `npm run e2e` is 19 passing (checked 2026-10-27, after the Bill Drop test was removed).
 - **Teacher to do in Firebase:** paste the whole `firestore.rules` (covers the Battle wins leaderboard field, the Arcade class top scores and live classmate battles). Add a budget alert now that the project is on Blaze (upgraded 2026-10-26).
 - **Suggested next (teacher to pick):**
   1. Two-tab save protection (`docs/BATTLE-SCALING.md` item 3). More urgent now that a battle win pays $200.
@@ -17,6 +17,16 @@ Last updated: 2026-10-27 (Later chapters in the bestiary look, Battle wins board
 - **Sound files:** the teacher's battle sounds and the Apple Pay chime have unchecked licenses (`sounds/CREDITS.md`). Fine for class, swap before any wider sharing.
 
 ## Next step
+
+- **Teacher requests of 2026-10-27, round 3 (done and pushed, awaiting review):**
+  - **Check Writer:** the word tiles sit in labeled, lined-up rows (1 to 9, 10 to 19, Tens), with Big words, Cents (smallest first) and Undo last tile / Clear words in a strip below. Groups live in `CW_TILE_GROUPS` (`js/data/arcade/checks.js`).
+  - **The Dock is gone.** A Map button took its spot at the bottom left. Clothes are worn from the Wardrobe (`#/creature`), room pieces placed with Decorate your room. `js/ui/dock.js` deleted.
+  - **Closet on Home:** a new room object at the far right opens the Wardrobe. The mailbox and door moved left to make room (`js/data/cottage-objects.js`).
+  - **Bill Drop is off** (in `RETIRED_JOBS`, out of `ARCADE_ORDER`, code kept). Phish Tank opens in the prologue and is the third prologue job. Jack of All Trades now means Cashier Rush, Check Writer and Phish Tank.
+  - **Timers:** Check Writer, Fee Detective and The Lot went from 3:30 to 2:30. Every timed game is now 2:30 or less.
+  - **Battles:** every question has a Calculator button. It stays open from round to round once opened. Logged as `calcOpen` and `calcUse` with `game: "arena"`.
+  - **Creature names:** first and family name are one word each. Spaces are removed as the student types, with a short note. Name ideas with spaces were made one word.
+  - **Arcade shifts are uncapped.** The 3 shifts a month are now a goal (shown as "N shifts to go") and safe mode never closes, so a student can always earn. The prologue still asks for one of each job first, then any job can be replayed. **Open decision:** life events that "cut a shift" (`shiftsCut`) now only lower the month's goal, so they no longer cost anything. Default: leave it. Option: make a cut shift lower pay instead. Also: endless safe shifts could make coins easy, so watch pilot data.
 
 - **Later chapters in the bestiary look (teacher request 2026-10-27, done and pushed, awaiting review):** an audit of every screen and Vault tab that opens in Chapters 3 to 8 found only the credit card application still in the old look. Now: the network lesson is a bank leaflet pinned on the moss with drawn icons and a tick-the-box quick check (emoji came out of `NETWORK_SLIDES`), Design Your Card is ruled application paper beside a taped specimen plate (choices are index cards that turn plum and say "chosen", changes show an arrow and the word higher or lower, Apply is a wax seal), and the result is a letter from the issuer with an APPROVED or DENIED ink stamp. Chapter 4 touch-ups: My Score's five parts and My Report's helping, hurting and inquiries use drawn icons instead of emoji, and report accounts sit on paper. Lantern Alley (Chapter 5), Protect Yourself, Cards, Statements and the Garage already matched. The Arcade games that open later (Score Chase, Rainy Day, Move-In Day, Money Tree) keep their arcade cabinet skins on purpose.
 

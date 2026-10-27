@@ -6,7 +6,7 @@ import { h, fill, money } from "../dom.js";
 import { icon } from "../icons.js";
 import { CONFIG } from "../../data/config.js";
 import { createRng } from "../../engine/index.js";
-import { CW_TILES, CW_ENDORSE } from "../../data/arcade/checks.js";
+import { CW_TILE_GROUPS, CW_ENDORSE } from "../../data/arcade/checks.js";
 import { CHECK_FIELDS, amountInWords } from "../../data/minigames.js";
 import { fullName } from "../../data/creatures.js";
 import * as K from "../../arcade/checks.js";
@@ -44,11 +44,8 @@ export function start(ctx) {
 
   // ---------- Phase 1: write the check ----------
   const right = deal.bill.cents % 100;
-  const centsTiles = [right, (right + 10) % 100, (right + 37) % 100, (right + 71) % 100].map((c) => `${String(c).padStart(2, "0")}/100`);
-  for (let i = centsTiles.length - 1; i > 0; i--) {
-    const j = Math.floor(rng.next() * (i + 1));
-    [centsTiles[i], centsTiles[j]] = [centsTiles[j], centsTiles[i]];
-  }
+  // Smallest first, so the order gives nothing away and is easy to scan.
+  const centsTiles = [right, (right + 10) % 100, (right + 37) % 100, (right + 71) % 100].sort((a, b) => a - b).map((c) => `${String(c).padStart(2, "0")}/100`);
 
   function phaseWrite() {
     paintBar("Part 1 of 3: write your rent check");
@@ -90,12 +87,22 @@ export function start(ctx) {
       ctx.track("checkSigned", { side: "front", kind: sig.kind });
       fill(sigSlot, signatureMark(sig));
     }
+    // Number words in labeled rows on the left. Joining words, cents and the
+    // undo buttons on the right.
+    const row = (label, tiles, cls = "") => h("div.cw2-row", { role: "group", "aria-label": label }, h("span.cw2-rowlabel", label), h("div.cw2-rowtiles", { class: cls }, tiles));
+    const wordTile = (t) => h("button.cw2-tile", { type: "button", onclick: () => (w.tiles.push(t), paintWords()) }, t.toUpperCase());
+    const [big, ...numbers] = [CW_TILE_GROUPS.at(-1), ...CW_TILE_GROUPS.slice(0, -1)];
+    const undo = () => (w.cents ? (w.cents = "") : w.tiles.pop(), paintWords());
     const tray = h(
       "div.cw2-tray",
       { role: "group", "aria-label": "Word tiles" },
-      CW_TILES.map((t) => h("button.cw2-tile", { type: "button", onclick: () => (w.tiles.push(t), paintWords()) }, t.toUpperCase())),
-      h("span.cw2-sep", { "aria-hidden": "true" }),
-      centsTiles.map((c) => h("button.cw2-tile.cents", { type: "button", onclick: () => ((w.cents = c), paintWords()) }, c))
+      h("div.cw2-traycol.numbers", numbers.map((g) => row(g.label, g.tiles.map(wordTile), "grid"))),
+      h(
+        "div.cw2-traycol.extras",
+        row(big.label, big.tiles.map(wordTile)),
+        row("Cents", centsTiles.map((c) => h("button.cw2-tile.cents", { type: "button", onclick: () => ((w.cents = c), paintWords()) }, c))),
+        h("div.cw2-trayedit", h("button.cw2-edit", { type: "button", onclick: undo }, icon("back", { size: 14 }), " Undo last tile"), h("button.cw2-edit", { type: "button", onclick: () => ((w.tiles = []), (w.cents = ""), paintWords()) }, icon("x", { size: 14 }), " Clear words"))
+      )
     );
     const check = h(
       "div.check.cw2-check",
@@ -129,7 +136,7 @@ export function start(ctx) {
         e.preventDefault();
         drawLine(field || (w.lines.payee ? "words" : "payee"));
       } else if (k === "s") (e.preventDefault(), sign());
-      else if (e.key === "Backspace" && w.tiles.length) (e.preventDefault(), w.cents ? (w.cents = "") : w.tiles.pop(), paintWords());
+      else if (e.key === "Backspace" && (w.tiles.length || w.cents)) (e.preventDefault(), undo());
     };
     if (training) {
       (async () => {

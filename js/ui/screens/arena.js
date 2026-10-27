@@ -13,6 +13,7 @@ import { placeHeader } from "../place-header.js";
 import { creatureSvg } from "../creature-art.js";
 import { sealSvg, inkStampSvg } from "../bestiary-art.js";
 import { timerRing } from "../arcade/components.js";
+import { calculator } from "../minigames/calculator.js";
 import { burstFrom, burst } from "../motion/particles.js";
 import { react } from "../motion/gaze.js";
 import { confetti } from "../fx.js";
@@ -519,15 +520,40 @@ export function render(root, { game, go, track }) {
     const m = st.match;
     const q = m.round;
     m.ring = timerRing({ size: 52, label: "Time left to answer" });
-    return h(
+    // A fresh calculator for every question (teacher request 2026-10-27). It
+    // stays open from round to round once a student opens it.
+    const calcSlot = h("div.arena-calc-slot");
+    const toggle = h("button.calc-toggle", { type: "button", "aria-expanded": "false", "data-sound": "none" }, "Calculator");
+    const box = h(
       "div.arena-question",
-      h("div.arena-q-head", h("span.arena-chosen", icon(moveById(m.move, m.battle.ruleset).icon, { size: 18 }), ` ${moveById(m.move, m.battle.ruleset).name}`), m.ring),
-      h("div.arena-q-prompt", q.prompt.map((line) => h("p", line))),
+      h("div.arena-q-head", h("span.arena-chosen", icon(moveById(m.move, m.battle.ruleset).icon, { size: 18 }), ` ${moveById(m.move, m.battle.ruleset).name}`), h("span.arena-q-tools", toggle, m.ring)),
       h(
-        "div.arena-choices",
-        q.choices.map((c, i) => h("button.arena-choice", { type: "button", onclick: (e) => submit(i, e.currentTarget) }, h("span.arena-choice-letter", "ABCD"[i]), h("span", c)))
+        "div.arena-q-body",
+        h(
+          "div.arena-q-main",
+          h("div.arena-q-prompt", q.prompt.map((line) => h("p", line))),
+          h(
+            "div.arena-choices",
+            q.choices.map((c, i) => h("button.arena-choice", { type: "button", onclick: (e) => submit(i, e.currentTarget) }, h("span.arena-choice-letter", "ABCD"[i]), h("span", c)))
+          )
+        ),
+        calcSlot
       )
     );
+    const showCalc = (open, focus) => {
+      st.calcOpen = open;
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.textContent = open ? "Hide calculator" : "Calculator";
+      box.classList.toggle("has-calc", open);
+      calcSlot.replaceChildren(...(open ? [calculator({ onUse: () => track("calcUse", { game: "arena", kind: m.kind }) })] : []));
+      if (open && focus) calcSlot.querySelector(".calc")?.focus({ preventScroll: true });
+    };
+    toggle.addEventListener("click", () => {
+      showCalc(!st.calcOpen, true);
+      if (st.calcOpen) track("calcOpen", { game: "arena" });
+    });
+    if (st.calcOpen) showCalc(true, false);
+    return box;
   }
 
   function startClock() {

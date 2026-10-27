@@ -155,20 +155,31 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
     lastInput.value = draft.lastName;
     lastIdeaUsed = true;
   });
+  // One word each, no spaces (teacher request 2026-10-27).
+  const oneWord = (input) => {
+    if (!/\s/.test(input.value)) return void (error.textContent = "");
+    const at = input.selectionStart - (input.value.slice(0, input.selectionStart).match(/\s/g) || []).length;
+    input.value = input.value.replace(/\s+/g, "");
+    input.setSelectionRange(at, at);
+    error.textContent = "Names are one word each, with no spaces.";
+  };
   nameInput.addEventListener("input", () => {
+    oneWord(nameInput);
     draft.name = nameInput.value;
-    if (nameInput.value.trim()) error.textContent = "";
     paintSeal();
     paintMirrorNote();
   });
-  lastInput.addEventListener("input", () => (draft.lastName = lastInput.value));
+  lastInput.addEventListener("input", () => {
+    oneWord(lastInput);
+    draft.lastName = lastInput.value;
+  });
 
   const label = h(
     "div.bst-label",
     h("p.bst-label-title", "Specimen label"),
     h("div.bst-field", h("label", { for: "creature-name" }, "Name"), h("div.bst-field-row", nameInput, ideaBtn)),
     h("div.bst-field", h("label", { for: "creature-last-name" }, "Family name"), h("div.bst-field-row", lastInput, lastIdeaBtn)),
-    h("p.bst-label-note", "Use a made-up name, not your real one. It goes on your creature's bank cards. You can change it later.")
+    h("p.bst-label-note", "One word each, no spaces. Use a made-up name, not your real one. It goes on your creature's bank cards. You can change it later.")
   );
 
   // The index: paper tabs along the top of the panel. Arrow keys move between them.
@@ -371,7 +382,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
 
   rightPage.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const name = nameInput.value.trim().replace(/\s+/g, " ");
+    const name = nameInput.value.replace(/\s+/g, "");
     if (!name) {
       error.textContent = "Every specimen needs a name. Even a temporary one will do.";
       nameInput.focus();
@@ -379,7 +390,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
     }
     submit.disabled = true;
     draft.name = name;
-    draft.lastName = lastInput.value.trim().replace(/\s+/g, " ");
+    draft.lastName = lastInput.value.replace(/\s+/g, "");
     game.save.creature = draft;
     track("creatureSaved", {
       species: draft.species,

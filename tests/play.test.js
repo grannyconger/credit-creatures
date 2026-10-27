@@ -158,14 +158,17 @@ test("practice mode rebuilds the life at a chapter's start and replays the same 
   assert.equal(save.play.chapter, 4);
 });
 
-test("a work shift pays into checking as income, and the month has 3 shifts", () => {
+test("a work shift pays into checking as income, and the month asks for 3 shifts but never caps them", () => {
   const play = P.newPlay();
   let life = lifeWith({ seed: "shift", checking: 100 });
   P.startChapter(play, life);
   for (let i = 0; i < 3; i++) life = P.workShift(play, life, 80).life;
   assert.equal(life.checking, 340);
   assert.equal(life.incomeThisMonth, 340);
-  assert.equal(P.workShift(play, life, 80).ok, false);
+  assert.equal(P.shiftsLeft(play), 0);
+  const more = P.workShift(play, life, 80);
+  assert.ok(more.ok, "a fourth shift still pays");
+  assert.equal(more.life.checking, 420);
 });
 
 test("limited bills end after their months, and a bounced one stays", () => {

@@ -125,12 +125,11 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
         mode = m;
         paintMode();
       };
-      const safeBtn = h("button.arc-mode-btn", { type: "button", "aria-pressed": String(mode === "safe"), disabled: training, onclick: pick("safe") }, icon("check", { size: 18 }), h("strong", "Safe mode"), h("small", prologue ? `${left} shift${left === 1 ? "" : "s"} left before the bank opens.` : `${left} shift${left === 1 ? "" : "s"} left this month. Mistakes cost nothing.`));
-      const riskyBtn = h("button.arc-mode-btn.risky", { type: "button", "aria-pressed": String(mode === "risky"), disabled: training || prologue, onclick: pick("risky") }, icon("alert", { size: 18 }), h("strong", "Risky mode"), h("small", prologue ? "Opens with your bank account." : "Unlimited shifts. Mistakes cost real coins."));
+      const safeBtn = h("button.arc-mode-btn", { type: "button", "aria-pressed": String(mode === "safe"), disabled: training, onclick: pick("safe") }, icon("check", { size: 18 }), h("strong", "Safe mode"), h("small", prologue ? (left ? `${left} shift${left === 1 ? "" : "s"} to go before the bank opens.` : "Mistakes cost nothing.") : left ? `${left} shift${left === 1 ? "" : "s"} to go this month. Mistakes cost nothing.` : "Mistakes cost nothing. Work as much as you like."));
+      const riskyBtn = h("button.arc-mode-btn.risky", { type: "button", "aria-pressed": String(mode === "risky"), disabled: training || prologue, onclick: pick("risky") }, icon("alert", { size: 18 }), h("strong", "Risky mode"), h("small", prologue ? "Opens with your bank account." : "Mistakes cost real coins."));
       const warn = mode === "risky" && !training ? h("div.arc-risk-warn", h("p", h("strong", "In risky mode, mistakes cost your creature:")), h("ul", meta.mistakes.map((m) => h("li", m))), h("p", `${CONFIG.arcade.fireAfter} mistakes in one shift and you're fired from this game for ${CONFIG.arcade.cooldownMinutes} minutes. If a cost is more than your checking, the rest goes on your Arcade IOU.`)) : null;
       const firedNote = fired ? h("p.arc-fired", icon("lock", { size: 18 }), ` You were fired from ${meta.title}. It opens again in ${fired} minute${fired === 1 ? "" : "s"}.`) : null;
-      const noSafe = !training && mode === "safe" && left <= 0 ? h("p.arc-fired", icon("info", { size: 18 }), " No safe shifts left this month. Finish the month to refill them, or try risky mode.") : null;
-      fill(modeBox, h("h3", "Play mode"), h("div.arc-mode-row", safeBtn, riskyBtn), warn, firedNote, noSafe);
+      fill(modeBox, h("h3", "Play mode"), h("div.arc-mode-row", safeBtn, riskyBtn), warn, firedNote);
       const check = AC.canStart(play, key, { mode, training, shiftsLeft: left, prologue });
       startBtn.disabled = !check.ok;
       startBtn.title = check.ok ? "" : check.reason;
