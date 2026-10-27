@@ -105,7 +105,6 @@ export function rosterRow(raw) {
     chapter: play?.chapter ?? 1,
     // Before Phase 10, finishing onboarding counted as Chapter 1.
     chaptersDone: (play?.history.length ?? 0) + (play?.progression !== 2 && (raw.step === "hub" || raw.step === "done") ? 1 : 0),
-    reflections: play?.history.filter((h) => h.reflection).length ?? 0,
     onTimePct: null,
     utilization: null,
     accountTypes: [],
@@ -172,7 +171,6 @@ export function studentDetail(raw) {
     play,
     report: s.life ? buildReport(s.life) : null,
     decisions: decisionsOf(play),
-    reflections: (play?.history || []).filter((h) => h.reflection).map((h) => ({ chapter: h.chapter, title: h.title, text: h.reflection, fun: h.fun, clear: h.clear, startScore: h.startScore, endScore: h.endScore })),
     achievements: ACHIEVEMENTS.filter((a) => play?.achievements[a.id]).map((a) => ({ ...a, ...play.achievements[a.id] })),
     arcade: arcadeShifts(play),
   };
@@ -236,7 +234,6 @@ const CSV_COLUMNS = [
   ["Display name", (r) => r.displayName],
   ["Creature", (r) => r.creatureName],
   ["Chapters done", (r) => r.chaptersDone],
-  ["Reflections", (r) => r.reflections],
   ["Practice accuracy %", (r) => r.accuracyAll],
   ...Object.entries(STANDARD_LABELS).map(([std, label]) => [`${label} %`, (r) => r.accuracy[std]]),
   ["XP", (r) => r.xp],
@@ -402,15 +399,13 @@ export function pacing(rows, releasedChapter = 1, readyShare = 0.75) {
   return out;
 }
 
-// What the grade is built on (SPEC §20): practice accuracy, chapters and
-// reflections. Medians for the class, and who owes a reflection.
+// What the grade is built on (SPEC §20): practice accuracy and chapters.
+// Medians for the class.
 export function gradeSummary(rows) {
   const mid = (xs) => median(xs.filter((x) => x != null));
   return {
     practice: mid(rows.map((r) => r.accuracyAll)),
     chapters: mid(rows.map((r) => r.chaptersDone)),
-    reflections: mid(rows.map((r) => r.reflections)),
-    missingReflections: rows.filter((r) => r.reflections < r.chaptersDone).sort(byName).map((r) => ({ uid: r.uid, row: r, missing: r.chaptersDone - r.reflections })),
     noPractice: rows.filter((r) => r.accuracyAll == null && r.chaptersDone > 0).length,
   };
 }
@@ -511,7 +506,6 @@ const COUNTS = {
   questions: ["question", "lessonQuiz", "shiftAnswer"],
   lessons: ["lessonStart"],
   chapters: ["chapterDone"],
-  reflections: ["reflection"],
   achievements: ["achievement"],
 };
 export function timeline(batches) {
@@ -520,7 +514,7 @@ export function timeline(batches) {
     if (b.practice) continue;
     const at = lastPlayed(b.createdAt);
     const id = b.sessionId || `t${at}`;
-    const s = (sessions[id] ??= { id, start: null, end: null, saves: 0, months: 0, cards: 0, shifts: 0, questions: 0, right: 0, lessons: 0, chapters: 0, reflections: 0, achievements: 0, chapter: b.chapter ?? null, monthsSeen: new Set() });
+    const s = (sessions[id] ??= { id, start: null, end: null, saves: 0, months: 0, cards: 0, shifts: 0, questions: 0, right: 0, lessons: 0, chapters: 0, achievements: 0, chapter: b.chapter ?? null, monthsSeen: new Set() });
     s.saves++;
     const span = Math.max(0, ...((b.events || []).map((e) => e.t || 0)));
     if (at != null) {

@@ -63,13 +63,12 @@ test("CSV export quotes commas and quotes", () => {
   assert.ok(line.includes(',"Stone, Avery ""Ace""",'));
 });
 
-test("student detail lists reflections and earned achievements", () => {
+test("student detail lists earned achievements", () => {
   const { life } = playedLife();
   const play = P.newPlay();
-  play.history.push({ chapter: 2, title: "First card, first job", reflection: "Paying in full helped.", fun: 4, clear: 5, decisions: [] });
+  play.history.push({ chapter: 2, title: "First card, first job", decisions: [] });
   play.achievements.firstCard = { month: 3, chapter: 2 };
   const d = T.studentDetail(saveDoc(life, play));
-  assert.equal(d.reflections[0].text, "Paying in full helped.");
   assert.equal(d.achievements[0].id, "firstCard");
 });
 
@@ -117,7 +116,7 @@ test("pasted reset emails keep school addresses only, once each", async () => {
 
 // ---------- The dashboard's summary (2026-10-23) ----------
 
-const row = (o) => ({ uid: o.uid || "u", firstName: "A", lastName: o.uid || "u", step: "hub", chapter: 1, chaptersDone: 0, reflections: 0, accuracyAll: null, flags: [], lastPlayed: null, ...o });
+const row = (o) => ({ uid: o.uid || "u", firstName: "A", lastName: o.uid || "u", step: "hub", chapter: 1, chaptersDone: 0, accuracyAll: null, flags: [], lastPlayed: null, ...o });
 
 test("lastPlayed reads Firestore timestamps, numbers and dates", () => {
   assert.equal(T.lastPlayed({ seconds: 100 }), 100000);
@@ -161,11 +160,10 @@ test("pacing sorts the class against the open chapter", () => {
   assert.equal(T.pacing([row({ chaptersDone: 1 })], 1).ready, true);
 });
 
-test("gradeSummary gives medians and who owes a reflection", () => {
-  const g = T.gradeSummary([row({ uid: "a", chaptersDone: 2, reflections: 1, accuracyAll: 80 }), row({ uid: "b", chaptersDone: 1, reflections: 1, accuracyAll: 60 }), row({ uid: "c", chaptersDone: 1, reflections: 1 })]);
+test("gradeSummary gives class medians", () => {
+  const g = T.gradeSummary([row({ uid: "a", chaptersDone: 2, accuracyAll: 80 }), row({ uid: "b", chaptersDone: 1, accuracyAll: 60 }), row({ uid: "c", chaptersDone: 1 })]);
   assert.equal(g.practice, 60);
   assert.equal(g.chapters, 1);
-  assert.deepEqual(g.missingReflections.map((x) => [x.uid, x.missing]), [["a", 1]]);
   assert.equal(g.noPractice, 1);
 });
 

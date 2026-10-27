@@ -29,7 +29,7 @@ export const CONFIG = {
     // instead, never XP. Only right answers repeat without limit, so their XP is
     // capped per chapter. alleyStall: bonus XP for each Lantern Alley stall called
     // right, once each.
-    xp: { rightAnswer: 5, card: { good: 6, ok: 4, bad: 2, none: 2 }, month: 10, reflection: 25, answersPerChapter: 100, alleyStall: 10 },
+    xp: { rightAnswer: 5, card: { good: 6, ok: 4, bad: 2, none: 2 }, month: 10, chapterDone: 25, answersPerChapter: 100, alleyStall: 10 },
   },
 
   // Friends, groups and gifts (Phase 8). firestore.rules repeats giftHours,

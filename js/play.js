@@ -234,7 +234,7 @@ export function monthReady(play) {
 }
 
 // Ends the month. When the chapter's last month ends, the chapter summary
-// waits in play.summary for the reflection.
+// waits in play.summary until the student continues.
 export function finishMonth(play, life) {
   if (!monthReady(play)) return { life, ok: false, message: "Finish this month's cards first." };
   const month = life.month;
@@ -328,14 +328,14 @@ function summarize(a, life, play) {
   };
 }
 
-// Saves the reflection and moves on. Only the newest chapter keeps its month
-// records (for the "Previously on" recap), so the save stays small.
-export function submitReflection(play, { text, fun, clear }) {
+// Files the finished chapter and moves on. Only the newest chapter keeps its
+// month records (for the "Previously on" recap), so the save stays small.
+export function completeChapter(play) {
   const s = play.summary;
-  if (!s) return { ok: false, message: "There is no chapter to reflect on." };
+  if (!s) return { ok: false, message: "There is no finished chapter." };
   for (const h of play.history) delete h.records;
-  play.history.push({ ...s, reflection: text, fun, clear });
-  addXp(play, XP.reflection);
+  play.history.push({ ...s });
+  addXp(play, XP.chapterDone);
   play.summary = null;
   play.chapter = s.chapter + 1;
   return { ok: true };

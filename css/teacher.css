@@ -292,7 +292,6 @@ main.t-dash {
 }
 .t-big span { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
 .t-grades .t-small { margin: var(--b-s2) 0 0; }
-.t-owe { margin: var(--b-s2) 0 0; }
 
 /* ---- Tabs: quiet words, the current one bold and underlined ----------- */
 .t-tabs {
@@ -500,9 +499,6 @@ dialog.t-drawer::backdrop { background: color-mix(in srgb, var(--b-shadow-ink) 4
   border: 1px solid var(--b-rule);
   border-radius: 999px;
 }
-.t-reflection { padding: var(--b-s2) 0 var(--b-s3); border-bottom: 1px dotted var(--b-rule); }
-.t-reflection h3 { margin-top: var(--b-s2); }
-.t-reflection p { margin: var(--b-s1) 0 0; }
 .t-plain { margin: 0; padding-left: 1.2em; }
 .t-fold { margin: var(--b-s3) 0; }
 .t-fold > summary { cursor: pointer; font-weight: 700; }
@@ -687,7 +683,6 @@ dialog.t-projector::backdrop { background: var(--b-ground); }
   .t-report .t-big span { color: var(--b-money-ink); }
   .t-report .t-table { width: auto; }
   .t-report .t-table th, .t-report .t-table td { border-bottom: 1px solid var(--b-rule); padding: 4px 12px 4px 0; }
-  .t-report-refl p { margin: 2px 0 0; }
 }
 @media (max-width: 1100px) { .t-reteach-cols { grid-template-columns: minmax(0, 1fr); } .t-reteach-col + .t-reteach-col { border-left: 0; border-top: 1px solid var(--b-rule); } }
 

@@ -16,7 +16,7 @@ test("the teacher page shows the class, the roster and the student panel", async
 
   await page.locator("#t-roster-table tbody th button").first().click();
   await expect(page.locator("dialog.t-side")).toBeVisible();
-  for (const tab of ["Reflections", "Decisions", "Credit", "Timeline", "Friends", "Overview"]) await page.locator(".t-side-tabs button", { hasText: tab }).click();
+  for (const tab of ["Decisions", "Credit", "Timeline", "Friends", "Overview"]) await page.locator(".t-side-tabs button", { hasText: tab }).click();
   await page.keyboard.press("Escape");
   await expect(page.locator("dialog.t-side")).toHaveCount(0);
 

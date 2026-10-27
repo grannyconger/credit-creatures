@@ -37,7 +37,7 @@ export function render(root, { game, go, track, startTab }) {
 
   function paint() {
     const r = rankFor(play.xp);
-    const earned = Object.keys(play.achievements).length;
+    const earned = ACHIEVEMENTS.filter((a) => play.achievements[a.id]).length;
     const body = h("div.tr-body");
     fill(
       panel,
@@ -155,7 +155,7 @@ function records(play) {
           )
         )
       ),
-      h("p.note", "XP comes from achievements, right answers, work shifts and reflections. It never goes down.")
+      h("p.note", "XP comes from achievements, right answers, work shifts and finished chapters. It never goes down.")
     )
   );
 }

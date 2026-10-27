@@ -86,7 +86,7 @@ export function suggest(data) {
   }
 
   // 6. Chapter ratings.
-  for (const r of t.ratings || []) if (r.n >= 3 && (r.clear < 3 || r.fun < 3)) lines.push(`Chapter ${r.chapter} rated fun ${r.fun}, clear ${r.clear}. Read that chapter's reflections and confusing cards.`);
+  for (const r of t.ratings || []) if (r.n >= 3 && (r.clear < 3 || r.fun < 3)) lines.push(`Chapter ${r.chapter} rated fun ${r.fun}, clear ${r.clear}. Look at that chapter's confusing cards.`);
 
   // 7. XP cap.
   if ((t.xpCapHits || 0) > 0) lines.push(`${t.xpCapHits} right answers came after the 100 XP a chapter cap. If most students hit it, consider ${CONFIG.pacing.xp.answersPerChapter + 50}.`);

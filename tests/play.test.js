@@ -107,7 +107,7 @@ function playChapters(seed, chapters, pick = (choices) => choices.find((c) => !c
       life = end.life;
     }
     assert.ok(play.summary);
-    P.submitReflection(play, { text: "Paying on time helped.", fun: 4, clear: 5 });
+    P.completeChapter(play);
   }
   return { life, play };
 }
@@ -202,7 +202,7 @@ test("quests earn XP: each card by how well the choice went, and each finished m
   const x = CONFIG.pacing.xp;
   const decisions = play.history[0].decisions.length;
   const months = play.history[0].months;
-  const base = months * x.month + x.reflection;
+  const base = months * x.month + x.chapterDone;
   assert.ok(play.xp >= base + decisions * x.card.bad, `xp ${play.xp} is at least ${base} plus ${decisions} cards`);
   assert.ok(play.xp <= base + decisions * x.card.good, `xp ${play.xp} is at most ${base} plus ${decisions} good cards`);
   assert.equal(play.stats.shifts, 0, "this bot's shifts went through workShift, which never pays XP");

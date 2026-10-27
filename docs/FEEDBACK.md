@@ -34,10 +34,10 @@ Storage:
 
 ### 2. One-tap student reactions (seconds of effort)
 - **After each Decision card and minigame:** an optional 👍 / 😐 / 👎 plus a "This was confusing" chip. It's small, skippable, and logged into the same month flush.
-- **Chapter summary:** the reflection screen (already in SPEC §9) adds a 1–5 "How fun was this chapter?" and "How clear was it?" rating.
+- **Chapter summary:** no reflections or ratings since 2026-10-26 (teacher decision). Old `chapterRating` events still show in tuning reports.
 - **A "🐞 Something's wrong" button on every screen.** It saves the current screen, seed, engine version, the last 20 actions and an optional short note. Because the engine replays exactly from a seed (Phase 2), Claude can reproduce the exact bug from that report.
 
-Free text is limited to the bug note and the reflections, and is visible only to teachers. Students are told not to type personal info.
+Free text is limited to the bug note, and is visible only to teachers. Students are told not to type personal info.
 
 ### 3. Tuning view on the teacher dashboard (Phase 7)
 A **Tuning** tab next to the roster:

@@ -139,7 +139,7 @@ Google sign-in (school accounts only) -> story intro -> create creature -> pick 
 -> AGE 18: DESIGN YOUR CARD -> approved or denied, with reasons
 -> KINGDOM HUB: Town Hall (time passes), Arcade (earn), Market (spend),
    Vault (account management, time paused), Academy (XP), Plaza, Cottage
--> chapter summary -> reflection -> saved
+-> chapter celebration and summary -> saved
 Next class: sign in -> "Previously on your credit life..." -> next released chapter
 ```
 
@@ -220,7 +220,7 @@ Time passes here, at Town Hall. Target 3 to 4 real minutes per game month. Shift
 - **3 game months per chapter** (teacher setting, adjustable on the dashboard).
 - Random chapter goals are **replaced by a large achievements system** (Section 16).
 - **Chapter summary:** score change, best and worst decision, achievements earned this chapter, XP gained.
-- **One-question reflection** (1 to 3 sentences), for example "What helped or hurt your score this chapter?" Saved for the teacher.
+- **No reflections (teacher decision 2026-10-26).** Students never write reflections. The chapter ends with a big celebration, the summary and one Continue button. Finishing a month gets a smaller celebration.
 - **15-minute session timer** nudges students toward a save point. "Save and quit" is always available. (Periods are 90 minutes, so the teacher can run several sessions per class.)
 
 ---
@@ -432,7 +432,7 @@ Net worth is cash plus your car at resale value (half its price) minus everythin
 This is a core engagement mechanic. Build it out fully.
 
 - **Lots of achievements.** Aim for 40+ in the pilot across categories. Each awards XP. Some are hidden until earned.
-- **XP** accumulates on the student's account and never decreases. **Quests earn XP (2026-10-25):** each decision card (6 for a good choice, 4 ok, 2 bad, 2 for news and unrated cards), 10 for each finished month, plus achievements, Academy right answers and the chapter reflection. Side quests (Arcade shifts) never pay XP.
+- **XP** accumulates on the student's account and never decreases. **Quests earn XP (2026-10-25):** each decision card (6 for a good choice, 4 ok, 2 bad, 2 for news and unrated cards), 10 for each finished month, plus achievements, Academy right answers and 25 for each finished chapter. Side quests (Arcade shifts) never pay XP.
 - **Class leaderboard ranks by XP**, so careful, consistent play wins, not having the most cash. Teacher can toggle the leaderboard on or off.
 - **Names (2026-10-20):** among classmates (leaderboard, friends, groups, gifts) every creature shows as "Creature name (Student's Google name)", so everyone knows who sent what. The Firestore rules check that the name matches the student's sign-in, so it can't be faked. Gift messages are picked from a preset list (38, including silly ones), never typed.
 - Show levels or ranks derived from XP (for example kingdom ranks: Squire, Knight, Treasurer, Grand Vizier).
@@ -449,7 +449,7 @@ This is a core engagement mechanic. Build it out fully.
 | Learning | Practice Desk streaks · 100% Factor Check chapter · Standard mastery badges |
 | Minigames | High scores and streaks per minigame |
 | Creature | Named Your Creature · Fully Dressed · Room Decorator (background collector) |
-| Persistence | Chapters completed · Reflections submitted |
+| Persistence | Chapters completed |
 
 - Personal records: highest score, longest on-time streak, highest XP chapter.
 
@@ -516,8 +516,8 @@ Private page at `coachw.club/credit-creatures/teacher` (exact path set in Phase 
 
 - Create classes and get a join code for each.
 - **Chapter release controls** (Section 5).
-- **Roster:** XP and rank, score, chapters played, reflections submitted, on-time %, utilization, account types, practice accuracy by standard, achievements count, and flags (payday or title loan taken, collections, maxed cards, many inquiries, numbers that don't match the activity log).
-- **Student detail:** creature, credit report, score history, decisions, reflections, achievements.
+- **Roster:** XP and rank, score, chapters played, on-time %, utilization, account types, practice accuracy by standard, achievements count, and flags (payday or title loan taken, collections, maxed cards, many inquiries, numbers that don't match the activity log).
+- **Student detail:** creature, credit report, score history, decisions, achievements.
 - **Controls:** pause play, release chapters, set months per chapter, toggle leaderboard, reset a student.
 - **CSV export** (comma-separated values file) for the gradebook.
 
@@ -577,7 +577,7 @@ The pilot is Phases 1 to 7. Stop and wait for approval at the end of each.
 | 1 | **Setup:** repo structure, `CLAUDE.md`, Firebase config wiring, a "hello" page live at `coachw.club/credit-creatures` with working school-only Google sign-in. Give the teacher click-by-click steps for anything done in the Firebase or GitHub web consoles. |
 | 2 | **Engine:** accounts, month updates, score model, card approvals, collections status. Automated tests that simulate 1,000 creature lives with different play styles and print a score distribution sanity report. |
 | 3 | **Onboarding:** profile, creature creator, class codes, age 16 options, tutorial, lenders-vs-networks explainer, Design Your Card with live tradeoff display, saving. |
-| 4 | **Simulation:** hub, month loop, life events, first ~20 scenarios with a basic "Pay with" picker (debit card or a credit card, with live balances), adult debit card at 18, chapters, teacher chapter release, reflections. |
+| 4 | **Simulation:** hub, month loop, life events, first ~20 scenarios with a basic "Pay with" picker (debit card or a credit card, with live balances), adult debit card at 18, chapters, teacher chapter release. |
 | 5 | **Account Management:** wallet with debit card and digital wallet, statements, pay bills, AutoPay, My Score with life-choice explainers, credit report, Practice Desk, Factor Check, notifications inbox, theme picker. |
 | 6 | **Economy and engagement:** Ledger Sort, Cashier Rush and Check Writer minigames, "Pay with" picker at checkout, shop with backgrounds and creature items, BNPL checkout, achievements (40+), XP, ranks, class leaderboard. |
 | 7 | **Teacher:** dashboard, roster, controls, CSV export, Firestore security rules hardening, school-only sign-in verification. |
@@ -593,6 +593,6 @@ The pilot is Phases 1 to 7. Stop and wait for approval at the end of each.
 - A student can sign in with a school account, create and name a creature, play Chapter 1 through Design Your Card, and play released chapters with saves surviving a closed browser.
 - Score changes always come with a plain-language reason tied to a factor.
 - Achievements, XP and the leaderboard update live.
-- The teacher can release chapters, see the roster, read reflections and export CSV.
+- The teacher can release chapters, see the roster and export CSV.
 - Engine tests pass, and the 1,000-life simulation produces sensible scores (careful players mostly 700+, reckless players mostly under 600).
 - Works in current Chrome on school laptops at 1280px wide and up.

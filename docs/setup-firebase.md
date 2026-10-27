@@ -127,7 +127,7 @@ Then open `/credit-creatures/teacher/`. Each student shows up on the roster afte
 ## 15. Using the dashboard
 
 - **Controls:** release the next chapter, pause or resume play, turn the leaderboard on or off, and set months per chapter (1 to 6, for chapters started from then on).
-- **Roster:** click a column to sort, click a name for details (reflections, decisions, credit report, score chart, achievements). **Download CSV** gives a gradebook-ready file.
+- **Roster:** click a column to sort, click a name for details (decisions, credit report, score chart, achievements). **Download CSV** gives a gradebook-ready file.
 - **Flags:** 💵 payday loan, 🚨 collections, 📈 a card 90% or more used, 🔎 3 or more hard inquiries, ⚠️ numbers that don't match the activity log (a sign someone edited their save).
 - **Reset this student** (inside their details) deletes their game so they start over. Type RESET to confirm. It can't be undone.
 - **Tuning:** click **Load tuning data** for time per month, how the class splits on each card, confusing cards, minigame pay, question accuracy and chapter ratings. **Export tuning data (JSON)** is the file to give Claude in Phase 9.

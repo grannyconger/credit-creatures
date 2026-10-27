@@ -23,6 +23,9 @@ import { HINTS } from "../../data/card-hints.js";
 import { vehicleValue } from "../../data/garage.js";
 import { sealSvg } from "../bestiary-art.js";
 import { showBrokeAlert } from "../broke-alert.js";
+import { confetti } from "../fx.js";
+import { synth } from "../arcade-sound.js";
+import { burstFrom } from "../motion/particles.js";
 
 export function render(root, { game, go, track, refreshWho }) {
   const run = game.run;
@@ -300,7 +303,6 @@ export function render(root, { game, go, track, refreshWho }) {
         fees,
         cards: ownCards(life).length,
       });
-      if (r.xp) toast(`+${r.xp} XP for finishing the month`, "info");
       track("monthTime", { chapter, monthIndex, seconds: Math.round((Date.now() - monthStartedAt) / 1000) });
       monthStartedAt = Date.now();
       if (r.chapterDone) track("chapterDone", { chapter, score: life.score ?? -1 });
@@ -316,7 +318,13 @@ export function render(root, { game, go, track, refreshWho }) {
         await showBrokeAlert(r.broke, { name: game.save.creature.name, chapter, track });
       }
       if (r.chapterDone) go("chapterEnd");
-      else paint();
+      else {
+        paint();
+        if (r.broke?.type !== "reset") {
+          monthParty(monthIndex + 1, r.xp);
+          track("monthCelebrate", { chapter, monthIndex });
+        }
+      }
       window.scrollTo(0, 0);
       // Phase 17: the creature wobbles after a fee or a late mark, or hops
       // when the score goes up. The month summary says why in words.
@@ -328,4 +336,28 @@ export function render(root, { game, go, track, refreshWho }) {
 
   paint();
   if (run.play.active) firstVisitLesson({ game, track, id: "townhall", route: "month" });
+}
+
+// A finished month (teacher request 2026-10-26): a smaller party than a
+// finished chapter. A stamped banner drops in, a shower of leaves, a cheer,
+// then it tucks itself away. It never blocks the screen.
+export function monthParty(n, xp) {
+  document.querySelector(".month-party")?.remove();
+  const banner = h(
+    "div.month-party.bst-scope",
+    { role: "status" },
+    confetti(40),
+    h("p.month-party-stamp", `Month ${n} done!`),
+    xp ? h("p.month-party-xp", `+${xp} XP`) : null
+  );
+  const close = () => {
+    banner.classList.add("out");
+    setTimeout(() => banner.remove(), 400);
+  };
+  banner.addEventListener("click", close);
+  document.body.append(banner);
+  setTimeout(() => burstFrom(banner, "leaves", { n: 22 }), 250);
+  synth("cheer");
+  sfx.questComplete();
+  setTimeout(close, 3200);
 }

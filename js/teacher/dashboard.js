@@ -282,21 +282,13 @@ function pacingPanel() {
 
 function gradesPanel() {
   const g = gradeSummary(state.rows);
-  const owe = g.missingReflections;
   const big = (value, label) => h("div.t-big", h("strong", value), h("span", label));
   return h(
     "div.t-panel-col.t-grades",
     h("h2", "Grades"),
-    h("div.t-bigs", big(g.practice == null ? "–" : `${g.practice}%`, "practice accuracy"), big(g.chapters ?? "–", "chapters done"), big(g.reflections ?? "–", "reflections")),
-    h("p.t-muted.t-small", "Class medians. Grade on these three. Score and XP are for motivation."),
-    owe.length
-      ? h("p.t-owe", h("strong", `${plural(owe.length, "student")} owe a reflection: `), joinNodes(owe.slice(0, 4).map((x) => nameLink(x.row))), owe.length > 4 ? ` and ${owe.length - 4} more` : "")
-      : h("p.t-ok", icon("check", { size: 18 }), "Every finished chapter has a reflection.")
+    h("div.t-bigs", big(g.practice == null ? "–" : `${g.practice}%`, "practice accuracy"), big(g.chapters ?? "–", "chapters done")),
+    h("p.t-muted.t-small", "Class medians. Grade on these two. Score and XP are for motivation.")
   );
-}
-
-function joinNodes(nodes) {
-  return nodes.flatMap((n, i) => (i ? [", ", n] : [n]));
 }
 
 // ---------- settings drawer ----------
@@ -467,7 +459,7 @@ async function loadRoster({ quiet = false } = {}) {
       return rosterRow(s);
     } catch (err) {
       console.error(err);
-      return { uid: s.uid, studentName: s.studentName || s.uid, firstName: "", lastName: "", chaptersDone: 0, reflections: 0, flags: [], mismatches: [`Could not read this save: ${err.message}`], accountTypes: [], accuracy: {}, lastPlayed: null };
+      return { uid: s.uid, studentName: s.studentName || s.uid, firstName: "", lastName: "", chaptersDone: 0, flags: [], mismatches: [`Could not read this save: ${err.message}`], accountTypes: [], accuracy: {}, lastPlayed: null };
     }
   });
   state.loaded = true;
@@ -518,7 +510,6 @@ const VIEWS = {
       { key: "creatureName", label: "Creature", cell: (r) => r.creatureName || "–" },
       { key: "chapter", label: "Chapter", cell: chapterCell },
       { key: "chaptersDone", label: "Chapters done", num: true, cell: (r) => r.chaptersDone },
-      { key: "reflections", label: "Reflections", num: true, cell: (r) => (r.chaptersDone ? `${r.reflections} of ${r.chaptersDone}` : r.reflections) },
       { key: "accuracyAll", label: "Practice", num: true, cell: (r) => pctCell(r.accuracyAll) },
       { key: "lastPlayed", label: "Last played", cell: lastCell },
     ],
@@ -692,7 +683,7 @@ function detail(uid) {
   // A click on the dimmed page beside the panel closes it.
   dialog.addEventListener("click", (e) => e.target === dialog && close());
   const reset = async () => {
-    const typed = prompt(`Reset ${fullName(r)}? Their creature, money, score, XP and reflections are deleted, and they start over at the next sign-in. This can't be undone. Type RESET to confirm.`);
+    const typed = prompt(`Reset ${fullName(r)}? Their creature, money, score and XP are deleted, and they start over at the next sign-in. This can't be undone. Type RESET to confirm.`);
     if (typed !== "RESET") return;
     try {
       await state.db.deleteStudentSave(uid, state.classId);
@@ -708,7 +699,6 @@ function detail(uid) {
 
   const tabs = [
     ["overview", "Overview", () => overviewTab(d)],
-    ["reflections", `Reflections (${d.reflections.length})`, () => reflectionsTab(d)],
     ["decisions", `Decisions (${d.decisions.length})`, () => decisionsTab(d)],
     ["arcade", `Arcade (${d.arcade.length})`, () => arcadeTab(d)],
     ["credit", "Credit", () => creditTab(d)],
@@ -737,7 +727,7 @@ function detail(uid) {
       ),
       h("div.t-side-actions", h("button.t-btn", { type: "button", onclick: () => printReports([uid]) }, icon("report", { size: 18 }), "Print report"), h("button.t-btn", { type: "button", onclick: close }, "Close"))
     ),
-    h("div.t-bigs.t-side-stats", stat("score", r.score ?? "None yet"), stat("practice", pctCell(r.accuracyAll)), stat("on time", pctCell(r.onTimePct)), stat("reflections", r.chaptersDone ? `${r.reflections} of ${r.chaptersDone}` : r.reflections)),
+    h("div.t-bigs.t-side-stats", stat("score", r.score ?? "None yet"), stat("practice", pctCell(r.accuracyAll)), stat("on time", pctCell(r.onTimePct)), stat("chapters", r.chaptersDone)),
     r.flags.length
       ? h(
           "div.t-flags",
@@ -781,18 +771,6 @@ function overviewTab(d) {
     h("h3", `Achievements (${d.achievements.length})`),
     d.achievements.length ? h("p.t-tags", d.achievements.map((a) => h("span.t-tag", a.title))) : h("p.t-muted", "None yet."),
   ];
-}
-
-function reflectionsTab(d) {
-  if (!d.reflections.length) return h("p.t-muted", "No reflections yet.");
-  return d.reflections.map((x) =>
-    h(
-      "article.t-reflection",
-      h("h3", `Chapter ${x.chapter}: ${x.title}`),
-      h("p.t-muted.t-small", `Fun ${x.fun}/5. Clear ${x.clear}/5. Score ${x.startScore ?? "none"} to ${x.endScore ?? "none"}.`),
-      h("p", x.text)
-    )
-  );
 }
 
 // Arcade shifts and the "why" each student picked (GAME-SPECS.md 2.7). Student
@@ -994,7 +972,6 @@ function timelineView(sessions, d) {
         s.questions && `${plural(s.questions, "question")} (${s.right} right)`,
         s.lessons && plural(s.lessons, "lesson"),
         s.chapters && plural(s.chapters, "chapter") + " finished",
-        s.reflections && plural(s.reflections, "reflection"),
         s.achievements && plural(s.achievements, "achievement"),
       ].filter(Boolean);
       out.push(
@@ -1010,7 +987,7 @@ function timelineView(sessions, d) {
   // What the save itself remembers, by chapter.
   const chapters = d.play?.history || [];
   if (chapters.length) {
-    out.push(h("h3", "Chapters"), h("dl.t-lines", chapters.flatMap((c) => [h("dt", `Chapter ${c.chapter}: ${c.title || ""}`), h("dd", `${(c.decisions || []).length} cards. ${c.reflection ? "Reflection written" : "No reflection"}`)])));
+    out.push(h("h3", "Chapters"), h("dl.t-lines", chapters.flatMap((c) => [h("dt", `Chapter ${c.chapter}: ${c.title || ""}`), h("dd", `${(c.decisions || []).length} cards. Score ${c.startScore ?? "none"} to ${c.endScore ?? "none"}.`)])));
   }
   return out;
 }
@@ -1049,7 +1026,6 @@ function report(uid) {
     h(
       "div.t-bigs",
       h("div.t-big", h("strong", r.chaptersDone), h("span", "chapters done")),
-      h("div.t-big", h("strong", r.chaptersDone ? `${r.reflections} of ${r.chaptersDone}` : r.reflections), h("span", "reflections")),
       h("div.t-big", h("strong", pctCell(r.accuracyAll)), h("span", "practice accuracy")),
       h("div.t-big", h("strong", r.score ?? "None yet"), h("span", "credit score")),
       h("div.t-big", h("strong", pctCell(r.onTimePct)), h("span", "payments on time"))
@@ -1060,8 +1036,6 @@ function report(uid) {
       return h("tr", h("th", { scope: "row" }, label), h("td.num", pctCell(r.accuracy[std])), h("td", b.label));
     }))),
     r.flags.length ? [h("h2", "Things to talk about"), h("ul", r.flags.map((f) => h("li", FLAGS[f].label)))] : null,
-    h("h2", "Reflections"),
-    d.reflections.length ? d.reflections.map((x) => h("div.t-report-refl", h("h3", `Chapter ${x.chapter}: ${x.title}`), h("p", x.text))) : h("p", "No reflections yet."),
     r.alleyChecked ? [h("h2", "Lantern Alley"), h("p", `Called ${r.alleyRight} of ${r.alleyChecked} offers right (trap or fair deal).`)] : null
   );
 }
@@ -1088,7 +1062,7 @@ function openProjector() {
       h(
         "section.t-proj-wins",
         h("h2", "What the class has done"),
-        h("div.t-bigs", h("div.t-big", h("strong", total("chaptersDone")), h("span", "chapters finished")), h("div.t-big", h("strong", total("reflections")), h("span", "reflections written")), h("div.t-big", h("strong", total("lessons")), h("span", "lessons read")), h("div.t-big", h("strong", total("achievements")), h("span", "achievements earned")))
+        h("div.t-bigs", h("div.t-big", h("strong", total("chaptersDone")), h("span", "chapters finished")), h("div.t-big", h("strong", total("lessons")), h("span", "lessons read")), h("div.t-big", h("strong", total("achievements")), h("span", "achievements earned")))
       ),
       c.leaderboard === false
         ? null

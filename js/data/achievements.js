@@ -95,7 +95,6 @@ export const ACHIEVEMENTS = [
   { id: "dreamer", cat: "persistence", icon: "🌠", title: "Dreamer", how: "Pick a dream for your creature.", xp: 10, check: (f) => Boolean(f.creature?.dream) },
   { id: "grandTour", cat: "persistence", icon: "🧭", title: "Grand Tour", how: "Finish the prologue and open your first bank account.", xp: 50, check: (f) => Boolean(f.play.prologue?.done || f.play.tourDone) },
   { id: "dreamComeTrue", cat: "persistence", icon: "🏰", title: "Dream Come True", how: "Make your creature's dream come true.", xp: 200, check: (f) => Boolean(f.play.dreamDone) },
-  { id: "deepThinker", cat: "persistence", icon: "💭", title: "Deep Thinker", how: "Write 3 chapter reflections.", xp: 50, check: (f) => f.play.history.filter((h) => h.reflection).length >= 3 },
 ];
 
 export const ACHIEVEMENT_BY_ID = Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, a]));

@@ -1,21 +1,27 @@
-// Chapter summary and reflection (SPEC §9): score change, best and worst
-// decision, then one question plus fun and clarity ratings for the teacher.
+// Chapter summary (SPEC §9): a big celebration, then the score change, best
+// and worst decision, and one button on to the next chapter. No reflections
+// (teacher decision 2026-10-26).
 // A page of the Mossy Bestiary (2026-10-23): the naturalist's chapter report,
 // with the numbers as a ruled record, the best and toughest moments as two
-// field observations, and the reflection on a lined notebook page beneath.
+// field observations.
 import { afterChapter } from "../../progression.js";
 import { celebrate } from "../celebrate.js";
 import { h, add, fill, money } from "../dom.js";
 import { creatureSvg } from "../creature-art.js";
 import { icon } from "../icons.js";
 import { sealSvg, fernSvg } from "../bestiary-art.js";
-import { chapterInfo, RATING_LABELS, REFLECTION_MAX } from "../../data/chapters.js";
+import { CONFIG } from "../../data/config.js";
+import { confetti } from "../fx.js";
+import { sfx } from "../sound.js";
+import { synth } from "../arcade-sound.js";
+import { burstFrom } from "../motion/particles.js";
+import { react } from "../motion/gaze.js";
 import * as P from "../../play.js";
 import { monthSummary } from "../month-summary.js";
 import { DREAMS, dreamProgress } from "../../data/dreams.js";
 import { meters } from "./hub.js";
 
-const MIN_CHARS = 15;
+const XP_CHAPTER = CONFIG.pacing.xp.chapterDone;
 
 export function render(root, { game, go, track, refreshWho }) {
   const run = game.run;
@@ -65,9 +71,13 @@ export function render(root, { game, go, track, refreshWho }) {
       "div.bestiary.bst-chapter-end",
       h("div.bst-decor", { "aria-hidden": "true" }, h("span.bst-fern-left", { html: fernSvg({ seed: 63, curl: 0.36, width: 140, height: 260 }) })),
       panel,
-      run.practice ? null : reflectionForm(s, run, go, track, game.save.creature.name)
+      run.practice ? null : continueButton(s, run, go, track, c.name)
     )
   );
+  if (!run.practice) {
+    chapterParty(s, c, XP_CHAPTER);
+    track("chapterCelebrate", { chapter: s.chapter });
+  }
 }
 
 // Where the dream stands after this chapter (teacher request: keep the purpose in view).
@@ -91,81 +101,61 @@ function moment(title, d, cls) {
   return h("article.ce-moment", { class: cls }, h("h3", icon(cls === "good" ? "up" : "down", { size: 18 }), title), h("p", `${P.titled(d.title)}"${d.label}"`), d.outcome ? h("p.ce-outcome", d.outcome) : null);
 }
 
-function ratingGroup(name, question) {
-  let value = 0;
-  const group = h(
-    "div.rating",
-    { role: "radiogroup", "aria-label": question },
-    RATING_LABELS[name].map((label, i) =>
-      h(
-        "button.rating-option",
-        {
-          type: "button",
-          role: "radio",
-          "aria-checked": "false",
-          "aria-label": `${i + 1}: ${label}`,
-          onclick: (e) => {
-            value = i + 1;
-            group.querySelectorAll(".rating-option").forEach((b) => b.setAttribute("aria-checked", String(b === e.currentTarget)));
-          },
-        },
-        h("strong", String(i + 1)),
-        h("small", label)
-      )
-    )
+// The big moment (teacher request 2026-10-26): finishing a chapter gets the
+// loudest celebration in the game. Waves of falling leaves, a fanfare, the
+// creature hopping and a stamp. Any click or key skips to the report.
+function chapterParty(s, c, xp) {
+  const go = h("button.bst-seal-btn", { type: "button" }, h("span.bst-seal-wax", { html: sealSvg({ seed: 43, size: 84, letter: String(s.chapter) }) }), h("span.bst-seal-text", "See my chapter report"));
+  const critter = h("div.ce-party-creature", { "aria-hidden": "true", html: creatureSvg(c, { size: 220, label: "" }) });
+  const body = h(
+    "div.celebrate-body.ce-party-body",
+    h("p.celebrate-kicker.bst-stamp-word", `Chapter ${s.chapter} complete!`),
+    critter,
+    h("h2", { id: "ce-party-title" }, s.title),
+    h("p", { id: "ce-party-text" }, `${c.name} made it through every month. The naturalist is honestly impressed.`),
+    h("p.celebrate-xp", `+${xp} XP`),
+    h("div.row", go)
   );
-  return { el: h("fieldset.rating-set", h("legend", question), group), get value() {
-    return value;
-  } };
+  const dialog = h("dialog.celebrate.bst-scope.bst-celebrate.ce-party", { "aria-labelledby": "ce-party-title", "aria-describedby": "ce-party-text" }, h("div.ce-party-glow", { "aria-hidden": "true" }), body);
+  const timers = [];
+  const later = (ms, fn) => timers.push(setTimeout(() => dialog.open && fn(), ms));
+  const close = () => {
+    timers.forEach(clearTimeout);
+    if (dialog.open) dialog.close();
+    dialog.remove();
+  };
+  go.addEventListener("click", close);
+  dialog.addEventListener("cancel", (e) => (e.preventDefault(), close()));
+  document.body.append(dialog);
+  dialog.showModal();
+  go.focus();
+  [0, 650, 1300, 2000].forEach((ms, i) => later(ms, () => dialog.prepend(confetti(i ? 60 : 90))));
+  later(200, () => burstFrom(critter, "leaves", { n: 40 }));
+  later(700, () => burstFrom(critter, "coins", { n: 16 }));
+  later(1400, () => burstFrom(go, "leaves", { n: 30 }));
+  later(2100, () => burstFrom(critter, "motes", { n: 24 }));
+  synth("fanfare");
+  later(900, () => sfx.levelUp());
+  later(300, () => react("happy"));
+  later(1500, () => react("happy"));
 }
 
-function reflectionForm(s, run, go, track, creatureName) {
-  const question = chapterInfo(s.chapter, run.play).reflect;
-  const text = h("textarea", { id: "reflection", rows: 4, maxlength: REFLECTION_MAX, "aria-describedby": "reflection-help" });
-  const count = h("span.muted", `0 / ${REFLECTION_MAX}`);
-  text.addEventListener("input", () => (count.textContent = `${text.value.length} / ${REFLECTION_MAX}`));
-  const fun = ratingGroup("fun", "How fun was this chapter?");
-  const clear = ratingGroup("clear", "How clear was it?");
-  const error = h("p.error", { role: "alert" });
-  const btn = h("button.bst-seal-btn", { type: "submit" }, h("span.bst-seal-wax", { html: sealSvg({ seed: 71, size: 80, letter: String(s.chapter) }) }), h("span.bst-seal-text", "Save my reflection"));
-  const form = h(
-    "form.reflection.ce-notebook",
-    h("h2", "Your field notebook"),
-    h("label", { for: "reflection" }, question),
-    h("p.note.tight", { id: "reflection-help" }, "Write 1 to 3 sentences. Your teacher reads these. Don't include personal info like your real name or address."),
-    text,
-    h("p.note.tight", count),
-    fun.el,
-    clear.el,
-    error,
-    h("div.bst-actions", btn)
-  );
-  const started = Date.now();
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const words = text.value.trim();
-    if (words.length < MIN_CHARS) {
-      error.textContent = "Write at least one full sentence.";
-      return text.focus();
-    }
-    if (!fun.value || !clear.value) {
-      error.textContent = "Pick a number for both questions.";
-      return;
-    }
+function continueButton(s, run, go, track, creatureName) {
+  const btn = h("button.bst-seal-btn", { type: "button" }, h("span.bst-seal-wax", { html: sealSvg({ seed: 71, size: 80, letter: String(s.chapter + 1) }) }), h("span.bst-seal-text", `On to Chapter ${s.chapter + 1}`));
+  btn.addEventListener("click", async () => {
     btn.disabled = true;
-    P.submitReflection(run.play, { text: words, fun: fun.value, clear: clear.value });
+    P.completeChapter(run.play);
     // Phase 10: between chapters (after Chapter 1, time jumps to age 18).
-    const between = run.practice ? { skipped: null } : afterChapter(run.play, run.life, s.chapter);
+    const between = afterChapter(run.play, run.life, s.chapter);
     if (between.skipped) {
       run.life = between.life;
       const k = between.skipped;
       track("timeSkip", { months: k.months, earned: k.earned, spent: k.spent });
       celebrate({ kind: "timeSkip", id: String(s.chapter), icon: "⏳", kicker: "Time flies!", title: `${k.months} months later, ${creatureName} is 18`, text: `A part-time job paid ${money(k.earned)} along the way, and ${money(k.spent)} went to everyday things. Now you're old enough to borrow money.` });
     }
-    track("reflection", { chapter: s.chapter, chars: words.length, seconds: Math.round((Date.now() - started) / 1000) });
-    track("chapterRating", { chapter: s.chapter, fun: fun.value, clear: clear.value });
-    await run.persist("reflection");
+    track("chapterContinue", { chapter: s.chapter });
+    await run.persist("chapterDone");
     go("hub");
   });
-  return form;
+  return h("div.bst-actions.ce-continue", btn);
 }

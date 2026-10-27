@@ -338,7 +338,7 @@ function route() {
   show(target);
 }
 
-// A finished chapter waits for its reflection. A month needs a chapter in
+// A finished chapter waits on its report page. A month needs a chapter in
 // progress. Practice mode lasts until the student leaves it from the hub.
 // Places open as they unlock (js/progression.js). A typed-in link to a
 // locked place goes back to the kingdom.

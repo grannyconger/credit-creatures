@@ -151,3 +151,36 @@ function play(name) {
 
 // Same names as sound.js, so a game only changes its import.
 export const sfx = new Proxy(base, { get: (_, name) => () => play(name) });
+
+// Named one-off effects outside the Arcade games: the chapter and month
+// celebrations, and the Battle Arena's hits. Same rules: off unless sound
+// is on, quieter under Calm, never able to break the game.
+export const SYNTH = {
+  // A brass-ish fanfare: three rising calls and a held chord.
+  fanfare: () => {
+    [[523, 0], [659, 0.14], [784, 0.28]].forEach(([f, at]) => tone(f, 0.16, { type: "sawtooth", vol: 0.1, at }));
+    [1046, 1318, 1568].forEach((f) => tone(f, 0.9, { type: "triangle", vol: 0.1, at: 0.46 }));
+    tone(523, 0.9, { type: "sawtooth", vol: 0.06, at: 0.46 });
+    noise(0.5, { vol: 0.08, at: 0.46, freq: 6000 });
+  },
+  // A smaller two-note cheer for a finished month.
+  cheer: () => arp([784, 1046, 1318], 0.08, { type: "triangle", vol: 0.14 }),
+  whoosh: () => noise(0.22, { vol: 0.22, filter: "bandpass", freq: 900 }),
+  hit: () => (tone(160, 0.18, { slide: 50, vol: 0.45 }), noise(0.12, { vol: 0.35, filter: "lowpass", freq: 1400 })),
+  crit: () => (tone(220, 0.3, { slide: 40, type: "square", vol: 0.3 }), noise(0.25, { vol: 0.45, filter: "lowpass", freq: 2200 }), tone(1760, 0.25, { vol: 0.12, at: 0.05 })),
+  block: () => (tone(1200, 0.35, { type: "triangle", vol: 0.2 }), tone(1800, 0.3, { type: "triangle", vol: 0.12 }), noise(0.05, { vol: 0.3, freq: 4000 })),
+  heal: () => arp([660, 880, 1046, 1318], 0.07, { vol: 0.14 }),
+  miss: () => tone(400, 0.25, { slide: 150, type: "triangle", vol: 0.15 }),
+  ko: () => (tone(110, 0.9, { slide: 30, type: "sawtooth", vol: 0.35 }), noise(0.8, { vol: 0.4, filter: "lowpass", freq: 900 })),
+  win: () => (arp([523, 659, 784, 1046, 1318], 0.1, { type: "square", vol: 0.1 }), tone(1046, 0.8, { type: "triangle", vol: 0.12, at: 0.5 })),
+  lose: () => arp([392, 349, 311, 262], 0.18, { type: "triangle", vol: 0.16 }),
+};
+
+export function synth(name) {
+  if (!soundOn() || !SYNTH[name]) return;
+  try {
+    SYNTH[name]();
+  } catch {
+    // Sound is a nice extra. Never let it break the game.
+  }
+}

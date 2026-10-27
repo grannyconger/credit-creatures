@@ -45,7 +45,7 @@ test("a 12-chapter save stays far under the Firestore document limit and grows s
       }
       life = P.finishMonth(play, life).life;
     }
-    P.submitReflection(play, { text: "ok", fun: 4, clear: 5 });
+    P.completeChapter(play);
     sizes.push(kb(life) + kb(play));
   }
   const final = sizes.at(-1);

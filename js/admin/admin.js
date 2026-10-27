@@ -83,7 +83,7 @@ async function load() {
       return { ...rosterRow(s), classId: s.classId, teacherEmail: s.teacherEmail };
     } catch (err) {
       console.error(err);
-      return { uid: s.uid, classId: s.classId, studentName: s.studentName || s.uid, firstName: "", lastName: "", chaptersDone: 0, reflections: 0, flags: [], accuracy: {}, lastPlayed: null };
+      return { uid: s.uid, classId: s.classId, studentName: s.studentName || s.uid, firstName: "", lastName: "", chaptersDone: 0, flags: [], accuracy: {}, lastPlayed: null };
     }
   });
   paint();

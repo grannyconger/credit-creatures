@@ -30,7 +30,6 @@ One class plays Credit Life for real. The game collects play data on its own, an
 **Download CSV** on the roster. Grade on what's hard to fake (SPEC §20):
 - practice accuracy (overall and by standard)
 - chapters completed
-- reflections written (read them in each student's details)
 
 Treat score, XP and money as motivation, not grades.
 

@@ -5151,68 +5151,63 @@ main#app.app:has(.bestiary) {
 .bst-chapter-end details.months summary { cursor: pointer; font-weight: 700; color: var(--b-plum); }
 .bst-chapter-end .practice { display: flex; align-items: center; gap: var(--b-s2); }
 
-/* The field notebook: lined paper with a red margin, tucked under the report. */
-.bst-chapter-end .ce-notebook {
-  position: relative;
-  z-index: 1;
-  max-width: 920px;
-  margin: calc(-1 * var(--b-s4)) auto 0;
-  padding: calc(var(--b-s6) + var(--b-s3)) var(--b-s6) var(--b-s5) calc(var(--b-s6) + var(--b-s4));
-  color: var(--b-ink);
-  background:
-    linear-gradient(90deg, transparent 52px, color-mix(in srgb, var(--b-rust) 55%, transparent) 52px 54px, transparent 54px),
-    repeating-linear-gradient(transparent 0 31px, color-mix(in srgb, var(--b-rule) 55%, transparent) 31px 32px),
-    var(--b-paper-insert);
-  border: 0;
-  border-top: 0;
-  border-radius: 0 0 var(--b-r-sheet) var(--b-r-sheet);
-  box-shadow: var(--b-shadow-card);
-  transform: rotate(0.6deg);
-}
-.bst-chapter-end .ce-notebook h2 { margin: 0; font-size: var(--b-fs-lead); }
-.bst-chapter-end .ce-notebook label { display: block; margin: var(--b-s3) 0 var(--b-s1); font-weight: 700; }
-.bst-chapter-end .ce-notebook .note { color: var(--b-ink-soft); font-size: var(--b-small); }
-.bst-chapter-end .ce-notebook textarea {
-  width: 100%;
-  min-height: 128px;
-  padding: 4px 0;
-  font-family: var(--b-hand);
-  font-size: var(--b-fs-lead);
-  line-height: 32px;
-  color: var(--b-ink);
-  background: transparent;
-  border: 0;
-  border-bottom: 2px dashed var(--b-rule);
-  border-radius: 0;
-  resize: vertical;
-}
-.bst-chapter-end .ce-notebook textarea:focus { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
-.bst-chapter-end .rating-set { border: 0; padding: 0; margin: var(--b-s4) 0 0; }
-.bst-chapter-end .rating-set legend { font-weight: 700; margin-bottom: var(--b-s2); }
-.bst-chapter-end .rating { display: flex; flex-wrap: wrap; gap: var(--b-s2); }
-.bst-chapter-end .rating-option {
-  display: grid;
-  justify-items: center;
-  gap: 2px;
-  min-width: 96px;
-  padding: var(--b-s2) var(--b-s3);
-  font-family: var(--b-body);
-  color: var(--b-ink);
-  background: var(--b-paper);
-  border: 1.5px solid var(--b-rule);
-  border-radius: var(--b-r-tag);
-  box-shadow: none;
-}
-.bst-chapter-end .rating-option strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); }
-.bst-chapter-end .rating-option small { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
-/* Chosen: plum, a ring and the word "chosen" under the number. */
-.bst-chapter-end .rating-option[aria-checked="true"] { color: var(--b-plum); background: var(--b-plum-wash); border-color: var(--b-plum); box-shadow: inset 0 0 0 1.5px var(--b-plum); }
-.bst-chapter-end .rating-option[aria-checked="true"] small::after { content: " (chosen)"; }
-.bst-chapter-end .ce-notebook .bst-error { margin-top: var(--b-s3); }
-.bst-chapter-end .ce-notebook .bst-actions { margin-top: var(--b-s3); }
+/* One wax seal under the report, on to the next chapter. */
+.bst-chapter-end .ce-continue { justify-content: center; margin: var(--b-s5) auto 0; }
 
-:root[data-reading="dyslexia"] .bst-chapter-end :is(.panel.chapter-end, .ce-notebook) { transform: none; }
-:root[data-reading="dyslexia"] .bst-chapter-end .ce-notebook textarea { font-size: var(--b-text); line-height: 1.7; }
+/* The chapter party (2026-10-26): the loudest moment in the game. The page
+   springs up over a glowing moss ground, the creature hops, leaves fall in
+   waves from the top of the screen. */
+.ce-party { overflow: hidden; }
+.ce-party .ce-party-glow {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--b-foxfire) 45%, transparent), transparent 70%);
+  animation: ce-party-pulse 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes ce-party-pulse { 50% { opacity: 0.55; transform: scale(1.08); } }
+.ce-party .fx-confetti { position: fixed; inset: 0; border-radius: 0; z-index: 2; }
+.ce-party .fx-confetti span { animation-name: ce-party-fall !important; animation-duration: 3.4s !important; }
+@keyframes ce-party-fall {
+  0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translate(var(--drift), 105vh) rotate(var(--spin)); opacity: 0; }
+}
+.ce-party .fx-confetti span:nth-child(5n + 1) { background: var(--b-moss-2) !important; }
+.ce-party .fx-confetti span:nth-child(5n + 2) { background: var(--b-gold) !important; }
+.ce-party .fx-confetti span:nth-child(5n + 3) { background: var(--b-rust) !important; }
+.ce-party .fx-confetti span:nth-child(5n + 4) { background: var(--b-plum) !important; }
+.ce-party .fx-confetti span:nth-child(5n + 5) { background: var(--b-foxfire) !important; }
+.ce-party .ce-party-body {
+  z-index: 1;
+  width: min(680px, 90vw);
+  margin-top: 6vh;
+  align-items: center;
+  text-align: center;
+  animation: ce-party-in 0.8s var(--ease-bouncy) both;
+}
+@keyframes ce-party-in {
+  0% { opacity: 0; transform: translateY(60px) scale(0.6) rotate(-6deg); }
+  100% { opacity: 1; transform: rotate(-1.4deg); }
+}
+.ce-party .ce-party-body .bst-stamp-word { align-self: center; margin-bottom: var(--b-s4); font-size: var(--b-fs-lead); animation-delay: 0.6s; }
+.ce-party .ce-party-creature { animation: ce-party-hop 0.9s var(--ease-bouncy) 0.5s 3 both; transform-origin: 50% 100%; }
+@keyframes ce-party-hop {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  20% { transform: translateY(0) scale(1.08, 0.9); }
+  50% { transform: translateY(-46px) scale(0.95, 1.06) rotate(-4deg); }
+  80% { transform: translateY(0) scale(1.06, 0.94); }
+}
+.ce-party .ce-party-body h2 { font-size: clamp(2.6rem, 4vw, 3.8rem); }
+.ce-party .celebrate-xp { font-size: var(--b-fs-title) !important; }
+:root[data-motion="calm"] .ce-party :is(.ce-party-glow, .ce-party-body, .ce-party-creature, .bst-stamp-word) { animation: none; }
+:root[data-motion="calm"] .ce-party .fx-confetti { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .ce-party :is(.ce-party-glow, .ce-party-body, .ce-party-creature, .bst-stamp-word) { animation: none; }
+}
+:root[data-reading="dyslexia"] .ce-party .ce-party-body { transform: none; }
+
+:root[data-reading="dyslexia"] .bst-chapter-end .panel.chapter-end { transform: none; }
 @media (max-width: 900px) { .bst-chapter-end :is(.ce-record, .ce-moments) { grid-template-columns: minmax(0, 1fr); } }
 
 /* ===========================================================================
@@ -6611,3 +6606,54 @@ dialog.broke-alert.reset .broke-siren { animation: none; }
 .pay-with .later-first { line-height: 1.2; }
 .pay-with .later-first small { font-family: var(--b-body); font-size: var(--b-small); font-weight: 700; }
 :root[data-reading="dyslexia"] .pay-with .later-first { font-size: 1.35rem; }
+
+/* ===========================================================================
+   Month party (js/ui/screens/month.js monthParty, 2026-10-26): a smaller
+   celebration than the chapter party. A paper banner with a stamped line
+   drops from the top bar, leaves shower down, and it lifts away.
+   =========================================================================== */
+.month-party {
+  position: fixed;
+  top: 84px;
+  left: 50%;
+  z-index: 60;
+  display: grid;
+  justify-items: center;
+  gap: var(--b-s3);
+  min-width: 300px;
+  padding: var(--b-s4) var(--b-s6);
+  overflow: visible;
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-lift);
+  cursor: pointer;
+  translate: -50% 0;
+  rotate: -1.5deg;
+  animation: month-party-in 0.6s var(--ease-bouncy) both;
+}
+.month-party.out { animation: month-party-out 0.4s ease-in both; }
+@keyframes month-party-in { 0% { opacity: 0; transform: translateY(-80px) scale(0.8); } 100% { opacity: 1; transform: none; } }
+@keyframes month-party-out { to { opacity: 0; transform: translateY(-40px) scale(0.95); } }
+.month-party-stamp {
+  margin: 0;
+  padding: 4px 16px;
+  font-family: var(--b-display);
+  font-size: var(--b-fs-lead);
+  color: var(--b-plum);
+  border: 3px double var(--b-plum);
+  border-radius: var(--b-r-tag);
+  rotate: -4deg;
+  animation: bst-stamp-word 0.5s var(--ease-bouncy) 0.25s both;
+}
+.month-party-xp { margin: 0; font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-gold-ink); }
+.month-party .fx-confetti { inset: 0 -60px -260px; }
+.month-party .fx-confetti span { border-radius: 0 100% 0 100%; width: 10px; height: 15px; }
+.month-party .fx-confetti span:nth-child(4n + 1) { background: var(--b-moss-2) !important; }
+.month-party .fx-confetti span:nth-child(4n + 2) { background: var(--b-gold) !important; }
+.month-party .fx-confetti span:nth-child(4n + 3) { background: var(--b-rust) !important; }
+.month-party .fx-confetti span:nth-child(4n + 4) { background: var(--b-plum) !important; }
+:root[data-motion="calm"] .month-party, :root[data-motion="calm"] .month-party-stamp { animation: none; }
+:root[data-motion="calm"] .month-party .fx-confetti { display: none; }
+@media (prefers-reduced-motion: reduce) { .month-party, .month-party-stamp { animation: none; } }
+:root[data-reading="dyslexia"] .month-party, :root[data-reading="dyslexia"] .month-party-stamp { rotate: none; }

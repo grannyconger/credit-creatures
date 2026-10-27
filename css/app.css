@@ -467,13 +467,6 @@ details.math summary { font-weight: 700; cursor: pointer; }
 .best-worst { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 details.months { margin: 12px 0; }
 details.months summary { font-weight: 700; cursor: pointer; }
-.reflection { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px; }
-.rating-set { border: 0; padding: 0; margin: 16px 0; }
-.rating-set legend { font-weight: 600; margin-bottom: 6px; }
-.rating { display: flex; gap: 8px; flex-wrap: wrap; }
-.rating-option { display: flex; flex-direction: column; align-items: center; min-width: 92px; background: var(--panel); color: var(--ink); border: 1.5px solid var(--border); padding: 8px 10px; }
-.rating-option small { font-weight: 400; color: var(--muted); font-size: 0.75rem; }
-.rating-option[aria-checked="true"] { border-color: var(--accent); background: var(--soft); box-shadow: 0 0 0 2px var(--accent) inset; }
 
 @media (max-width: 900px) {
   .month-grid { grid-template-columns: 1fr; }
@@ -485,7 +478,6 @@ details.months summary { font-weight: 700; cursor: pointer; }
 @media (max-width: 520px) {
   .card-art.mini { width: 100%; }
   .custom-pay { flex-wrap: wrap; }
-  .rating-option { min-width: 0; flex: 1; }
 }
 
 
