@@ -38,7 +38,7 @@ export const CASHIER_META = {
       label: "Round",
       def: "speed",
       options: [
-        { value: "speed", label: "Speed", hint: "As many customers as you can in 3:00. Double coins." },
+        { value: "speed", label: "Speed", hint: "As many customers as you can in 2:30. Double coins." },
         { value: "chill", label: "Chill", hint: "6 customers, no clock." },
       ],
     },

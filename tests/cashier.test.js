@@ -101,15 +101,15 @@ test("wrong change stays in the drawer, and the guess is checked", () => {
   assert.equal(R.score(s).score, C.guessBonus);
 });
 
-test("a Speed round is 3:00 and customers keep coming, with one rush of three", () => {
-  assert.equal(C.speedSeconds, 180);
+test("a Speed round is 2:30 and customers keep coming, with one rush of three", () => {
+  assert.equal(C.speedSeconds, 150);
   const s = R.newState(R.newShift("rush", { difficulty: "easy", round: "speed" }));
   let rush = 0;
-  for (let t = 0; t <= 180000; t += 1000) {
+  for (let t = 0; t <= C.speedSeconds * 1000; t += 1000) {
     if (R.tick(s, t).rush) rush++;
     if (s.current && t % 4000 === 0) R.give(s, R.changeDue(s.current), t);
   }
   assert.equal(rush, 1);
-  assert.ok(s.served >= 30, `served ${s.served}`);
+  assert.ok(s.served >= 25, `served ${s.served}`);
   assert.ok(R.tipFor(1) === C.tipMax && R.tipFor(0) === 0);
 });

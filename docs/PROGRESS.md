@@ -23,7 +23,7 @@ Last updated: 2026-10-27 (Teacher requests round 3: Check Writer tray, Map butto
   - **The Dock is gone.** A Map button took its spot at the bottom left. Clothes are worn from the Wardrobe (`#/creature`), room pieces placed with Decorate your room. `js/ui/dock.js` deleted.
   - **Closet on Home:** a new room object at the far right opens the Wardrobe. The mailbox and door moved left to make room (`js/data/cottage-objects.js`).
   - **Bill Drop is off** (in `RETIRED_JOBS`, out of `ARCADE_ORDER`, code kept). Phish Tank opens in the prologue and is the third prologue job. Jack of All Trades now means Cashier Rush, Check Writer and Phish Tank.
-  - **Timers:** Check Writer, Fee Detective and The Lot went from 3:30 to 2:30. Every timed game is now 2:30 or less.
+  - **Timers:** Check Writer, Fee Detective and The Lot went from 3:30 to 2:30, and Cashier Rush Speed from 3:00 to 2:30 (same pay ceiling, so a full Speed round pays a little less). Every timed game is now 2:30 or less.
   - **Battles:** every question has a Calculator button. It stays open from round to round once opened. Logged as `calcOpen` and `calcUse` with `game: "arena"`.
   - **Creature names:** first and family name are one word each. Spaces are removed as the student types, with a short note. Name ideas with spaces were made one word.
   - **Cashier Rush:** customers always hand whole dollars (the odd-amount "smart payers" are gone, and the short customer hands the dollars just under the price). The calculator is on every difficulty. The "Count up from the charge" box is gone. Easy and Medium show "Change due" under the charge.

@@ -238,7 +238,7 @@ export const CONFIG = {
       // Cashier Rush (game 1, upgrade). Money in cents. Speed doubles coins.
       cashier: {
         maxPayScore: { easy: 240, medium: 300, hard: 340 },
-        speedSeconds: 180,
+        speedSeconds: 150,
         chillCustomers: 6,
         speedPool: 60,
         lineSize: 3,
