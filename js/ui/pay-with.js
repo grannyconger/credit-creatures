@@ -29,7 +29,7 @@ function laterArt(o) {
     "div.pay-art.later-art",
     { role: "img", "aria-label": `Pay later in ${parts} payments` },
     h("span.later-name", "Pay later"),
-    h("strong.later-first", `${money(o.first)} today`),
+    h("strong.later-first", money(o.first), h("small", " today")),
     h("span.later-dots", { "aria-hidden": "true" }, Array.from({ length: parts }, (_, i) => h("i", { class: i === 0 ? "on" : "" }))),
     h("span.later-note", `${parts} payments`)
   );

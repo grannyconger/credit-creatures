@@ -9,7 +9,8 @@
     "sim": "node scripts/sim-report.js",
     "tuning-report": "node scripts/tuning-report.js",
     "replay": "node scripts/replay.js",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "audit": "node e2e/layout-audit.js"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1"

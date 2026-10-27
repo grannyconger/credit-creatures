@@ -174,10 +174,12 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
       ),
       h(
         "div.arc-set-body",
-        h("div.arc-set-col", topCard, defs.map(group), timerDef ? group(timerDef) : null, h("label.arc-train", trainBox, " Training shift (guided, no pay)")),
+        h("div.arc-set-col", topCard, defs.map(group), timerDef ? group(timerDef) : null),
         h("div.arc-set-col", modeBox, ranked)
       ),
-      h("footer.arc-set-foot", h("button.arc-back-btn", { type: "button", "aria-keyshortcuts": "Escape", onclick: () => close(false) }, icon("back", { size: 16 }), " Back"), startBtn)
+      // The training choice sits beside Start, since it changes what Start does,
+      // and the footer is always on screen (layout audit 2026-10-26).
+      h("footer.arc-set-foot", h("button.arc-back-btn", { type: "button", "aria-keyshortcuts": "Escape", onclick: () => close(false) }, icon("back", { size: 16 }), " Back"), h("label.arc-train", trainBox, " Training shift (guided, no pay)"), startBtn)
     );
     startBtn.addEventListener("click", () => !startBtn.disabled && close(true));
     dialog.addEventListener("cancel", (e) => (e.preventDefault(), close(false)));

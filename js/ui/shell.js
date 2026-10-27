@@ -93,7 +93,7 @@ export function paintShell(game) {
     shortcuts.append(
       h(
         "button",
-        { type: "button", "data-route": s.route, "data-place": s.id, "aria-current": s.route === here ? "page" : "false", "aria-disabled": locked ? "true" : null },
+        { type: "button", title: s.label, "data-route": s.route, "data-place": s.id, "aria-current": s.route === here ? "page" : "false", "aria-disabled": locked ? "true" : null },
         icon(locked ? "lock" : s.icon, { size: 22 }),
         h("span", s.label)
       )
@@ -104,6 +104,16 @@ export function paintShell(game) {
 // Today's three challenges: a small pill above the bottom bar that opens a list.
 const pill = document.getElementById("challenges");
 let pillOpen = false;
+// The list sits over the page, so it closes on Escape, a click anywhere else and
+// a new screen (layout audit 2026-10-26: it stayed open and covered buttons).
+function closePill() {
+  if (!pillOpen) return;
+  pillOpen = false;
+  paintChallenges(api?.getGame());
+}
+addEventListener("keydown", (e) => e.key === "Escape" && closePill());
+addEventListener("click", (e) => !pill.contains(e.target) && closePill());
+addEventListener("hashchange", closePill);
 function paintChallenges(game) {
   pill.hidden = !(game?.step === "hub");
   if (pill.hidden) return;

@@ -54,7 +54,18 @@ export function mountBugButton({ getContext, send }) {
 
   // A small drawn ladybug (the bestiary draws its icons, no emoji).
   const bug = '<svg class="bst-bug" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="10" cy="5.5" r="3.2" fill="var(--b-ink, #1b2420)"/><ellipse cx="10" cy="12" rx="6.5" ry="6.2" fill="var(--b-rust, #b5532e)"/><path d="M10 6 V18" stroke="var(--b-ink, #1b2420)" stroke-width="1.2"/><circle cx="7" cy="10.5" r="1.3" fill="var(--b-ink, #1b2420)"/><circle cx="13" cy="10.5" r="1.3" fill="var(--b-ink, #1b2420)"/><circle cx="7.6" cy="14.6" r="1.1" fill="var(--b-ink, #1b2420)"/><circle cx="12.4" cy="14.6" r="1.1" fill="var(--b-ink, #1b2420)"/></svg>';
-  const button = h("button.bug-button.bst-scope.bst-bug-button", { type: "button", title: "Report a problem", "aria-label": "Report a problem (Bugs?)", onclick: () => dialog.showModal() }, h("span", { "aria-hidden": "true" }, "🐞"), " Bugs?");
+  const button = h("button.bug-button.bst-scope.bst-bug-button", { type: "button", title: "Report a problem", "aria-label": "Report a problem (Bugs?)", onclick: () => dialog.showModal() }, h("span", { "aria-hidden": "true" }, "🐞"), h("span.bug-word", " Bugs?"));
   document.body.append(button, dialog);
+  // While the bottom bar shows, the tag sits in it, beside Things To Do, so it
+  // never covers the page (layout audit 2026-10-26). Elsewhere it floats.
+  const bar = document.getElementById("bottombar");
+  if (bar) {
+    const dock = () => {
+      if (!bar.hidden && button.parentElement !== bar) bar.insertBefore(button, document.getElementById("things-btn"));
+      else if (bar.hidden && button.parentElement !== document.body) document.body.insertBefore(button, dialog);
+    };
+    new MutationObserver(dock).observe(bar, { attributes: true, attributeFilter: ["hidden"] });
+    dock();
+  }
   return { show: () => (button.hidden = false), hide: () => (button.hidden = true) };
 }

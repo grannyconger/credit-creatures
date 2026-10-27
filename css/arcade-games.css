@@ -1093,3 +1093,17 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .mi-sheet tr.total th, .mi-sheet tr.total td { font-weight: 900; }
 .mi-reveal p { margin: 6px 0 0; }
 .minigame.movein { min-height: 460px; }
+
+/* Dyslexia mode reaches the Arcade too (layout audit 2026-10-26: the games and
+   their settings card kept their own fonts). Every word switches to
+   OpenDyslexic, and the wide arcade letter-spacing comes off. */
+:root[data-reading="dyslexia"] :is(.arc-v2, .arc-settings, .bst-guild) *:not(svg, svg *) {
+  font-family: "OpenDyslexic", system-ui, sans-serif !important;
+  letter-spacing: normal !important;
+}
+/* OpenDyslexic digits are wide, so "209s" shrinks to stay inside the timer ring. */
+:root[data-reading="dyslexia"] .arc-ring-num { font-size: 0.6rem; letter-spacing: -0.06em !important; }
+.arc-set-foot { align-items: center; }
+.arc-set-foot .arc-train { margin-left: auto; }
+/* A soft shadow over the card's lower edge says more options scroll up from under the footer. */
+.arc-set-foot { box-shadow: 0 -10px 14px -8px color-mix(in srgb, #000 55%, transparent); }

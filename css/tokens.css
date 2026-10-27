@@ -767,3 +767,9 @@
   --seg-later: var(--b-gold-ink);
   --seg-qol: var(--b-plum);
 }
+
+/* Dyslexia mode, everywhere (layout audit 2026-10-26): never italic (some
+   pieces set italics on themselves), and headings that wrap get room between
+   lines, since OpenDyslexic's letters are taller than the display face's. */
+:root[data-reading="dyslexia"] body * { font-style: normal !important; }
+:root[data-reading="dyslexia"] :is(h1, h2, h3, h4) { line-height: 1.3 !important; }

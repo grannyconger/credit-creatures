@@ -4,6 +4,7 @@ import { isConfigured, SCHOOL_DOMAIN } from "./firebase-config.js";
 import { createGame, STEPS, EDITABLE, HUB_SCREENS } from "./game.js";
 import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge, onTrack } from "./telemetry.js";
 import { mountBugButton } from "./ui/bug-button.js";
+import { fitBar } from "./ui/fit-bar.js";
 import { sfx, setClassMuted, soundOn, classIsMuted } from "./ui/sound.js";
 import { PLACES } from "./places.js";
 import { hasFeature, prologueStep, PROLOGUE_STEPS, stageOf } from "./progression.js";
@@ -423,6 +424,9 @@ function updateWho() {
 // The chapter's progress, always in the top bar (teacher request 2026-10-22).
 // The pips are backed by words, so progress is never shown by color alone.
 const chapterChip = document.getElementById("chapter-chip");
+// Both bars measure themselves and tuck words away only when they're full.
+fitBar(document.getElementById("topbar"));
+fitBar(document.getElementById("bottombar"));
 function paintChapter() {
   const inKingdom = game?.step === "hub";
   chapterChip.hidden = !inKingdom;
@@ -455,7 +459,8 @@ function paintChapter() {
     ].filter(Boolean)
   );
   chapterChip.setAttribute("aria-label", `${title}. ${sub}.`);
-  chapterChip.title = play.active || play.summary ? "Go to Town Hall" : "Go Home";
+  // The title can be cut short with "…" when the bar is full, so the tooltip has it all.
+  chapterChip.title = `${title}. ${sub}. ${play.active || play.summary ? "Go to Town Hall" : "Go Home"}.`;
 }
 chapterChip.addEventListener("click", () => {
   if (!game) return;
@@ -482,6 +487,9 @@ function paintNav() {
     const key = b.dataset.nav;
     const [ico, label] = NAV[key];
     b.replaceChildren(icon(ico, { size: 20 }), h("span", label));
+    // When the bar is full only the icon shows, so the word stays as a tooltip and a name.
+    b.title = label;
+    b.setAttribute("aria-label", label);
     if (key === "leaderboard") b.hidden = game.classInfo?.leaderboard === false;
     if (key !== "wallet") b.setAttribute("aria-current", key === here ? "page" : "false");
   }

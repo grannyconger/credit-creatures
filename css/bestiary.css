@@ -6554,3 +6554,60 @@ dialog.broke-alert.reset .broke-siren { animation: none; }
 :root[data-motion="calm"] .arena-hp-fill, :root[data-motion="calm"] button.arena-move { transition: none; }
 @media (prefers-reduced-motion: reduce) { .arena-stage { animation: none; } .arena-hp-fill { transition: none; } }
 :root[data-reading="dyslexia"] .arena-note, :root[data-reading="dyslexia"] button.arena-move, :root[data-reading="dyslexia"] .arena-stamp { rotate: none; }
+
+/* ===========================================================================
+   The bars fit themselves (layout audit 2026-10-26). js/ui/fit-bar.js sets
+   data-fit 1 to 3 on a bar only while it overflows, so dyslexia mode and
+   smaller laptops never get chips on top of each other. Each step hides the
+   least needed words first. Icons, numbers and spoken labels always stay.
+   =========================================================================== */
+.bst-topbar .chapter-chip { flex: 0 1 auto; min-width: 13em; }
+.bst-topbar .chip-text small { overflow: hidden; text-overflow: ellipsis; }
+.bst-topbar .stat-chip, .bst-topbar .topnav button, .bst-topbar .topbar-actions > * { flex: none; }
+.bst-topbar .status-chips, .bst-topbar .topnav, .bst-topbar .topbar-actions { flex: none; }
+.bst-topbar[data-fit="1"] .save-state,
+.bst-topbar[data-fit="2"] .save-state,
+.bst-topbar[data-fit="3"] .save-state { display: none; }
+.bst-topbar:is([data-fit="1"], [data-fit="2"], [data-fit="3"]) .topnav button span:not(.ico-wrap) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.bst-topbar:is([data-fit="2"], [data-fit="3"]) .stat-chip small { display: none; }
+.bst-topbar[data-fit="3"] .chapter-chip { min-width: 8em; }
+.bst-topbar[data-fit="3"] .chip-pips { display: none; }
+.bst-topbar[data-fit="3"] .status-chips { gap: 2px; }
+
+/* The passbook's index tabs hang off the page's right edge, so the page leaves
+   room for them on any laptop (layout audit 2026-10-26: below about 1420px wide
+   they ran off the screen). In dyslexia mode the words are too wide for side
+   tabs, so they become a row of tabs across the top of the page. */
+.bst-book-place :is(.panel.accounts, .panel.bank-open) { max-width: min(1060px, 100% - 380px); }
+:root[data-reading="dyslexia"] .bst-book-place :is(.panel.accounts, .panel.bank-open) { max-width: 1180px; }
+:root[data-reading="dyslexia"] .bst-book-place .acct-tabs { position: static; width: auto; display: flex; flex-wrap: wrap; gap: var(--b-s2); margin: var(--b-s3) 0 var(--b-s2); padding-bottom: var(--b-s2); border-bottom: 2px solid var(--b-rule); }
+:root[data-reading="dyslexia"] .bst-book-place .acct-tabs button { transform: none; border-radius: var(--b-r-tag); white-space: nowrap; padding: var(--b-s2) var(--b-s3); }
+:root[data-reading="dyslexia"] .bst-book-place .acct-tabs button[aria-current="page"] { box-shadow: inset 0 -4px 0 var(--b-plum), var(--b-shadow-card); }
+/* Home's caption: the dream's name and its stage track stack, so a long dream
+   name never runs into "Stage 1 of 3" (layout audit 2026-10-26). */
+.bst-home .room-caption .dream-mini { display: grid; justify-items: start; gap: var(--b-s1); }
+.bst-home .room-caption .meters { min-width: 0; width: min(100%, 420px); max-width: none; }
+/* OpenDyslexic is taller than the display face, so stacked labels need more room. */
+:root[data-reading="dyslexia"] .bst-trophies .tr-rank-text { line-height: 1.4; gap: 2px; }
+/* The Bugs? tag in the bottom bar: in the row, not floating over the page. */
+.bst-bottombar .bug-button { position: static; inset: auto; flex: none; margin: 0; z-index: auto; }
+/* The bottom bar's steps (js/ui/fit-bar.js): the creature's age first, then the
+   shortcut words (icons stay, the word is a tooltip and a spoken name), then the
+   Dock and Bugs? words. Visually hidden, so screen readers still hear them. */
+.bst-bottombar > *, .bst-bottombar .shortcuts button { flex: none; }
+.bst-bottombar:is([data-fit="1"], [data-fit="2"], [data-fit="3"]) .who-text small { display: none; }
+.bst-bottombar:is([data-fit="2"], [data-fit="3"]) .shortcuts button > span:not(.ico-wrap),
+.bst-bottombar[data-fit="3"] :is(.dock-btn > span:not(.ico-wrap), .bug-word) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.bst-home .room-caption .decorate-btn { margin-top: var(--b-s3); }
+/* Arena fit (layout audit 2026-10-26): the round sheet gets most of the width
+   and the six moves sit in three columns, so they fit on a 768px-tall laptop
+   without scrolling, even in dyslexia mode. Give up stays readable on the dark ground. */
+.arena-field { grid-template-columns: minmax(150px, 0.8fr) minmax(0, 2.6fr) minmax(150px, 0.8fr); gap: var(--b-s3); }
+.arena-art svg { width: min(170px, 100%); height: auto; }
+.arena-moves { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-s2); }
+.bst-arena .arena-top button.arena-giveup.secondary { color: var(--b-on-ground); background: transparent; border: 2px solid var(--b-on-ground-soft); }
+.bst-arena .arena-top button.arena-giveup.secondary:hover, .bst-arena .arena-top button.arena-giveup.secondary:focus-visible { border-color: var(--b-on-ground); border-style: dashed; }
+/* "today" sits small beside the amount, so the pay-later card never cuts it off (layout audit 2026-10-26). */
+.pay-with .later-first { line-height: 1.2; }
+.pay-with .later-first small { font-family: var(--b-body); font-size: var(--b-small); font-weight: 700; }
+:root[data-reading="dyslexia"] .pay-with .later-first { font-size: 1.35rem; }
