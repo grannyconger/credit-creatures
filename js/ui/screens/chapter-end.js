@@ -41,7 +41,7 @@ export function render(root, { game, go, track, refreshWho }) {
     h(
       "header.ce-head",
       h("figure.ce-portrait", { "aria-hidden": "true" }, h("span", { html: creatureSvg(c, { size: 130, label: "" }) })),
-      h("div", h("h1", s.title), h("p.bst-margin.ce-kicker", `Chapter ${s.chapter} is done. Here's what the naturalist wrote down.`))
+      h("div", h("h1", s.title), h("p.bst-margin.ce-kicker", `Chapter ${s.chapter} is done. Here's how it went.`))
     ),
     h(
       "dl.ce-record",
@@ -53,7 +53,7 @@ export function render(root, { game, go, track, refreshWho }) {
     h(
       "div.ce-moments",
       s.best ? moment("Best move", s.best, "good") : null,
-      s.worst ? moment("Toughest moment", s.worst, "bad") : h("article.ce-moment.good", h("h3", icon("check", { size: 18 }), "Toughest moment"), h("p", "No risky choices this chapter. The naturalist had nothing to worry about."))
+      s.worst ? moment("Toughest moment", s.worst, "bad") : h("article.ce-moment.good", h("h3", icon("check", { size: 18 }), "Toughest moment"), h("p", "No risky choices this chapter. Nothing to worry about."))
     ),
     c.dream && DREAMS[c.dream] ? dreamBlock(c, run.life, run.play) : null,
     h(
@@ -112,7 +112,7 @@ function chapterParty(s, c, xp) {
     h("p.celebrate-kicker.bst-stamp-word", `Chapter ${s.chapter} complete!`),
     critter,
     h("h2", { id: "ce-party-title" }, s.title),
-    h("p", { id: "ce-party-text" }, `${c.name} made it through every month. The naturalist is honestly impressed.`),
+    h("p", { id: "ce-party-text" }, `${c.name} made it through every month. Seriously impressive.`),
     h("p.celebrate-xp", `+${xp} XP`),
     h("div.row", go)
   );

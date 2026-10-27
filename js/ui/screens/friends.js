@@ -231,7 +231,7 @@ export function render(root, { game, go, track, refreshWho }) {
         h(
           "section.fr-start",
           h("h3", "Start a group"),
-          note(`Naturalists call a group of creatures a gathering. Pick a name and up to ${max} classmates can gather.`),
+          note(`A group of creatures is called a gathering. Pick a name and up to ${max} classmates can gather.`),
           h(
             "div.fr-names",
             choices.map((c) =>

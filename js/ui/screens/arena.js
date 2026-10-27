@@ -671,9 +671,9 @@ export function render(root, { game, go, track }) {
     const win = r.result === "win";
     const title = { win: "VICTORY!", loss: "Defeated", draw: "A tie!" }[r.result] || "Battle over";
     const line = {
-      win: `${b.sides[m.slot].name} beat ${m.vs.name}${ko ? " by knockout" : ""}! The naturalist had to sit down.`,
+      win: `${b.sides[m.slot].name} beat ${m.vs.name}${ko ? " by knockout" : ""}! What a battle.`,
       loss: `${m.vs.name} won this one. ${b.sides[m.slot].name} is already planning a rematch.`,
-      draw: "Nobody gave an inch. The naturalist calls it even.",
+      draw: "Nobody gave an inch. It's dead even.",
     }[r.result];
     const prize = r.prize ? `+${money(r.prize)} prize went into checking.` : r.capped ? "No prize. Computer prizes are used up for today." : !m.vs.paid ? "No prize, since the entry fee wasn't paid." : "No prize this time.";
     const cont = h("button.bst-seal-btn", { type: "button" }, h("span.bst-seal-wax", { html: sealSvg({ seed: 77, size: 80, letter: win ? "V" : "A" }) }), h("span.bst-seal-text", "See the battle report"));
@@ -729,7 +729,7 @@ export function render(root, { game, go, track }) {
     const words = {
       win: `${b.sides[m.slot].name} stands tall. The field notes call it a clean win.`,
       loss: `${b.sides[m.slot].name} takes a seat on a mossy log to think it over. Next time.`,
-      draw: "Both creatures run out of steam at the same moment. The naturalist writes down a tie.",
+      draw: "Both creatures run out of steam at the same moment. It's a tie.",
     }[r.result];
     return h(
       "div.arena-over",

@@ -27,6 +27,7 @@ The app is the naturalist's field guide to Coinhaven's creatures. Screens are pa
 A dry, affectionate field naturalist: understated, specific, a little wry, never sarcastic at the player. Bad choices get gentle, funny consequences, never shame. Financial terms stay accurate and plain, and whimsy never replaces clarity. Plain words for a 15-year-old, no em-dashes, no semicolons. Write new lines rather than reusing examples. Buttons name their action ("Adopt Pebble"), and errors name the problem and the fix.
 
 ## Avoid
+Never name "the naturalist" (or any narrator) in student-facing text (teacher request 2026-10-26: no one knows who that is). The voice stays, the character never appears. 
 A cream ground with an indigo accent. Eyebrow labels (small caps above a heading). Uniform rounded cards with hairline borders, or one card repeated. Thick colored side stripes on cards. Inter, Roboto, system fonts, Fraunces, Fredoka, Baloo, Nunito, Quicksand, Poppins. Purple or blue gradients, glassmorphism, generic icon sets, emoji as icons. Centered step-wizard boxes. Bland microcopy ("Get started"). Color alone for any state: pair it with a word, an icon or a shape ("chosen" written under it, focus as a dashed trace).
 
 ## Do

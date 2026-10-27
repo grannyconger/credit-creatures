@@ -20,7 +20,7 @@ const TABS = [
 // How each specimen is fixed to the board, in board order.
 const ATTACH = ["pin", "tape", "string", "pin", "tape", "pin", "string", "tape"];
 
-// What the naturalist writes after too many pokes at the plate.
+// What the page says after too many pokes at the plate.
 const POKE_NOTES = [
   "The specimen would like you to stop poking it.",
   "It has asked politely. It will not ask a third time.",
@@ -263,7 +263,7 @@ export function render(root, { game, advance, back, editing, track, refreshWho }
     return h(
       "div.bst-opts.bst-opts-swatches",
       { role: "group", "aria-label": "Colors" },
-      h("p.bst-panel-note", "Watercolor samples from the naturalist's box. Pick one for its body, belly and markings."),
+      h("p.bst-panel-note", "Watercolor samples from the paint box. Pick one for its body, belly and markings."),
       h(
         "div.bst-swatches",
         open.map((o, i) => {

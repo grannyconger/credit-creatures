@@ -245,7 +245,7 @@ function scene(creature, ageMonths, status = {}, home = [], guardian = "", calm 
       ${both("M0 6 Q0 0 8 0 H262 Q270 0 270 6 V60 Q270 66 262 66 H8 Q0 66 0 60 Z", "var(--m-paper)", 1.6)}
       ${ink("M6 6 H264 V60 H6 Z", 0.8)}
       <text x="135" y="32" text-anchor="middle" font-size="26" fill="var(--m-ink)" style="font-family: var(--b-display)">Coinhaven</text>
-      <text x="135" y="52" text-anchor="middle" font-size="14" font-style="italic" fill="var(--m-ink)" style="font-family: var(--b-body)">${guardian ? `surveyed for the Guardian of ${guardian}` : "as surveyed by the naturalist"}</text>
+      <text x="135" y="52" text-anchor="middle" font-size="14" font-style="italic" fill="var(--m-ink)" style="font-family: var(--b-body)">${guardian ? `surveyed for the Guardian of ${guardian}` : "a map of the kingdom"}</text>
     </g>
     ${PLACES.filter((pl) => !locked(pl.id)).map((pl) => BUILDINGS[pl.id](p[pl.id], home)).join("")}
     ${critter}
