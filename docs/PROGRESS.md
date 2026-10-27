@@ -2,7 +2,19 @@
 
 Update this file at the end of every phase (and whenever a decision is made) so the next session can resume from here alone.
 
-Last updated: 2026-10-26 (No reflections, chapter and month celebrations, simple Battles with music, calmer Arcade results and setup card, real brands in Phish Tank. Awaiting the teacher's review)
+Last updated: 2026-10-27 (Later chapters in the bestiary look, Battle wins board, big wins, Arena on the map, no naturalist, no reflections. Everything is pushed. Awaiting the teacher's review)
+
+## Start here next session
+- **Baseline:** `npm test` is 375 passing and `npm run e2e` is 20 passing (checked 2026-10-27).
+- **Teacher to do in Firebase:** paste the whole `firestore.rules` (covers the Battle wins leaderboard field, the Arcade class top scores and live classmate battles). Add a budget alert now that the project is on Blaze (upgraded 2026-10-26).
+- **Suggested next (teacher to pick):**
+  1. Two-tab save protection (`docs/BATTLE-SCALING.md` item 3). More urgent now that a battle win pays $200.
+  2. Battle stats on the teacher page (wins, losses, missed battle questions).
+  3. Ranked ladder, teacher pairings and brackets, extra answer time for accommodations (`docs/BATTLES.md`).
+  4. Small cleanups: Arcade bonus typed-number questions (teacher may want multiple choice only), unused `why` and `reasons` lists in Arcade data, the six retired Version 1 Arcade games' code.
+- **Needs the teacher's go-ahead first:** Quest mode and Skill Sims (`docs/MODES.md`), more side quests from `docs/MINIGAMES.md` (standard F, paychecks and taxes, has almost nothing), phone layout.
+- **Standing rules from the teacher (also in memory):** no reflections or short-answer "why" prompts anywhere, never name "the naturalist" in student text, Phish Tank uses real company names (other games keep parodies), the 6-move classic battle rules stay in code (`CONFIG.battle.ruleset`).
+- **Sound files:** the teacher's battle sounds and the Apple Pay chime have unchecked licenses (`sounds/CREDITS.md`). Fine for class, swap before any wider sharing.
 
 ## Next step
 
