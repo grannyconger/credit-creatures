@@ -47,6 +47,7 @@ Version 2, 2026-10-25. This replaces Version 1 completely. The teacher approved 
 
 ## 1.4 Brand names
 - Use near-identical parody names, never real brand names. Never use real logos.
+- Exception (teacher decision 2026-10-26): Phish Tank uses real company names (Chase, UPS, Venmo and so on), so students judge the scam tells, not odd spellings. Still no real logos.
 - Starter list (add more in the same style):
   - Stores: Trader Zoe's, Barnes and Noodle, Chick Filet, Sneaker Hut, Targit, Mallwart.
   - Pay apps: Venmoo, Cash Ap.
@@ -649,7 +650,7 @@ One sample message before play: "Tap what looks wrong." There is one obvious fla
 - IRL: top reported scams and losses by age group. Source: FTC Consumer Sentinel Data Book, checked when written.
 
 **Content and config**
-- At least 80 messages built from templates with parody brands.
+- At least 80 messages built from templates with real company names (2026-10-26).
 - Loss amounts per type, legit ratio, arrival speed curve.
 
 **Acceptance tests**

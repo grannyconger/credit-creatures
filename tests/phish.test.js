@@ -95,3 +95,12 @@ test("acceptance: Trust everything scores lowest", () => {
   const avg = (pick) => seeds.reduce((t, seed) => t + run(seed, pick).score, 0) / seeds.length;
   assert.ok(avg(F.trustAllPick) < avg(F.blockAllPick));
 });
+
+test("real company names, and look-alike links are lowercase with no spaces (2026-10-26)", () => {
+  const names = PHISH_TEMPLATES.flatMap((t) => t.a || []);
+  for (const real of ["Chase", "Bank of America", "UPS", "Venmo", "Amazon"]) assert.ok(names.includes(real), real);
+  for (const parody of ["Chaise", "Venmoo", "Amazin", "UPZ"]) assert.ok(!names.some((n) => n.includes(parody)), parody);
+  assert.equal(F.slug("Bank of America"), "bankofamerica");
+  for (let i = 0; i < 30; i++)
+    for (const m of F.newShift(`links${i}`).msgs) for (const p of m.text) if (p.flag === "link") assert.match(p.text, /^[a-z0-9.-]+$/, p.text);
+});

@@ -23,8 +23,11 @@ export function parts(text) {
 }
 export const plain = (text) => parts(text).map((p) => p.text).join("");
 
+// "Bank of America" -> "bankofamerica", for a look-alike link.
+export const slug = (a) => String(a ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
 function build(t, a, uid) {
-  const fill = (x) => String(x || "").replaceAll("{a}", a ?? "");
+  const fill = (x) => String(x || "").replace(/\{\{link\|((?:\{a\}|[^}])*)\}\}/g, (_, link) => `{{link|${link.replaceAll("{a}", slug(a))}}}`).replaceAll("{a}", a ?? "");
   const text = parts(fill(t.text));
   const sender = parts(fill(t.sender));
   const flags = [...sender, ...text].filter((p) => p.flag).map((p) => ({ type: p.flag, text: p.text }));

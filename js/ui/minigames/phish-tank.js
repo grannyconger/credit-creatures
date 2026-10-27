@@ -34,7 +34,7 @@ export function start(ctx) {
 
   // ---------- Skill moment ----------
   function skillMoment() {
-    const chunks = ["Chaise Bank:", "your card is frozen.", "Unlock it now at", PHISH_SAMPLE.flag];
+    const chunks = ["Chase:", "your card is frozen.", "Unlock it now at", PHISH_SAMPLE.flag];
     const box = h("div.ph-skill");
     const pick = (i) => {
       const right = chunks[i] === PHISH_SAMPLE.flag;
