@@ -72,7 +72,7 @@ Pip the Sprout (right 55% of the time), Mossbeard (70%) and Old Ledgerhorn (85%)
 The rules let only the two players read it (and the class's teacher), only the challenged player accept or decline, only the challenger cancel, each player add exactly one new answer to their own side at a time and never change an old one, and the battle end only once.
 
 ## Not built yet (next steps)
-- **Blaze:** upgrade before live battles are used by a whole class (`docs/BATTLE-SCALING.md`, item 4), with a budget alert.
+- **Blaze:** done by the teacher on 2026-10-26. Add a budget alert in the Google Cloud console if there isn't one.
 - **Two-tab save protection** (`saveVersion` plus a second-tab warning). Energy makes a double-tab cheat worth trying.
 - The ranked ladder, teacher pairings and brackets, the small optional wager, extra time for students with accommodations, abilities earned from Skill Sims, secret-nonce rounds and server time for ranked play, and emulator tests for the battle rules.
 - Battle stats on the teacher page.
