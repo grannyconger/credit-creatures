@@ -2,6 +2,15 @@
 // Plain language for a 15-year-old. No em-dashes, no semicolons.
 
 export const JOBS = {
+  // Check Writer leads the Arcade, so it's in the top row (teacher request 2026-10-27).
+  // The Arcade shows cabinets in this order.
+  checks: {
+    mark: "scroll",
+    icon: "✍️",
+    title: "Check Writer",
+    job: "Scribe at the Vault",
+    skill: "Write a careful check, deposit your paycheck, then judge checks at the Vault.",
+  },
   // The GAME-SPECS.md games (2026-10-25). Their settings, rules and results
   // run through js/ui/arcade/runner.js.
   billdrop: {
@@ -94,13 +103,6 @@ export const JOBS = {
     title: "Cashier Rush",
     job: "Shopkeeper",
     skill: "Make change fast, read your line of customers, and close your drawer clean.",
-  },
-  checks: {
-    mark: "scroll",
-    icon: "✍️",
-    title: "Check Writer",
-    job: "Scribe at the Vault",
-    skill: "Write a careful check, deposit your paycheck, then judge checks at the Vault.",
   },
   // Five more jobs that open in Chapter 1 (teacher request 2026-10-22).
   overdraft: {
