@@ -244,8 +244,6 @@ export const CONFIG = {
         lineSize: 3,
         arriveMs: 6000,
         rushAt: [50, 120],
-        smartShare: 0.2,
-        short: [25, 60],
         returnOdds: 0.5,
         returnTip: 9,
         tipMax: 5,

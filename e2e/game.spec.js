@@ -190,7 +190,10 @@ test("Cashier Rush: settings, a Medium Chill round with a line and a short custo
   expect(amounts[1]).toContain("Charged");
   expect(await page.locator(".cash-drawer .cash-piece").count()).toBe(6);
   await expect(page.locator(".cr-line .cr-cust").first()).toBeVisible();
-  await expect(page.locator(".cr-lesson")).toContainText("Count up");
+  // Whole dollars handed over, the change due shown on Medium, a calculator on every level.
+  await expect(page.locator(".cash-amt.paid strong")).toHaveText(/^\$\d+\.00$/);
+  await expect(page.locator(".cash-amt.due")).toContainText("Change due");
+  await expect(page.locator(".cr2 .calc-toggle, .cashier .calc-toggle").first()).toBeVisible();
   for (let i = 0; i < 12 && !(await page.locator(".cr-close").count()); i++) {
     if (await page.locator(".cr-prompt button").count()) {
       await page.keyboard.press("n");

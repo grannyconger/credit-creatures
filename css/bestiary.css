@@ -5483,8 +5483,9 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
 .home-stage .room-tag small { display: block; font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
 .home-stage .room-object:hover .room-tag, .home-stage .room-object:focus-visible .room-tag { display: block; }
 /* Objects near the top of the room put their tag below so it stays on screen. */
-.home-stage .room-object[data-object="window"] .room-tag, .home-stage .room-object[data-object="poster"] .room-tag, .home-stage .room-object[data-object="shelf"] .room-tag, .home-stage .room-object[data-object="door"] .room-tag { bottom: auto; top: 100%; }
-.home-stage .room-object[data-object="door"] .room-tag { left: auto; right: 0; transform: none; }
+.home-stage .room-object[data-object="window"] .room-tag, .home-stage .room-object[data-object="poster"] .room-tag, .home-stage .room-object[data-object="shelf"] .room-tag, .home-stage .room-object[data-object="door"] .room-tag, .home-stage .room-object[data-object="closet"] .room-tag { bottom: auto; top: 100%; }
+/* Objects at the right edge line their tag up on the right so it isn't cut off. */
+.home-stage .room-object:is([data-object="door"], [data-object="closet"]) .room-tag { left: auto; right: 0; transform: none; }
 .home-stage .room-badge {
   position: absolute;
   right: -4px;
@@ -5809,6 +5810,8 @@ button.daily-box:hover .ico-wrap, button.daily-box:focus-visible .ico-wrap { tra
 .bst-guild .cash-amt.price { color: var(--cash-price); }
 .bst-guild .cash-amt.paid { color: var(--cash-paid); }
 .bst-guild .cash-amt.change { color: var(--cash-change); }
+/* Easy and Medium show the change due on its own row (teacher request 2026-10-27). */
+.bst-guild .cash-amt.due { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: var(--b-s2); color: var(--cash-change); border-left-style: dashed; }
 .bst-guild .cashier .cash-tray { display: grid; gap: var(--b-s2); align-content: start; min-height: 0; padding: var(--b-s3); color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-sheet); box-shadow: var(--b-shadow-card); }
 .bst-guild .cashier .tray-pieces { display: flex; flex-wrap: wrap; gap: var(--b-s2); margin: 0; }
 .bst-guild .tray-empty { margin: 0; color: var(--b-ink-soft); }

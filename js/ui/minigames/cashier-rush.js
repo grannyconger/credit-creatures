@@ -1,6 +1,6 @@
 // Cashier Rush (GAME-SPECS.md game 1, upgraded 2026-10-25): make change fast,
 // read your customers, close your drawer clean. A line of customers with
-// patience bars, tips for speed, smart payers, one short customer, and a drawer
+// patience bars, tips for speed, one short customer, and a drawer
 // reveal at closing (it replaced Count the Drawer). Rules: js/arcade/cashier.js.
 // The drawer, tray and pieces keep the retro register look from 2026-10-23.
 import { h, fill } from "../dom.js";
@@ -25,6 +25,7 @@ const faceSvg = (d) => `<svg viewBox="0 0 24 24" width="20" height="20" aria-hid
 export function start(ctx) {
   const { seed, settings, training } = ctx;
   const difficulty = training ? "easy" : settings.difficulty;
+  const showDue = difficulty !== "hard";
   const round = training ? "chill" : settings.round;
   const speed = round === "speed";
   const cfg = CONFIG.arcade.games.cashier;
@@ -50,10 +51,10 @@ export function start(ctx) {
   const tips = h("span.mg-score");
   const clock = h("span.mg-clock", { role: "timer" });
   const ring = speed ? timerRing({ label: "Time left in the rush" }) : null;
-  const lesson = h("div.cr-lesson");
   const prompt = h("div.cr-prompt");
   const calcSlot = h("div.calc-slot");
-  const calcBtn = difficulty === "easy" ? h("button.calc-toggle", { type: "button", "aria-expanded": "false", "aria-keyshortcuts": "K", onclick: () => toggleCalc() }, "Calculator (K)") : null;
+  // The calculator is on every difficulty (teacher request 2026-10-27).
+  const calcBtn = h("button.calc-toggle", { type: "button", "aria-expanded": "false", "aria-keyshortcuts": "K", onclick: () => toggleCalc() }, "Calculator (K)");
 
   const piece = (c) => pieceButton(c, { onclick: () => addPiece(c), ariaLabel: `Add ${label(c)}`, key: String(mine.indexOf(c) + 1) });
   const coinRow = mine.filter((c) => c < 100);
@@ -69,7 +70,7 @@ export function start(ctx) {
       line,
       h(
         "div.cash-counter",
-        h("div.cash-left", ticket, changeBox, lesson, prompt, flash),
+        h("div.cash-left", ticket, changeBox, prompt, flash),
         h(
           "div.cash-right",
           drawer,
@@ -79,11 +80,10 @@ export function start(ctx) {
         calcSlot
       )
     ),
-    keyHelp(`1 to ${mine.length} add money, U undo, C clear, Enter give change${calcBtn ? ", K calculator" : ""}, Y or N for a short customer. Tap money in the tray to take it back.`)
+    keyHelp(`1 to ${mine.length} add money, U undo, C clear, Enter give change, K calculator, Y or N for a short customer. Tap money in the tray to take it back.`)
   );
 
   function toggleCalc() {
-    if (!calcBtn) return;
     const open = calcBtn.getAttribute("aria-expanded") !== "true";
     calcBtn.setAttribute("aria-expanded", String(open));
     calcBtn.textContent = open ? "Hide calculator" : "Calculator (K)";
@@ -115,8 +115,14 @@ export function start(ctx) {
     const [word, d] = faceFor(f);
     fill(
       ticket,
-      h("p.cash-item", h("span.cr-face", { html: faceSvg(d), title: word }), ` ${c.name} buys ${c.item}.`, c.smart ? h("span.cr-smart", " Odd amount!") : null),
-      h("div.cash-amounts", h("div.cash-amt.paid", h("small", "They hand you"), h("strong", fmt(c.paid))), h("div.cash-amt.price", h("small", h("span.cash-op", { "aria-hidden": "true" }, "− "), "Charged"), h("strong", fmt(c.price)))),
+      h("p.cash-item", h("span.cr-face", { html: faceSvg(d), title: word }), ` ${c.name} buys ${c.item}.`),
+      h(
+        "div.cash-amounts",
+        h("div.cash-amt.paid", h("small", "They hand you"), h("strong", fmt(c.paid))),
+        h("div.cash-amt.price", h("small", h("span.cash-op", { "aria-hidden": "true" }, "− "), "Charged"), h("strong", fmt(c.price))),
+        // Easy and Medium show the change due, so the skill is counting it out.
+        showDue && !c.short ? h("div.cash-amt.due", h("small", h("span.cash-op", { "aria-hidden": "true" }, "= "), "Change due"), h("strong", fmt(R.changeDue(c)))) : null
+      ),
       h("div.cr-pbar.big", { role: "img", "aria-label": `Patience ${Math.round(f * 100)} percent, ${word}` }, h("span", { style: `width: ${Math.round(f * 100)}%` }), h("small", `Tip if right now: ${R.tipFor(f)}`))
     );
     if (c.short) showShort(c);
@@ -128,19 +134,6 @@ export function start(ctx) {
     fill(changeBox, h("small", "Your change so far"), h("strong", fmt(sum)));
     fill(tray, given.length ? h("div.tray-pieces", given.map((c, i) => pieceButton(c, { onclick: () => takeBack(i), ariaLabel: `Take back ${label(c)}`, quiet: true }))) : h("p.tray-empty", "Tap coins and bills to count out the change."));
     tips.textContent = `✓ ${s.right}  ✗ ${s.wrong}  Tips ${s.tips}`;
-  }
-
-  // The skill moment: the first customer shows the count-up method step by step.
-  function showLesson() {
-    const c = s.current;
-    if (!c || c.short) return;
-    const steps = R.countUp(c.price, c.paid, mine);
-    fill(
-      lesson,
-      h("h5", "Count up from the charge"),
-      h("ol.cr-steps", h("li", `Start at ${fmt(c.price)}`), steps.map((st, i) => h("li", { style: `--d: ${i}` }, `+ ${label(st.piece)} makes ${fmt(st.total)}`))),
-      h("p", `So the change is ${fmt(R.changeDue(c))}. Now tap those pieces.`)
-    );
   }
 
   function showShort(c) {
@@ -169,7 +162,6 @@ export function start(ctx) {
     const sale = R.give(s, sum, now());
     given = [];
     ctx.track("cashierSale", { difficulty, round, right: sale.ok, off: sale.diff, smart: sale.smart, tip: sale.tip });
-    fill(lesson);
     if (sale.ok) {
       sfx.correct();
       flash.className = "mg-flash good";
@@ -325,7 +317,6 @@ export function start(ctx) {
   paintCustomer();
   paintLine();
   paintTray();
-  showLesson();
   tick = setInterval(loop, 200);
   loop();
   if (training) {
@@ -333,7 +324,7 @@ export function start(ctx) {
       coached.add(0);
       await hold(ctx.coach(0, ticket));
       coached.add(1);
-      await hold(ctx.coach(1, lesson));
+      await hold(ctx.coach(1, calcBtn));
     })();
   }
   root.stop = () => {

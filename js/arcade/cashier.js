@@ -11,15 +11,6 @@ const C = () => CONFIG.arcade.games.cashier;
 export const fmt = (cents) => `$${(cents / 100).toFixed(2)}`;
 export const DRAWERS = { easy: [100, 500, 1000], medium: [5, 10, 25, 100, 500, 1000], hard: [1, 5, 10, 25, 100, 500, 1000] };
 
-// Smart payers hand an odd amount so the change comes out cleaner, like
-// $20.05 on a $7.30 charge for $12.75 back.
-function smartExtra(price, paid, level) {
-  const step = level === "hard" ? 25 : 25;
-  const rem = (paid - price) % step;
-  const e = rem ? step - rem : 0;
-  return e > 0 && e < 100 ? e : 0;
-}
-
 export function newShift(seed, { difficulty, round }) {
   const c = C();
   const rng = createRng(`${seed}:${difficulty}:${round}`);
@@ -29,25 +20,18 @@ export function newShift(seed, { difficulty, round }) {
   for (let i = 0; i < n; i++) {
     const base = cashierCustomer(rng, difficulty, CASHIER_ITEMS);
     const name = names.splice(rng.int(0, names.length - 1), 1)[0] || `Customer ${i + 1}`;
-    const cust = { i, name, item: base.item, price: base.price, paid: base.paid, smart: false, short: 0 };
-    // Smart payers: about 1 in 5 on Medium and Hard (never the first, the count-up lesson).
-    if (difficulty !== "easy" && i > 0 && rng.chance(c.smartShare)) {
-      const e = smartExtra(base.price, base.paid, difficulty);
-      if (e && base.paid + e - base.price < 2000) {
-        cust.paid = base.paid + e;
-        cust.smart = true;
-      }
-    }
-    customers.push(cust);
+    // Customers always hand whole dollars (teacher request 2026-10-27), so the
+    // odd-amount "smart payers" are gone.
+    customers.push({ i, name, item: base.item, price: base.price, paid: base.paid, smart: false, short: 0 });
   }
-  // The short customer: once a shift on Medium and Hard, 25 to 60 cents short.
+  // The short customer: once a shift on Medium and Hard. They hand the whole
+  // dollars just under the price, so they're short the cents.
   let shortAt = null;
   if (difficulty !== "easy") {
     shortAt = rng.int(2, Math.min(4, n - 2));
     const sc = customers[shortAt];
-    sc.smart = false;
-    sc.short = rng.int(c.short[0], c.short[1]);
-    sc.paid = sc.price - sc.short;
+    sc.paid = Math.floor(sc.price / 100) * 100;
+    sc.short = sc.price - sc.paid;
   }
   const returns = rng.chance(c.returnOdds);
   const rushAt = round === "speed" ? rng.int(c.rushAt[0], c.rushAt[1]) * 1000 : null;

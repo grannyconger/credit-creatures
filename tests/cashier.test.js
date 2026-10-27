@@ -12,37 +12,30 @@ test("the same seed deals the same customers", () => {
   assert.deepEqual(R.newShift("s", { difficulty: "hard", round: "speed" }), R.newShift("s", { difficulty: "hard", round: "speed" }));
 });
 
-test("smart payers make the change cleaner, and change never needs a $20", () => {
-  let smart = 0;
-  let all = 0;
+test("customers always hand whole dollars, and change never needs a $20", () => {
   for (const seed of seeds) {
     for (const difficulty of ["easy", "medium", "hard"]) {
-      const d = R.newShift(seed, { difficulty, round: "speed" });
-      for (const c of d.customers) {
-        all += difficulty === "easy" ? 0 : 1;
-        if (c.short) continue;
-        const ch = c.paid - c.price;
-        assert.ok(ch > 0 && ch < 2000, `${seed} ${difficulty}: ${ch}`);
-        assert.ok(R.makeChange(ch, R.DRAWERS[difficulty]), "the drawer can always make it");
-        if (c.smart) {
-          smart++;
-          assert.notEqual(difficulty, "easy");
-          assert.equal(ch % 25, 0, "a smart payer's change has no small coins");
+      for (const round of ["chill", "speed"]) {
+        for (const c of R.newShift(seed, { difficulty, round }).customers) {
+          assert.equal(c.paid % 100, 0, `${seed} ${difficulty}: they hand ${c.paid}`);
+          if (c.short) continue;
+          const ch = c.paid - c.price;
+          assert.ok(ch > 0 && ch < 2000, `${seed} ${difficulty}: ${ch}`);
+          assert.ok(R.makeChange(ch, R.DRAWERS[difficulty]), "the drawer can always make it");
         }
       }
     }
   }
-  const share = smart / all;
-  assert.ok(share > 0.1 && share < 0.3, `smart share ${share}`);
 });
 
-test("one short customer on Medium and Hard, 25 to 60 cents short, none on Easy", () => {
+test("one short customer on Medium and Hard, short just the cents, none on Easy", () => {
   for (const seed of seeds) {
     assert.equal(R.newShift(seed, { difficulty: "easy", round: "chill" }).customers.filter((c) => c.short).length, 0);
     for (const difficulty of ["medium", "hard"]) {
       const shorts = R.newShift(seed, { difficulty, round: "chill" }).customers.filter((c) => c.short);
       assert.equal(shorts.length, 1);
-      assert.ok(shorts[0].short >= 25 && shorts[0].short <= 60);
+      assert.ok(shorts[0].short > 0 && shorts[0].short < 100);
+      assert.equal(shorts[0].price - shorts[0].paid, shorts[0].short);
     }
   }
 });

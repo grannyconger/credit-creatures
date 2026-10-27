@@ -44,7 +44,7 @@ export const CASHIER_META = {
     },
   ],
   mistakes: ["Each wrong change: the amount you were over or short (at least $1).", "Drawer over or short by more than $2 at closing: an extra $5."],
-  beats: ["Read what they hand you and what they were charged.", "Count up from the charge to what they handed you.", "Watch the patience bar. Faster service, bigger tip."],
+  beats: ["Read what they hand you and what they were charged.", "Stuck on the math? Open the calculator, then tap coins and bills to count out the change.", "Watch the patience bar. Faster service, bigger tip."],
   why: { weak: "I didn't want to lose my tips.", okay: "It was only a little money.", strong: "I had enough tips to cover it and still keep a cushion." },
   revealTitle: "The drawer count",
   unlock: 0,
