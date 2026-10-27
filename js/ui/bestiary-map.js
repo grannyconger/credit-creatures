@@ -153,6 +153,19 @@ const BUILDINGS = {
       ${ink("M-20 -50 Q0 -36 20 -46", 1.2)}
       ${[[-12, -44, "var(--m-gold)"], [0, -41, "var(--m-roof-rust)"], [12, -43, "var(--m-gold)"]].map(([cx, cy, c]) => `<g class="m-lantern">${ink(`M${cx} ${cy} v3`, 1)}${both(`M${cx - 5} ${cy + 9} a5 6.5 0 1 0 10 0 a5 6.5 0 1 0 -10 0`, c, 1.2)}</g>`).join("")}
     </g>`,
+  // The Battle Arena (2026-10-26): a round stone ring with arches, a sand
+  // floor inside and two pennants on poles.
+  arena: ({ x, y }) => `
+    <g transform="translate(${x} ${y})">
+      ${both("M-62 6 a62 22 0 1 0 124 0 V-18 a62 22 0 1 0 -124 0 Z", "var(--m-stone)")}
+      ${both("M-62 -18 a62 22 0 1 0 124 0 a62 22 0 1 0 -124 0", "var(--m-wall)", 1.6)}
+      ${wash("M-44 -16 a44 13 0 1 0 88 0 a44 13 0 1 0 -88 0", "var(--m-gold)")}
+      ${ink("M-44 -16 a44 13 0 1 0 88 0 a44 13 0 1 0 -88 0", 1.2)}
+      ${[-46, -24, 0, 24, 46].map((cx) => both(`M${cx - 7} 22 v-14 a7 7 0 0 1 14 0 v14 Z`, "var(--m-door)", 1.3)).join("")}
+      ${ink("M-14 -20 l10 6 M14 -20 l-10 6", 2)}
+      ${[-58, 58].map((cx, i) => `${ink(`M${cx} -14 v-46`, 2)}<g class="m-flag">${both(`M${cx} -60 l${i ? -20 : 20} 6 ${i ? 20 : -20} 6z`, i ? "var(--m-roof-plum)" : "var(--m-roof-rust)", 1.3)}</g>`).join("")}
+      ${ink("M-68 30 H68", 2)}
+    </g>`,
   academy: ({ x, y }) => `
     <g transform="translate(${x} ${y})">
       ${both(R(-56, -30, 112, 66), "var(--m-stone)")}

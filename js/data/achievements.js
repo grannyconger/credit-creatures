@@ -16,6 +16,7 @@ export const CATEGORIES = {
   creature: "Creature",
   persistence: "Persistence",
   social: "Friends",
+  battle: "Battles",
 };
 
 const chose = (f, id, keys) => f.decisions.some((d) => d.id === id && keys.includes(d.choice));
@@ -94,6 +95,13 @@ export const ACHIEVEMENTS = [
   { id: "squad", cat: "social", icon: "🛡️", title: "Squad Goals", how: "Join or start a friend group.", xp: 20, check: (f) => f.play.social.groupJoined },
   { id: "dreamer", cat: "persistence", icon: "🌠", title: "Dreamer", how: "Pick a dream for your creature.", xp: 10, check: (f) => Boolean(f.creature?.dream) },
   { id: "grandTour", cat: "persistence", icon: "🧭", title: "Grand Tour", how: "Finish the prologue and open your first bank account.", xp: 50, check: (f) => Boolean(f.play.prologue?.done || f.play.tourDone) },
+  // Battles (teacher request 2026-10-26: winning is a big deal).
+  { id: "firstVictory", cat: "battle", icon: "⚔️", title: "First Victory", how: "Win a battle in the Battle Arena.", xp: 50, check: (f) => (f.play.battle?.wins || 0) >= 1 },
+  { id: "classmateChamp", cat: "battle", icon: "🤺", title: "Classmate Champion", how: "Beat a classmate in a battle.", xp: 75, check: (f) => (f.play.battle?.liveWins || 0) >= 1 },
+  { id: "knockoutArtist", cat: "battle", icon: "💥", title: "Knockout Artist", how: "Win 3 battles by knockout.", xp: 75, check: (f) => (f.play.battle?.koWins || 0) >= 3 },
+  { id: "onARoll", cat: "battle", icon: "🔥", title: "On a Roll", how: "Win 3 battles in a row.", xp: 100, check: (f) => (f.play.battle?.best || 0) >= 3 },
+  { id: "flawless", cat: "battle", icon: "🛡️", title: "Flawless", how: "Win a battle without losing any HP.", xp: 100, hidden: true, check: (f) => (f.play.battle?.flawless || 0) >= 1 },
+  { id: "arenaLegend", cat: "battle", icon: "👑", title: "Arena Legend", how: "Win 10 battles.", xp: 150, check: (f) => (f.play.battle?.wins || 0) >= 10 },
   { id: "dreamComeTrue", cat: "persistence", icon: "🏰", title: "Dream Come True", how: "Make your creature's dream come true.", xp: 200, check: (f) => Boolean(f.play.dreamDone) },
 ];
 

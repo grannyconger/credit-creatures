@@ -31,7 +31,6 @@ const EXTRAS = [
   { id: "map", name: "Map", kind: "The whole kingdom", icon: "compass", route: "map" },
   { id: "leaderboard", name: "Leaderboard", kind: "How the class is doing", icon: "trophy", route: "leaderboard" },
   { id: "trophies", name: "Trophies", kind: "Ranks and achievements", icon: "star", route: "trophies" },
-  { id: "arena", name: "Battle Arena", kind: "Battle a classmate or the computer", icon: "shield", route: "arena" },
 ];
 
 export function initShell({ getGame, go, track }) {

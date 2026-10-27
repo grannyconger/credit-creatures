@@ -145,8 +145,14 @@ service cloud.firestore {
       // Resetting a student also clears their leaderboard entry.
       allow delete: if ownsClass();
       allow create, update: if isMe(uid) && inClass()
-        && request.resource.data.keys().hasOnly(['creatureName', 'displayName', 'person', 'xp', 'rank', 'species', 'palette', 'look', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['creatureName', 'displayName', 'person', 'xp', 'rank', 'species', 'palette', 'look', 'battles', 'updatedAt'])
         && (!('person' in request.resource.data) || request.resource.data.person == request.auth.token.name)
+        // Battle wins (2026-10-26): { wins, live, bot }, whole numbers.
+        && (!('battles' in request.resource.data) || (request.resource.data.battles is map
+          && request.resource.data.battles.keys().hasOnly(['wins', 'live', 'bot'])
+          && request.resource.data.battles.get('wins', 0) is int && request.resource.data.battles.get('wins', 0) >= 0 && request.resource.data.battles.get('wins', 0) <= 100000
+          && request.resource.data.battles.get('live', 0) is int && request.resource.data.battles.get('live', 0) >= 0
+          && request.resource.data.battles.get('bot', 0) is int && request.resource.data.battles.get('bot', 0) >= 0))
         && (!('look' in request.resource.data) || (request.resource.data.look is map && request.resource.data.look.size() <= 12))
         && request.resource.data.xp is int
         && request.resource.data.xp >= 0

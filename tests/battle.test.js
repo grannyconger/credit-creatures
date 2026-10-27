@@ -211,3 +211,19 @@ test("finishing records the result, pays the prize, and computer prizes stop aft
   // Prizes and fees replay exactly.
   assert.equal(replayLife({ seed: "prize" }, life.log).checking, life.checking);
 });
+
+test("wins are counted by opponent, knockouts and flawless wins, for the board and achievements", () => {
+  const play = newPlay();
+  let life = createLife({ seed: "wins" });
+  const day = new Date("2026-10-26T12:00:00");
+  let b = newBattle(simple("w1"));
+  while (!b.over) b = resolveTurn(b, [right("strike", 1), wrong("heal")]);
+  life = finishBattle(life, play, b, 0, { name: "Rival", kind: "live" }, day).life;
+  life = finishBattle(life, play, b, 0, { name: "Pip", kind: "bot" }, day).life;
+  const rec = ensureBattle(play);
+  assert.deepEqual([rec.wins, rec.liveWins, rec.botWins, rec.koWins], [2, 1, 1, 2]);
+  assert.equal(CONFIG.battle.prize.win, 200);
+  const old = newPlay();
+  old.battle = { wins: 4, losses: 0, draws: 0, streak: 0, best: 0, log: [], botPrizes: { day: "", n: 0 } };
+  assert.equal(ensureBattle(old).botWins, 4, "older wins count as computer wins");
+});

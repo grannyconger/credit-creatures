@@ -161,7 +161,8 @@ export const CONFIG = {
     },
     energy: 2,
     fee: 5,
-    prize: { win: 25, draw: 10, loss: 5 },
+    // A win is a big deal (teacher request 2026-10-26): 200 coins.
+    prize: { win: 200, draw: 10, loss: 5 },
     botPrizesPerDay: 3,
     bots: {
       sprout: { right: 0.55, label: "Sprout" },

@@ -14,6 +14,9 @@ import { creatureSvg } from "../creature-art.js";
 import { sealSvg, inkStampSvg } from "../bestiary-art.js";
 import { timerRing } from "../arcade/components.js";
 import { burstFrom, burst } from "../motion/particles.js";
+import { react } from "../motion/gaze.js";
+import { confetti } from "../fx.js";
+import { openBoardTab } from "./trophies.js";
 import { motionOn } from "../motion/spring.js";
 import { sfx, music, BATTLE_TRACKS } from "../sound.js";
 import { synth } from "../arcade-sound.js";
@@ -151,6 +154,7 @@ export function render(root, { game, go, track }) {
         h("span", h("strong", String(r.draws)), " tied"),
         h("span", h("strong", String(r.best)), " best streak")
       ),
+      game.classInfo?.leaderboard === false || !classId ? null : h("button.small.secondary.arena-board-link", { type: "button", onclick: () => (openBoardTab("battles"), go("leaderboard")) }, icon("trophy", { size: 16 }), " See the class Battle wins board"),
       total
         ? h(
             "ol.arena-log",
@@ -642,9 +646,77 @@ export function render(root, { game, go, track }) {
     }
     track("battleEnd", { kind: m.kind, level: m.vs.level || "", result: r.result, prize: r.prize, turns: m.battle.turn, right: m.right, hp: m.battle.sides.map((s) => s.hp).join("-"), moves: m.moves, seconds: Math.round((Date.now() - m.startedAt) / 1000) });
     music.once("battleEnd");
-    if (motionOn() && r.result === "win") setTimeout(() => burstFrom(panel.querySelector(".arena-stamp"), "leaves", { n: 34 }), 300);
     paintMatch();
+    // The big moment (teacher request 2026-10-26): a full-screen end card with
+    // the summary, then the battle report underneath. Saving waits until it
+    // closes, so new achievements pop up after it, not on top of it.
+    await endScreen(m, r);
+    m.saved = true;
     await run.persist("battleEnd");
+  }
+
+  // Victory gets falling leaves in waves, the creature hopping and a huge
+  // stamp. A loss or a tie gets a calmer card. Both show the summary.
+  function endScreen(m, r) {
+    const b = m.battle;
+    const mine = b.log.map((t) => t[m.slot]);
+    const stats = [
+      ["Rounds", String(b.turn)],
+      ["Right answers", `${m.right} of ${b.turn}`],
+      ["Damage dealt", String(mine.reduce((s, t) => s + (t.dealt || 0), 0))],
+      ["Critical hits", String(mine.filter((t) => t.crit).length)],
+      ["Healed", String(mine.reduce((s, t) => s + (t.healed || 0), 0))],
+    ];
+    const ko = b.sides[1 - m.slot].hp <= 0;
+    const win = r.result === "win";
+    const title = { win: "VICTORY!", loss: "Defeated", draw: "A tie!" }[r.result] || "Battle over";
+    const line = {
+      win: `${b.sides[m.slot].name} beat ${m.vs.name}${ko ? " by knockout" : ""}! The naturalist had to sit down.`,
+      loss: `${m.vs.name} won this one. ${b.sides[m.slot].name} is already planning a rematch.`,
+      draw: "Nobody gave an inch. The naturalist calls it even.",
+    }[r.result];
+    const prize = r.prize ? `+${money(r.prize)} prize went into checking.` : r.capped ? "No prize. Computer prizes are used up for today." : !m.vs.paid ? "No prize, since the entry fee wasn't paid." : "No prize this time.";
+    const cont = h("button.bst-seal-btn", { type: "button" }, h("span.bst-seal-wax", { html: sealSvg({ seed: 77, size: 80, letter: win ? "V" : "A" }) }), h("span.bst-seal-text", "See the battle report"));
+    const critter = h("div.be-creature", { "aria-hidden": "true", html: creature ? creatureSvg(publicLook(creature), { size: win ? 230 : 170, label: "" }) : "" });
+    const dialog = h(
+      "dialog.celebrate.bst-scope.bst-celebrate.battle-end",
+      { class: r.result, "aria-labelledby": "be-title", "aria-describedby": "be-text" },
+      h("div.be-glow", { "aria-hidden": "true" }),
+      h(
+        "div.celebrate-body.be-body",
+        h("p.be-stamp", { id: "be-title" }, title),
+        critter,
+        h("p", { id: "be-text" }, line),
+        h("p.celebrate-xp.be-prize", icon("coins", { size: 22 }), ` ${prize}`),
+        h("dl.be-stats", stats.map(([k, v]) => h("div", h("dt", k), h("dd", v)))),
+        h("div.row", cont)
+      )
+    );
+    const timers = [];
+    const later = (ms, fn) => timers.push(setTimeout(() => dialog.open && fn(), ms));
+    document.body.append(dialog);
+    dialog.showModal();
+    cont.focus();
+    track("battleEndScreen", { result: r.result, ko });
+    if (win) {
+      [0, 600, 1200, 1900, 2700].forEach((ms) => later(ms, () => dialog.prepend(confetti(80))));
+      later(200, () => burstFrom(critter, "leaves", { n: 40 }));
+      later(500, () => burstFrom(dialog.querySelector(".be-prize"), "coins", { n: 20 }));
+      later(1300, () => burstFrom(critter, "motes", { n: 30 }));
+      later(300, () => react("happy"));
+      later(1400, () => react("happy"));
+    }
+    return new Promise((done) => {
+      const close = () => {
+        timers.forEach(clearTimeout);
+        if (dialog.open) dialog.close();
+        dialog.remove();
+        done();
+      };
+      cont.addEventListener("click", close);
+      dialog.addEventListener("cancel", (e) => (e.preventDefault(), close()));
+      m.closeEnd = close;
+    });
   }
 
   function overStage() {
@@ -748,6 +820,8 @@ export function render(root, { game, go, track }) {
   return () => {
     st.gone = true;
     music.stop();
+    st.match?.closeEnd?.();
+    if (st.match?.result && !st.match.saved) run.persist("battleEnd");
     clearInterval(st.timer);
     clearInterval(st.waitTimer);
     st.unsubMine?.();

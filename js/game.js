@@ -204,11 +204,20 @@ export function createGame(user, db) {
         species: c.species,
         palette: c.palette,
         look: publicLook(c),
+        // Battle wins for the Battle wins board (2026-10-26).
+        battles: battleWins(play),
       };
       const key = JSON.stringify(entry);
       if (key === game.boardKey && Date.now() - game.boardAt < CONFIG.teacher.heartbeatMinutes * 60000) return;
       try {
-        await db.writeLeaderboard(game.profile.classId, user.uid, entry);
+        try {
+          await db.writeLeaderboard(game.profile.classId, user.uid, entry);
+        } catch (err) {
+          // Older Firestore rules don't allow battle wins yet: save the rest.
+          if (err.code !== "permission-denied") throw err;
+          const { battles, ...rest } = entry;
+          await db.writeLeaderboard(game.profile.classId, user.uid, rest);
+        }
         game.boardKey = key;
         game.boardAt = Date.now();
       } catch (err) {
@@ -218,4 +227,11 @@ export function createGame(user, db) {
     },
   };
   return game;
+}
+
+// Wins against anyone, against classmates and against the computer.
+function battleWins(play) {
+  const b = play.battle || {};
+  const live = b.liveWins || 0;
+  return { wins: b.wins || 0, live, bot: b.botWins ?? Math.max(0, (b.wins || 0) - live) };
 }

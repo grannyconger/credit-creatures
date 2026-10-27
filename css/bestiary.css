@@ -6857,3 +6857,53 @@ dialog.arc-settings.bst-scope::backdrop { background: color-mix(in srgb, var(--b
 .arc-settings.bst-scope .arc-start:disabled { opacity: 1; color: var(--b-ink-soft); background: var(--b-paper-insert); border: 1.5px dashed var(--b-rule); box-shadow: none; }
 .arc-settings.bst-scope :is(button, input):focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 3px; }
 :root[data-reading="dyslexia"] .arc-settings.bst-scope .arc-set-art { rotate: none; }
+
+/* The Battle wins board's filter chips (2026-10-26). Chosen: plum, a tick and aria-pressed. */
+.bst-trophies .tr-filters { display: flex; flex-wrap: wrap; gap: var(--b-s2); margin: var(--b-s2) 0 var(--b-s4); }
+.bst-trophies .tr-filter { display: inline-flex; align-items: center; gap: 4px; padding: var(--b-s1) var(--b-s3); font-family: var(--b-body); font-size: var(--b-fs-ui); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: var(--b-r-tag); box-shadow: none; }
+.bst-trophies .tr-filter[aria-pressed="true"] { color: var(--b-plum); background: var(--b-plum-wash); border: 2px solid var(--b-plum); font-weight: 700; }
+.bst-trophies .tr-battle-board .lb-rank { font-family: var(--b-body); font-size: var(--b-small); }
+
+/* ===========================================================================
+   The end of a battle (js/ui/screens/arena.js endScreen, 2026-10-26). A win
+   is the loudest card in the Arena: a glowing ground, a huge stamp, waves of
+   leaves and the creature hopping. A loss or a tie is the same card, calmer.
+   =========================================================================== */
+.battle-end { overflow: hidden; }
+.battle-end .be-glow { position: absolute; inset: -20%; pointer-events: none; background: radial-gradient(closest-side, color-mix(in srgb, var(--b-foxfire) 50%, transparent), transparent 70%); animation: ce-party-pulse 2.2s ease-in-out infinite; }
+.battle-end.loss .be-glow, .battle-end.draw .be-glow { background: radial-gradient(closest-side, color-mix(in srgb, var(--b-moss-2) 30%, transparent), transparent 70%); animation: none; }
+.battle-end .fx-confetti { position: fixed; inset: 0; border-radius: 0; z-index: 2; }
+.battle-end .fx-confetti span { animation-name: ce-party-fall !important; animation-duration: 3.4s !important; }
+.battle-end .fx-confetti span:nth-child(5n + 1) { background: var(--b-moss-2) !important; }
+.battle-end .fx-confetti span:nth-child(5n + 2) { background: var(--b-gold) !important; }
+.battle-end .fx-confetti span:nth-child(5n + 3) { background: var(--b-rust) !important; }
+.battle-end .fx-confetti span:nth-child(5n + 4) { background: var(--b-plum) !important; }
+.battle-end .fx-confetti span:nth-child(5n + 5) { background: var(--b-foxfire) !important; }
+.battle-end .be-body { z-index: 1; width: min(720px, 92vw); margin-top: 4vh; align-items: center; text-align: center; animation: ce-party-in 0.8s var(--ease-bouncy) both; }
+.battle-end .be-stamp {
+  order: 0;
+  margin: 0;
+  padding: var(--b-s1) var(--b-s5);
+  font-family: var(--b-display);
+  font-size: clamp(2.6rem, 5vw, 4.4rem);
+  line-height: 1.05;
+  color: var(--b-rust-ink);
+  border: 6px double var(--b-rust);
+  border-radius: var(--b-r-tag);
+  rotate: -5deg;
+  animation: arena-ko 0.6s var(--ease-bouncy) 0.35s both;
+}
+.battle-end.win .be-stamp { color: var(--b-gold-ink); border-color: var(--b-gold); font-size: clamp(3.2rem, 7vw, 5.6rem); }
+.battle-end.draw .be-stamp { color: var(--b-plum); border-color: var(--b-plum); }
+.battle-end.win .be-creature { animation: ce-party-hop 0.9s var(--ease-bouncy) 0.5s 3 both; transform-origin: 50% 100%; }
+.battle-end.loss .be-creature { filter: saturate(0.6); rotate: -6deg; }
+.battle-end .be-prize { display: inline-flex; align-items: center; gap: var(--b-s2); }
+.battle-end .be-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--b-s2); width: 100%; margin: var(--b-s2) 0 0; }
+.battle-end .be-stats div { padding: var(--b-s2); background: var(--b-paper-insert); border-top: 3px solid var(--b-rule); border-radius: var(--b-r-tag); }
+.battle-end .be-stats dt { font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
+.battle-end .be-stats dd { margin: 0; font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-ink); }
+:root[data-motion="calm"] .battle-end :is(.be-glow, .be-body, .be-creature, .be-stamp) { animation: none; }
+:root[data-motion="calm"] .battle-end .fx-confetti { display: none; }
+@media (prefers-reduced-motion: reduce) { .battle-end :is(.be-glow, .be-body, .be-creature, .be-stamp) { animation: none; } }
+:root[data-reading="dyslexia"] .battle-end :is(.be-body, .be-stamp) { rotate: none; transform: none; }
+.arena-board-link { margin: var(--b-s2) 0; }

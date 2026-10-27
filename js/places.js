@@ -6,6 +6,7 @@ import * as P from "./play.js";
 import { hasFeature, opensText, prologueStep, stageOf } from "./progression.js";
 import { alleyProgress } from "./data/alley.js";
 import { pickState } from "./daily.js";
+import { CONFIG } from "./data/config.js";
 
 // The one next thing to do in the prologue (coach panel and chapter box).
 export const PROLOGUE_TEXT = {
@@ -32,6 +33,7 @@ export const PLACES = [
   { id: "cottage", kind: "Your creature's home", name: "Your Cottage", icon: "cottage", route: "cottage", feature: "cottage", does: "Your creature, its dream, its home and your settings", x: 37, y: 81 },
   { id: "plaza", kind: "Friends and gifts", name: "Friendship Plaza", icon: "plaza", route: "friends", feature: "plaza", does: "Friends, groups and gifts", x: 63, y: 81 },
   { id: "alley", kind: "Tricky offers", name: "Lantern Alley", icon: "lantern", route: "alley", feature: "pitfalls", does: "Read the fine print on tricky offers", x: 25, y: 55 },
+  { id: "arena", kind: "Battles", name: "Battle Arena", icon: "shield", route: "arena", feature: "arena", does: "Battle a classmate or the computer", x: 50, y: 55 },
   { id: "academy", kind: "Lessons and trophies", name: "The Academy", icon: "academy", route: "academy", feature: "academy", does: "Lessons and practice to earn XP, trophies and ranks", x: 88, y: 26 },
 ];
 
@@ -72,6 +74,9 @@ export function placeStatus({ life, play, creature, classInfo }) {
   const alley = alleyProgress(play);
   const stallsLeft = alley.total - alley.checked;
   out.alley = stallsLeft ? { text: `${stallsLeft} offer${stallsLeft === 1 ? "" : "s"} to check`, tone: "action", count: stallsLeft } : { text: `${alley.right} of ${alley.total} called right`, tone: "calm" };
+
+  const wins = play.battle?.wins || 0;
+  out.arena = (play.energy || 0) >= CONFIG.battle.energy ? { text: wins ? `${wins} win${wins === 1 ? "" : "s"}. Ready to battle` : "Ready to battle", tone: "action" } : { text: wins ? `${wins} win${wins === 1 ? "" : "s"}` : "Needs Energy from the Arcade", tone: "calm" };
 
   // The prologue: Sage's current step lights up its place.
   if (prologue) {

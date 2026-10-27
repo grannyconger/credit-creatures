@@ -21,6 +21,15 @@ The teacher asked to begin the multiplayer battles component. This is the first 
 - Each turn plays in beats: lunges, knockback and flashes, floating damage numbers, shield flares, heal glows, screen shake (bigger on a critical hit), HP bars that drain with a gold ghost bar, a rust pulse at low HP, and a K.O. stamp with the loser toppling. All of it stops under Calm. The turn log says everything in words.
 - Sounds (teacher-supplied, `sounds/CREDITS.md`): `battle-config` loops in the lobby, one of `battle-bg-1` to `5` loops during a bout, `battle-end` plays once at the end, and `attack-landed` / `attack-landed-2` play for a normal and a critical hit. Whoosh, block, heal, miss and K.O. are synthesized (`SYNTH` in `js/ui/arcade-sound.js`). Music goes through `music` in `js/ui/sound.js`, and only plays when sound is on and the class isn't muted.
 
+## Winning (teacher request 2026-10-26)
+- A win pays **$200** (`CONFIG.battle.prize.win`). Computer prizes still stop after 3 a day.
+- When a battle ends, a full-screen card shows the result and a summary (rounds, right answers, damage, critical hits, healing) while `battle-end` plays. A win gets the full party: a huge VICTORY stamp, waves of leaves, coins and the creature hopping. Then the battle report shows underneath. The game saves after the card closes, so new achievements pop up after it.
+- Six achievements in a new Battles group: First Victory, Classmate Champion, Knockout Artist (3 KO wins), On a Roll (3 in a row), Flawless (hidden, win at full HP) and Arena Legend (10 wins).
+- The record counts `liveWins`, `botWins`, `koWins` and `flawless`. Older records' wins count as computer wins.
+
+## Battle wins leaderboard
+A Battle wins tab on the Leaderboard, with **All wins** (the default), **vs classmates** and **vs computer**. Each student's leaderboard entry carries `battles: { wins, live, bot }`, which needs the updated `leaderboards` rule in `firestore.rules`. The Arena links to it from Your record. The Battle Arena is also a place on the map now (the middle of the map).
+
 ## Classic moves (numbers in `CONFIG.battle.classic.moves`, words in `CLASSIC_MOVES`)
 | Move | What it does | Money idea |
 |---|---|---|

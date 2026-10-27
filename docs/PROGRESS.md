@@ -6,6 +6,8 @@ Last updated: 2026-10-26 (No reflections, chapter and month celebrations, simple
 
 ## Next step
 
+- **Battle wins board and big wins (teacher request 2026-10-26, done and pushed, awaiting review):** a Battle wins tab on the Leaderboard (All wins by default, vs classmates, vs computer), $200 for a win, six Battles achievements, a full-screen end-of-battle card with the summary while `battle-end` plays (a victory party on a win), and the Battle Arena on the map. **Teacher to do:** paste the updated `firestore.rules` (the `leaderboards` block now allows `battles`). Until then the XP board keeps working (the game retries without battle wins), but everyone shows no battle wins. See `docs/BATTLES.md`.
+
 - **Teacher requests of 2026-10-26, round 2 (done and pushed, awaiting review):**
   - **No reflections anywhere, ever.** The chapter-end form, ratings, `reflect:` prompts, the Deep Thinker trophy, and every reflection count, tab, banner, CSV column and print line on the teacher page are gone. `completeChapter` replaces `submitReflection` and still gives 25 XP (`CONFIG.pacing.xp.chapterDone`). Old saves keep their old text, unused.
   - **Celebrations.** Finishing a chapter opens a full-screen party (waves of falling leaves, a fanfare, the creature hopping, a stamp), then the report with one "On to Chapter N" seal. Finishing a month drops a smaller stamped banner with leaves and a cheer that tucks itself away. Both go still under Calm.

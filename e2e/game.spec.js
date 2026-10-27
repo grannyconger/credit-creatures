@@ -498,6 +498,8 @@ test("Battle Arena: a computer bout costs Energy and the fee, plays rounds with 
     await expect(page.locator(".arena-math")).not.toBeEmpty();
     await page.locator("button.arena-next").click();
   }
+  await expect(page.locator("dialog.battle-end .be-stats")).toContainText("Right answers");
+  await page.locator("dialog.battle-end .bst-seal-btn").click();
   await expect(page.locator(".arena-over h2")).toHaveText(/won|lost|tie/i);
   await page.locator(".arena-over .bst-seal-btn").click();
   await expect(page.locator(".arena-tally")).toContainText("1");

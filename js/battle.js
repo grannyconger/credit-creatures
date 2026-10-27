@@ -12,7 +12,14 @@ const B = () => CONFIG.battle;
 
 export function ensureBattle(play) {
   play.battle ??= { wins: 0, losses: 0, draws: 0, streak: 0, best: 0, log: [], botPrizes: { day: "", n: 0 } };
-  return play.battle;
+  const b = play.battle;
+  // Wins split by opponent, for the Battle wins leaderboard (2026-10-26). Older
+  // records only had a total, so those wins count as computer wins.
+  b.liveWins ??= 0;
+  b.botWins ??= Math.max(0, b.wins - b.liveWins);
+  b.koWins ??= 0;
+  b.flawless ??= 0;
+  return b;
 }
 
 // The question for one side on one turn. Both sides get the same kind of
@@ -90,8 +97,14 @@ export function finishBattle(life, play, battle, slot, vs, now = new Date()) {
   // A loss to the computer pays nothing, so losing on purpose can't farm coins.
   const prize = capped || vs.unpaid || (vs.kind === "bot" && result === "loss") ? 0 : B().prize[result];
   if (vs.kind === "bot" && !capped && !vs.unpaid) rec.botPrizes.n++;
+  const me = battle.sides[slot];
+  const them = battle.sides[1 - slot];
   if (result === "win") {
     rec.wins++;
+    if (vs.kind === "live") rec.liveWins++;
+    else rec.botWins++;
+    if (them.hp <= 0) rec.koWins++;
+    if (me.hp >= B().hp) rec.flawless++;
     rec.streak++;
     rec.best = Math.max(rec.best, rec.streak);
   } else {
@@ -99,8 +112,6 @@ export function finishBattle(life, play, battle, slot, vs, now = new Date()) {
     else rec.draws++;
     rec.streak = 0;
   }
-  const me = battle.sides[slot];
-  const them = battle.sides[1 - slot];
   rec.log.unshift({ at: today, vs: String(vs.name || "").slice(0, 40), kind: vs.kind, level: vs.level || null, result, hp: [me.hp, them.hp], turns: battle.turn, prize });
   rec.log.length = Math.min(rec.log.length, B().resultsKept);
   const next = prize > 0 ? receiveCash(life, prize, "Battle prize").life : life;
