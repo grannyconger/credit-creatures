@@ -149,7 +149,8 @@ export async function readLeaderboard(classId) {
 // One doc per student: their creature name and their personal bests by board.
 // Needs the 2026-10-25 rules block for arcade/{classId}/players/{uid}.
 export async function writeArcadeBest(classId, uid, entry) {
-  await setDoc(doc(db, "arcade", classId, "players", uid), { ...plain(entry), updatedAt: serverTimestamp() });
+  // Until the rules allow person, the write retries without it.
+  await withoutPeopleIfRefused(plain(entry), (d) => setDoc(doc(db, "arcade", classId, "players", uid), { ...d, updatedAt: serverTimestamp() }));
 }
 
 export async function readArcadeBoard(classId) {

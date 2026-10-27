@@ -55,11 +55,19 @@ export function echoHost() {
 
 // Points at one element with one sentence and a "Got it" button (Enter).
 // Resolves when the student presses it.
+// The training coach (teacher request 2026-10-27: bigger, and plum so it
+// stands out from every game's skin). It lives on the page, not in the
+// frame, so the frame's edges never cut it off. It sits beside its target,
+// or below or above when there's no room, and never under the top and bottom bars.
 export function coachMark(frame, target, text) {
   return new Promise((resolve) => {
-    const box = h("div.arc-coach", { role: "dialog", "aria-label": "Coach" });
+    const box = h("div.arc-coach.bst-scope", { role: "dialog", "aria-label": "Coach" });
+    let watch = null;
     const done = () => {
       document.removeEventListener("keydown", onKey, true);
+      removeEventListener("resize", place);
+      removeEventListener("scroll", place, true);
+      clearInterval(watch);
       target?.classList.remove("arc-coached");
       box.remove();
       resolve();
@@ -72,17 +80,38 @@ export function coachMark(frame, target, text) {
         done();
       }
     };
-    box.append(h("p", icon("compass", { size: 18 }), " ", text), got);
-    frame.append(box);
+    box.append(h("p", icon("compass", { size: 22 }), " ", text), got);
+    document.body.append(box);
     target?.classList.add("arc-coached");
-    if (target) {
-      const f = frame.getBoundingClientRect();
-      const t = target.getBoundingClientRect();
-      const below = t.bottom - f.top + 10;
-      const top = below + 140 > f.height ? Math.max(8, t.top - f.top - 130) : below;
-      box.style.top = `${top}px`;
-      box.style.left = `${Math.max(8, Math.min(f.width - 340, t.left - f.left))}px`;
+    function place() {
+      const gap = 14;
+      const top = (document.getElementById("topbar")?.getBoundingClientRect().bottom || 0) + 8;
+      const bar = document.getElementById("bottombar");
+      const bottom = (bar && !bar.hidden ? bar.getBoundingClientRect().top : innerHeight) - 8;
+      const bw = box.offsetWidth;
+      const bh = box.offsetHeight;
+      const t = (target || frame).getBoundingClientRect();
+      const fitsX = (x) => x >= 8 && x + bw <= innerWidth - 8;
+      const fitsY = (y) => y >= top && y + bh <= bottom;
+      const clampX = (x) => Math.max(8, Math.min(innerWidth - bw - 8, x));
+      const clampY = (y) => Math.max(top, Math.min(bottom - bh, y));
+      const spots = target
+        ? [
+            [t.right + gap, clampY(t.top)],
+            [t.left - bw - gap, clampY(t.top)],
+            [clampX(t.left), t.bottom + gap],
+            [clampX(t.left), t.top - bh - gap],
+          ]
+        : [];
+      const [x, y] = spots.find(([sx, sy]) => fitsX(sx) && fitsY(sy)) || [clampX(innerWidth - bw - 24), clampY(bottom - bh)];
+      box.style.left = `${x}px`;
+      box.style.top = `${y}px`;
     }
+    place();
+    addEventListener("resize", place);
+    addEventListener("scroll", place, true);
+    // If the shift closes while the coach is up, the coach goes too.
+    watch = setInterval(() => !frame.isConnected && done(), 500);
     document.addEventListener("keydown", onKey, true);
     got.focus();
   });

@@ -167,7 +167,7 @@ export function classTop(rows, board, tie = "high") {
   for (const r of rows || []) {
     const b = r?.best?.[board];
     if (!b || typeof b.s !== "number") continue;
-    if (!top || beats(b, top.best, tie)) top = { creatureName: r.creatureName || "A creature", best: b };
+    if (!top || beats(b, top.best, tie)) top = { creatureName: r.creatureName || "A creature", person: r.person || "", best: b };
   }
   return top;
 }

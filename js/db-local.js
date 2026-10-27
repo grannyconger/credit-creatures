@@ -116,7 +116,7 @@ export async function writeArcadeBest(classId, uid, entry) {
 
 export async function readArcadeBoard() {
   const me = read("arcade/me");
-  const demo = { uid: "c3", creatureName: "Ember Lanternby", best: { "billdrop:easy": { s: 300, t: 0, at: Date.UTC(2026, 9, 20) } } };
+  const demo = { uid: "c3", creatureName: "Ember Lanternby", person: "Riley Brooks", best: { "cashier:easy": { s: 300, t: 0, at: Date.UTC(2026, 9, 20) } } };
   return [demo, ...(me ? [me] : [])];
 }
 

@@ -11,7 +11,6 @@ import { sealSvg } from "../bestiary-art.js";
 import { ACHIEVEMENTS, CATEGORIES, RANKS } from "../../data/achievements.js";
 import { rankFor, bestXpChapter } from "../../progress.js";
 import { creatureSvg } from "../creature-art.js";
-import { withPerson } from "../../social.js";
 
 const TABS = [
   ["badges", "trophy", "Achievements"],
@@ -231,7 +230,7 @@ async function battleBoard(body, game, track, paint) {
             { class: `${r.uid === me ? "me" : ""}${top ? ` top top-${i + 1}` : ""}` },
             top ? h("span.lb-place.tr-ribbon", { "aria-label": `${PLACE_WORD[i]} place` }, PLACE_WORD[i]) : h("span.lb-place", String(i + 1)),
             h("span.lb-art", { html: creatureSvg(r.look || { species: r.species, palette: r.palette, accessories: {} }, { size: 52, label: "" }) }),
-            h("span.lb-name", h("strong", withPerson(r.creatureName, r.person)), r.uid === me ? h("small.tr-you", "That's you") : null),
+            h("span.lb-name", h("strong", r.creatureName || "Classmate", r.person ? h("span.lb-person", ` (${r.person})`) : null), r.uid === me ? h("small.tr-you", "That's you") : null),
             h("span.lb-rank", `${r.battles?.live || 0} vs classmates, ${r.battles?.bot || 0} vs computer`),
             h("strong.lb-xp", n ? word(n) : "No wins yet")
           );
@@ -269,7 +268,7 @@ async function leaderboard(body, game) {
             { class: `${r.uid === me ? "me" : ""}${i < 3 ? ` top top-${i + 1}` : ""}` },
             i < 3 ? h("span.lb-place.tr-ribbon", { "aria-label": `${PLACE_WORD[i]} place` }, PLACE_WORD[i]) : h("span.lb-place", String(i + 1)),
             h("span.lb-art", { html: creatureSvg(r.look || { species: r.species, palette: r.palette, accessories: {} }, { size: 52, label: "" }) }),
-            h("span.lb-name", h("strong", withPerson(r.creatureName, r.person)), r.uid === me ? h("small.tr-you", "That's you") : null),
+            h("span.lb-name", h("strong", r.creatureName || "Classmate", r.person ? h("span.lb-person", ` (${r.person})`) : null), r.uid === me ? h("small.tr-you", "That's you") : null),
             h("span.lb-rank", r.rank),
             h("strong.lb-xp", `${r.xp} XP`)
           )

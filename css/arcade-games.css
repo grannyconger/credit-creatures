@@ -64,10 +64,16 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .arc-echo.good { background: var(--arc-green); }
 .arc-echo.safe { background: var(--arc-ink-soft); }
 .arc-echo.leaving { opacity: 0; transform: translateY(-6px); }
-.arc-coach { position: absolute; z-index: 20; width: 330px; padding: 10px 12px; color: var(--arc-dark-ink); background: var(--arc-yellow); border: 3px solid var(--arc-dark-ink); border-radius: 12px; box-shadow: 0 6px 0 color-mix(in srgb, #000 40%, transparent); }
-.arc-coach p { margin: 0 0 8px; font: 700 1.02rem "Trebuchet MS", sans-serif; }
-.arc-coach-ok { padding: 4px 16px; font: 800 1rem "Trebuchet MS", sans-serif; color: var(--arc-yellow); background: var(--arc-dark-ink); border: 0; border-radius: 999px; cursor: pointer; }
-.arc-coached { outline: 4px dashed var(--arc-yellow) !important; outline-offset: 4px; }
+/* The training coach (2026-10-27): plum, the complement of the moss and
+   every game's skin, with big type, so it can't be missed. */
+.arc-coach { position: fixed; z-index: 60; width: min(440px, calc(100vw - 16px)); padding: 16px 18px 14px; color: var(--b-on-plum); background: var(--b-plum); border: 3px solid var(--b-gold); border-radius: var(--b-r-insert); box-shadow: var(--b-shadow-lift), 0 0 0 6px color-mix(in srgb, var(--b-plum) 30%, transparent); }
+.arc-coach p { display: block; margin: 0 0 12px; font-family: var(--b-body); font-weight: 700; font-size: 1.25rem; line-height: 1.45; }
+.arc-coach p .ico-wrap { vertical-align: -3px; color: var(--b-gold); }
+.arc-coach-ok { min-height: 44px; padding: 6px 22px; font-family: var(--b-body); font-weight: 800; font-size: 1.1rem; color: var(--b-ink); background: var(--b-gold); border: 0; border-radius: var(--b-r-tag); cursor: pointer; }
+.arc-coach-ok:focus-visible { outline: 3px dashed var(--b-on-plum); outline-offset: 3px; }
+:root[data-reading="dyslexia"] .arc-coach { width: min(520px, calc(100vw - 16px)); }
+:root[data-reading="dyslexia"] .arc-coach p { font-size: 1.15rem; }
+.arc-coached { outline: 4px dashed var(--b-plum, var(--arc-yellow)) !important; outline-offset: 4px; box-shadow: 0 0 0 8px color-mix(in srgb, var(--b-gold, var(--arc-yellow)) 45%, transparent) !important; }
 .arc-keys { display: flex; align-items: center; gap: 4px; margin: 6px 0 0; font-size: 0.88rem; color: var(--g-ink); opacity: 0.85; }
 .arc-simplified { display: block; font-size: 0.8rem; opacity: 0.8; }
 

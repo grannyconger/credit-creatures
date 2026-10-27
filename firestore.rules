@@ -166,7 +166,8 @@ service cloud.firestore {
     }
 
     // ---------- Arcade class top scores (GAME-SPECS.md 2.1, 2026-10-25) ----------
-    // One doc per student: their creature name (never their real name) and their
+    // One doc per student: their creature name, their Google name (person, must
+    // match their sign-in, shown faintly after the creature, 2026-10-27) and their
     // personal bests by board. Classmates and the class's teacher can read them.
     match /arcade/{classId}/players/{uid} {
       function inArcadeClass() {
@@ -175,8 +176,9 @@ service cloud.firestore {
       allow read: if isSchool() && (inArcadeClass() || teachesClass(classId));
       allow delete: if teachesClass(classId);
       allow create, update: if isMe(uid) && inArcadeClass()
-        && request.resource.data.keys().hasOnly(['creatureName', 'best', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['creatureName', 'person', 'best', 'updatedAt'])
         && shortString('creatureName', 41)
+        && (!('person' in request.resource.data) || request.resource.data.person == request.auth.token.name)
         && request.resource.data.best is map
         && request.resource.data.best.size() <= 60;
     }

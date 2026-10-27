@@ -3997,6 +3997,8 @@ main#app.app:has(.bestiary) {
 .bst-trophies .tr-rows .lb-place { font-family: var(--b-display); font-size: var(--b-fs-lead); text-align: center; color: var(--b-ink-soft); }
 .bst-trophies .tr-rows .lb-art { width: 56px; height: 56px; display: grid; place-items: center; background: var(--b-paper-2); border: 3px double var(--b-rule); border-radius: var(--b-r-sheet); }
 .bst-trophies .tr-rows .lb-name strong { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); }
+/* The student's name after the creature's, a little fainter (teacher request 2026-10-27). */
+.bst-trophies .tr-rows .lb-person { font-family: var(--b-body); font-size: var(--b-fs-ui); color: var(--b-ink-soft); }
 .bst-trophies .tr-rows .lb-rank { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-ink-soft); }
 .bst-trophies .tr-rows .lb-xp { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-gold-ink); white-space: nowrap; }
 /* Ribbons for the top three, with the place written on them. */
@@ -6816,6 +6818,50 @@ dialog.arc-settings.bst-scope::backdrop { background: color-mix(in srgb, var(--b
 .arc-settings.bst-scope .arc-start:disabled { opacity: 1; color: var(--b-ink-soft); background: var(--b-paper-insert); border: 1.5px dashed var(--b-rule); box-shadow: none; }
 .arc-settings.bst-scope :is(button, input):focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 3px; }
 :root[data-reading="dyslexia"] .arc-settings.bst-scope .arc-set-art { rotate: none; }
+
+/* Setup card, condensed (teacher request 2026-10-27): the class top score
+   sits in the header beside the title, the choices move up into compact
+   rows, and each choice has a tone and a shape mark (pips for difficulty,
+   a moon for calm, a clock for fast) besides its word. */
+.arc-settings.bst-scope .arc-set-head { grid-template-columns: 136px minmax(0, 1fr) minmax(250px, 330px); gap: var(--b-s4); padding: var(--b-s3) var(--b-s5); }
+.arc-settings.bst-scope .arc-set-art { height: 82px; }
+.arc-settings.bst-scope .arc-set-head p { margin-top: 2px; line-height: 1.3; }
+.arc-settings.bst-scope .arc-set-head .arc-top { align-self: center; padding: var(--b-s2) var(--b-s3); }
+.arc-settings.bst-scope .arc-top h3 { margin: 0 0 2px; font-size: var(--b-fs-ui); font-family: var(--b-body); font-weight: 700; }
+.arc-settings.bst-scope .arc-top p { margin: 0; font-size: var(--b-small); line-height: 1.3; }
+.arc-settings.bst-scope .arc-top-best { gap: 6px; }
+.arc-settings.bst-scope .arc-top-num { font-size: var(--b-fs-lead); line-height: 1; }
+.arc-settings.bst-scope .arc-set-head .arc-top :is(h3, p) { color: var(--b-ink); }
+.arc-settings.bst-scope .arc-set-head .arc-top :is(.arc-top-mine, .arc-top-none, .arc-top-load), .arc-settings.bst-scope .arc-top-person { color: var(--b-ink-soft); }
+.arc-settings.bst-scope .arc-set-body { padding: var(--b-s3) var(--b-s5); gap: var(--b-s3) var(--b-s5); grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
+.arc-settings.bst-scope .arc-set-col { gap: var(--b-s3); }
+.arc-settings.bst-scope .arc-group legend, .arc-settings.bst-scope .arc-mode h3 { margin-bottom: 4px; font-size: var(--b-fs-lead); }
+.arc-settings.bst-scope .arc-opts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--b-s2); }
+.arc-settings.bst-scope .arc-mode-row { gap: var(--b-s2); }
+.arc-settings.bst-scope .arc-opt { grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 8px; min-width: 0; padding: 6px 10px; }
+.arc-settings.bst-scope .arc-opt small { grid-column: 1 / -1; line-height: 1.25; }
+.arc-settings.bst-scope .arc-opt:not([data-tone]) strong { grid-column: 1 / -1; }
+.arc-settings.bst-scope .arc-mode-btn { padding: 6px 10px; }
+.arc-settings.bst-scope [data-tone="easy"] { --tone: var(--b-tone-easy); }
+.arc-settings.bst-scope [data-tone="medium"] { --tone: var(--b-tone-medium); }
+.arc-settings.bst-scope [data-tone="hard"] { --tone: var(--b-tone-hard); }
+.arc-settings.bst-scope [data-tone="calm"] { --tone: var(--b-tone-calm); }
+.arc-settings.bst-scope [data-tone="fast"] { --tone: var(--b-tone-fast); }
+.arc-settings.bst-scope .arc-opt-mark { display: inline-flex; color: var(--tone); }
+.arc-settings.bst-scope .arc-opt-mark svg { display: block; }
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn)[data-tone] { border-color: color-mix(in srgb, var(--tone) 60%, var(--b-rule)); background: color-mix(in srgb, var(--tone) 7%, var(--b-paper-2)); }
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn)[data-tone]:hover:not(:disabled) { border-color: var(--tone); }
+.arc-settings.bst-scope .arc-mode-btn[data-tone] > .ico-wrap { color: var(--tone); }
+/* Chosen: the tone fills in, a thick tone ring, and the word "chosen". */
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn)[data-tone][aria-pressed="true"] { background: color-mix(in srgb, var(--tone) 22%, var(--b-paper-2)); border: 2px solid var(--tone); box-shadow: inset 0 0 0 2px var(--tone); }
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn)[data-tone][aria-pressed="true"] strong::after { color: var(--b-ink); }
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn)[data-tone]:disabled { background: transparent; border-color: var(--b-rule); }
+/* Dyslexia mode: bigger letters, so the top score drops under the title and
+   the choices may wrap onto two lines. */
+:root[data-reading="dyslexia"] .arc-settings.bst-scope .arc-set-head { grid-template-columns: 110px minmax(0, 1fr); }
+:root[data-reading="dyslexia"] .arc-settings.bst-scope .arc-set-head .arc-top { grid-column: 1 / -1; }
+:root[data-reading="dyslexia"] .arc-settings.bst-scope .arc-set-art { height: 70px; }
+:root[data-reading="dyslexia"] .arc-settings.bst-scope .arc-opts { grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 
 /* The Battle wins board's filter chips (2026-10-26). Chosen: plum, a tick and aria-pressed. */
 .bst-trophies .tr-filters { display: flex; flex-wrap: wrap; gap: var(--b-s2); margin: var(--b-s2) 0 var(--b-s4); }

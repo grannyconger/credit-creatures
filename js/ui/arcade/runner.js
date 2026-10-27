@@ -47,7 +47,8 @@ async function shareBest(game) {
   const classId = game.profile?.classId;
   if (!classId || !game.db?.writeArcadeBest || !game.user) return;
   try {
-    await game.db.writeArcadeBest(classId, game.user.uid, { creatureName: (fullName(game.save.creature) || "Creature").slice(0, 41), best: game.save.play.arcade.best });
+    // person: the student's Google name, shown faintly after the creature name.
+    await game.db.writeArcadeBest(classId, game.user.uid, { creatureName: (fullName(game.save.creature) || "Creature").slice(0, 41), person: (game.user.displayName || "").slice(0, 100), best: game.save.play.arcade.best });
     boardCache.at = 0;
   } catch (err) {
     console.warn("Arcade score share failed", err);
@@ -62,6 +63,24 @@ export function scoreText(meta, b, board = null) {
   return meta.format ? meta.format(b.s) : String(b.s);
 }
 const metricName = (meta, settings) => meta.metricFor?.(settings) ?? meta.metric;
+
+// Each choice gets a tone and a shape (teacher request 2026-10-27), so Easy,
+// Medium and Hard, and calm and fast rounds, read at a glance. The word is
+// always there too, so color is never the only cue.
+const TONES = {
+  easy: { tone: "easy", pips: 1 },
+  medium: { tone: "medium", pips: 2 },
+  hard: { tone: "hard", pips: 3 },
+  chill: { tone: "calm", icon: "moon" },
+  none: { tone: "calm", icon: "pause" },
+  speed: { tone: "fast", icon: "clock" },
+  timed: { tone: "fast", icon: "clock" },
+};
+const pipsSvg = (n) => `<svg viewBox="0 0 30 10" width="30" height="10" aria-hidden="true" focusable="false">${[0, 1, 2].map((i) => `<circle cx="${5 + i * 10}" cy="5" r="${i < n ? 4 : 3}" style="${i < n ? "fill:var(--tone)" : "fill:none;stroke:var(--tone);stroke-width:1.5"}"/>`).join("")}</svg>`;
+function toneMark(t) {
+  if (!t) return null;
+  return t.pips ? h("span.arc-opt-mark", { html: pipsSvg(t.pips) }) : h("span.arc-opt-mark", icon(t.icon, { size: 18 }));
+}
 
 // host: the job board's element. onBack(): back to the cabinets.
 export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
@@ -109,7 +128,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
       const line = topCard.querySelector(".arc-top-load");
       if (!rows) line.replaceWith(h("p.arc-top-none", "Class scores show up when you play with your class."));
       else if (!top) line.replaceWith(h("p.arc-top-none", "No class score yet. Be the first."));
-      else line.replaceWith(h("p.arc-top-best", h("strong.arc-top-num", scoreText(meta, top.best, board)), h("span", ` held by ${top.creatureName}, ${fmtDate(top.best.at)}`)));
+      else line.replaceWith(h("p.arc-top-best", h("strong.arc-top-num", scoreText(meta, top.best, board)), h("span", " held by ", top.creatureName, top.person ? h("span.arc-top-person", ` (${top.person})`) : null, `, ${fmtDate(top.best.at)}`)));
     };
 
     const paintRanked = () => {
@@ -125,8 +144,8 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
         mode = m;
         paintMode();
       };
-      const safeBtn = h("button.arc-mode-btn", { type: "button", "aria-pressed": String(mode === "safe"), disabled: training, onclick: pick("safe") }, icon("check", { size: 18 }), h("strong", "Safe mode"), h("small", prologue ? (left ? `${left} shift${left === 1 ? "" : "s"} to go before the bank opens.` : "Mistakes cost nothing.") : left ? `${left} shift${left === 1 ? "" : "s"} to go this month. Mistakes cost nothing.` : "Mistakes cost nothing. Work as much as you like."));
-      const riskyBtn = h("button.arc-mode-btn.risky", { type: "button", "aria-pressed": String(mode === "risky"), disabled: training || prologue, onclick: pick("risky") }, icon("alert", { size: 18 }), h("strong", "Risky mode"), h("small", prologue ? "Opens with your bank account." : "Mistakes cost real coins."));
+      const safeBtn = h("button.arc-mode-btn", { type: "button", "data-tone": "easy", "aria-pressed": String(mode === "safe"), disabled: training, onclick: pick("safe") }, icon("check", { size: 18 }), h("strong", "Safe mode"), h("small", prologue ? (left ? `${left} shift${left === 1 ? "" : "s"} to go before the bank opens.` : "Mistakes cost nothing.") : left ? `${left} shift${left === 1 ? "" : "s"} to go this month. Mistakes cost nothing.` : "Mistakes cost nothing. Work as much as you like."));
+      const riskyBtn = h("button.arc-mode-btn.risky", { type: "button", "data-tone": "hard", "aria-pressed": String(mode === "risky"), disabled: training || prologue, onclick: pick("risky") }, icon("alert", { size: 18 }), h("strong", "Risky mode"), h("small", prologue ? "Opens with your bank account." : "Mistakes cost real coins."));
       const warn = mode === "risky" && !training ? h("div.arc-risk-warn", h("p", h("strong", "In risky mode, mistakes cost your creature:")), h("ul", meta.mistakes.map((m) => h("li", m))), h("p", `${CONFIG.arcade.fireAfter} mistakes in one shift and you're fired from this game for ${CONFIG.arcade.cooldownMinutes} minutes. If a cost is more than your checking, the rest goes on your Arcade IOU.`)) : null;
       const firedNote = fired ? h("p.arc-fired", icon("lock", { size: 18 }), ` You were fired from ${meta.title}. It opens again in ${fired} minute${fired === 1 ? "" : "s"}.`) : null;
       fill(modeBox, h("h3", "Play mode"), h("div.arc-mode-row", safeBtn, riskyBtn), warn, firedNote);
@@ -141,6 +160,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
           "button.arc-opt",
           {
             type: "button",
+            "data-tone": TONES[o.value]?.tone ?? null,
             "aria-pressed": String(settings[d.key] === o.value),
             disabled: d.locked != null && d.locked !== o.value,
             onclick: () => {
@@ -150,6 +170,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
               paintTop();
             },
           },
+          toneMark(TONES[o.value]),
           h("strong", o.label),
           o.hint ? h("small", o.hint) : null
         )
@@ -169,11 +190,13 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
         "header.arc-set-head",
         { class: `cab-${key}` },
         h("span.arc-set-art", { html: cabinetArt(key) }),
-        h("div", h("h2", { id: "arc-set-title" }, meta.title), h("p", meta.pitch), h("p.arc-std", `Skill: ${meta.skill}. Standards: ${meta.standards.join(", ")}.`))
+        h("div.arc-set-intro", h("h2", { id: "arc-set-title" }, meta.title), h("p", meta.pitch), h("p.arc-std", `Skill: ${meta.skill}. Standards: ${meta.standards.join(", ")}.`)),
+        // The class top score sits up here, beside the title (teacher request 2026-10-27).
+        topCard
       ),
       h(
         "div.arc-set-body",
-        h("div.arc-set-col", topCard, defs.map(group), timerDef ? group(timerDef) : null),
+        h("div.arc-set-col", defs.map(group), timerDef ? group(timerDef) : null),
         h("div.arc-set-col", modeBox, ranked)
       ),
       // The training choice sits beside Start, since it changes what Start does,

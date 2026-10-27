@@ -260,6 +260,14 @@
   --b-seal-shine: #f3b08e;
   --b-plum: #5b2a4e;
   --b-plum-wash: rgba(91, 42, 78, 0.12);
+  /* Choice tones (Arcade setup, 2026-10-27): easy, medium, hard, calm, fast.
+     Used for edges, washes and marks, never as text on paper. Each choice
+     also has a shape mark and its word, so color is never the only cue. */
+  --b-tone-easy: #3f7a34;
+  --b-tone-medium: #b07c0c;
+  --b-tone-hard: #b0303c;
+  --b-tone-calm: #2f6f96;
+  --b-tone-fast: #c0601a;
   --b-gold: #d9a441;
   --b-gold-ink: #7a5410;
   --b-foxfire: #c8e04b;
@@ -424,6 +432,11 @@
     --b-seal-deep: #6e2d14;
     --b-plum: #dba6cd;
     --b-plum-wash: rgba(219, 166, 205, 0.14);
+    --b-tone-easy: #8fcf7a;
+    --b-tone-medium: #e6bf55;
+    --b-tone-hard: #f08a8a;
+    --b-tone-calm: #82c4ea;
+    --b-tone-fast: #f2a36a;
     --b-gold-ink: #e2b65a;
     --b-tape: rgba(120, 130, 105, 0.55);
   --b-peg: #8a6c40;
@@ -477,6 +490,11 @@
   --b-seal-deep: #6e2d14;
   --b-plum: #dba6cd;
   --b-plum-wash: rgba(219, 166, 205, 0.14);
+  --b-tone-easy: #8fcf7a;
+  --b-tone-medium: #e6bf55;
+  --b-tone-hard: #f08a8a;
+  --b-tone-calm: #82c4ea;
+  --b-tone-fast: #f2a36a;
   --b-gold-ink: #e2b65a;
   --b-tape: rgba(120, 130, 105, 0.55);
   --b-tracing: rgba(31, 43, 36, 0.84);
