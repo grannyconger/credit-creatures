@@ -39,7 +39,25 @@ export const EVENTS = {
   stamp: { file: "stamp", volume: 0.7, gap: 300 },
   // The Apple Pay style chime after a tap to pay (sounds/apple-pay.mp3, supplied by the teacher).
   tapToPay: { file: "apple-pay", formats: ["mp3"], volume: 0.8, gap: 1600 },
+  // The Battle Arena's sounds, supplied by the teacher on 2026-10-26.
+  attackLanded: { file: "attack-landed", formats: ["m4a"], volume: 0.9, gap: 120 },
+  attackLanded2: { file: "attack-landed-2", formats: ["m4a"], volume: 0.95, gap: 120 },
 };
+
+// Music loops (Battle Arena, 2026-10-26), streamed one at a time and only while
+// sound is on: battleConfig in the Arena lobby, one of battleBg picked for each
+// bout, and battleEnd played once when a bout ends.
+export const MUSIC = {
+  battleEnd: "battle-end",
+  battleConfig: "battle-config",
+  battleBg1: "battle-bg-1",
+  battleBg2: "battle-bg-2",
+  battleBg3: "battle-bg-3",
+  battleBg4: "battle-bg-4",
+  battleBg5: "battle-bg-5",
+};
+export const BATTLE_TRACKS = ["battleBg1", "battleBg2", "battleBg3", "battleBg4", "battleBg5"];
+const MUSIC_VOLUME = 0.35;
 
 export const SOUND_EVENTS = Object.keys(EVENTS);
 
@@ -112,14 +130,71 @@ function load() {
 export function refreshSound() {
   if (!soundOn()) {
     if (howls) Object.values(howls).forEach((s) => s.stop());
+    dropTune();
     return;
   }
   if (howls) globalThis.Howler?.volume(calm() ? CALM_VOLUME : MASTER_VOLUME);
   else load();
+  if (wanted && !tune) startTune(wanted);
 }
+
+// ---------- Music ----------
+
+let wanted = null;
+let tune = null;
+
+function dropTune(fade = 400) {
+  const t = tune;
+  tune = null;
+  if (!t) return;
+  try {
+    t.fade(t.volume(), 0, fade);
+    setTimeout(() => t.unload(), fade + 50);
+  } catch {
+    // Sound is a nice extra. Never let it break the game.
+  }
+}
+
+function startTune(name, loop = true) {
+  if (!soundOn() || !MUSIC[name]) return;
+  load().then((hs) => {
+    if (!hs || wanted !== name || tune || !soundOn()) return;
+    try {
+      const src = new URL(`../../sounds/${MUSIC[name]}.m4a`, import.meta.url).href;
+      tune = new globalThis.Howl({ src: [src], loop, html5: true, volume: 0 });
+      if (!loop) tune.once("end", () => wanted === name && (wanted = null));
+      tune.play();
+      tune.fade(0, MUSIC_VOLUME, 800);
+    } catch {
+      tune = null;
+    }
+  });
+}
+
+// music.play("battleConfig") swaps to that loop (a no-op if it's already on).
+// music.stop() fades it out. Both are safe to call with sound off.
+export const music = {
+  play(name) {
+    if (wanted === name && tune) return;
+    dropTune();
+    wanted = name;
+    startTune(name);
+  },
+  // Plays a track once (battleEnd), cutting off whatever loop was on.
+  once(name) {
+    dropTune(200);
+    wanted = name;
+    startTune(name, false);
+  },
+  stop(fade) {
+    wanted = null;
+    dropTune(fade);
+  },
+};
 
 function unlock() {
   if (soundOn()) load();
+  if (soundOn() && wanted && !tune) startTune(wanted);
 }
 if (typeof document !== "undefined") {
   for (const type of ["pointerdown", "keydown"]) document.addEventListener(type, unlock, { capture: true, passive: true });

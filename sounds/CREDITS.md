@@ -22,3 +22,15 @@ Each sound comes as `.ogg` (the original) and `.m4a` (AAC, for Safari before ver
 Not by Kenney: `apple-pay.mp3` (event tapToPay) was supplied by the teacher on 2026-10-25. It sounds like the Apple Pay confirmation chime, so it is **not** CC0 and has not been cleared for public use. It is used here as the teacher's decision for a classroom lesson. If the site is ever shared more widely, swap it for a sound you have the rights to.
 
 Packs: https://kenney.nl/assets/interface-sounds, https://kenney.nl/assets/rpg-audio, https://kenney.nl/assets/casino-audio, https://kenney.nl/assets/music-jingles
+
+Battle Arena sounds, supplied by the teacher on 2026-10-26 and compressed to .m4a (AAC):
+
+| File | Used for | Source file |
+|---|---|---|
+| battle-config.m4a | music loop in the Arena lobby (`music.play("battleConfig")`) | battle config.wav |
+| battle-bg-1 to battle-bg-5.m4a | music loops, one picked at random for each bout | bground 1 to 5 |
+| battle-end.m4a | played once when a bout ends (`music.once("battleEnd")`) | battle end.wav |
+| attack-landed.m4a | a normal hit (`sfx.attackLanded`) | attack landed.wav |
+| attack-landed-2.m4a | a critical hit (`sfx.attackLanded2`) | attack landed 2.wav |
+
+Their licenses were not checked. They are used here as the teacher's decision for a classroom game.

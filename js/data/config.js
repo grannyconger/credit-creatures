@@ -119,30 +119,45 @@ export const CONFIG = {
 
   // Battles (docs/BATTLES.md, teacher request 2026-10-26). Two creatures, hp each.
   // A turn: both pick a move, then answer one quick question. A right answer
-  // plays the move at full power plus up to speedBonus for a fast answer, a wrong
-  // answer plays it at wrongPower. maxTurns ends a battle on time, and the side
-  // with more HP wins. Moves: power is damage, heal or shield, cd is how many
-  // turns before it can be used again, ticks are what a lingering effect does at
-  // the end of each turn (Compound Interest grows, a Payday Loan charges you back).
-  // Guard halves the hit you take this turn and your next hit gets boost.
+  // plays the move at full power plus up to speedBonus for a fast one. maxTurns
+  // ends a battle on time, and the side with more HP wins.
+  // ruleset picks which set of moves is live: "simple" (3 moves, hard hits) or
+  // "classic" (the first 6-move version, kept for tuning another day).
+  //  simple: Strike hits for power (wrongPower on a wrong answer). Shield blocks
+  //   that share of this turn's hit and sends counter of what it blocked back
+  //   (wrongBlock on a wrong answer). Heal restores power HP (wrongPower if wrong).
+  //  classic: wrongPower scales any wrong move. cd is how many turns before a move
+  //   can be used again, ticks are what a lingering effect does at the end of each
+  //   turn (Compound Interest grows, a Payday Loan charges you back). Guard halves
+  //   the hit you take this turn and your next hit gets boost.
   // Costs: energy plus an entry fee from checking, never more than what's left
   // after this month's bills. Prizes are coins. Computer wins pay a prize only
   // botPrizesPerDay times a day, so they can't be farmed. Live rounds give
   // waitSeconds before the one still there can end it with no winner.
   battle: {
+    ruleset: "simple",
     hp: 100,
     maxTurns: 8,
     roundSeconds: 30,
     speedBonus: 0.15,
-    wrongPower: 0.5,
-    shieldMax: 30,
-    moves: {
-      strike: { power: 17, cd: 0 },
-      guard: { power: 0.5, wrongPower: 0.75, boost: 1.3, cd: 0 },
-      fund: { power: 20, cd: 3 },
-      compound: { ticks: [5, 8, 11], cd: 3 },
-      payday: { power: 34, ticks: [4, 4, 4], cd: 4 },
-      payfull: { power: 18, cd: 3 },
+    simple: {
+      moves: {
+        strike: { power: 34, wrongPower: 12 },
+        shield: { block: 0.8, wrongBlock: 0.4, counter: 0.5 },
+        heal: { power: 24, wrongPower: 8 },
+      },
+    },
+    classic: {
+      wrongPower: 0.5,
+      shieldMax: 30,
+      moves: {
+        strike: { power: 17, cd: 0 },
+        guard: { power: 0.5, wrongPower: 0.75, boost: 1.3, cd: 0 },
+        fund: { power: 20, cd: 3 },
+        compound: { ticks: [5, 8, 11], cd: 3 },
+        payday: { power: 34, ticks: [4, 4, 4], cd: 4 },
+        payfull: { power: 18, cd: 3 },
+      },
     },
     energy: 2,
     fee: 5,

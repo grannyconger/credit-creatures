@@ -13,10 +13,12 @@ import { placeHeader } from "../place-header.js";
 import { creatureSvg } from "../creature-art.js";
 import { sealSvg, inkStampSvg } from "../bestiary-art.js";
 import { timerRing } from "../arcade/components.js";
-import { burstFrom } from "../motion/particles.js";
-import { sfx } from "../sound.js";
+import { burstFrom, burst } from "../motion/particles.js";
+import { motionOn } from "../motion/spring.js";
+import { sfx, music, BATTLE_TRACKS } from "../sound.js";
+import { synth } from "../arcade-sound.js";
 import { CONFIG } from "../../data/config.js";
-import { MOVES, MOVE_BY_ID, BOT_NAMES, turnLine } from "../../data/battle.js";
+import { movesFor, moveById, BOT_NAMES, turnLine } from "../../data/battle.js";
 import { publicLook } from "../../data/looks.js";
 import { newBattle, resolveTurn, replayBattle, availableMoves, botAction } from "../../engine/index.js";
 import * as BT from "../../battle.js";
@@ -60,6 +62,7 @@ export function render(root, { game, go, track }) {
 
   function paintLobby() {
     if (st.gone || st.match) return;
+    music.play("battleConfig");
     const can = BT.canEnter(run.life, run.play);
     const left = BT.botPrizesLeft(run.play);
     fill(
@@ -164,11 +167,11 @@ export function render(root, { game, go, track }) {
         "ol",
         h("li", "Both creatures start with ", h("strong", `${B.hp} HP`), `. A battle lasts up to ${B.maxTurns} rounds.`),
         h("li", "Each round, pick a move, then answer one money question. You have ", h("strong", `${B.roundSeconds} seconds`), "."),
-        h("li", "A right answer plays your move at full power, and a fast one adds a little more. A wrong answer plays it at half power."),
-        h("li", "Both moves happen at the same time. Whoever has more HP at the end wins."),
+        h("li", "A right answer plays your move at full power, and a fast one can land a critical hit. A wrong answer makes it much weaker."),
+        h("li", "Both moves happen at the same time. Knock the other creature to 0 HP to win, or have more HP when time runs out."),
         h("li", `Prizes: ${money(B.prize.win)} for a win, ${money(B.prize.draw)} for a tie, and ${money(B.prize.loss)} for playing a classmate even if you lose. Computer prizes stop after ${B.botPrizesPerDay} a day.`)
       ),
-      h("div.arena-move-key", MOVES.map((m) => h("div.arena-key", icon(m.icon, { size: 20 }), h("strong", m.name), h("span", m.does), h("small", m.echo))))
+      h("div.arena-move-key", movesFor().map((m) => h("div.arena-key", icon(m.icon, { size: 20 }), h("strong", m.name), h("span", m.does), h("small", m.echo))))
     );
   }
 
@@ -224,7 +227,7 @@ export function render(root, { game, go, track }) {
 
   function baseMatch({ kind, slot, seed, names, vs }) {
     const players = [0, 1].map((i) => ({ uid: String(i), name: names[i] }));
-    const start = { seed, players };
+    const start = { seed, players, ruleset: B.ruleset };
     return { kind, slot, seed, start, vs, battle: newBattle(start), turns: [], phase: "pick", move: null, round: null, shown: 0, myLast: null, finished: false, startedAt: Date.now(), right: 0, moves: "" };
   }
 
@@ -235,6 +238,7 @@ export function render(root, { game, go, track }) {
     const who = BOT_NAMES[level];
     st.match = baseMatch({ kind: "bot", slot: 0, seed: `${run.life.seed}:bout:${newSeed()}`, names: [myName, who.name], vs: { name: who.name, kind: "bot", level, look: { species: who.species, palette: who.palette, accessories: {} }, paid: true } });
     track("battleStart", { kind: "bot", level });
+    battleMusic();
     await run.persist("battleStart");
     paintMatch();
   }
@@ -257,6 +261,7 @@ export function render(root, { game, go, track }) {
     st.match.id = b.id;
     st.unsubMatch?.();
     st.unsubMatch = game.db.watchBattle(b.id, onLiveDoc, (err) => liveFailed(err));
+    battleMusic();
     paintMatch();
   }
 
@@ -300,14 +305,147 @@ export function render(root, { game, go, track }) {
           h("span.arena-round", m.phase === "over" ? "Battle over" : `Round ${Math.min(b.turn + 1, B.maxTurns)} of ${B.maxTurns}`),
           m.phase !== "over" ? h("button.small.secondary.arena-giveup", { type: "button", onclick: giveUp }, "Give up") : null
         ),
-        h("div.arena-field", side(mine, creature ? publicLook(creature) : null, "you"), h("div.arena-stage", stage()), side(theirs, m.vs.look, "them"))
+        h("div.arena-field", side(mine, creature ? publicLook(creature) : null, "you", m.slot), h("div.arena-stage", stage()), side(theirs, m.vs.look, "them", 1 - m.slot))
       )
     );
     if (m.phase === "question") startClock();
+    if (m.phase === "reveal" && m.fxTurn !== b.turn) {
+      m.fxTurn = b.turn;
+      playTurnFx();
+    }
   }
 
-  function side(s, look, who) {
-    const pct = Math.max(0, Math.round((s.hp / B.hp) * 100));
+  // ---------- Battle effects (teacher request 2026-10-26) ----------
+  // A turn plays out in beats: each attacker lunges, the hit lands with a
+  // shake, a flash and a damage number, shields flare, heals sparkle, and HP
+  // bars drain with a ghost bar behind. A knockout topples the loser under a
+  // K.O. stamp. The words in the turn log always say the same thing.
+
+  function battleMusic() {
+    music.play(BATTLE_TRACKS[Math.floor(Math.random() * BATTLE_TRACKS.length)]);
+  }
+
+  function playTurnFx() {
+    const m = st.match;
+    const b = m.battle;
+    const t = b.log[b.turn - 1];
+    const field = panel.querySelector(".arena-field");
+    if (!field || !t) return;
+    const sideEl = (slot) => field.querySelector(`.arena-side[data-slot="${slot}"]`);
+    const beat = motionOn() ? 650 : 120;
+    const later = (ms, fn) => setTimeout(() => !st.gone && st.match === m && m.phase === "reveal" && fn(), ms);
+    const next = panel.querySelector(".arena-next");
+    if (next) next.disabled = true;
+    // Mine first, then theirs, then the HP bars catch up.
+    const order = [m.slot, 1 - m.slot];
+    order.forEach((i, k) => {
+      const x = t[i];
+      const me = sideEl(i);
+      const them = sideEl(1 - i);
+      later(k * beat, () => {
+        if (x.move === "heal" || x.healed) {
+          flash(me, "fx-heal");
+          burstFrom(me.querySelector(".arena-art"), "hearts", { n: 12 });
+          synth("heal");
+          if (x.healed) floater(me, `+${x.healed}`, "heal");
+          return;
+        }
+        if (x.move === "shield" || x.move === "guard" || x.move === "fund") {
+          flash(me, "fx-shield");
+          if (!t[1 - i].dealt && !x.blocked) synth("block");
+          return;
+        }
+        flash(me, "fx-lunge");
+        synth("whoosh");
+        later(180, () => {
+          if (t[1 - i].blocked) {
+            flash(them, "fx-block");
+            synth("block");
+            floater(them, `Blocked ${t[1 - i].blocked}`, "block");
+          }
+          if (x.dealt) {
+            flash(them, x.crit ? "fx-crit" : "fx-hit");
+            shake(x.crit ? "big" : "small");
+            if (x.crit) sfx.attackLanded2();
+            else sfx.attackLanded();
+            burstFrom(them.querySelector(".arena-art"), "dust", { n: x.crit ? 24 : 12 });
+            floater(them, `-${x.dealt}${x.crit ? " CRIT!" : ""}`, x.crit ? "crit" : "hit");
+          } else if (!t[1 - i].blocked) {
+            synth("miss");
+            floater(them, "Miss", "miss");
+          }
+          if (t[1 - i].countered) later(260, () => (flash(me, "fx-hit"), floater(me, `-${t[1 - i].countered}`, "hit")));
+        });
+      });
+    });
+    later(2 * beat + 200, () => {
+      [0, 1].forEach((i) => setHp(sideEl(i), b.sides[i].hp));
+      const kos = [0, 1].filter((i) => b.sides[i].hp <= 0);
+      if (b.over && kos.length) later(400, () => knockout(field, kos.map(sideEl)));
+      later(b.over && kos.length && motionOn() ? 1700 : 300, () => {
+        if (next) {
+          next.disabled = false;
+          next.focus();
+        }
+      });
+    });
+  }
+
+  // A side's HP before the newest turn, rebuilt from the turns so far.
+  function replayHp(slot) {
+    const m = st.match;
+    const turns = m.kind === "bot" ? m.turns : BT.turnsFrom(m.seed, m.doc?.p0, m.doc?.p1);
+    return replayBattle(m.start, turns.slice(0, m.battle.turn - 1)).sides[slot].hp;
+  }
+
+  function flash(el, cls) {
+    if (!el) return;
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+    setTimeout(() => el.classList.remove(cls), 900);
+  }
+
+  function shake(size) {
+    const box = panel.querySelector(".arena-match");
+    if (box && motionOn()) flash(box, size === "big" ? "fx-shake-big" : "fx-shake");
+  }
+
+  function floater(el, text, kind) {
+    if (!el) return;
+    const f = h("span.arena-float", { class: kind, "aria-hidden": "true" }, text);
+    el.append(f);
+    setTimeout(() => f.remove(), 1400);
+  }
+
+  function setHp(el, hp) {
+    if (!el) return;
+    const pct = Math.max(0, Math.round((hp / B.hp) * 100));
+    const meter = el.querySelector(".arena-hp");
+    meter.style.setProperty("--hp", `${pct}%`);
+    meter.setAttribute("aria-valuenow", String(hp));
+    meter.classList.toggle("low", pct <= 30);
+    el.classList.toggle("low", pct <= 30);
+    el.querySelector(".arena-hp-num").textContent = `${hp} / ${B.hp} HP${pct <= 30 ? " (low)" : ""}`;
+  }
+
+  function knockout(field, losers) {
+    field.append(h("span.arena-ko", { "aria-hidden": "true" }, "K.O.!"));
+    shake("big");
+    synth("ko");
+    for (const el of losers) {
+      if (!el) continue;
+      el.classList.add("fx-ko");
+      const r = el.getBoundingClientRect();
+      burst("leaves", { x: r.left + r.width / 2, y: r.top + r.height / 3, n: 24 });
+    }
+  }
+
+  function side(s, look, who, slot) {
+    const m = st.match;
+    // During a reveal the bars start at last turn's HP and drain in playTurnFx.
+    const prev = m.phase === "reveal" && m.fxTurn !== m.battle.turn ? (m.battle.turn > 1 ? replayHp(slot) : B.hp) : s.hp;
+    const pct = Math.max(0, Math.round((prev / B.hp) * 100));
     const low = pct <= 30;
     const effects = [
       s.shield ? h("li", icon("piggy", { size: 14 }), ` Cushion ${s.shield}`) : null,
@@ -316,14 +454,14 @@ export function render(root, { game, go, track }) {
     ].filter(Boolean);
     return h(
       "div.arena-side",
-      { class: who },
+      { class: `${who}${low ? " low" : ""}${m.phase === "over" && s.hp <= 0 ? " ko-down" : ""}`, "data-slot": String(slot) },
       h("span.arena-art", { "aria-hidden": "true", html: look ? creatureSvg(look, { size: 170, label: "" }) : "" }),
       h("strong.arena-name", s.name, who === "you" ? h("small", " (you)") : null),
       h(
         "div.arena-hp",
-        { role: "meter", "aria-label": `${s.name} health`, "aria-valuemin": "0", "aria-valuemax": String(B.hp), "aria-valuenow": String(s.hp), class: low ? "low" : "" },
-        h("span.arena-hp-bar", h("span.arena-hp-fill", { style: `--hp: ${pct}%` })),
-        h("span.arena-hp-num", `${s.hp} / ${B.hp} HP`, low ? " (low)" : "")
+        { role: "meter", "aria-label": `${s.name} health`, "aria-valuemin": "0", "aria-valuemax": String(B.hp), "aria-valuenow": String(prev), class: low ? "low" : "", style: `--hp: ${pct}%` },
+        h("span.arena-hp-bar", h("span.arena-hp-ghost"), h("span.arena-hp-fill")),
+        h("span.arena-hp-num", `${prev} / ${B.hp} HP${prev <= 0 && m.phase === "over" ? " (knocked out)" : low ? " (low)" : ""}`)
       ),
       effects.length ? h("ul.arena-effects", effects) : null
     );
@@ -347,7 +485,7 @@ export function render(root, { game, go, track }) {
       h("h2", "Pick a move"),
       h(
         "div.arena-moves",
-        MOVES.map((mv, i) =>
+        movesFor(m.battle.ruleset).map((mv, i) =>
           h(
             "button.arena-move",
             {
@@ -356,6 +494,7 @@ export function render(root, { game, go, track }) {
               style: `--tilt: ${(i % 3) - 1}deg`,
               onclick: () => {
                 m.move = mv.id;
+                synth("whoosh");
                 m.round = BT.roundFor(m.seed, m.battle.turn, m.slot);
                 m.phase = "question";
                 m.askedAt = Date.now();
@@ -378,7 +517,7 @@ export function render(root, { game, go, track }) {
     m.ring = timerRing({ size: 52, label: "Time left to answer" });
     return h(
       "div.arena-question",
-      h("div.arena-q-head", h("span.arena-chosen", icon(MOVE_BY_ID[m.move].icon, { size: 18 }), ` ${MOVE_BY_ID[m.move].name}`), m.ring),
+      h("div.arena-q-head", h("span.arena-chosen", icon(moveById(m.move, m.battle.ruleset).icon, { size: 18 }), ` ${moveById(m.move, m.battle.ruleset).name}`), m.ring),
       h("div.arena-q-prompt", q.prompt.map((line) => h("p", line))),
       h(
         "div.arena-choices",
@@ -414,7 +553,7 @@ export function render(root, { game, go, track }) {
       if (el) burstFrom(el, "motes");
       sfx.correct();
     }
-    m.moves += MOVE_BY_ID[m.move].id.charAt(0);
+    m.moves += m.move.charAt(0);
     if (m.kind === "bot") {
       const them = botAction(m.battle, 1 - m.slot, m.vs.level, m.seed);
       const acts = m.slot === 0 ? [mineAct, them] : [them, mineAct];
@@ -468,7 +607,7 @@ export function render(root, { game, go, track }) {
     const lines = [m.slot, 1 - m.slot].map((i) => {
       const x = t[i];
       const tick = x.ticked ? ` ${names[i]} lost ${x.ticked} more to what's still hurting it.` : "";
-      return h("li", { class: i === m.slot ? "mine" : "theirs" }, icon(MOVE_BY_ID[x.move].icon, { size: 18 }), ` ${turnLine(names[i], x)}${tick}`);
+      return h("li", { class: i === m.slot ? "mine" : "theirs" }, icon(moveById(x.move, b.ruleset).icon, { size: 18 }), ` ${turnLine(names[i], x, b.ruleset)}${tick}`);
     });
     return h(
       "div.arena-reveal",
@@ -502,7 +641,8 @@ export function render(root, { game, go, track }) {
       if (m.doc?.status === "active") game.db.endBattle(m.id, { status: "done", winner: m.battle.winner ?? -1 }).catch(() => {});
     }
     track("battleEnd", { kind: m.kind, level: m.vs.level || "", result: r.result, prize: r.prize, turns: m.battle.turn, right: m.right, hp: m.battle.sides.map((s) => s.hp).join("-"), moves: m.moves, seconds: Math.round((Date.now() - m.startedAt) / 1000) });
-    if (r.result === "win") sfx.questComplete();
+    music.once("battleEnd");
+    if (motionOn() && r.result === "win") setTimeout(() => burstFrom(panel.querySelector(".arena-stamp"), "leaves", { n: 34 }), 300);
     paintMatch();
     await run.persist("battleEnd");
   }
@@ -607,6 +747,7 @@ export function render(root, { game, go, track }) {
 
   return () => {
     st.gone = true;
+    music.stop();
     clearInterval(st.timer);
     clearInterval(st.waitTimer);
     st.unsubMine?.();

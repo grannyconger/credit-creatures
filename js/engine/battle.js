@@ -5,16 +5,23 @@
 //
 // An action is { move, correct, frac }: the move id, whether the question was
 // answered right, and how much of the timer was left (0 to 1, for the speed
-// bonus). Moves and their numbers live in CONFIG.battle.moves.
+// bonus). Moves and their numbers live in CONFIG.battle[ruleset].moves.
+//
+// Two rulesets (teacher request 2026-10-26): "simple" (Strike, Shield, Heal,
+// hard hits, the live one) and "classic" (the first 6-move version, kept for
+// tuning another day). A battle remembers its ruleset, so a replay always
+// uses the rules it was played with.
 import { CONFIG } from "../data/config.js";
 import { createRng } from "./rng.js";
 
 const B = () => CONFIG.battle;
-const MOVE_IDS = () => Object.keys(B().moves);
+const rulesOf = (battle) => B()[battle?.ruleset || B().ruleset] || B().classic;
+const MOVE_IDS = (battle) => Object.keys(rulesOf(battle).moves);
 
-export function newBattle({ seed, players }) {
+export function newBattle({ seed, players, ruleset = B().ruleset }) {
   return {
     seed: String(seed),
+    ruleset,
     turn: 0,
     sides: players.map((p) => ({ uid: p.uid, name: p.name, hp: B().hp, shield: 0, boost: 1, dots: [], cd: {} })),
     log: [],
@@ -26,15 +33,16 @@ export function newBattle({ seed, players }) {
 // Moves a side can pick this turn (anything not cooling down).
 export function availableMoves(battle, slot) {
   const cd = battle.sides[slot].cd;
-  return MOVE_IDS().filter((id) => !(cd[id] > 0));
+  return MOVE_IDS(battle).filter((id) => !(cd[id] > 0));
 }
 
-// How strong a move lands: full power for a right answer plus up to speedBonus
-// for a fast one, wrongPower for a wrong answer.
+// How strong a classic move lands: full power for a right answer plus up to
+// speedBonus for a fast one, wrongPower for a wrong answer.
 export function quality({ correct, frac = 0 }) {
-  if (!correct) return B().wrongPower;
-  return 1 + B().speedBonus * Math.max(0, Math.min(1, frac));
+  if (!correct) return B().classic.wrongPower;
+  return speed(frac);
 }
+const speed = (frac) => 1 + B().speedBonus * Math.max(0, Math.min(1, Number(frac) || 0));
 
 function copy(battle) {
   return {
@@ -49,7 +57,8 @@ function copy(battle) {
 // unknown) is played as a strike, so a stale or tampered action can't break a match.
 export function resolveTurn(battle, actions) {
   if (battle.over) return battle;
-  const cfg = B();
+  if ((battle.ruleset || B().ruleset) === "simple") return resolveSimple(battle, actions);
+  const cfg = { ...B(), ...B().classic };
   const next = copy(battle);
   const acts = [0, 1].map((i) => {
     const a = actions[i] || {};
@@ -119,14 +128,57 @@ export function resolveTurn(battle, actions) {
     if (s.hp < 0) s.hp = 0;
   });
 
+  return endTurn(next, out);
+}
+
+function endTurn(next, out) {
   next.turn++;
   next.log.push(out);
   const [a, b] = next.sides;
-  if (a.hp <= 0 || b.hp <= 0 || next.turn >= cfg.maxTurns) {
+  if (a.hp <= 0 || b.hp <= 0 || next.turn >= B().maxTurns) {
     next.over = true;
     next.winner = a.hp === b.hp ? null : a.hp > b.hp ? 0 : 1;
   }
   return next;
+}
+
+// The simple ruleset. Heals land first, then Shields stand, then Strikes hit.
+// A Shield blocks its share of the hit coming in and throws part of what it
+// blocked back as a counter, so a Shield beats a Strike, a Strike beats a
+// Heal, and a Heal beats a Shield (a Shield against no hit does nothing).
+// crit marks a right, fast Strike for the screen's bigger hit effect.
+function resolveSimple(battle, actions) {
+  const R = rulesOf({ ruleset: "simple" }).moves;
+  const next = copy(battle);
+  const acts = [0, 1].map((i) => {
+    const a = actions[i] || {};
+    return { move: R[a.move] ? a.move : "strike", correct: Boolean(a.correct), frac: Number(a.frac) || 0 };
+  });
+  const out = acts.map((a) => ({ move: a.move, correct: a.correct, dealt: 0, blocked: 0, healed: 0, countered: 0, crit: false }));
+
+  acts.forEach((a, i) => {
+    if (a.move !== "heal") return;
+    const me = next.sides[i];
+    const add = a.correct ? Math.round(R.heal.power * speed(a.frac)) : R.heal.wrongPower;
+    const before = me.hp;
+    me.hp = Math.min(B().hp, me.hp + add);
+    out[i].healed = me.hp - before;
+  });
+  const block = acts.map((a) => (a.move === "shield" ? (a.correct ? R.shield.block : R.shield.wrongBlock) : 0));
+  acts.forEach((a, i) => {
+    if (a.move !== "strike") return;
+    const full = a.correct ? Math.round(R.strike.power * speed(a.frac)) : R.strike.wrongPower;
+    const stopped = Math.round(full * block[1 - i]);
+    const counter = Math.round(stopped * R.shield.counter);
+    next.sides[1 - i].hp -= full - stopped;
+    next.sides[i].hp -= counter;
+    out[i].dealt = full - stopped;
+    out[i].crit = a.correct && a.frac >= 0.5;
+    out[1 - i].blocked = stopped;
+    out[1 - i].countered = counter;
+  });
+  next.sides.forEach((s) => (s.hp = Math.max(0, s.hp)));
+  return endTurn(next, out);
 }
 
 // Rebuilds a battle from its start and its turns ([[action0, action1], ...]).
@@ -154,14 +206,17 @@ export function botAction(battle, slot, level = "grove", seed = battle.seed) {
   const me = battle.sides[slot];
   const them = battle.sides[1 - slot];
   const can = availableMoves(battle, slot);
-  const weight = {
-    strike: me.boost > 1 ? 6 : 4,
-    guard: me.boost > 1 ? 0.2 : 1,
-    fund: me.shield < 8 ? 1.5 : 0.2,
-    compound: them.dots.some((d) => d.kind === "compound") ? 0.3 : 2,
-    payday: me.hp > 40 ? 1.5 : 0.3,
-    payfull: me.dots.length || me.hp < 50 ? 2.5 : 0.3,
-  };
+  const simple = (battle.ruleset || B().ruleset) === "simple";
+  const weight = simple
+    ? { strike: 4, shield: them.hp > me.hp ? 1 : 1.6, heal: me.hp < 45 ? 2.2 : me.hp < 80 ? 1 : 0.2 }
+    : {
+      strike: me.boost > 1 ? 6 : 4,
+      guard: me.boost > 1 ? 0.2 : 1,
+      fund: me.shield < 8 ? 1.5 : 0.2,
+      compound: them.dots.some((d) => d.kind === "compound") ? 0.3 : 2,
+      payday: me.hp > 40 ? 1.5 : 0.3,
+      payfull: me.dots.length || me.hp < 50 ? 2.5 : 0.3,
+    };
   const pool = can.map((id) => [id, weight[id] ?? 1]);
   const total = pool.reduce((s, [, w]) => s + w, 0);
   let r = rng.next() * total;

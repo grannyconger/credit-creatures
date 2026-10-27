@@ -8,7 +8,20 @@ The teacher asked to begin the multiplayer battles component. This is the first 
 - Both moves happen at the same time.
 - The questions come from the Practice Desk types that are quick and have one clear answer (`ROUND_TYPES` in `js/data/battle.js`). Both players get the same kind of question with different numbers, so answers can't be passed across the room.
 
-## Moves (numbers in `CONFIG.battle.moves`, words in `js/data/battle.js`)
+## Rulesets (teacher request 2026-10-26)
+`CONFIG.battle.ruleset` picks the live rules. Each battle stores its ruleset, so replays always use the rules it was played with. Switching to `"classic"` brings back the 6-move version below, unchanged and still tested.
+
+### Simple (live): numbers in `CONFIG.battle.simple.moves`, words in `MOVES`
+- **Coin Crash** (strike): 34 damage (up to 39 when fast, which counts as a critical hit), 12 on a wrong answer.
+- **Savings Shield** (shield): blocks 80% of this turn's hit (40% if wrong), and knocks half of what it blocked back at the attacker.
+- **Pay It Off** (heal): +24 HP (+8 if wrong), never past full.
+- Shield beats Strike, Strike beats Heal, Heal beats Shield. In 2,000 simulated bouts against the Grove bot: no one-move habit wins over 44%, about 73% of even bouts end in a knockout in about 6 rounds, and a 90%-right player beats a 50%-right one 84% of the time.
+
+### Effects and sound
+- Each turn plays in beats: lunges, knockback and flashes, floating damage numbers, shield flares, heal glows, screen shake (bigger on a critical hit), HP bars that drain with a gold ghost bar, a rust pulse at low HP, and a K.O. stamp with the loser toppling. All of it stops under Calm. The turn log says everything in words.
+- Sounds (teacher-supplied, `sounds/CREDITS.md`): `battle-config` loops in the lobby, one of `battle-bg-1` to `5` loops during a bout, `battle-end` plays once at the end, and `attack-landed` / `attack-landed-2` play for a normal and a critical hit. Whoosh, block, heal, miss and K.O. are synthesized (`SYNTH` in `js/ui/arcade-sound.js`). Music goes through `music` in `js/ui/sound.js`, and only plays when sound is on and the class isn't muted.
+
+## Classic moves (numbers in `CONFIG.battle.classic.moves`, words in `CLASSIC_MOVES`)
 | Move | What it does | Money idea |
 |---|---|---|
 | Coin Toss | A steady hit (17) | Small, steady choices add up |
