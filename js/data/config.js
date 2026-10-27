@@ -185,7 +185,6 @@ export const CONFIG = {
     cooldownMinutes: 15,
     // A cost never below this, so a 5 cent slip still means something.
     minMistake: 1,
-    whyMaxChars: 140,
     echoMs: 3000,
     resultsKept: 25,
     iouName: "Owed to the Arcade",

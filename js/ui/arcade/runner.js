@@ -88,7 +88,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
     let training = prefill?.training ?? false;
     let mode = prologue ? "safe" : prefill?.mode ?? play.arcade.lastMode ?? "safe";
 
-    const dialog = h("dialog.arc-settings", { "aria-labelledby": "arc-set-title" });
+    const dialog = h("dialog.arc-settings.bst-scope", { "aria-labelledby": "arc-set-title" });
     const topCard = h("section.arc-top", { "aria-live": "polite" });
     const ranked = h("p.arc-ranked");
     const modeBox = h("section.arc-mode");
@@ -379,41 +379,9 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
     const mistakeBox = risky && report.mistakes.length ? h("div.arc-res-mistakes", h("h4", icon("alert", { size: 16 }), ` Risky mode cost ${money(report.mistakes.reduce((s, m) => s + m.cost, 0))}`), h("ul", report.mistakes.map((m) => h("li", `${m.label}: ${money(m.cost)}`)))) : null;
     const firedBox = fired ? h("p.arc-res-fired", { role: "alert" }, icon("lock", { size: 18 }), ` Fired! ${CONFIG.arcade.fireAfter} mistakes in one shift. ${meta.title} is closed to you for ${CONFIG.arcade.cooldownMinutes} minutes.${pay > 0 ? " Your pay for this shift still went into checking." : ""}`) : null;
 
-    const recap = h("section.arc-res-echo", h("h4", "What came back around"), echoes.length ? h("ol", echoes.map((e) => h("li", { class: e.kind }, e.text))) : h("p.muted", "Nothing came back to bite you this shift."));
-
-    // 2.7 The why capture.
-    const biggest = result.biggest || { text: "the choice you made most carefully" };
-    const reasons = AC.orderedReasons(biggest.reasons || meta.why, report.seed);
-    let picked = null;
-    const typed = h("input.arc-why-text", { type: "text", maxlength: String(CONFIG.arcade.whyMaxChars), placeholder: "Say it in your own words (optional)", "aria-label": "Your reason in your own words" });
-    const saveWhy = h("button.arc-why-save", { type: "button", disabled: true }, "Save my answer");
-    const whyBtns = reasons.map((r) =>
-      h(
-        "button.arc-why-opt",
-        {
-          type: "button",
-          "aria-pressed": "false",
-          onclick: (e) => {
-            picked = r;
-            whyBtns.forEach((b) => b.setAttribute("aria-pressed", String(b === e.currentTarget)));
-            saveWhy.disabled = false;
-          },
-        },
-        r.text
-      )
-    );
-    const why = h("section.arc-why", h("h4", `Your biggest decision this shift: ${biggest.text}. Why did you choose it?`), h("div.arc-why-opts", whyBtns), typed, saveWhy);
-    saveWhy.addEventListener("click", () => {
-      if (!picked) return;
-      const text = typed.value.trim().slice(0, CONFIG.arcade.whyMaxChars);
-      const answer = { q: picked.quality, pick: picked.text, text, d: biggest.text };
-      if (!training) AC.saveWhy(play, report.seed, answer);
-      track("arcadeWhy", { game: key, seed: report.seed, quality: picked.quality, decision: biggest.text, text, training });
-      if (!training) save("why");
-      fill(why, h("h4", "Thanks. Your reason is saved."), h("p.arc-why-done", `"${picked.text}"`), text ? h("p.arc-why-done", text) : null);
-    });
-
     // 2.8 The bonus round.
+    // No "why" question or recap any more (teacher request 2026-10-26): the
+    // results are the summary, the bonus round and the buttons.
     const bonusBox = h("section.arc-bonus");
     if (!training && meta.bonus?.length) {
       const q = AC.pickBonus(meta.bonus, report.seed, play.arcade.recentBonus || []);
@@ -465,7 +433,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
             mistakeBox,
             result.reveal ? h("section.arc-reveal", h("h4", meta.revealTitle || "The reveal"), result.reveal) : null
           ),
-          h("div.arc-res-side", recap, why, bonusBox)
+          !training && meta.bonus?.length ? h("div.arc-res-side", h("h4.arc-bonus-head", icon("coins", { size: 18 }), " Earn more coins"), bonusBox) : null
         )
       )
     );

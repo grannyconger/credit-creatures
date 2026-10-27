@@ -161,13 +161,6 @@ export function recordResult(play, report, { tie = "high", now = Date.now() } = 
   return { entry, prevBest, newBest };
 }
 
-// The why answer is added after the results screen shows it.
-export function saveWhy(play, seed, why) {
-  const e = ensureArcade(play).log.findLast((x) => x.seed === seed);
-  if (e) e.why = why;
-  return Boolean(e);
-}
-
 // The class top for one board, from every classmate's bests (from the db).
 // rows: [{ creatureName, best: { [board]: { s, t, at } } }].
 export function classTop(rows, board, tie = "high") {
@@ -180,22 +173,7 @@ export function classTop(rows, board, tie = "high") {
   return top;
 }
 
-// ---------- Why capture and bonus round ----------
-
-// The three reasons in a seeded order, so the strong one isn't always last.
-export function orderedReasons(reasons, seed) {
-  const rng = createRng(`${seed}:why`);
-  const list = [
-    { quality: "weak", text: reasons.weak },
-    { quality: "okay", text: reasons.okay },
-    { quality: "strong", text: reasons.strong },
-  ];
-  for (let i = list.length - 1; i > 0; i--) {
-    const j = Math.floor(rng.next() * (i + 1));
-    [list[i], list[j]] = [list[j], list[i]];
-  }
-  return list;
-}
+// ---------- Bonus round ----------
 
 // One bonus question per shift, picked by the seed, avoiding the last few seen.
 export function pickBonus(questions, seed, recent = []) {

@@ -182,7 +182,7 @@ export function arcadeShifts(play) {
   return (play?.arcade?.log || [])
     .slice()
     .reverse()
-    .map((e) => ({ at: e.at, game: e.g, mode: e.mode, ranked: e.rk, score: e.sc, coins: e.coins, settings: e.set, mistakes: (e.mistakes || []).reduce((t, m) => t + m.cost, 0), why: e.why || null }));
+    .map((e) => ({ at: e.at, game: e.g, mode: e.mode, ranked: e.rk, score: e.sc, coins: e.coins, settings: e.set, mistakes: (e.mistakes || []).reduce((t, m) => t + m.cost, 0) }));
 }
 
 // Lantern Alley for the whole class: which offers fool students, and whether

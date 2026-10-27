@@ -6781,3 +6781,79 @@ dialog.broke-alert.reset .broke-siren { animation: none; }
 }
 :root[data-reading="dyslexia"] .arena-ko { rotate: none; }
 .arena-side.ko-down .arena-art { animation: none; transform: translateY(30px) rotate(90deg); opacity: 0.45; filter: grayscale(1); }
+
+/* ===========================================================================
+   Arcade game setup (js/ui/arcade/runner.js openSettings, 2026-10-26): was
+   neon on dark purple and hard to read. Now a field-guide index card: a moss
+   header with the game's cabinet art pinned like a specimen plate, then
+   herbarium paper, ink text, tag chips, plum for what's chosen (with the word
+   "chosen"), rust for risk and a rust ribbon to start.
+   =========================================================================== */
+dialog.arc-settings.bst-scope {
+  font-family: var(--b-body);
+  font-size: var(--b-text);
+  color: var(--b-ink);
+  background: var(--b-fibers), var(--b-grain), var(--b-paper);
+  border: 0;
+  border-radius: var(--b-r-paper);
+  box-shadow: var(--b-shadow-page);
+}
+dialog.arc-settings.bst-scope::backdrop { background: color-mix(in srgb, var(--b-shadow-ink) 65%, transparent); }
+.arc-settings.bst-scope .arc-set-head {
+  padding: var(--b-s3) var(--b-s5);
+  color: var(--b-on-ground);
+  background: var(--b-grain), var(--b-ground);
+  border-bottom: 3px double var(--b-rule);
+}
+.arc-settings.bst-scope .arc-set-art { border: 4px solid var(--b-paper); border-radius: var(--b-r-insert); box-shadow: var(--b-shadow-card); rotate: -2deg; }
+.arc-settings.bst-scope .arc-set-head h2 { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-lead); letter-spacing: 0; text-transform: none; color: var(--b-on-ground); }
+.arc-settings.bst-scope .arc-set-head p { color: var(--b-on-ground); }
+.arc-settings.bst-scope .arc-set-head .arc-std { font-family: var(--b-hand); font-size: var(--b-fs-hand); color: var(--b-foxfire); }
+.arc-settings.bst-scope .arc-set-body { padding: var(--b-s4) var(--b-s5); gap: var(--b-s4) var(--b-s6); }
+.arc-settings.bst-scope h3,
+.arc-settings.bst-scope .arc-group legend { font-family: var(--b-display); font-weight: 400; font-size: var(--b-fs-title); color: var(--b-ink); }
+.arc-settings.bst-scope .arc-top { background: var(--b-paper-insert); border: 0; border-top: 3px solid var(--b-gold); border-radius: var(--b-r-sheet); box-shadow: var(--b-shadow-card); }
+.arc-settings.bst-scope .arc-top h3 .ico-wrap { color: var(--b-gold-ink); }
+.arc-settings.bst-scope .arc-top-num { font-family: var(--b-display); font-weight: 400; color: var(--b-gold-ink); }
+.arc-settings.bst-scope :is(.arc-top-mine, .arc-top-none, .arc-top-load, .arc-locked) { color: var(--b-ink-soft); }
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn) {
+  color: var(--b-ink);
+  background: var(--b-paper-2);
+  border: 1.5px solid var(--b-rule);
+  border-radius: var(--b-r-tag);
+  box-shadow: none;
+  font-family: var(--b-body);
+}
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn) small { color: var(--b-ink-soft); font-size: var(--b-small); }
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn):hover:not(:disabled) { border-color: var(--b-plum); }
+/* Chosen: plum wash, a plum ring, and the word "chosen". */
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn)[aria-pressed="true"] { background: var(--b-plum-wash); border: 2px solid var(--b-plum); box-shadow: inset 0 0 0 1.5px var(--b-plum); }
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn)[aria-pressed="true"] strong::after { content: "  (chosen)"; font-size: var(--b-fs-tiny); color: var(--b-plum); }
+/* Locked choices: a dashed edge and a struck-through look instead of a faded one. */
+.arc-settings.bst-scope :is(.arc-opt, .arc-mode-btn):disabled { opacity: 1; color: var(--b-ink-soft); background: transparent; border-style: dashed; }
+.arc-settings.bst-scope .arc-mode-btn > .ico-wrap { color: var(--b-good-ink); }
+.arc-settings.bst-scope .arc-mode-btn.risky > .ico-wrap { color: var(--b-rust-ink); }
+.arc-settings.bst-scope .arc-risk-warn { color: var(--b-ink); background: var(--b-paper-insert); border: 2px dashed var(--b-rust); border-radius: var(--b-r-sheet); }
+.arc-settings.bst-scope .arc-fired { color: var(--b-on-rust); background: var(--b-rust); }
+.arc-settings.bst-scope .arc-ranked { color: var(--b-ink-soft); border: 1.5px dashed var(--b-rule); }
+.arc-settings.bst-scope .arc-ranked.on { color: var(--b-ink); background: color-mix(in srgb, var(--b-gold) 35%, var(--b-paper)); border: 1.5px solid var(--b-gold-ink); }
+.arc-settings.bst-scope .arc-set-foot { background: var(--b-paper-2); border-top: 1px solid var(--b-rule); box-shadow: 0 -8px 14px -10px var(--b-shadow-ink); }
+.arc-settings.bst-scope .arc-train { color: var(--b-ink); }
+.arc-settings.bst-scope .arc-train input { accent-color: var(--b-plum); }
+.arc-settings.bst-scope .arc-back-btn { color: var(--b-plum); background: transparent; border: 1.5px solid var(--b-plum); font-family: var(--b-body); }
+.arc-settings.bst-scope .arc-start {
+  font-family: var(--b-display);
+  font-weight: 400;
+  font-size: var(--b-fs-title);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--b-on-rust);
+  background: var(--b-rust);
+  border: 0;
+  border-radius: var(--b-r-tag);
+  box-shadow: var(--b-shadow-card);
+}
+.arc-settings.bst-scope .arc-start:hover:not(:disabled) { background: var(--b-rust-ink); }
+.arc-settings.bst-scope .arc-start:disabled { opacity: 1; color: var(--b-ink-soft); background: var(--b-paper-insert); border: 1.5px dashed var(--b-rule); box-shadow: none; }
+.arc-settings.bst-scope :is(button, input):focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 3px; }
+:root[data-reading="dyslexia"] .arc-settings.bst-scope .arc-set-art { rotate: none; }

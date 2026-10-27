@@ -151,8 +151,6 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .arc-results.arc-v2 { padding-bottom: 12px; }
 .arc-res-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 10px 14px; padding: 10px 14px 0; }
 .arc-results.arc-v2 .arc-tl-plot svg { height: 70px; }
-.arc-why h4 { font-size: 0.95rem; }
-.arc-why-opt { padding: 4px 10px; font-size: 0.92rem; }
 .arc-res-main, .arc-res-side { display: grid; gap: 10px; align-content: start; min-width: 0; }
 .arc-res-top { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
 .arc-res-score, .arc-res-pay { display: grid; gap: 2px; padding: 10px 14px; color: var(--arc-ink); background: color-mix(in srgb, #000 45%, transparent); border-radius: 14px; }
@@ -166,19 +164,7 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .arc-res-mistakes ul { margin: 4px 0; padding-left: 20px; max-height: 92px; overflow: auto; font-size: 0.92rem; }
 .arc-reveal { padding: 8px 12px; color: var(--g-paper-ink); background: var(--g-paper); border-radius: 12px; }
 .arc-reveal h4 { margin: 0 0 6px; }
-.arc-res-echo, .arc-why, .arc-bonus { padding: 8px 12px; color: var(--arc-ink); background: color-mix(in srgb, #000 45%, transparent); border-radius: 12px; }
-.arc-res-echo h4, .arc-why h4 { margin: 0 0 6px; font-size: 1rem; }
-.arc-res-echo ol { margin: 0; padding-left: 20px; max-height: 160px; overflow: auto; font-size: 0.92rem; }
-.arc-res-echo li { margin: 2px 0; }
-.arc-res-echo li.good::marker { content: "+ "; }
-.arc-why-opts { display: grid; gap: 6px; }
-.arc-why-opt { padding: 6px 10px; text-align: left; color: var(--arc-ink); background: var(--arc-panel); border: 2px solid var(--arc-panel-edge); border-radius: 10px; font: 600 0.98rem "Trebuchet MS", sans-serif; cursor: pointer; }
-.arc-why-opt[aria-pressed="true"] { border: 3px solid var(--arc-cyan); }
-.arc-why-opt[aria-pressed="true"]::before { content: "✓ "; color: var(--arc-cyan); }
-.arc-why-text { width: 100%; margin-top: 6px; padding: 6px 10px; font: 1rem "Trebuchet MS", sans-serif; color: var(--arc-dark-ink); background: var(--arc-ink); border: 2px solid var(--arc-panel-edge); border-radius: 8px; }
-.arc-why-save { margin-top: 6px; padding: 4px 14px; font-weight: 800; color: var(--arc-dark-ink); background: var(--arc-cyan); border: 2px solid var(--arc-dark-ink); border-radius: 999px; cursor: pointer; }
-.arc-why-save:disabled { opacity: 0.5; cursor: not-allowed; }
-.arc-why-done { margin: 2px 0; font-style: italic; }
+.arc-bonus { padding: 8px 12px; color: var(--arc-ink); background: color-mix(in srgb, #000 45%, transparent); border-radius: 12px; }
 .arc-bonus-go { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; font: 900 1.15rem "Arial Black", sans-serif; letter-spacing: 0.04em; color: var(--arc-dark-ink); background: linear-gradient(90deg, var(--arc-yellow), var(--arc-orange), var(--arc-pink)); border: 3px solid var(--arc-dark-ink); border-radius: 999px; cursor: pointer; animation: arc-bonus-glow 1.4s ease-in-out infinite; }
 @keyframes arc-bonus-glow { 50% { box-shadow: 0 0 22px var(--arc-yellow); } }
 :root[data-motion="calm"] .arc-bonus-go { animation: none; }
@@ -1107,3 +1093,7 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .arc-set-foot .arc-train { margin-left: auto; }
 /* A soft shadow over the card's lower edge says more options scroll up from under the footer. */
 .arc-set-foot { box-shadow: 0 -10px 14px -8px color-mix(in srgb, #000 55%, transparent); }
+
+/* The results' side column is only the bonus round now (2026-10-26). */
+.arc-bonus-head { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 1.05rem; color: var(--arc-yellow); }
+.arc-res-grid:not(:has(.arc-res-side)) { grid-template-columns: 1fr; }

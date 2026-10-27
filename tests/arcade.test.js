@@ -82,17 +82,12 @@ test("ranked shifts set personal bests with the tiebreak, training never counts"
   assert.equal(AC.recordResult(play, { ...base, score: 999, training: true }).newBest, false);
   assert.equal(AC.bestOf(play, "billdrop:easy").s, 200);
   assert.equal(play.arcade.log.length, 4, "training isn't logged");
-  assert.ok(AC.saveWhy(play, "x", { q: "strong", pick: "p", text: "", d: "d" }));
   const rows = [{ creatureName: "A", best: { b: { s: 10, t: 5 } } }, { creatureName: "B", best: { b: { s: 10, t: 2 } } }, { creatureName: "C", best: {} }];
   assert.equal(AC.classTop(rows, "b", "low").creatureName, "B");
   assert.equal(AC.classTop(rows, "zzz"), null);
 });
 
-test("why reasons come in a seeded order, and bonus questions are picked and checked", () => {
-  const r = { weak: "w", okay: "o", strong: "s" };
-  assert.deepEqual(AC.orderedReasons(r, "a"), AC.orderedReasons(r, "a"));
-  const firsts = new Set(Array.from({ length: 30 }, (_, i) => AC.orderedReasons(r, `s${i}`)[2].quality));
-  assert.equal(firsts.size, 3, "the strong reason moves around");
+test("bonus questions are picked and checked", () => {
   const q = { id: "n", type: "number", answer: 150 };
   assert.ok(AC.bonusRight(q, "$150"));
   assert.ok(AC.bonusRight(q, "150.00"));

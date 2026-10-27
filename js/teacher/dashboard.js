@@ -773,14 +773,12 @@ function overviewTab(d) {
   ];
 }
 
-// Arcade shifts and the "why" each student picked (GAME-SPECS.md 2.7). Student
-// words are set as text, never as HTML.
-const WHY_LABEL = { weak: "Weak reason", okay: "Okay reason", strong: "Strong reason" };
+// Arcade shifts (GAME-SPECS.md 2.7). The "why" question was removed 2026-10-26.
 function arcadeTab(d) {
   if (!d.arcade.length) return h("p.t-muted", "No Arcade shifts in the new games yet.");
   return h(
     "table.t-table",
-    h("thead", h("tr", h("th", "When"), h("th", "Game"), h("th", "Score"), h("th", "Mode"), h("th", "Their biggest decision and why"))),
+    h("thead", h("tr", h("th", "When"), h("th", "Game"), h("th", "Score"), h("th", "Mode"))),
     h(
       "tbody",
       d.arcade.map((x) =>
@@ -789,8 +787,7 @@ function arcadeTab(d) {
           h("td", new Date(x.at).toLocaleDateString([], { month: "short", day: "numeric" })),
           h("td", ARCADE[x.game]?.title || JOBS[x.game]?.title || x.game),
           h("td", `${x.score}${x.ranked ? " (ranked)" : ""}`),
-          h("td", x.mode === "risky" ? `Risky${x.mistakes ? `, mistakes cost $${x.mistakes}` : ""}` : "Safe"),
-          h("td", x.why ? [h("strong", `${WHY_LABEL[x.why.q] || ""}: `), `"${x.why.pick}" about ${x.why.d}.`, x.why.text ? h("div.t-small", `In their words: ${x.why.text}`) : null] : h("span.t-muted", "No answer"))
+          h("td", x.mode === "risky" ? `Risky${x.mistakes ? `, mistakes cost $${x.mistakes}` : ""}` : "Safe")
         )
       )
     )

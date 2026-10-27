@@ -427,8 +427,8 @@ test("the Vault is organised by money jobs: an Overview with assets, liabilities
 });
 
 // GAME-SPECS.md (2026-10-25): the shared settings modal, a whole Bill Drop month,
-// the results with the why capture and the bonus round, and risky mode firing.
-test("Bill Drop: settings modal, a full untimed month, results, why and bonus", async ({ page }) => {
+// the results with the bonus round (no why question since 2026-10-26).
+test("Bill Drop: settings modal, a full untimed month, results and bonus", async ({ page }) => {
   const errors = watchErrors(page);
   await seededStudent(page);
   await open(page, "hub");
@@ -465,18 +465,13 @@ test("Bill Drop: settings modal, a full untimed month, results, why and bonus", 
     if (await c.isVisible().catch(() => false)) await c.click();
     await page.waitForTimeout(250);
   }
-  await page.locator(".arc-why-opt").first().click();
-  await page.fill(".arc-why-text", "<b>my words</b>");
-  await page.click(".arc-why-save");
-  await expect(page.locator(".arc-why")).toContainText("<b>my words</b>");
+  await expect(page.locator(".arc-why, .arc-res-echo")).toHaveCount(0);
   await page.click(".arc-bonus-go");
   if (await page.locator(".arc-bonus-num").count()) {
     await page.fill(".arc-bonus-num", "1");
     await page.locator(".arc-bonus-row button").click();
   } else await page.locator(".arc-bonus-choice").first().click();
   await expect(page.locator(".arc-bonus-result")).toBeVisible();
-  const play = await page.evaluate(() => JSON.parse(localStorage.getItem("credit-life:saves/local-student")).play);
-  expect(play.arcade.log.at(-1).why.text).toBe("<b>my words</b>");
   expect(errors).toEqual([]);
 });
 
