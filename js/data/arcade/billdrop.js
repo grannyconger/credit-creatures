@@ -155,6 +155,10 @@ export const BILLDROP_GUIDE = {
     { term: "overdraft", def: "When a payment takes your balance below $0. Banks often charge a fee for each one.", example: "Two bills drafted the same day and caused two overdraft fees." },
     { term: "cash flow", def: "The timing of money coming in and going out.", example: "His month added up, but his cash flow didn't, because rent was due before payday." },
     { term: "minimum payment", def: "The smallest amount you can pay on a credit card to stay on time. The rest costs interest.", example: "She paid the $35 minimum and owed interest on the other $365." },
+    { term: "budget", def: "A plan for how you will spend and save your money.", example: "Her budget set aside $40 a month for the phone bill." },
+    { term: "income", def: "Money you receive, like pay from a job or a gift.", example: "His weekend job was his main income." },
+    { term: "expense", def: "Money you spend, like rent, food or a phone plan.", example: "The biggest expense each month was the car payment." },
+    { term: "recurring bill", def: "A bill that comes again every month or year.", example: "A streaming plan is a recurring bill that is easy to forget." },
   ],
   irl: {
     checked: "2026-10-25",

@@ -97,6 +97,10 @@ export const TREE_GUIDE = {
     { term: "diversification", def: "Spreading money across different investments.", example: "Diversification meant one bad plot didn't ruin his garden." },
     { term: "volatility", def: "How much a price swings up and down.", example: "The Hype coin's volatility was wild." },
     { term: "time horizon", def: "How long until you need the money.", example: "Retirement money has a 40-year time horizon." },
+    { term: "inflation", def: "When prices rise over time, so money buys less.", example: "With inflation, $100 buys less groceries each year." },
+    { term: "stock", def: "A small piece of ownership in a company.", example: "She bought one share of stock for $40." },
+    { term: "dividend", def: "A share of a company's profit paid to its owners.", example: "The stock paid a $2 dividend each year." },
+    { term: "retirement account", def: "An account that holds money for when you stop working.", example: "He put 5% of each paycheck into a retirement account." },
   ],
   irl: {
     checked: "2026-10-25",

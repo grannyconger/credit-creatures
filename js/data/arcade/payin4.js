@@ -141,6 +141,10 @@ export const PAYIN4_GUIDE = {
     { term: "draft", def: "A payment a company pulls from your account automatically.", example: "The draft failed because his account had only $12." },
     { term: "late fee", def: "Extra money charged when a payment doesn't go through on time.", example: "A failed draft cost a $8 late fee." },
     { term: "stacking", def: "Having several pay-later plans at once, so their payments pile up.", example: "Stacking three plans meant $95 came out in one week." },
+    { term: "interest-free", def: "Having no charge for borrowing, as long as you pay on time.", example: "The plan was interest-free if every payment was on time." },
+    { term: "due date", def: "The day a payment must be made.", example: "Her due date was the 15th, so she paid on the 14th." },
+    { term: "refund", def: "Money given back when you return something.", example: "The store gave a refund within a week." },
+    { term: "merchant", def: "A store or business that sells things.", example: "The merchant got paid right away, and he paid in four parts." },
   ],
   irl: {
     checked: "2026-10-25",

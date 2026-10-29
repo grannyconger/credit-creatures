@@ -143,6 +143,10 @@ export const FEES_GUIDE = {
     { term: "cramming", def: "Third-party charges sneaked onto a phone bill.", example: "A $9.99 premium text charge was cramming." },
     { term: "cancel", def: "Stop a subscription or service so it stops charging you.", example: "He canceled the trial before it renewed." },
     { term: "cancellation", def: "Proof that you ended a service. Keep it in writing.", example: "Her cancellation email won the gym dispute." },
+    { term: "interest", def: "The cost of borrowing money, or the money your savings earns.", example: "The savings account paid 4% interest." },
+    { term: "ATM fee", def: "A charge for using a machine from another bank.", example: "The corner machine charged a $3 ATM fee." },
+    { term: "credit union", def: "A bank owned by its members that often has lower fees.", example: "The credit union had no monthly fee on checking." },
+    { term: "FDIC insured", def: "Protected by the government up to $250,000 if the bank fails.", example: "Her money was safe because the bank was FDIC insured." },
   ],
   irl: {
     checked: "2026-10-23",

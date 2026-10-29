@@ -119,6 +119,10 @@ export const RAINY_GUIDE = {
     { term: "exclusion", def: "Something a policy won't pay for.", example: "Floods are an exclusion in most renters policies." },
     { term: "emergency fund", def: "Savings set aside only for surprises.", example: "His emergency fund paid the deductible." },
     { term: "risk", def: "The chance that something bad and costly happens.", example: "Driving every day raises the risk of a crash." },
+    { term: "insurance policy", def: "The contract that says what an insurance company will pay for.", example: "The policy listed what the plan covered." },
+    { term: "claim", def: "A request to your insurance company to pay for a loss.", example: "He filed a claim after the storm broke the window." },
+    { term: "liability", def: "Being responsible for harm or damage to others.", example: "Liability coverage paid for the other driver's repairs." },
+    { term: "out-of-pocket", def: "Money you pay yourself, not the insurance company.", example: "Her out-of-pocket cost was the $500 deductible." },
   ],
   irl: {
     checked: "2026-10-25",

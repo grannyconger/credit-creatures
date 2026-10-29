@@ -151,6 +151,10 @@ export const CHECKS_GUIDE = {
     { term: "stale check", def: "A check more than six months old. Banks can refuse it.", example: "Grandma's check from last year was stale." },
     { term: "postdated", def: "Dated in the future, so it shouldn't be cashed yet.", example: "The check was postdated to the 30th." },
     { term: "check washing", def: "Erasing the ink on a stolen check and writing in a new payee or amount.", example: "Check washing turned a $42 check into $942." },
+    { term: "deposit", def: "Putting money into your account.", example: "She made a deposit of her paycheck on Friday." },
+    { term: "withdrawal", def: "Taking money out of your account.", example: "The $40 withdrawal came out of the ATM." },
+    { term: "balance", def: "The amount of money in an account right now.", example: "After the check cleared, the balance dropped to $120." },
+    { term: "ledger", def: "A record of the money going in and out of an account.", example: "He wrote each check in his ledger so he could keep track." },
   ],
   irl: {
     checked: "2026-10-25",

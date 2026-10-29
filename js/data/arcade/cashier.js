@@ -94,6 +94,10 @@ export const CASHIER_GUIDE = {
     { term: "float", def: "The cash a drawer starts with so you can make change.", example: "The morning float was $100 in small bills and coins." },
     { term: "over", def: "The drawer has more money than it should.", example: "The drawer was $0.40 over because a customer got too little change." },
     { term: "short", def: "The drawer has less money than it should.", example: "Giving an extra $1 left the drawer $1 short." },
+    { term: "subtotal", def: "The total of the items before tax or discounts.", example: "The subtotal was $18 and the tax made it $19.26." },
+    { term: "discount", def: "A lower price, often a percent off.", example: "A 20% discount cut the $30 jacket to $24." },
+    { term: "sales tax", def: "A small percent added at the register.", example: "With 6% sales tax, a $10 item costs $10.60." },
+    { term: "tip", def: "Extra money you give for good service.", example: "He left a $3 tip on the $15 meal." },
   ],
   irl: {
     checked: "2026-10-25",

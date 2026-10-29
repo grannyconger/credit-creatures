@@ -209,6 +209,10 @@ export const DASH_GUIDE = {
     { term: "perishable", def: "Food that goes bad after a few days.", example: "Chicken is perishable, so the family pack spoiled." },
     { term: "sales tax", def: "Tax added at the register on certain items.", example: "Paper towels had sales tax, but bread didn't here." },
     { term: "receipt", def: "The list of what you were charged.", example: "The receipt showed the eggs scanned twice." },
+    { term: "budget", def: "A plan for how you will spend and save your money.", example: "The family's grocery budget was $120 a week." },
+    { term: "coupon", def: "A voucher that takes money off the price of something.", example: "The coupon took $2 off the cereal." },
+    { term: "inflation", def: "When prices rise over time, so the same money buys less.", example: "Because of inflation, the same cart cost more than last year." },
+    { term: "shrinkflation", def: "When a package gets smaller but the price stays the same.", example: "The chip bag had two fewer ounces for the same price, which is shrinkflation." },
   ],
   irl: {
     checked: "2026-10-25",

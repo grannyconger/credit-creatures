@@ -165,6 +165,10 @@ export const SCORECHASE_GUIDE = {
     { term: "cosign", def: "Promise to pay someone else's loan if they don't.", example: "She cosigned her brother's loan and his late payments hit her report." },
     { term: "authorized user", def: "Someone added to another person's credit card. The card's history shows on their report.", example: "Being an authorized user on Mom's card gave him some history." },
     { term: "secured card", def: "A credit card backed by a deposit you make, made for building credit.", example: "Her $300 deposit became her $300 limit." },
+    { term: "credit report", def: "A record of your borrowing and payments that lenders read.", example: "The credit report showed a card opened two years ago." },
+    { term: "lender", def: "A bank or company that lends money.", example: "The lender checked her credit before saying yes." },
+    { term: "collateral", def: "Something you pledge that a lender can take if you don't repay.", example: "The car was the collateral for the loan." },
+    { term: "debt", def: "Money you owe to someone else.", example: "He paid down his debt a little each month." },
   ],
   irl: {
     checked: "2026-10-25",

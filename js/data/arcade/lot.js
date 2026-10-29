@@ -97,6 +97,10 @@ export const LOT_GUIDE = {
     { term: "preapproval", def: "A lender's offer of a rate and amount before you shop.", example: "His preapproval made the dealer beat its rate." },
     { term: "add-on", def: "An extra product sold with the car, often with a big markup.", example: "Paint protection was a $700 add-on." },
     { term: "depreciation", def: "How much value a car loses over time.", example: "The new car lost a third of its value in two years." },
+    { term: "principal", def: "The amount you borrow, before interest.", example: "The principal was $9,000 and the interest added $1,400." },
+    { term: "trade-in", def: "An old car you give to the dealer to lower the price of a new one.", example: "His trade-in took $2,000 off the price." },
+    { term: "warranty", def: "A promise to fix certain problems for a set time.", example: "The warranty covered the engine for three years." },
+    { term: "resale value", def: "What something could sell for later.", example: "The car's resale value dropped quickly each year." },
   ],
   irl: {
     checked: "2026-10-25",

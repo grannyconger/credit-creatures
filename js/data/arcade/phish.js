@@ -133,6 +133,10 @@ export const PHISH_GUIDE = {
     { term: "two-step login", def: "A second check, like a code, after your password.", example: "Two-step login stopped the hacker even with her password." },
     { term: "account takeover", def: "When a scammer gets into your account and acts as you.", example: "After the account takeover, his friends got scam links from him." },
     { term: "look-alike link", def: "A web address made to look like a real company's, but isn't.", example: "venmo-secure.co is a look-alike link." },
+    { term: "scam", def: "A trick to get your money or private information.", example: "The text about a free prize was a scam." },
+    { term: "identity theft", def: "When someone uses your name or details to get money or credit.", example: "Identity theft started with one reused password." },
+    { term: "password manager", def: "An app that stores strong, different passwords for you.", example: "A password manager made a new password for each site." },
+    { term: "spam", def: "Unwanted messages, often ads or tricks.", example: "The spam folder caught the fake delivery notice." },
   ],
   irl: {
     checked: "2026-10-25",

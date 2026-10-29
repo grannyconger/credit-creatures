@@ -129,6 +129,10 @@ export const FEED_GUIDE = {
     { term: "sponsored post", def: "A post a creator is paid to make. It's an ad.", example: "The tiny #ad meant it was a sponsored post." },
     { term: "free trial", def: "Free for a while, then a monthly charge unless you cancel.", example: "The free trial turned into $15 a month." },
     { term: "price anchoring", def: "Showing a big number first so the real price looks like a deal.", example: "WAS $120 is an anchor if it never cost $120." },
+    { term: "budget", def: "A plan for how you will spend and save your money.", example: "Her budget had $20 for fun, so she skipped the $60 ticket." },
+    { term: "opportunity cost", def: "What you give up when you pick one thing over another.", example: "The opportunity cost of the game was a month of savings." },
+    { term: "targeted ad", def: "An ad shown to you because of what you have clicked or searched.", example: "The shoes followed him around the web as a targeted ad." },
+    { term: "influencer", def: "A person with many followers who is paid to promote things.", example: "The influencer got paid to wear the jacket." },
   ],
   irl: {
     checked: "2026-10-25",

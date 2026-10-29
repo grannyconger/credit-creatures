@@ -123,6 +123,10 @@ export const GRIND_GUIDE = {
     { term: "gig work", def: "Short jobs through an app, where you're your own boss.", example: "Delivering on DashDash is gig work." },
     { term: "self-employment", def: "Working for yourself, so you handle your own taxes.", example: "Self-employment means saving for taxes yourself." },
     { term: "true hourly rate", def: "What you keep after costs and taxes, divided by all the hours you spent.", example: "The app said $20 an hour, but her true hourly rate was $12." },
+    { term: "salary", def: "A fixed yearly pay, no matter how many hours you work.", example: "A $52,000 salary pays about $1,000 a week." },
+    { term: "hourly wage", def: "Pay for each hour you work.", example: "At an hourly wage of $12, six hours earns $72." },
+    { term: "W-4", def: "The form that tells your boss how much tax to take out of your pay.", example: "He filled out a W-4 on his first day." },
+    { term: "benefits", def: "Extras a job gives you besides pay, like health insurance or paid days off.", example: "The benefits were worth more than a $1 raise." },
   ],
   irl: {
     checked: "2026-10-25",

@@ -204,6 +204,10 @@ export const MI_GUIDE = {
     { term: "security deposit", def: "Money a landlord holds to cover damage, returned at move-out.", example: "She got her whole security deposit back." },
     { term: "lease", def: "A contract to rent a place for a set time.", example: "He read the whole lease before signing." },
     { term: "joint lease", def: "One lease with two or more tenants who are all responsible for the rent.", example: "On a joint lease, he owed the full rent when his roommate left." },
+    { term: "tenant", def: "A person who rents a home from someone else.", example: "As the tenant, she paid rent on the first of the month." },
+    { term: "landlord", def: "The person or company that owns a place you rent.", example: "The landlord fixed the leak in two days." },
+    { term: "rent", def: "The money you pay each month to live in a place.", example: "Rent was $850, about a third of his pay." },
+    { term: "utilities", def: "Services like electricity, water and internet.", example: "The utilities added $120 to the monthly cost." },
   ],
   irl: {
     checked: "2026-10-26",
