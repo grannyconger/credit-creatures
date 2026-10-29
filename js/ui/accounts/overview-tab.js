@@ -30,7 +30,7 @@ function trendLine(series) {
 }
 
 // A card for one side of the sheet: the total, a bar of its parts, and each part with its amount.
-function sideCard(title, side, scale) {
+function sideCard(title, side, scale, action = null) {
   const parts = side.parts.filter((p) => p.amount > 0);
   return h(
     "article.nw-card",
@@ -43,11 +43,13 @@ function sideCard(title, side, scale) {
           "ul.nw-parts",
           parts.map((p) => h("li", h("span.seg-swatch", { class: `seg-${p.key}`, "aria-hidden": "true" }), h("span", SEGMENT_LABELS[p.key]), h("strong", money(p.amount))))
         )
-      : h("p.muted.tight", title === "Assets" ? "Nothing yet." : "Nothing owed. Nice.")
+      : h("p.muted.tight", title === "Assets" ? "Nothing yet." : "Nothing owed. Nice."),
+    action
   );
 }
 
 export function overviewTab({ run, openTab }) {
+  const owes = run.life.accounts.some((a) => a.owner === "self" && ["open", "collections"].includes(a.status) && a.balance > 0);
   const { life, play } = run;
   const sheet = balanceSheet(life, { vehicleValue: vehicleValue(play) });
   const scale = Math.max(1, sheet.assets.total, sheet.liabilities.total);
@@ -60,7 +62,7 @@ export function overviewTab({ run, openTab }) {
     h(
       "div.nw-grid",
       sideCard("Assets", sheet.assets, scale),
-      sideCard("Liabilities", sheet.liabilities, scale),
+      sideCard("Liabilities", sheet.liabilities, scale, owes ? h("button", { type: "button", onclick: () => openTab("debt") }, icon("receipt", { size: 18 }), " Repay my loans and debt") : null),
       h(
         "article.nw-card.networth",
         { class: net < 0 ? "negative" : "" },

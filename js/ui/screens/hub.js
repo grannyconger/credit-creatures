@@ -18,6 +18,7 @@ import { sealSvg } from "../bestiary-art.js";
 import { cottageRoom } from "../cottage-room.js";
 import { openThingsToDo } from "../shell.js";
 import { slotChips, pieceTray } from "../decorate.js";
+import { openPhotoFrame } from "../photo-frame.js";
 import { DECOR_BY_ID, cottageOf } from "../../data/cottage.js";
 import { rankSeal } from "./trophies.js";
 import { rankFor } from "../../progress.js";
@@ -47,7 +48,7 @@ export function render(root, { game, go, track, openWallet, refreshWho }) {
     const chips = decorating ? slotChips({ cottage, current: slot, onSlot: (id) => ((slot = id), (preview = null), track("decorSlot", { slot: id }), paint()) }) : null;
     return h(
       "div.home-room",
-      cottageRoom({ creature: c, ageMonths: life.ageMonths, play, status, onPick: pickObject(status), onCreature: () => go("cottage"), preview: preview ? DECOR_BY_ID[preview] : null, chips }),
+      cottageRoom({ creature: c, ageMonths: life.ageMonths, play, status, onPick: pickObject(status), onCreature: () => go("cottage"), onPhoto: run.practice ? null : () => (track("photoFrameOpen", {}), openPhotoFrame({ game, play, track, onChange: () => dispatchEvent(new CustomEvent("cc:decor")) })), preview: preview ? DECOR_BY_ID[preview] : null, chips }),
       decorating && slot
         ? pieceTray({
             play,

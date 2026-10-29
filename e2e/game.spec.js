@@ -66,7 +66,7 @@ test("Home is the Cottage room: objects glow and lead places", async ({ page }) 
   await seededStudent(page);
   await open(page, "hub");
   await closePopups(page);
-  await expect(page.locator(".room-object")).toHaveCount(11);
+  await expect(page.locator(".room-object")).toHaveCount(12);
   await page.hover('[data-object="window"]');
   await expect(page.locator('[data-object="window"] .room-tag')).toBeVisible();
   await page.click('[data-object="window"]');
@@ -394,13 +394,13 @@ test("the Vault is organised by money jobs: an Overview with assets, liabilities
   await closePopups(page);
   // The landing page: assets, liabilities and net worth, with what each is made of.
   const tabs = (await page.locator("nav.acct-tabs button").allInnerTexts()).map((t) => t.replace(/\d+$/, "").trim());
-  expect(tabs).toEqual(["Overview", "Pay Bills", "Save for Goals", "Manage Debt", "Build Credit", "Protect Yourself", "Messages"]);
+  expect(tabs).toEqual(["Overview", "Pay Bills", "Save for Goals", "Loans and Debt", "Build Credit", "Protect Yourself", "Messages"]);
   await expect(page.locator(".nw-card.assets .nw-total")).toHaveText("$1,185");
   await expect(page.locator(".nw-card.liabilities .nw-total")).toHaveText("$4,840");
   await expect(page.locator(".nw-card.networth .nw-total")).toContainText("3,655");
   await expect(page.locator(".nw-card.assets .seg-bar")).toHaveAttribute("aria-label", /Checking \$271, Savings \$414, Locked savings \$500/);
   // Each tab opens with something real, with no errors.
-  for (const [tab, text] of [["Pay Bills", "Comes out of checking"], ["Save for Goals", "safety net"], ["Manage Debt", "Auto loan"], ["Protect Yourself", "Renter's insurance"], ["Messages", ""]]) {
+  for (const [tab, text] of [["Pay Bills", "Comes out of checking"], ["Save for Goals", "safety net"], ["Loans and Debt", "Auto loan"], ["Protect Yourself", "Renter's insurance"], ["Messages", ""]]) {
     await page.locator("nav.acct-tabs button", { hasText: tab }).click();
     if (text) await expect(page.locator(".acct-body")).toContainText(text);
   }

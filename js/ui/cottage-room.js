@@ -7,19 +7,30 @@ import { creatureSvg } from "./creature-art.js";
 import { roomSvg, OBJECT_ART } from "./cottage-art.js";
 import { ROOM_OBJECTS, CREATURE_SPOT } from "../data/cottage-objects.js";
 import { PLACES } from "../places.js";
-import { cottageOf } from "../data/cottage.js";
+import { cottageOf, DECOR_BY_ID, validPhoto } from "../data/cottage.js";
 
 const PLACE = Object.fromEntries(PLACES.map((p) => [p.id, p]));
 
 // onPick(object, place): the screen decides what each click does.
-export function cottageRoom({ creature, ageMonths, play, status, onPick, onCreature, preview = null, chips = null }) {
+export function cottageRoom({ creature, ageMonths, play, status, onPick, onCreature, onPhoto, preview = null, chips = null }) {
   // preview: a piece being tried on (never saved). chips: slot buttons for Decorate mode.
-  const cottage = { ...cottageOf(play), ...(preview ? { [preview.slot]: preview.id } : {}) };
+  const cottage = { ...cottageOf(play), photo: validPhoto(play.photo), ...(preview ? { [preview.slot]: preview.id } : {}) };
   const editing = Boolean(chips);
   const stage = h("div.home-stage", { class: editing ? "editing" : "" }, h("div.room-wall", { html: roomSvg(cottage), "aria-hidden": "true" }));
   stage.append(
     h("button.room-creature", { type: "button", "aria-label": `Open ${creature.name}'s cottage`, style: { left: `${CREATURE_SPOT.x}%`, top: `${CREATURE_SPOT.y}%`, width: `${CREATURE_SPOT.w}%` }, onclick: onCreature, html: creatureSvg(creature, { size: 200, ageMonths, label: "" }) })
   );
+  // The photo frame is a button over the frame on the wall (it sits first, so the mailbox wins any overlap).
+  if (!editing && onPhoto && DECOR_BY_ID[cottage.art]?.variant === "photo") {
+    stage.append(
+      h(
+        "button.room-object",
+        { type: "button", "data-object": "photo", "aria-label": `Photo frame. ${cottage.photo ? "Change or take down your photo" : "Hang your own photo"}.`, style: { left: "56%", top: "31.9%", width: "10%", height: "14%" }, onclick: onPhoto },
+        h("span.room-object-art", { html: '<svg viewBox="0 0 80 73" aria-hidden="true" focusable="false"><rect width="80" height="73" fill="transparent"/></svg>' }),
+        h("span.room-tag", h("strong", "Photo frame"), h("small", cottage.photo ? "Change your photo" : "Hang your own photo"))
+      )
+    );
+  }
   for (const o of ROOM_OBJECTS) {
     const pl = o.place ? PLACE[o.place] : null;
     const st = o.status ? status[o.status] : pl ? status[pl.id] : null;

@@ -27,7 +27,7 @@ export const VAULT_LAYOUT = [
   { key: "overview", label: "Overview", icon: "vault", show: feature("vault") },
   { key: "paybills", label: "Pay Bills", icon: "receipt", show: feature("bills") },
   { key: "save", label: "Save for Goals", icon: "piggy", show: feature("savings") },
-  { key: "debt", label: "Manage Debt", icon: "chart", show: (play, life) => hasFeature(play, "loans", life) || hasFeature(play, "bnpl", life) || Boolean(arcadeIou(life) && amountOwed(arcadeIou(life)) > 0) },
+  { key: "debt", label: "Loans and Debt", icon: "chart", show: (play, life) => hasFeature(play, "loans", life) || hasFeature(play, "bnpl", life) || Boolean(arcadeIou(life) && amountOwed(arcadeIou(life)) > 0) },
   {
     key: "credit",
     label: "Build Credit",
@@ -84,6 +84,8 @@ export function vaultAttention(play, life) {
   const iou = arcadeIou(life);
   if (iou && amountOwed(iou) > 0) out.push({ id: "iou", tone: "warn", text: `You owe the Arcade ${dollars(amountOwed(iou))} from risky mode mistakes.`, tab: "debt" });
   for (const a of life.accounts.filter((x) => x.owner === "cosigned" && x.status === "open" && x.pastDue > 0)) out.push({ id: `cos-${a.id}`, tone: "warn", text: `A cosigned loan is behind, and it shows on your report.`, tab: "protect" });
+  const loans = life.accounts.filter((x) => x.kind === "installment" && x.status === "open" && x.owner === "self");
+  if (loans.length) out.push({ id: "loans", tone: "calm", text: `You owe ${dollars(loans.reduce((t, x) => t + amountOwed(x), 0))} on ${loans.length === 1 ? "a loan" : `${loans.length} loans`}. You can pay extra or pay it off any time.`, tab: "debt" });
   const unread = unreadCount(play);
   if (unread) out.push({ id: "mail", tone: "calm", text: `${unread} new letter${unread === 1 ? "" : "s"} waiting.`, tab: "messages" });
   return out;

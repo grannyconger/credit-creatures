@@ -2,7 +2,7 @@
 // only, so it goes through h(..., { html }). Every color is a Bestiary token
 // (never a raw color), so light, dark and dyslexia modes keep working.
 // One drawing per object, and a variant picks the palette. No student text here.
-import { DECOR_BY_ID, DEFAULT_COTTAGE } from "../data/cottage.js";
+import { DECOR_BY_ID, DEFAULT_COTTAGE, validPhoto } from "../data/cottage.js";
 
 const f = (c) => `style="fill:var(--b-${c})"`;
 const s = (c, w = 2) => `style="fill:none;stroke:var(--b-${c});stroke-width:${w};stroke-linecap:round;stroke-linejoin:round"`;
@@ -34,7 +34,7 @@ export function roomSvg(cottage, crop = null) {
     const round = rug === "gold" || rug === "rust";
     body += `<ellipse cx="400" cy="450" rx="${round ? 120 : 170}" ry="${round ? 36 : 30}" ${fs(col, "ink-soft", 2)}/><ellipse cx="400" cy="450" rx="${round ? 90 : 135}" ry="${round ? 24 : 20}" ${s("paper", 2)} opacity=".7"/>`;
   }
-  body += artSvg(variantOf(cottage, "art"));
+  body += artSvg(variantOf(cottage, "art"), validPhoto(cottage.photo));
   body += lampSvg(variantOf(cottage, "lamp"));
   body += plantSvg(variantOf(cottage, "plant"));
   if (crop) return svg(crop, body, "room-bg");
@@ -50,9 +50,15 @@ export function decorThumb(decor) {
   return roomSvg(cottage, CROP[decor.slot]);
 }
 
-function artSvg(v) {
+function artSvg(v, photo = null) {
   if (v === "none") return "";
   const frame = (inner) => `<g transform="translate(448 166)"><rect width="80" height="73" ${fs("paper", "peg-line", 4)}/><rect x="8" y="8" width="64" height="57" ${f("paper-insert")}/>${inner}</g>`;
+  if (v === "photo") {
+    const inner = photo
+      ? `<svg x="8" y="8" width="64" height="57" viewBox="0 0 64 57"><image width="64" height="57" preserveAspectRatio="xMidYMid slice" href="${photo}"/></svg>`
+      : `<path d="M12 54l16-20 11 13 8-10 17 17z" ${f("moss-2")}/><circle cx="54" cy="22" r="6" ${f("gold")}/>`;
+    return frame(inner);
+  }
   if (v === "fern") return frame(`<path d="M40 60V16M40 24c-10 0-16 4-18 10M40 24c10 0 16 4 18 10M40 36c-9 0-14 3-16 9M40 36c9 0 14 3 16 9M40 48c-7 0-11 3-13 7M40 48c7 0 11 3 13 7" ${s("fern", 2.5)}/>`);
   if (v === "moon") return frame(`<path d="M52 38a14 14 0 1 1-14-18 11 11 0 0 0 14 18z" ${fs("gold", "gold-ink", 2)}/><circle cx="24" cy="24" r="1.8" ${f("plum")}/><circle cx="56" cy="22" r="1.5" ${f("plum")}/>`);
   if (v === "coin") return frame(`<circle cx="40" cy="36" r="18" ${fs("gold", "gold-ink", 3)}/><path d="M40 26v20M34 31c0-4 12-4 12 0s-12 5-12 9 12 4 12 0" ${s("gold-ink", 2.5)}/>`);

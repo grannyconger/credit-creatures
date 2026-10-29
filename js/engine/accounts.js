@@ -167,7 +167,21 @@ export function applyPayment(life, a, amount) {
   a.paidThisCycle = money(a.paidThisCycle + pay);
   if (a.kind === "bnpl") payBnplInstallments(a, pay);
   if (a.status === "collections" && amountOwed(a) <= 0) a.status = "collectionPaid";
+  if (a.kind === "installment" && a.status === "open" && a.balance <= 0.005) closeOutLoan(life, a);
   return pay;
+}
+
+// A loan paid off early (a custom amount or "Pay it all off") closes right away, and a
+// credit-builder loan's held savings come back to the student.
+function closeOutLoan(life, a) {
+  a.balance = 0;
+  a.status = "paid";
+  a.closedMonth = life.month;
+  if (a.held) {
+    life.heldSavings = money(life.heldSavings - a.held);
+    life.savings = money(life.savings + a.held);
+    a.held = 0;
+  }
 }
 
 function payBnplInstallments(a, amount) {
@@ -191,7 +205,8 @@ export function pay(life, accountId, amount) {
   const next = copyLife(life);
   const paid = applyPayment(next, findAccount(next, accountId), amount);
   logAction(next, "pay", [accountId, amount], { paid });
-  return { life: next, ok: true, paid, message: `Paid ${dollars(paid)} to ${a.name}.` };
+  const done = findAccount(next, accountId).status === "paid";
+  return { life: next, ok: true, paid, message: done ? `Paid ${dollars(paid)}. ${a.name} is paid off!` : `Paid ${dollars(paid)} to ${a.name}.` };
 }
 
 // mode: null (off), "min", "full", or a dollar amount.

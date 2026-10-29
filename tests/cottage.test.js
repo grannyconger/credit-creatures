@@ -42,3 +42,12 @@ test("room objects point at real places and stay inside the room", () => {
     assert.ok(o.route || o.place || o.act, o.id);
   }
 });
+
+test("only a small JPEG data URL is accepted for the photo frame", async () => {
+  const { validPhoto } = await import("../js/data/cottage.js");
+  assert.equal(validPhoto("data:image/jpeg;base64,/9j/4AAQ"), "data:image/jpeg;base64,/9j/4AAQ");
+  assert.equal(validPhoto('data:image/jpeg;base64,abc"><script>'), null);
+  assert.equal(validPhoto("data:image/svg+xml;base64,AAAA"), null);
+  assert.equal(validPhoto(null), null);
+  assert.equal(validPhoto(`data:image/jpeg;base64,${"A".repeat(300000)}`), null);
+});

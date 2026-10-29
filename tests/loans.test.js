@@ -82,3 +82,32 @@ test("an ignored bill in collections hurts the score until paid, and stays as a 
   assert.ok(life.score > lower, "paying it off helps");
   assert.ok(life.score < before, "but the paid collection still shows");
 });
+
+test("an installment loan can be paid down early by any amount, then paid off", () => {
+  let life = { ...lifeWith(), score: 700, checking: 5000 };
+  const open = E.openPurchaseLoan(life, { item: "Couch", price: 1000, termMonths: 12 });
+  assert.ok(open.ok);
+  life = open.life;
+  const id = open.accountId;
+  const owed = E.amountOwed(life.accounts.find((a) => a.id === id));
+  const part = E.pay(life, id, 250);
+  assert.ok(part.ok);
+  assert.equal(E.amountOwed(part.life.accounts.find((a) => a.id === id)), Math.round((owed - 250) * 100) / 100);
+  assert.equal(part.life.accounts.find((a) => a.id === id).status, "open");
+  const all = E.pay(part.life, id, 99999);
+  const loan = all.life.accounts.find((a) => a.id === id);
+  assert.equal(loan.status, "paid");
+  assert.equal(loan.balance, 0);
+  assert.match(all.message, /paid off/);
+});
+
+test("paying off a credit-builder loan early releases the held savings", () => {
+  const open = E.openCreditBuilderLoan({ ...lifeWith(), checking: 3000 });
+  assert.ok(open.ok);
+  const id = open.accountId || open.life.accounts.at(-1).id;
+  const held = open.life.heldSavings;
+  assert.ok(held > 0);
+  const r = E.pay(open.life, id, 99999);
+  assert.equal(r.life.heldSavings, 0);
+  assert.equal(r.life.savings, open.life.savings + held);
+});

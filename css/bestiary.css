@@ -5454,7 +5454,7 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
   border-radius: var(--b-r-tag);
   cursor: pointer;
 }
-.home-stage .room-object[data-object="jar"] { z-index: 3; }
+.home-stage .room-object:is([data-object="jar"], [data-object="photo"]) { z-index: 3; }
 .home-stage .room-object-art, .home-stage .room-object-art svg { display: block; width: 100%; height: 100%; }
 .home-stage .room-object-art svg { transition: filter var(--b-quick), transform var(--b-quick); }
 /* The glow, and a dashed ring so it never relies on the glow alone. */
@@ -7095,3 +7095,10 @@ dialog.arc-settings.bst-scope::backdrop { background: color-mix(in srgb, var(--b
 @keyframes cd-flash { from { background: color-mix(in srgb, var(--b-gold) 30%, transparent); } to { background: transparent; } }
 :root[data-motion="calm"] .bst-carddesign .tradeoff.changed { animation: none; }
 .bst-cardresult .cr-terms .cr-line { padding: var(--b-s2) 0; background: none; border: 0; border-bottom: 1px solid var(--b-rule); border-radius: 0; box-shadow: none; }
+
+/* The photo frame pop-up: the picture large on a mat, with the buttons under it. */
+.photo-dialog { border: 0; border-radius: var(--b-r-paper); padding: 24px 28px; width: min(640px, calc(100% - 32px)); background: var(--b-paper); color: var(--b-ink); box-shadow: var(--b-shadow-page); }
+.photo-dialog::backdrop { background: rgba(43, 35, 64, 0.55); }
+.photo-dialog h2 { margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+.photo-dialog .photo-view { display: grid; place-items: center; min-height: 240px; margin-bottom: 12px; padding: 14px; background: var(--b-paper-insert); border: 6px solid var(--b-peg-line); border-radius: var(--b-r-tag); }
+.photo-dialog .photo-view img { display: block; max-width: 100%; max-height: 52vh; object-fit: contain; }

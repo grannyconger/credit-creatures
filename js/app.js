@@ -528,6 +528,9 @@ walletPop.addEventListener("beforetoggle", (e) => {
     stageOf(play) === 0
       ? h("p.note.tight", bank ? "Your coins are in a piggy bank. Take them to the Vault to open a bank account." : "Your coins are in a piggy bank for now. Work shifts at the Arcade to fill it.")
       : walletStrip(life, game.save.creature),
+    bank && life.accounts.some((x) => x.owner === "self" && ["open", "collections"].includes(x.status) && x.balance > 0)
+      ? h("div.row", h("button", { type: "button", onclick: goBank("debt") }, icon("receipt", { size: 18 }), " Repay my loans and debt"))
+      : null,
     bank && stageOf(play) > 0
       ? h("div.row", h("button", { type: "button", onclick: goBank("wallet") }, icon("vault", { size: 18 }), " Pay bills and move money"), h("button.secondary", { type: "button", onclick: goBank("inbox") }, icon("inbox", { size: 18 }), " Letters"))
       : bank

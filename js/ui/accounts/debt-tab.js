@@ -1,9 +1,9 @@
-// Manage Debt: everything you owe, by kind, with each loan and pay-later plan, and any
+// Loans and Debt: everything you owe, by kind, with each loan and pay-later plan, and any
 // debt that went to collections.
-import { h, money, percent } from "../dom.js";
+import { h, money } from "../dom.js";
 import { icon } from "../icons.js";
-import { amountOwed, balanceSheet, dollars, arcadeIou } from "../../engine/index.js";
-import { exposureBills } from "../bills-panel.js";
+import { amountOwed, balanceSheet, arcadeIou } from "../../engine/index.js";
+import { exposureBills, loanBills } from "../bills-panel.js";
 import { segmentBar, SEGMENT_LABELS } from "../segment-bar.js";
 import { vaultActions } from "./actions.js";
 
@@ -15,14 +15,13 @@ export function debtTab(ctx) {
   const parts = sheet.liabilities.parts.filter((p) => p.amount > 0);
   const loans = life.accounts.filter((a) => a.kind === "installment" && a.status === "open" && a.owner !== "authorized");
   const plans = life.accounts.filter((a) => a.kind === "bnpl" && a.status === "open");
-  const monthsLeft = (a) => Math.max(0, a.termMonths - a.monthsPaid);
   // Risky mode mistakes that checking couldn't cover (GAME-SPECS.md 2.3).
   const iou = arcadeIou(life);
   const iouOwed = iou ? amountOwed(iou) : 0;
   const payIou = (amount) => () => onPay(iou.id, Math.min(amount, iouOwed, life.checking), "arcadeIou");
   return h(
     "section.vault-debt",
-    h("h2", "Manage your debt"),
+    h("h2", "Your loans and debt"),
     h(
       "article.nw-card",
       h("small.nw-title", "You owe"),
@@ -47,24 +46,7 @@ export function debtTab(ctx) {
       ? h(
           "section",
           h("h3", "Loans"),
-          h(
-            "div.loan-cards",
-            loans.map((a) =>
-              h(
-                "div.bill-card",
-                h("div.bill-head", h("strong", `${a.icon} ${a.name}`), a.owner === "cosigned" ? h("span.badge", "You cosigned") : null),
-                h(
-                  "dl.bill-facts",
-                  fact("Still owed", money(amountOwed(a))),
-                  fact("Payment", `${money(a.payment)}/month`),
-                  fact("APR", percent(a.apr, 1)),
-                  fact("Payments left", String(monthsLeft(a))),
-                  fact("Next payment", a.firstDueMonth == null ? "After school + 6 months" : a.firstDueMonth > life.month ? `In ${a.firstDueMonth - life.month} month${a.firstDueMonth - life.month === 1 ? "" : "s"}` : "At End Month")
-                ),
-                a.held ? h("p.note.tight", `${dollars(a.held)} is locked in savings until this loan is paid off.`) : null
-              )
-            )
-          )
+          loanBills({ life, onPay })
         )
       : null,
     plans.length
@@ -82,8 +64,4 @@ export function debtTab(ctx) {
       : null,
     !loans.length && !plans.length && !parts.length ? h("p.callout.good", icon("check", { size: 16 }), " You're debt free. Keep it that way.") : null
   );
-}
-
-function fact(label, value) {
-  return h("div", h("dt", label), h("dd", value));
 }

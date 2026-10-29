@@ -71,6 +71,50 @@ export function cardBills({ life, onPay, onAutopay }) {
   return el;
 }
 
+// Installment loans (car, school, couch, credit-builder) with the buttons to pay them early.
+// A custom amount is allowed, and "Pay it all off" clears the loan and its interest.
+export function loanBills({ life, onPay }) {
+  onPay = once(onPay);
+  const loans = life.accounts.filter((a) => a.kind === "installment" && a.status === "open" && a.owner !== "authorized");
+  const el = h("div.loan-cards");
+  for (const a of loans) {
+    const owed = amountOwed(a);
+    const left = Math.max(0, a.termMonths - a.monthsPaid);
+    const own = a.owner === "self";
+    const next = a.firstDueMonth == null ? "After school + 6 months" : a.firstDueMonth > life.month ? `In ${a.firstDueMonth - life.month} month${a.firstDueMonth - life.month === 1 ? "" : "s"}` : "At End Month";
+    const custom = h("input", { type: "number", min: 1, max: owed, step: "0.01", inputmode: "decimal", "aria-label": `Extra payment toward ${a.name}`, placeholder: "Any amount" });
+    add(
+      el,
+      h(
+        "div.bill-card.loan-card",
+        h("div.bill-head", h("strong", `${a.icon} ${a.name}`), a.owner === "cosigned" ? h("span.badge", "You cosigned") : null),
+        h("dl.bill-facts", fact("Still owed", money(owed)), fact("Payment", `${money(a.payment)}/month`), fact("APR", percent(a.apr, 1)), fact("Payments left", String(left)), fact("Next payment", next)),
+        a.held ? h("p.note.tight", `${money(a.held)} is locked in savings until this loan is paid off.`) : null,
+        own
+          ? h(
+              "div.row.pay-buttons",
+              h("button", { type: "button", disabled: owed > life.checking, onclick: () => onPay(a.id, owed, "loanPayoff") }, `Pay it all off ${money(owed)}`),
+              h(
+                "form.custom-pay",
+                {
+                  onsubmit: (e) => {
+                    e.preventDefault();
+                    const v = Math.round(Number(custom.value) * 100) / 100;
+                    if (v > 0) onPay(a.id, Math.min(v, owed), "loanCustom");
+                  },
+                },
+                custom,
+                h("button.secondary", { type: "submit" }, "Pay extra")
+              )
+            )
+          : null,
+        own ? h("p.note.tight", `Pay any amount you like, any time. Extra money goes straight to what you owe, so you pay less interest. Checking has ${money(life.checking)}.`) : null
+      )
+    );
+  }
+  return el;
+}
+
 // Debts that need help: collections to settle and a cosigned loan that is behind.
 export function exposureBills({ life, onPay, kinds = ["collections", "cosigned"] }) {
   onPay = once(onPay);

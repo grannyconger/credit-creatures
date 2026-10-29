@@ -35,6 +35,7 @@ export const DECOR = [
   { id: "rug-plum", slot: "rug", name: "Plum oval rug", variant: "plum", price: 40 },
   { id: "rug-fern", slot: "rug", name: "Fern oval rug", variant: "fern", price: 40 },
 
+  { id: "art-photo", slot: "art", name: "Photo frame", variant: "photo", price: 0 },
   { id: "art-none", slot: "art", name: "Bare wall", variant: "none", price: 0 },
   { id: "art-fern", slot: "art", name: "Pressed fern frame", variant: "fern", price: 20 },
   { id: "art-moon", slot: "art", name: "Moon frame", variant: "moon", price: 30 },
@@ -67,10 +68,18 @@ export const DECOR = [
 export const DECOR_BY_ID = Object.fromEntries(DECOR.map((d) => [d.id, d]));
 
 // What every new cottage wears.
-export const DEFAULT_COTTAGE = { wallpaper: "wall-moss", floor: "floor-oak", rug: "rug-none", art: "art-none", lamp: "lamp-none", plant: "plant-none", window: "window-day", shelf: "shelf-none" };
+export const DEFAULT_COTTAGE = { wallpaper: "wall-moss", floor: "floor-oak", rug: "rug-none", art: "art-photo", lamp: "lamp-none", plant: "plant-none", window: "window-day", shelf: "shelf-none" };
 
 // Pieces that cost nothing are always owned.
 export const STARTERS = DECOR.filter((d) => d.price === 0).map((d) => d.id);
+
+// The student's own picture for the photo frame (play.photo). It is a small JPEG the game made
+// itself from their upload (js/ui/photo-frame.js). Anything else is ignored, so a bad save
+// can never put odd text into the room's drawing.
+export const PHOTO_MAX_CHARS = 200000;
+export function validPhoto(s) {
+  return typeof s === "string" && s.length <= PHOTO_MAX_CHARS && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s) ? s : null;
+}
 
 export function ownedDecor(play) {
   return new Set([...STARTERS, ...(play.decorOwned || [])]);

@@ -69,6 +69,8 @@ export function ensurePlay(play) {
   // The Cottage room (js/data/cottage.js): pieces bought and what each slot wears.
   play.decorOwned ??= [];
   play.cottage ??= null;
+  // The picture hung in the Cottage photo frame (js/ui/photo-frame.js), or null.
+  play.photo ??= null;
   // Daily Pick, the login streak and a coupon from it (js/daily.js).
   play.daily ??= { lastLogin: null, streak: 0, best: 0, pickDay: null, pick: null };
   play.coupon ??= null;

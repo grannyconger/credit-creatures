@@ -1,6 +1,6 @@
 // The places in the kingdom hub and what's waiting at each (teacher request
 // 2026-10-20: everything starts and ends at the hub). Pure, so it runs in Node.
-import { upcomingPayments } from "./engine/index.js";
+import { upcomingPayments, amountOwed } from "./engine/index.js";
 import { DREAMS, dreamProgress } from "./data/dreams.js";
 import * as P from "./play.js";
 import { hasFeature, opensText, prologueStep, stageOf } from "./progression.js";
@@ -38,6 +38,9 @@ export const PLACES = [
 ];
 
 // { [placeId]: { text, tone: "action" | "warn" | "calm" | "off", count } }
+// What the student owes on loans, cards and pay-later plans (the Vault's Loans and Debt tab).
+const debtOf = (life) => (life?.accounts || []).filter((a) => a.owner === "self" && a.status === "open").reduce((t, a) => t + amountOwed(a), 0);
+
 export function placeStatus({ life, play, creature, classInfo }) {
   const out = {};
   const prologue = stageOf(play) === 0;
@@ -63,6 +66,7 @@ export function placeStatus({ life, play, creature, classInfo }) {
   if (up.cardsDue.length) out.vault = { text: "A bill is due", tone: "warn", count: up.cardsDue.length };
   else if (up.short > 0) out.vault = { text: "Checking is short", tone: "warn" };
   else if (unread) out.vault = { text: `${unread} new letter${unread === 1 ? "" : "s"}`, tone: "calm", count: unread };
+  else if (debtOf(life) > 0) out.vault = { text: `You owe $${Math.round(debtOf(life)).toLocaleString("en-US")}. Repay it here`, tone: "calm" };
   else out.vault = { text: life?.score != null && hasFeature(play, "score", life) ? `Score ${life.score}` : "All caught up", tone: "calm" };
 
   out.market = { text: "New stock each chapter", tone: "calm" };
