@@ -143,3 +143,13 @@ test("three challenges a day, the first is the pick, and finishing all pays the 
   assert.equal(progress(play, cur, at("2026-10-23")).done, 3);
   assert.notDeepEqual(tasksFor(play, life, at("2026-11-02")).day, t.day);
 });
+
+test("a class grant pays only that class, once, and carries its pop-up", () => {
+  const grants = [{ id: "c1", amount: 1500, className: "Weaver 2B PF 2627", popup: { text: "Hi", image: "x.jpg" } }];
+  const { life, play } = fresh();
+  assert.equal(claimGrants(play, life, grants, "Other class"), null);
+  const g = claimGrants(play, life, grants, "Weaver 2B PF 2627");
+  assert.equal(g.life.checking, life.checking + 1500);
+  assert.equal(g.popups.length, 1);
+  assert.equal(claimGrants(play, g.life, grants, "Weaver 2B PF 2627"), null);
+});

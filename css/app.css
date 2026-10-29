@@ -1465,3 +1465,11 @@ body { font-variation-settings: "SOFT" 100, "WONK" 1; }
 .bst-guild .ch-spot.ch-wrong::after { content: " ✗"; font-family: var(--b-body); font-weight: 700; color: #a33b1c; }
 .bst-guild .dr-pile.bills .dr-piece { width: 54px; min-height: 30px; padding: 0; font-size: 0.75rem; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); transform: rotate(calc((var(--i) - 3) * 2deg)); }
 .bst-guild .dr-pile.coins .dr-piece { font-size: calc(var(--coin) * 0.3); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); }
+
+/* Gift pop-up: near full screen with the picture behind the words */
+.gift-popup { border: 0; padding: 0; width: 94vw; height: 94vh; max-width: none; max-height: none; border-radius: var(--radius); overflow: hidden; background: var(--panel); color: var(--ink); }
+.gift-popup::backdrop { background: rgba(43, 35, 64, 0.7); }
+.gift-popup[open] { display: flex; flex-direction: row; align-items: stretch; }
+.gift-popup img { height: 100%; width: auto; max-width: 55%; object-fit: cover; flex: none; }
+.gift-popup .gift-words { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 32px 48px; }
+.gift-popup h2 { font-size: clamp(28px, 4vw, 52px); margin: 0; }

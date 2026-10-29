@@ -40,14 +40,20 @@ export function claimLogin(play, life, now = new Date()) {
 
 // One-time gifts from CONFIG.grants. Run before claimLogin, which moves
 // lastLogin to today. Returns null when nothing is owed.
-export function claimGrants(play, life, grants = CONFIG.grants) {
+// A grant with className pays everyone in that class, whenever they log in.
+// Otherwise it pays saves whose last login was on or before upTo.
+export function claimGrants(play, life, grants = CONFIG.grants, className = "") {
   const last = play.daily?.lastLogin;
-  const owed = last ? grants.filter((g) => !play.grants?.includes(g.id) && last <= g.upTo) : [];
+  const owed = grants.filter((g) => {
+    if (play.grants?.includes(g.id)) return false;
+    if (g.className) return g.className === className;
+    return Boolean(last) && last <= g.upTo;
+  });
   if (!owed.length) return null;
   let next = life;
   for (const g of owed) next = receiveCash(next, g.amount, g.from).life;
   (play.grants ||= []).push(...owed.map((g) => g.id));
-  return { life: next, total: owed.reduce((t, g) => t + g.amount, 0), ids: owed.map((g) => g.id) };
+  return { life: next, total: owed.reduce((t, g) => t + g.amount, 0), ids: owed.map((g) => g.id), popups: owed.filter((g) => g.popup).map((g) => g.popup) };
 }
 
 // Opens box `index`. One pick per day. Returns { life, prize, shown, others }.

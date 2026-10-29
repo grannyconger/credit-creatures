@@ -4,6 +4,7 @@ import { isConfigured, SCHOOL_DOMAIN } from "./firebase-config.js";
 import { createGame, STEPS, EDITABLE, HUB_SCREENS } from "./game.js";
 import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge, onTrack } from "./telemetry.js";
 import { mountBugButton } from "./ui/bug-button.js";
+import { showGiftPopup } from "./ui/gift-popup.js";
 import { fitBar } from "./ui/fit-bar.js";
 import { sfx, setClassMuted, soundOn, classIsMuted } from "./ui/sound.js";
 import { PLACES } from "./places.js";
@@ -80,13 +81,14 @@ onTrack((type, data) => {
 async function dailyLogin() {
   if (game.practice) return;
   const run = game.run;
-  const g = claimGrants(run.play, run.life);
+  const g = claimGrants(run.play, run.life, CONFIG.grants, game.classInfo?.name || "");
   if (g) {
     run.life = g.life;
     track("grantClaim", { ids: g.ids, coins: g.total });
     await run.persist("grant");
     updateWho();
-    toast(`A gift from the Kingdom! ${money(g.total)} went into your checking.`, "good");
+    if (g.popups.length) for (const p of g.popups) await showGiftPopup(p, g.total);
+    else toast(`A gift from the Kingdom! ${money(g.total)} went into your checking.`, "good");
   }
   const r = claimLogin(run.play, run.life);
   if (!r) return;
