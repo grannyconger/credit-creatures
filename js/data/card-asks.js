@@ -4,7 +4,10 @@
 // A card that only brings news says there is nothing to decide, so students
 // know to read it and move on. Plain words for a 15-year-old. No em-dashes, no
 // semicolons.
+import { EVERYDAY_ASKS } from "./scenarios-everyday.js";
+
 export const ASKS = {
+  ...EVERYDAY_ASKS,
   // ---- Chapter 1: your first bank account ----
   billsFirst: "Do you buy the headphones now, or wait until your bills are covered?",
   depositCheck: "How will you turn Grandma's check into money you can use?",

@@ -183,6 +183,18 @@ export function pickBonus(questions, seed, recent = []) {
   return pool[Math.floor(rng.next() * pool.length)];
 }
 
+// The choices in a seeded random order, with the right answer's new position, so the
+// first choice isn't always the correct one. Same seed, same order.
+export function shuffleChoices(q, seed) {
+  const rng = createRng(`${seed}:bonus-order`);
+  const order = q.choices.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(rng.next() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return { choices: order.map((i) => q.choices[i]), answer: order.indexOf(q.answer) };
+}
+
 // A typed answer counts if it's within the question's tolerance (default a cent).
 export function bonusRight(q, answer) {
   if (q.type === "number") {

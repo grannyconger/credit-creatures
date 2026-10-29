@@ -407,12 +407,13 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
     const bonusBox = h("section.arc-bonus");
     if (!training && meta.bonus?.length) {
       const q = AC.pickBonus(meta.bonus, report.seed, play.arcade.recentBonus || []);
+      const shown = q.type === "number" ? q : { ...q, ...AC.shuffleChoices(q, report.seed) };
       const go = h("button.arc-bonus-go", { type: "button", onclick: () => ask() }, icon("coins", { size: 20 }), ` Earn ${CONFIG.arcade.bonusCoins} extra coins`);
       fill(bonusBox, go);
       const ask = () => {
         track("arcadeBonusOpen", { game: key, id: q.id });
         const answer = (given) => {
-          const right = AC.bonusRight(q, given);
+          const right = AC.bonusRight(shown, given);
           play.arcade.recentBonus = [...(play.arcade.recentBonus || []), q.id].slice(-10);
           if (right) {
             run.life = earn(run.life, CONFIG.arcade.bonusCoins, "Arcade bonus round").life;
@@ -429,7 +430,7 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
           fill(bonusBox, h("p.arc-bonus-q", q.q), h("div.arc-bonus-row", input, submit), h("small", "One try."));
           input.focus();
         } else {
-          fill(bonusBox, h("p.arc-bonus-q", q.q), h("div.arc-bonus-choices", q.choices.map((c, i) => h("button.arc-bonus-choice", { type: "button", onclick: () => answer(i) }, c))), h("small", "One try."));
+          fill(bonusBox, h("p.arc-bonus-q", q.q), h("div.arc-bonus-choices", shown.choices.map((c, i) => h("button.arc-bonus-choice", { type: "button", onclick: () => answer(i) }, c))), h("small", "One try."));
           bonusBox.querySelector("button").focus();
         }
       };

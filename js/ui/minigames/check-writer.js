@@ -114,7 +114,7 @@ export function start(ctx) {
       h("div.check-bottom", h("label", "Memo"), memoIn, h("div.check-sign", sigSlot, h("small", "Signature"))),
       h("p.cw2-micr", "⑆071000013⑆ 448210377⑈ 101")
     );
-    const send = h("button.big", { type: "button", onclick: () => sendCheck() }, "Send the check");
+    const send = h("button.big.cw2-send", { type: "button", onclick: () => sendCheck() }, "Send the check");
     fill(
       body,
       h(

@@ -1130,3 +1130,15 @@ dialog.arc-settings::backdrop { background: color-mix(in srgb, var(--arc-floor) 
 .gr-skill-wrap { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: center; gap: 16px; margin: 14px auto; }
 .gr-skill-wrap .gr-skill { flex: 1 1 360px; margin: 0; }
 .gr-skill-wrap .calc { flex: none; }
+
+/* Check Writer: the send button is a bright orange so it's easy to find (teacher request 2026-10-29) */
+.arc-frame.skin-checks .cw2-send { color: var(--arc-dark-ink); background: var(--arc-orange); border: 3px solid var(--arc-dark-ink); font-weight: 900; box-shadow: 0 3px 0 var(--arc-dark-ink); }
+.arc-frame.skin-checks .cw2-send:hover:not(:disabled), .arc-frame.skin-checks .cw2-send:focus-visible { background: var(--arc-yellow); }
+
+/* Earn more coins: bigger type so the question and answers read easily */
+.arc-bonus-q { font-size: 1.3rem; line-height: 1.35; }
+.arc-bonus-choices { flex-direction: column; gap: 8px; }
+.arc-bonus-choice, .arc-bonus-row button { padding: 10px 16px; font-size: 1.15rem; text-align: left; }
+.arc-bonus-num { width: 180px; padding: 10px 12px; font-size: 1.2rem; }
+.arc-bonus-result { font-size: 1.15rem; line-height: 1.35; }
+.arc-bonus small { font-size: 0.95rem; }

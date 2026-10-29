@@ -27,6 +27,7 @@ import {
 } from "../engine/index.js";
 import { EARLY_SCENARIOS } from "./scenarios-early.js";
 import { LATE_SCENARIOS } from "./scenarios-late.js";
+import { EVERYDAY_SCENARIOS, weekendVariant, weekendCost } from "./scenarios-everyday.js";
 
 const pct = (x) => `${Math.round(x * 100)}%`;
 const apr = (x) => `${(x * 100).toFixed(1)}%`;
@@ -712,15 +713,13 @@ export const SCENARIOS = [
     title: "Weekend plans",
     once: false,
     fits: () => true,
-    text: (life) => {
-      const cost = 25 + (life.month % 4) * 10;
-      return [`Friends are going to Bowl Hero Lanes for bowling and snacks. It costs about ${dollars(cost)}.`];
-    },
+    text: (life) => [`${weekendVariant(life).story} It costs about ${dollars(weekendCost(life))}.`],
     choices: (life) => {
-      const cost = 25 + (life.month % 4) * 10;
+      const v = weekendVariant(life);
+      const cost = weekendCost(life);
       return [
-        { key: "go", label: `Go (${dollars(cost)})`, cost: { amount: cost, item: "bowling night" }, outcome: "Strike! A fun night out.", quality: "ok" },
-        { key: "free", label: "Suggest a free movie night at home", outcome: "Popcorn and a borrowed movie. Still fun, and free.", quality: "good" },
+        { key: "go", label: `Go (${dollars(cost)})`, cost: { amount: cost, item: v.item }, outcome: v.go, quality: "ok" },
+        { key: "free", label: v.free, outcome: v.freeOutcome, quality: "good" },
       ];
     },
   },
@@ -1228,7 +1227,7 @@ for (const id of ["graduation", "studentLoan", "carDecision", "carLease", "credi
 for (const id of ["weekendPlans", "payYourselfFirst"]) SCENARIOS.find((s) => s.id === id).minChapter = 1;
 
 SCENARIOS.unshift(...EARLY_SCENARIOS);
-SCENARIOS.push(...LATE_SCENARIOS);
+SCENARIOS.push(...LATE_SCENARIOS, ...EVERYDAY_SCENARIOS);
 
 export const SCENARIO_BY_ID = Object.fromEntries(SCENARIOS.map((s) => [s.id, s]));
 

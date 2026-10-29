@@ -8,7 +8,10 @@
 // CONFIG.pacing.qol in js/data/config.js). About +5 or +6 is a big treat, +2 or +3 a small one, 0 is
 // neutral, and -1 to -3 is going without or stress. Keyed by card id, then choice
 // key. tests/cards-ask.test.js fails if a choice has no number.
+import { EVERYDAY_QOL } from "./scenarios-everyday.js";
+
 export const QOL = {
+  ...EVERYDAY_QOL,
   billsFirst: { buy: 3, wait: 0 },
   depositCheck: { deposit: 1, split: 1, cash: 0 },
   atmFee: { walk: -1, here: 0 },

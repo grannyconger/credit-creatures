@@ -138,3 +138,16 @@ test("every standards category A to G has at least one Arcade game once all are 
   if (ARCADE.movein) assert.deepEqual([...cats].sort(), ["A", "B", "C", "D", "E", "F", "G"]);
   else assert.ok(cats.size >= 1);
 });
+
+test("bonus choices are shuffled by seed and the answer index follows", () => {
+  const q = { type: "choice", choices: ["A", "B", "C", "D"], answer: 0 };
+  const seen = new Set();
+  for (let s = 0; s < 40; s++) {
+    const r = AC.shuffleChoices(q, `seed${s}`);
+    assert.equal(r.choices[r.answer], "A");
+    assert.deepEqual([...r.choices].sort(), ["A", "B", "C", "D"]);
+    assert.deepEqual(AC.shuffleChoices(q, `seed${s}`), r);
+    seen.add(r.answer);
+  }
+  assert.ok(seen.size > 1);
+});
