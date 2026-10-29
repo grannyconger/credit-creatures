@@ -66,7 +66,7 @@ test("Home is the Cottage room: objects glow and lead places", async ({ page }) 
   await seededStudent(page);
   await open(page, "hub");
   await closePopups(page);
-  await expect(page.locator(".room-object")).toHaveCount(12);
+  await expect(page.locator(".room-object")).toHaveCount(11);
   await page.hover('[data-object="window"]');
   await expect(page.locator('[data-object="window"] .room-tag')).toBeVisible();
   await page.click('[data-object="window"]');

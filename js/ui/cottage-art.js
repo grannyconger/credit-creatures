@@ -34,7 +34,8 @@ export function roomSvg(cottage, crop = null) {
     const round = rug === "gold" || rug === "rust";
     body += `<ellipse cx="400" cy="450" rx="${round ? 120 : 170}" ry="${round ? 36 : 30}" ${fs(col, "ink-soft", 2)}/><ellipse cx="400" cy="450" rx="${round ? 90 : 135}" ry="${round ? 24 : 20}" ${s("paper", 2)} opacity=".7"/>`;
   }
-  body += artSvg(variantOf(cottage, "art"), validPhoto(cottage.photo));
+  body += artSvg(variantOf(cottage, "art"));
+  body += photoFrameSvg(validPhoto(cottage.photo));
   body += lampSvg(variantOf(cottage, "lamp"));
   body += plantSvg(variantOf(cottage, "plant"));
   if (crop) return svg(crop, body, "room-bg");
@@ -50,15 +51,18 @@ export function decorThumb(decor) {
   return roomSvg(cottage, CROP[decor.slot]);
 }
 
-function artSvg(v, photo = null) {
+// The photo frame hangs where the dream poster used to (the room object in js/ui/cottage-room.js
+// sits over it). The picture is a validated JPEG data URL, never student text.
+function photoFrameSvg(photo) {
+  const inner = photo
+    ? `<svg x="10" y="10" width="100" height="130" viewBox="0 0 100 130"><image width="100" height="130" preserveAspectRatio="xMidYMid slice" href="${photo}"/></svg>`
+    : `<path d="M14 124l30-38 20 24 16-18 26 32z" ${f("moss-2")}/><circle cx="84" cy="36" r="10" ${f("gold")}/>`;
+  return `<g transform="translate(284 36)"><rect width="120" height="150" ${fs("paper", "peg-line", 5)}/><rect x="10" y="10" width="100" height="130" ${f("paper-insert")}/>${inner}</g>`;
+}
+
+function artSvg(v) {
   if (v === "none") return "";
   const frame = (inner) => `<g transform="translate(448 166)"><rect width="80" height="73" ${fs("paper", "peg-line", 4)}/><rect x="8" y="8" width="64" height="57" ${f("paper-insert")}/>${inner}</g>`;
-  if (v === "photo") {
-    const inner = photo
-      ? `<svg x="8" y="8" width="64" height="57" viewBox="0 0 64 57"><image width="64" height="57" preserveAspectRatio="xMidYMid slice" href="${photo}"/></svg>`
-      : `<path d="M12 54l16-20 11 13 8-10 17 17z" ${f("moss-2")}/><circle cx="54" cy="22" r="6" ${f("gold")}/>`;
-    return frame(inner);
-  }
   if (v === "fern") return frame(`<path d="M40 60V16M40 24c-10 0-16 4-18 10M40 24c10 0 16 4 18 10M40 36c-9 0-14 3-16 9M40 36c9 0 14 3 16 9M40 48c-7 0-11 3-13 7M40 48c7 0 11 3 13 7" ${s("fern", 2.5)}/>`);
   if (v === "moon") return frame(`<path d="M52 38a14 14 0 1 1-14-18 11 11 0 0 0 14 18z" ${fs("gold", "gold-ink", 2)}/><circle cx="24" cy="24" r="1.8" ${f("plum")}/><circle cx="56" cy="22" r="1.5" ${f("plum")}/>`);
   if (v === "coin") return frame(`<circle cx="40" cy="36" r="18" ${fs("gold", "gold-ink", 3)}/><path d="M40 26v20M34 31c0-4 12-4 12 0s-12 5-12 9 12 4 12 0" ${s("gold-ink", 2.5)}/>`);
@@ -101,7 +105,6 @@ export const OBJECT_ART = {
             : `<circle cx="70" cy="30" r="12" ${f("gold")}/><path d="M6 86c18-10 34-10 88 0v8H6z" ${f(accent)}/>`;
     return svg("0 0 100 100", `<rect x="3" y="3" width="94" height="94" rx="3" ${fs("peg", "peg-line", 4)}/><rect x="9" y="9" width="82" height="82" ${f(sky)}/>${extra}<path d="M50 9v82M9 50h82" ${s("peg-line", 4)}/>`);
   },
-  poster: () => svg("0 0 60 78", `<rect x="2" y="2" width="56" height="74" ${fs("paper-insert", "ink-soft", 3)}/><path d="M30 14l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z" ${f("gold")}/><path d="M14 56h32M18 64h24" ${s("ink-soft", 3)}/><circle cx="6" cy="6" r="3" ${f("rust")}/><circle cx="54" cy="6" r="3" ${f("rust")}/>`),
   shelf: (cottage) => {
     const v = variantOf(cottage, "shelf");
     const item = {

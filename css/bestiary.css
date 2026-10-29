@@ -5454,7 +5454,7 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
   border-radius: var(--b-r-tag);
   cursor: pointer;
 }
-.home-stage .room-object:is([data-object="jar"], [data-object="photo"]) { z-index: 3; }
+.home-stage .room-object[data-object="jar"] { z-index: 3; }
 .home-stage .room-object-art, .home-stage .room-object-art svg { display: block; width: 100%; height: 100%; }
 .home-stage .room-object-art svg { transition: filter var(--b-quick), transform var(--b-quick); }
 /* The glow, and a dashed ring so it never relies on the glow alone. */
@@ -5485,7 +5485,7 @@ body:has(#bottombar:not([hidden])) .bug-button { bottom: 92px; left: auto; right
 .home-stage .room-tag small { display: block; font-size: var(--b-fs-tiny); color: var(--b-ink-soft); }
 .home-stage .room-object:hover .room-tag, .home-stage .room-object:focus-visible .room-tag { display: block; }
 /* Objects near the top of the room put their tag below so it stays on screen. */
-.home-stage .room-object[data-object="window"] .room-tag, .home-stage .room-object[data-object="poster"] .room-tag, .home-stage .room-object[data-object="shelf"] .room-tag, .home-stage .room-object[data-object="door"] .room-tag, .home-stage .room-object[data-object="closet"] .room-tag { bottom: auto; top: 100%; }
+.home-stage .room-object[data-object="window"] .room-tag, .home-stage .room-object[data-object="photo"] .room-tag, .home-stage .room-object[data-object="shelf"] .room-tag, .home-stage .room-object[data-object="door"] .room-tag, .home-stage .room-object[data-object="closet"] .room-tag { bottom: auto; top: 100%; }
 /* Objects at the right edge line their tag up on the right so it isn't cut off. */
 .home-stage .room-object:is([data-object="door"], [data-object="closet"]) .room-tag { left: auto; right: 0; transform: none; }
 .home-stage .room-badge {

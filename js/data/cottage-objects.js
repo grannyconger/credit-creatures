@@ -6,7 +6,6 @@
 // route: a screen to open (the closet opens the Wardrobe).
 export const ROOM_OBJECTS = [
   { id: "window", label: "Window to the map", hint: "See the whole kingdom", art: "window", route: "map", x: 8, y: 8, w: 20, h: 30 },
-  { id: "poster", label: "Dream poster", hint: "Your creature's dream", art: "poster", place: "cottage", route: "cottage", x: 36, y: 8, w: 12, h: 24 },
   { id: "shelf", label: "Trophy shelf", hint: "Ranks and achievements", art: "shelf", place: "academy", route: "trophies", x: 52, y: 5, w: 16, h: 22 },
   { id: "mailbox", label: "Mailbox", hint: "Letters from the bank", art: "mailbox", place: "vault", tab: "messages", x: 62, y: 26, w: 7, h: 13 },
   { id: "door", label: "Front door", hint: "Things To Do", art: "door", act: "things", x: 70, y: 8, w: 13, h: 55 },

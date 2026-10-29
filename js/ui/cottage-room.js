@@ -7,7 +7,7 @@ import { creatureSvg } from "./creature-art.js";
 import { roomSvg, OBJECT_ART } from "./cottage-art.js";
 import { ROOM_OBJECTS, CREATURE_SPOT } from "../data/cottage-objects.js";
 import { PLACES } from "../places.js";
-import { cottageOf, DECOR_BY_ID, validPhoto } from "../data/cottage.js";
+import { cottageOf, validPhoto } from "../data/cottage.js";
 
 const PLACE = Object.fromEntries(PLACES.map((p) => [p.id, p]));
 
@@ -20,13 +20,13 @@ export function cottageRoom({ creature, ageMonths, play, status, onPick, onCreat
   stage.append(
     h("button.room-creature", { type: "button", "aria-label": `Open ${creature.name}'s cottage`, style: { left: `${CREATURE_SPOT.x}%`, top: `${CREATURE_SPOT.y}%`, width: `${CREATURE_SPOT.w}%` }, onclick: onCreature, html: creatureSvg(creature, { size: 200, ageMonths, label: "" }) })
   );
-  // The photo frame is a button over the frame on the wall (it sits first, so the mailbox wins any overlap).
-  if (!editing && onPhoto && DECOR_BY_ID[cottage.art]?.variant === "photo") {
+  // The photo frame hangs where the dream poster was. It is a button over the frame drawn in the wall.
+  if (!editing && onPhoto) {
     stage.append(
       h(
         "button.room-object",
-        { type: "button", "data-object": "photo", "aria-label": `Photo frame. ${cottage.photo ? "Change or take down your photo" : "Hang your own photo"}.`, style: { left: "56%", top: "31.9%", width: "10%", height: "14%" }, onclick: onPhoto },
-        h("span.room-object-art", { html: '<svg viewBox="0 0 80 73" aria-hidden="true" focusable="false"><rect width="80" height="73" fill="transparent"/></svg>' }),
+        { type: "button", "data-object": "photo", "aria-label": `Photo frame. ${cottage.photo ? "Change or take down your photo" : "Hang your own photo"}.`, style: { left: "35.5%", top: "6.9%", width: "15%", height: "28.8%" }, onclick: onPhoto },
+        h("span.room-object-art", { html: '<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false"><rect width="120" height="150" fill="transparent"/></svg>' }),
         h("span.room-tag", h("strong", "Photo frame"), h("small", cottage.photo ? "Change your photo" : "Hang your own photo"))
       )
     );
