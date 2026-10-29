@@ -6,8 +6,8 @@ import { CONFIG } from "./config.js";
 // The simple ruleset (teacher request 2026-10-26): three moves, hard hits.
 // echo: the money idea the move is named after, shown on its card.
 export const MOVES = [
-  { id: "strike", name: "Coin Crash", icon: "coins", kind: "Attack", does: "A big hit. Answer fast for a critical hit.", echo: "Beats Heal." },
-  { id: "shield", name: "Savings Shield", icon: "shield", kind: "Block", does: "Block most of a hit and knock some of it back.", echo: "Beats Coin Crash." },
+  { id: "strike", name: "Coin Crash", icon: "coins", kind: "Attack", does: "A big hit. Answer right in the first half of the timer for a much bigger critical hit.", echo: "Beats Heal." },
+  { id: "shield", name: "Savings Shield", icon: "shield", kind: "Block", does: "Block most of a hit and knock some of it back. If nothing hits you, you bank a little HP.", echo: "Beats Coin Crash." },
   { id: "heal", name: "Pay It Off", icon: "check", kind: "Heal", does: "Get HP back.", echo: "Beats Savings Shield." },
 ];
 

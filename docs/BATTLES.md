@@ -12,7 +12,7 @@ The teacher asked to begin the multiplayer battles component. This is the first 
 `CONFIG.battle.ruleset` picks the live rules. Each battle stores its ruleset, so replays always use the rules it was played with. Switching to `"classic"` brings back the 6-move version below, unchanged and still tested.
 
 ### Simple (live): numbers in `CONFIG.battle.simple.moves`, words in `MOVES`
-- **Coin Crash** (strike): 34 damage (up to 39 when fast, which counts as a critical hit), 12 on a wrong answer.
+- **Coin Crash** (strike): 34 damage, 12 on a wrong answer. A right answer in the first half of the timer is a critical hit for 58 (x1.7). `CONFIG.battle.simple.moves.strike`.
 - **Savings Shield** (shield): blocks 80% of this turn's hit (40% if wrong), and knocks half of what it blocked back at the attacker.
 - **Pay It Off** (heal): +24 HP (+8 if wrong), never past full.
 - Shield beats Strike, Strike beats Heal, Heal beats Shield. In 2,000 simulated bouts against the Grove bot: no one-move habit wins over 44%, about 73% of even bouts end in a knockout in about 6 rounds, and a 90%-right player beats a 50%-right one 84% of the time.

@@ -25,10 +25,30 @@ test("every move has its numbers in CONFIG and its words in the data file, for b
 test("simple: a strike hits hard, harder when right and fast, and a wrong one still scratches", () => {
   const b = newBattle(simple());
   const n = resolveTurn(b, [right("strike", 1), wrong("strike")]);
-  assert.equal(n.sides[1].hp, CONFIG.battle.hp - Math.round(S.strike.power * (1 + CONFIG.battle.speedBonus)));
+  assert.equal(n.sides[1].hp, CONFIG.battle.hp - Math.round(S.strike.power * S.strike.critMult));
   assert.equal(n.sides[0].hp, CONFIG.battle.hp - S.strike.wrongPower);
   assert.equal(n.log[0][0].crit, true);
   assert.equal(n.log[0][1].crit, false);
+});
+
+test("simple: a critical hit is clearly bigger than a normal right hit", () => {
+  const slow = resolveTurn(newBattle(simple()), [right("strike", 0.2), wrong("heal")]);
+  const fast = resolveTurn(newBattle(simple()), [right("strike", 0.9), wrong("heal")]);
+  const slowHit = slow.log[0][0].dealt;
+  const fastHit = fast.log[0][0].dealt;
+  assert.equal(slow.log[0][0].crit, false);
+  assert.equal(fast.log[0][0].crit, true);
+  assert.ok(fastHit >= slowHit * 1.5, `a crit (${fastHit}) should be at least 1.5 times a normal hit (${slowHit})`);
+});
+
+test("simple: a shield nothing hits banks a little HP, a little more with a right answer", () => {
+  const hurt = resolveTurn(newBattle(simple()), [right("strike"), right("strike")]);
+  const a = resolveTurn(hurt, [right("shield"), right("heal")]);
+  assert.equal(a.log[1][0].healed, S.shield.idleHeal);
+  const b = resolveTurn(hurt, [wrong("shield"), right("shield")]);
+  assert.equal(b.log[1][0].healed, S.shield.wrongIdleHeal);
+  const c = resolveTurn(hurt, [right("shield"), right("strike")]);
+  assert.equal(c.log[1][0].healed, 0, "no idle bank when a strike came in");
 });
 
 test("simple: a shield blocks most of a strike and counters, a heal tops up but never past full", () => {

@@ -154,8 +154,11 @@ export const CONFIG = {
     speedBonus: 0.15,
     simple: {
       moves: {
-        strike: { power: 34, wrongPower: 12 },
-        shield: { block: 0.8, wrongBlock: 0.4, counter: 0.5 },
+        // A right answer in the first half of the timer is a critical hit: critMult times the power,
+        // so a crit is clearly bigger than a normal hit (teacher request 2026-10-29).
+        strike: { power: 34, wrongPower: 12, critMult: 1.7, critFrac: 0.5 },
+        // idleHeal: a Shield nothing hits still banks a little HP (the name says "Savings"), so it never does nothing.
+        shield: { block: 0.8, wrongBlock: 0.4, counter: 0.5, idleHeal: 8, wrongIdleHeal: 3 },
         heal: { power: 24, wrongPower: 8 },
       },
     },

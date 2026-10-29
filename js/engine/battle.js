@@ -167,15 +167,24 @@ function resolveSimple(battle, actions) {
   const block = acts.map((a) => (a.move === "shield" ? (a.correct ? R.shield.block : R.shield.wrongBlock) : 0));
   acts.forEach((a, i) => {
     if (a.move !== "strike") return;
-    const full = a.correct ? Math.round(R.strike.power * speed(a.frac)) : R.strike.wrongPower;
+    const crit = a.correct && a.frac >= R.strike.critFrac;
+    const full = !a.correct ? R.strike.wrongPower : crit ? Math.round(R.strike.power * R.strike.critMult) : R.strike.power;
     const stopped = Math.round(full * block[1 - i]);
     const counter = Math.round(stopped * R.shield.counter);
     next.sides[1 - i].hp -= full - stopped;
     next.sides[i].hp -= counter;
     out[i].dealt = full - stopped;
-    out[i].crit = a.correct && a.frac >= 0.5;
+    out[i].crit = crit;
     out[1 - i].blocked = stopped;
     out[1 - i].countered = counter;
+  });
+  // A Shield that nothing hit banks a little HP, so it is never wasted.
+  acts.forEach((a, i) => {
+    if (a.move !== "shield" || acts[1 - i].move === "strike") return;
+    const me = next.sides[i];
+    const before = me.hp;
+    me.hp = Math.min(B().hp, me.hp + (a.correct ? R.shield.idleHeal : R.shield.wrongIdleHeal));
+    out[i].healed = me.hp - before;
   });
   next.sides.forEach((s) => (s.hp = Math.max(0, s.hp)));
   return endTurn(next, out);

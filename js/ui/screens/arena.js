@@ -358,6 +358,7 @@ export function render(root, { game, go, track }) {
         if (x.move === "shield" || x.move === "guard" || x.move === "fund") {
           flash(me, "fx-shield");
           if (!t[1 - i].dealt && !x.blocked) synth("block");
+          if (x.healed) floater(me, `Banked +${x.healed}`, "heal");
           return;
         }
         flash(me, "fx-lunge");
