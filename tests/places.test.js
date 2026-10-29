@@ -47,11 +47,11 @@ test("the kingdom has ten places, each with a route, a feature, a spot on the ma
 
 const life = () => lifeWith({ seed: "places", checking: 500 });
 
-test("before a chapter starts: Town Hall says what to do and the Guild waits", () => {
+test("before a chapter starts: Town Hall says what to do and the Arcade stays open for coins", () => {
   const play = P.newPlay();
   const s = placeStatus({ life: life(), play, creature: { name: "Pip" }, classInfo: { releasedChapter: 2 } });
   assert.equal(s.townhall.text, "Chapter 2 is open");
-  assert.equal(s.guild.tone, "off");
+  assert.equal(s.guild.tone, "calm");
   assert.equal(s.cottage.text, "Pick your creature's dream");
   assert.match(nextStep({ play, classInfo: { releasedChapter: 2 }, status: s }), /Start it at Town Hall/);
   const waiting = placeStatus({ life: life(), play, creature: { dream: "home" }, classInfo: { releasedChapter: 1 } });

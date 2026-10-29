@@ -365,7 +365,9 @@ function hubTarget(want) {
   const feature = ROUTE_FEATURE[want];
   const bankStep = want === "accounts" && prologueStep(play)?.place === "vault";
   if (feature && !hasFeature(play, feature, game.run.life) && !bankStep) return "hub";
-  if (play.summary) return "chapterEnd";
+  // A finished chapter waits on its report, but Home and the month page are the only ones it takes over.
+  // Every other place stays open, so a student can still use the Arcade, Market and Vault first.
+  if (play.summary && ["hub", "month", "chapterEnd"].includes(want)) return "chapterEnd";
   if (want === "chapterEnd") return play.active ? "month" : "hub";
   if (want === "month" && !play.active) return "hub";
   return want;

@@ -223,3 +223,12 @@ test("a choice returns its XP, better choices earn more, and a finished month ea
   assert.equal(play.xp, r.xp);
   assert.ok(CONFIG.pacing.xp.card.good > CONFIG.pacing.xp.card.ok && CONFIG.pacing.xp.card.ok > CONFIG.pacing.xp.card.bad);
 });
+
+test("the Arcade works between chapters: a shift pays coins and counts toward nothing", () => {
+  const { life, play } = playChapters("bot-between", 1);
+  assert.equal(play.active, null);
+  assert.equal(P.shiftsLeft(play), 0);
+  const r = P.workShift(play, life, 80);
+  assert.ok(r.ok);
+  assert.equal(r.life.checking, life.checking + 80);
+});

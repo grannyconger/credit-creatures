@@ -213,6 +213,7 @@ export function choose(play, life, item, key, method = null) {
 export function shiftsLeft(play) {
   // The prologue has no months yet, just a few shifts to fill the piggy bank.
   if (play.prologue && !play.prologue.done) return Math.max(0, CONFIG.onboarding.prologueShifts - play.prologue.shifts);
+  if (!play.active) return 0;
   const m = play.active.month;
   return Math.max(0, CONFIG.pacing.shiftsPerMonth - m.shiftsCut - m.shifts);
 }
@@ -231,7 +232,7 @@ export function workShift(play, life, pay, source = "work shift", job = null, { 
   if (play.prologue && !play.prologue.done) {
     play.prologue.shifts++;
     if (job) (play.prologue.worked ||= []).push(job);
-  } else play.active.month.shifts++;
+  } else if (play.active) play.active.month.shifts++;
   return { ...r, pay };
 }
 

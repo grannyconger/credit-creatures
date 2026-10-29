@@ -47,13 +47,11 @@ export function render(root, { game, go, track, refreshWho }) {
       run.practice ? h("p.callout.warn.practice", "Practice mode. Nothing you do here is saved.") : null
     );
     const prologue = play.prologue && !play.prologue.done;
-    if (!play.active && !prologue) {
-      add(panel, h("p.callout", "The Arcade is open while a chapter is going. Start the next chapter at Town Hall."), h("div.row", h("button", { type: "button", onclick: () => go("hub") }, "Back home")));
-      return;
-    }
+    // Between chapters the Arcade stays open. Shifts still pay coins, they just don't count toward a month's goal.
+    if (!play.active && !prologue) add(panel, h("p.callout", icon("info", { size: 18 }), play.summary ? " Your chapter is finished. Shifts still pay coins while you wait to wrap it up at Town Hall." : " No chapter is running right now, but shifts still pay coins. Start the next chapter at Town Hall."));
     const left = P.shiftsLeft(play);
     // The goal is met, but the Arcade stays open so a student can always earn.
-    if (left <= 0) add(panel, h("p.callout", icon("check", { size: 18 }), prologue ? " Your piggy bank is filling up nicely. You worked all three jobs. Keep working for more coins, or check what Sage says to do next." : " You worked this month's shifts. You can keep working for more coins any time."));
+    if (left <= 0 && (play.active || prologue)) add(panel, h("p.callout", icon("check", { size: 18 }), prologue ? " Your piggy bank is filling up nicely. You worked all three jobs. Keep working for more coins, or check what Sage says to do next." : " You worked this month's shifts. You can keep working for more coins any time."));
     board = jobBoard({
       game,
       run,
@@ -64,7 +62,7 @@ export function render(root, { game, go, track, refreshWho }) {
         paint();
       },
     });
-    panel.querySelector(".arc-hall-head")?.append(h("span.arc-shifts", prologue ? (left ? `${left} shift${left === 1 ? "" : "s"} to go before the bank opens` : "All 3 jobs worked") : left ? `${left} shift${left === 1 ? "" : "s"} to go this month` : "This month's shifts done"));
+    panel.querySelector(".arc-hall-head")?.append(h("span.arc-shifts", prologue ? (left ? `${left} shift${left === 1 ? "" : "s"} to go before the bank opens` : "All 3 jobs worked") : !play.active ? "Between chapters" : left ? `${left} shift${left === 1 ? "" : "s"} to go this month` : "This month's shifts done"));
     add(panel, board);
   }
 

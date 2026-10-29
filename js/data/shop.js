@@ -48,11 +48,13 @@ for (const i of SHOP_ITEMS) if (i.kind === "background") BACKGROUND_LABELS[i.id]
 
 export const STOCK_SIZE = { regular: 5 };
 
-// This chapter's stock: 5 regular items, 1 limited item (each limited item
+// The stock: 5 regular items, 1 limited item (each limited item
 // gets its own chapter in turn) and 1 big-ticket item. Same seed and chapter,
 // same stock.
-export function stockFor(seed, chapter) {
-  const rng = createRng(`${seed}:shop:${chapter}`);
+// day (a dayKey like "2026-10-29") makes the regular items and the big-ticket item change every
+// day (teacher request 2026-10-29). The limited item stays for the whole chapter.
+export function stockFor(seed, chapter, day = "") {
+  const rng = createRng(`${seed}:shop:${chapter}${day ? `:${day}` : ""}`);
   const regular = SHOP_ITEMS.filter((i) => !i.limited && !i.big);
   const picks = [];
   while (picks.length < STOCK_SIZE.regular && regular.length) picks.push(regular.splice(Math.floor(rng.next() * regular.length), 1)[0]);

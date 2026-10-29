@@ -1,4 +1,4 @@
-// The Shop (SPEC §18): wants for the creature. Stock rotates each chapter.
+// The Shop (SPEC §18): wants for the creature. Stock changes every day.
 // Checkout uses the "Pay with" picker: debit, a credit card, or BNPL.
 import { payMethods, hasFeature } from "../../progression.js";
 import { burstFrom } from "../motion/particles.js";
@@ -14,6 +14,7 @@ import { sfx } from "../sound.js";
 import { DECOR, SLOTS, ownedDecor, cottageOf } from "../../data/cottage.js";
 import { decorThumb } from "../cottage-art.js";
 import { couponPrice } from "../../daily.js";
+import { dayKey } from "../../engine/daily.js";
 import { icon } from "../icons.js";
 
 const KIND = { head: "Head", neck: "Neck", face: "Face", held: "Held in paw", feet: "Feet", effect: "Magic effect", background: "Background" };
@@ -26,14 +27,14 @@ export function render(root, { game, go, track }) {
   // shelves under a striped awning and a string price tag on each.
   root.append(h("div.bestiary.bst-shop", h("div.bst-awning", { "aria-hidden": "true" }), panel));
   const chapter = play.active?.chapter ?? play.chapter;
-  const stock = stockFor(run.life.seed, chapter).map((id) => SHOP_BY_ID[id]);
+  const stock = stockFor(run.life.seed, chapter, dayKey()).map((id) => SHOP_BY_ID[id]);
   track("shopOpen", { chapter, items: stock.length });
   if (play.prologue && !play.prologue.marketVisited && !run.practice) {
     play.prologue.marketVisited = true;
     game.persist("prologueMarket");
   }
 
-  // Two shelves: things for the creature (new stock each chapter) and things
+  // Two shelves: things for the creature (new stock every day) and things
   // for the Cottage room (always on sale).
   let tab = "creature";
   const tabs = () =>
@@ -49,7 +50,7 @@ export function render(root, { game, go, track }) {
     const c = game.save.creature;
     fill(
       panel,
-      placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `Chapter ${chapter} stock`, title: "Market", subtitle: "Spend money on things for your creature and your Cottage. Time is paused while you shop.", practice: run.practice, aside: moneyChips(run.life, play) }),
+      placeHeader({ go, iconName: "market", kicker: play.prologue && !play.prologue.done ? "Opening day stock" : `New stock today`, title: "Market", subtitle: "Spend money on things for your creature and your Cottage. Time is paused while you shop.", practice: run.practice, aside: moneyChips(run.life, play) }),
       buying ? null : tabs(),
       buying ? checkout(buying, c) : tab === "home" ? homeShelf() : h("div.shop-grid", stock.map((item) => card(item, c))),
       h("p.note.center", "Wants are fun, but check your bills first. Clothes you buy go in the closet at home. Room pieces go in Decorate your room.")

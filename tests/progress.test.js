@@ -120,6 +120,9 @@ test("shop stock is 7 items, the same for the same chapter, with one limited and
   assert.equal(items.filter((i) => i.limited).length, 1);
   assert.equal(items.filter((i) => i.big).length, 1);
   assert.notDeepEqual(stockFor("seed", 4), a);
+  assert.deepEqual(stockFor("seed", 3, "2026-10-29"), stockFor("seed", 3, "2026-10-29"), "a day is steady");
+  assert.notDeepEqual(stockFor("seed", 3, "2026-10-29"), stockFor("seed", 3, "2026-10-30"), "the stock changes the next day");
+  assert.equal(stockFor("seed", 3, "2026-10-29").at(-2), stockFor("seed", 3, "2026-10-30").at(-2), "the limited item stays all chapter");
 });
 
 test("every shop accessory draws something", () => {

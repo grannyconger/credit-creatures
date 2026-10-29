@@ -59,7 +59,7 @@ export function placeStatus({ life, play, creature, classInfo }) {
   if (a) {
     const left = P.shiftsLeft(play);
     out.guild = left ? { text: `${left} shift${left === 1 ? "" : "s"} to go`, tone: "action", count: left } : { text: "Shifts done. Work more any time", tone: "calm" };
-  } else out.guild = { text: "Opens with the chapter", tone: "off" };
+  } else out.guild = { text: "Open. Shifts still pay coins", tone: "calm" };
 
   const up = upcomingPayments(life);
   const unread = P.unreadCount(play);
@@ -69,7 +69,7 @@ export function placeStatus({ life, play, creature, classInfo }) {
   else if (debtOf(life) > 0) out.vault = { text: `You owe $${Math.round(debtOf(life)).toLocaleString("en-US")}. Repay it here`, tone: "calm" };
   else out.vault = { text: life?.score != null && hasFeature(play, "score", life) ? `Score ${life.score}` : "All caught up", tone: "calm" };
 
-  out.market = { text: "New stock each chapter", tone: "calm" };
+  out.market = { text: "New stock every day", tone: "calm" };
   const xpLeft = P.answerXpLeft(play);
   out.academy = xpLeft ? { text: `${xpLeft} XP to earn`, tone: "action" } : { text: "All answer XP earned", tone: "calm" };
   out.plaza = classInfo?.social === false ? { text: "Closed by your teacher", tone: "off" } : { text: "Friends and gifts", tone: "calm" };

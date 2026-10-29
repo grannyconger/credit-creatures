@@ -43,6 +43,8 @@ export function render(root, { game, go, track, refreshWho }) {
       h("figure.ce-portrait", { "aria-hidden": "true" }, h("span", { html: creatureSvg(c, { size: 130, label: "" }) })),
       h("div", h("h1", s.title), h("p.bst-margin.ce-kicker", `Chapter ${s.chapter} is done. Here's how it went.`))
     ),
+    // The way on sits right under the title, so nobody has to scroll to find it. A second one stays pinned to the bottom of the screen.
+    run.practice ? null : continueButton(s, run, go, track, c.name, "top"),
     h(
       "dl.ce-record",
       stat("Credit score", scoreText, delta == null ? "" : delta > 0 ? "up" : delta < 0 ? "down" : ""),
@@ -71,7 +73,7 @@ export function render(root, { game, go, track, refreshWho }) {
       "div.bestiary.bst-chapter-end",
       h("div.bst-decor", { "aria-hidden": "true" }, h("span.bst-fern-left", { html: fernSvg({ seed: 63, curl: 0.36, width: 140, height: 260 }) })),
       panel,
-      run.practice ? null : continueButton(s, run, go, track, c.name)
+      run.practice ? null : continueButton(s, run, go, track, c.name, "pinned")
     )
   );
   if (!run.practice) {
@@ -140,10 +142,13 @@ function chapterParty(s, c, xp) {
   later(1500, () => react("happy"));
 }
 
-function continueButton(s, run, go, track, creatureName) {
+let proceeding = false;
+function continueButton(s, run, go, track, creatureName, where = "pinned") {
   const btn = h("button.bst-seal-btn", { type: "button" }, h("span.bst-seal-wax", { html: sealSvg({ seed: 71, size: 80, letter: String(s.chapter + 1) }) }), h("span.bst-seal-text", `On to Chapter ${s.chapter + 1}`));
   btn.addEventListener("click", async () => {
-    btn.disabled = true;
+    if (proceeding) return;
+    proceeding = true;
+    document.querySelectorAll(".ce-continue button").forEach((b) => (b.disabled = true));
     P.completeChapter(run.play);
     // Phase 10: between chapters (after Chapter 1, time jumps to age 18).
     const between = afterChapter(run.play, run.life, s.chapter);
@@ -155,7 +160,8 @@ function continueButton(s, run, go, track, creatureName) {
     }
     track("chapterContinue", { chapter: s.chapter });
     await run.persist("chapterDone");
+    proceeding = false;
     go("hub");
   });
-  return h("div.bst-actions.ce-continue", btn);
+  return h(`div.bst-actions.ce-continue.${where}`, where === "top" ? h("p.ce-continue-say", `Ready? Chapter ${s.chapter + 1} is next.`) : null, btn);
 }
