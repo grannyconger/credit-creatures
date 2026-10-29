@@ -6,6 +6,7 @@ import { CONFIG } from "./data/config.js";
 import { DECOR, ownedDecor } from "./data/cottage.js";
 import { dayKey, streakAfter, loginReward, rollBoxes } from "./engine/daily.js";
 import { receiveCash } from "./engine/index.js";
+import { fastForward } from "./fastforward.js";
 
 export function ensureDaily(play) {
   play.daily ??= { lastLogin: null, streak: 0, best: 0, pickDay: null, pick: null };
@@ -54,6 +55,20 @@ export function claimGrants(play, life, grants = CONFIG.grants, className = "") 
   for (const g of owed) next = receiveCash(next, g.amount, g.from).life;
   (play.grants ||= []).push(...owed.map((g) => g.id));
   return { life: next, total: owed.reduce((t, g) => t + g.amount, 0), ids: owed.map((g) => g.id), popups: owed.filter((g) => g.popup).map((g) => g.popup) };
+}
+
+// One-time fast-forwards from CONFIG.fastForwards, matched on email and creature name.
+// who = { email, creatureName }. Returns null when nothing is owed or it could not finish.
+export function claimFastForwards(play, life, who, months, list = CONFIG.fastForwards) {
+  const email = String(who?.email || "").toLowerCase();
+  for (const g of list) {
+    if (play.grants?.includes(g.id) || g.email.toLowerCase() !== email || g.creatureName !== who?.creatureName) continue;
+    const r = fastForward(play, life, { through: g.through, months });
+    if (!r) continue;
+    (play.grants ||= []).push(g.id);
+    return { ...r, id: g.id, through: g.through };
+  }
+  return null;
 }
 
 // Opens box `index`. One pick per day. Returns { life, prize, shown, others }.

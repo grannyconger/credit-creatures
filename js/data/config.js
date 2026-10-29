@@ -71,6 +71,10 @@ export const CONFIG = {
   // One-time coin gifts for students who already had a save. A save gets a
   // grant once if its last login day was on or before the grant's day, so
   // students who join later never get it. id must be new for each grant.
+  // One-time fast-forwards for named students (js/fastforward.js), matched by sign-in email
+  // and creature name. The game plays the skipped chapters for them the next time they sign in.
+  fastForwards: [{ id: "ff-coco-ch4-2026-10-29", email: "bweaver@greermiddlecollege.org", creatureName: "Coco", through: 4 }],
+
   grants: [{ id: "coins-2026-10-27", amount: 1000, upTo: "2026-10-27", from: "Kingdom of Coinhaven" },
     // A class grant pays every student in that class once, with a full-screen pop-up.
     { id: "coins-2b-2026-10-29", amount: 1500, className: "Weaver 2B PF 2627", from: "The Creator", popup: { text: "You've received a generous gift from The Creator", image: "img/creator-gift.jpg" } },

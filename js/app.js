@@ -45,7 +45,7 @@ import * as alley from "./ui/screens/alley.js";
 import * as map from "./ui/screens/map.js";
 import * as daily from "./ui/screens/daily.js";
 import { initShell, paintShell } from "./ui/shell.js";
-import { claimLogin, claimGrants } from "./daily.js";
+import { claimLogin, claimGrants, claimFastForwards } from "./daily.js";
 import { onEvent as challengeEvent } from "./challenges.js";
 import { watchSentences } from "./ui/sentences.js";
 import { publishSpringTokens, motionOn } from "./ui/motion/spring.js";
@@ -81,6 +81,14 @@ onTrack((type, data) => {
 async function dailyLogin() {
   if (game.practice) return;
   const run = game.run;
+  const ff = claimFastForwards(run.play, run.life, { email: game.user?.email, creatureName: game.save.creature?.name }, game.classInfo?.monthsPerChapter);
+  if (ff) {
+    run.life = ff.life;
+    track("fastForward", { id: ff.id, through: ff.through, xp: ff.xpGained, coins: ff.coinsGained });
+    await run.persist("fastForward");
+    updateWho();
+    toast(`${game.save.creature.name} jumped to the end of Chapter ${ff.through}. Chapter ${ff.through + 1} is ready at Town Hall.`, "good");
+  }
   const g = claimGrants(run.play, run.life, CONFIG.grants, game.classInfo?.name || "");
   if (g) {
     run.life = g.life;
