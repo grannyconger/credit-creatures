@@ -47,7 +47,7 @@ export const QOL = {
   maxedTrip: { card: 6, dayTrip: 3, skip: -2 },
   threeCards: { three: 3, one: 2, none: 0 },
   closeOldest: { close: 0, keep: 0 },
-  weekendPlans: { go: 4, free: 3 },
+  weekendPlans: { go: 4, free: 4 },
   payYourselfFirst: { hundred: 0, fifty: 0, none: 1 },
   smallCharge: { card: 0, debit: 0, cancel: -1 },
   carLease: { lease: 0, bus: 0 }, // an example, so nothing changes

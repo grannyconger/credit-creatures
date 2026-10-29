@@ -29,8 +29,11 @@ function mc(rng, right, wrong) {
 
 // ---------- Factor Check: "Which factor moves, and which way?" ----------
 
-const ARROW = { up: "▲ goes up", down: "▼ goes down" };
-export const factorChoice = (key, dir) => `${FACTOR_LABELS[key]} ${ARROW[dir]}`;
+// Said as what it does to the score. "Amounts owed goes up" was confusing, because owing
+// more is bad and the part of the score that improves when you owe less (tuning data
+// 2026-10-29: only 30% got Factor Check right).
+const ARROW = { up: "helps your score ▲", down: "hurts your score ▼" };
+export const factorChoice = (key, dir) => `${FACTOR_LABELS[key]}: ${ARROW[dir]}`;
 
 export function factorOptions(rng, key, dir) {
   const flip = dir === "up" ? "down" : "up";
@@ -43,20 +46,20 @@ export const FACTOR_CHECKS = [
   { text: "You put a $450 laptop on a card with a $500 limit.", key: "owed", dir: "down", why: "You're using 90% of your limit. High utilization hurts." },
   { text: "You forgot to pay your card while on a trip, and it was reported 30 days late.", key: "payment", dir: "down", why: "A late payment lands on your record." },
   { text: "You applied for 3 store cards in one week for holiday discounts.", key: "newCredit", dir: "down", why: "3 hard inquiries close together make lenders nervous." },
-  { text: "You already have a card, and you take out a car loan and pay it on time.", key: "mix", dir: "up", why: "You now handle two kinds of credit." },
+  { text: "You only had a credit card. Now you also have a car loan, so you handle two different kinds of credit.", key: "mix", dir: "up", why: "You now handle two kinds of credit." },
   { text: "You paid your $400 card balance down to $20.", key: "owed", dir: "up", why: "Your utilization dropped a lot." },
   { text: "Your card issuer raised your limit, and your balance stayed the same.", key: "owed", dir: "up", why: "Same balance, bigger limit, lower utilization." },
   { text: "A year went by since your last credit application.", key: "newCredit", dir: "up", why: "Hard inquiries stop counting after 12 months." },
   { text: "You paid on time for another 12 months in a row.", key: "payment", dir: "up", why: "A longer on-time record counts more." },
   { text: "A friend you cosigned for missed two payments.", key: "payment", dir: "down", why: "A cosigned account's late marks show on your report too." },
-  { text: "You opened 3 new accounts in two months.", key: "length", dir: "down", why: "New accounts pull down the average age of your accounts." },
+  { text: "You opened several new accounts, and the average age of your accounts dropped from 4 years to 1 year.", key: "length", dir: "down", why: "New accounts pull down the average age of your accounts." },
   { text: "You took a $100 cash advance on a card with a $300 limit.", key: "owed", dir: "down", why: "The advance and its fee raise your balance and utilization." },
 ];
 
 function factorCheckQuestion(rng) {
   const f = pick(rng, FACTOR_CHECKS);
   const { choices, answer } = factorOptions(rng, f.key, f.dir);
-  return { prompt: [f.text, "Which part of your score moves, and which way?"], choices, answer, math: `${factorChoice(f.key, f.dir)}. ${f.why}` };
+  return { prompt: [f.text, "Which part of your score does this change, and does it help or hurt?"], choices, answer, math: `${factorChoice(f.key, f.dir)}. ${f.why}` };
 }
 
 // ---------- Question types (SPEC §14 table) ----------

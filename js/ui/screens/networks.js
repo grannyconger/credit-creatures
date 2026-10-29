@@ -49,7 +49,7 @@ export function render(root, { go, track }) {
             buttons.forEach((b) => (b.disabled = true));
             buttons[i].classList.add("picked", o.correct ? "right" : "wrong");
             buttons[i].append(h("small.ci-verdict", o.correct ? "✓ Right" : "✗ Not this one"));
-            track("question", { id: "networkQuiz", right: o.correct, seconds: Math.round((Date.now() - asked) / 1000) });
+            track("question", { qtype: "networkQuiz", correct: o.correct, seconds: Math.round((Date.now() - asked) / 1000) });
             fill(
               out,
               h("p.ci-answer", { class: o.correct ? "good" : "bad" }, o.correct ? q.right : q.wrong),

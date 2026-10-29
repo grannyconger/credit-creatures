@@ -23,3 +23,6 @@ playwright-report/
 
 # Claude Code personal settings
 .claude/settings.local.json
+
+# Dashboard tuning exports hold student data
+*-tuning.json

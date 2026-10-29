@@ -6,8 +6,10 @@ export const CONFIG = {
     decisionCardsPerMonth: 5,
     // One-time cards per month (priority cards don't count). This spreads the
     // pilot's ~20 scenarios across the semester. Everyday cards fill the rest.
-    newCardsPerMonth: 2,
-    everydayCardsPerMonth: 1,
+    // Tuning data 2026-10-29: a month took about half a minute (target 3 to 4), so one more
+    // new card and one more everyday card a month (the cap below still holds).
+    newCardsPerMonth: 3,
+    everydayCardsPerMonth: 2,
     // From this chapter on, one-time cards already played can come back once the new ones run out.
     replayFromChapter: 9,
     shiftsPerMonth: 3,
