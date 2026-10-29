@@ -5,6 +5,7 @@ import { createGame, STEPS, EDITABLE, HUB_SCREENS } from "./game.js";
 import { initTelemetry, captureErrors, screenView, track, flush, onSessionNudge, onTrack } from "./telemetry.js";
 import { mountBugButton } from "./ui/bug-button.js";
 import { showGiftPopup } from "./ui/gift-popup.js";
+import { initFullscreenGate } from "./ui/fullscreen-gate.js";
 import { fitBar } from "./ui/fit-bar.js";
 import { sfx, setClassMuted, soundOn, classIsMuted } from "./ui/sound.js";
 import { PLACES } from "./places.js";
@@ -130,6 +131,8 @@ const bug = mountBugButton({
   send: (report) => db.sendFeedback(report),
 });
 bug.hide();
+
+initFullscreenGate({ skip: LOCAL || new URLSearchParams(location.search).has("nofs"), track });
 
 if (!LOCAL && !isConfigured) {
   signedOut("Sign-in is not set up yet. Check back soon.");

@@ -5158,7 +5158,7 @@ main#app.app:has(.bestiary) {
 /* The way on: a banner under the title, and a bar pinned to the bottom so it is never off screen (teacher request 2026-10-29). */
 .bst-chapter-end .ce-continue.top { display: flex; align-items: center; justify-content: space-between; gap: var(--b-s4); margin: var(--b-s4) 0; padding: var(--b-s3) var(--b-s4); background: var(--b-paper-insert); border: 3px solid var(--b-plum); border-radius: var(--b-r-sheet); }
 .bst-chapter-end .ce-continue-say { margin: 0; font-family: var(--b-display); font-size: var(--b-fs-title); color: var(--b-plum); }
-.bst-chapter-end .ce-continue.pinned { position: sticky; bottom: 0; z-index: 20; margin: var(--b-s4) 0 0; padding: var(--b-s3) var(--b-s4); background: var(--b-paper); border-top: 4px solid var(--b-plum); box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.25); }
+.bst-chapter-end .ce-continue.pinned { position: sticky; bottom: 86px; z-index: 20; margin: var(--b-s4) 0 0; padding: var(--b-s3) var(--b-s4); background: var(--b-paper); border-top: 4px solid var(--b-plum); box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.25); }
 .bst-chapter-end .ce-continue button { box-shadow: 0 0 0 4px var(--b-foxfire); }
 
 /* The chapter party (2026-10-26): the loudest moment in the game. The page
