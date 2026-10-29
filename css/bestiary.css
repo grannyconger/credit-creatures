@@ -3662,7 +3662,7 @@ main#app.app:has(.bestiary) {
 .bst-guild .tray-piece.coin { border-radius: 999px; background: var(--b-coin-silver); }
 .bst-guild .cash-actions { justify-content: flex-end; gap: var(--b-s2); }
 .bst-guild .cash-actions button { min-height: 56px; touch-action: manipulation; }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-toggle {
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-toggle {
   margin-left: auto;
   font-family: var(--b-body);
   font-weight: 700;
@@ -3673,8 +3673,8 @@ main#app.app:has(.bestiary) {
   box-shadow: var(--b-shadow-card);
   min-height: 48px;
 }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-toggle[aria-expanded="true"] { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
-:is(.bst-guild, .bst-month, .bst-arena) .calc {
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-toggle[aria-expanded="true"] { box-shadow: inset 0 0 0 2.5px var(--b-plum), var(--b-shadow-card); }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc {
   width: 272px;
   padding: var(--b-s3);
   color: var(--b-ink);
@@ -3683,20 +3683,20 @@ main#app.app:has(.bestiary) {
   box-shadow: var(--b-shadow-lift);
   touch-action: manipulation;
 }
-:is(.bst-guild, .bst-month, .bst-arena) .calc:focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--b-s2); margin-bottom: var(--b-s2); }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-screen { display: block; padding: 8px 12px; overflow: hidden; text-align: right; font-family: var(--b-body); font-size: var(--b-fs-lead); font-variant-numeric: tabular-nums; background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--b-s2); }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-key { min-height: 54px; padding: 0; font-family: var(--b-body); font-weight: 700; font-size: var(--b-fs-title); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; touch-action: manipulation; user-select: none; }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-key:active { transform: translateY(2px); }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-key.calc-op { color: var(--b-on-rust); background: var(--b-rust); border-color: transparent; }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-key.calc-fn { min-width: 52px; }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc:focus-visible { outline: 2.5px dashed var(--b-plum); outline-offset: 4px; }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--b-s2); margin-bottom: var(--b-s2); }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-screen { display: block; padding: 8px 12px; overflow: hidden; text-align: right; font-family: var(--b-body); font-size: var(--b-fs-lead); font-variant-numeric: tabular-nums; background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--b-s2); }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-key { min-height: 54px; padding: 0; font-family: var(--b-body); font-weight: 700; font-size: var(--b-fs-title); color: var(--b-ink); background: var(--b-paper-2); border: 1.5px solid var(--b-rule); border-radius: 6px; touch-action: manipulation; user-select: none; }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-key:active { transform: translateY(2px); }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-key.calc-op { color: var(--b-on-rust); background: var(--b-rust); border-color: transparent; }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-key.calc-fn { min-width: 52px; }
 @media (max-width: 1100px) {
   .bst-guild .cash-counter { grid-template-columns: minmax(0, 1fr); }
 }
 .bst-guild .cash-drawer { justify-content: stretch; flex-wrap: nowrap; }
 .bst-guild .drawer-row .cash-piece.bill { width: 100%; }
-:is(.bst-guild, .bst-month, .bst-arena) .calc-key.calc-op { font-family: system-ui, sans-serif; font-size: 1.6rem; line-height: 1; }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-key.calc-op { font-family: system-ui, sans-serif; font-size: 1.6rem; line-height: 1; }
 .bst-guild .cashier .cash-actions button.secondary { color: var(--b-ink); background: var(--b-grain), var(--b-paper); border: 0; border-radius: var(--b-r-tag); box-shadow: var(--b-shadow-card); }
 /* Pet the creature in the Cottage (Phase 16). */
 .bst-cottage .cottage-pet { padding: 0; background: none; border: 0; border-radius: var(--b-r-blob); cursor: var(--b-cursor-lens), pointer; }
@@ -7109,3 +7109,17 @@ dialog.arc-settings.bst-scope::backdrop { background: color-mix(in srgb, var(--b
 .photo-dialog h2 { margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
 .photo-dialog .photo-view { display: grid; place-items: center; min-height: 240px; margin-bottom: 12px; padding: 14px; background: var(--b-paper-insert); border: 6px solid var(--b-peg-line); border-radius: var(--b-r-tag); }
 .photo-dialog .photo-view img { display: block; max-width: 100%; max-height: 52vh; object-fit: contain; }
+
+/* Calculator: the sum so far, and a bright New button once an answer is showing (teacher request 2026-10-29). */
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-expr { min-height: 1.3em; margin: 0 0 var(--b-s1); text-align: right; font-size: var(--b-small); color: var(--b-ink-soft); font-variant-numeric: tabular-nums; }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-key.calc-new { min-width: 64px; font-size: var(--b-fs-ui); }
+:is(.bst-guild, .bst-month, .bst-arena, .bst-vault, .bst-academy) .calc-key.calc-new.ready { color: var(--b-on-rust); background: var(--b-rust); border-color: transparent; box-shadow: 0 0 0 3px var(--b-foxfire); }
+.calc-slot:empty { display: none; }
+.vault-desk-tools { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--b-s3); margin: var(--b-s3) 0; }
+
+/* The formula box beside a math question */
+.formula-box { padding: var(--b-s3) var(--b-s4); color: var(--b-ink); background: var(--b-paper-insert); border: 2px dashed var(--b-plum); border-radius: var(--b-r-tag); }
+.formula-box .formula-title { display: flex; align-items: center; gap: var(--b-s2); color: var(--b-plum); }
+.formula-box .formula-rule { margin: var(--b-s1) 0; font-family: var(--b-display); font-size: var(--b-fs-title); line-height: 1.25; }
+.formula-box .formula-steps { margin: var(--b-s1) 0 0; padding-left: 1.3em; font-size: var(--b-small); color: var(--b-ink-soft); }
+.dc-formula { margin: var(--b-s2) 0; }

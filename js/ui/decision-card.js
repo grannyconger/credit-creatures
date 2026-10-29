@@ -4,6 +4,7 @@ import { h, add, fill } from "./dom.js";
 import { burstFrom } from "./motion/particles.js";
 import { payWith } from "./pay-with.js";
 import { calculator } from "./minigames/calculator.js";
+import { formulaBox } from "./formula.js";
 import { segmentBar, segmentLegend } from "./segment-bar.js";
 import { sfx } from "./sound.js";
 import { FACTOR_LABELS, compareChoices, allSame, startRow, dollars } from "../engine/index.js";
@@ -93,7 +94,7 @@ export function decisionCard({ def, kind, life, ctx, choices, choose, onContinue
         tools.push(toggle);
       }
     }
-    return h("div.dc-ask-row", ask ? h("p.dc-ask", h("strong", ask)) : null, tools.length ? h("div.dc-tools", tools) : null);
+    return h("div.dc-ask-row", ask ? h("p.dc-ask", h("strong", ask)) : null, tools.length ? h("div.dc-tools", tools) : null, hint?.formula ? h("div.dc-formula", formulaBox(hint.formula)) : null);
   }
   const card = h(
     "article.decision-card",

@@ -14,6 +14,8 @@ import { creatureSvg } from "../creature-art.js";
 import { sealSvg, inkStampSvg } from "../bestiary-art.js";
 import { timerRing } from "../arcade/components.js";
 import { calculator } from "../minigames/calculator.js";
+import { formulaBox } from "../formula.js";
+import { QUESTION_TYPES } from "../../data/practice-questions.js";
 import { burstFrom, burst } from "../motion/particles.js";
 import { react } from "../motion/gaze.js";
 import { confetti } from "../fx.js";
@@ -533,6 +535,7 @@ export function render(root, { game, go, track }) {
         h(
           "div.arena-q-main",
           h("div.arena-q-prompt", q.prompt.map((line) => h("p", line))),
+          formulaBox(QUESTION_TYPES[q.type]?.formula),
           h(
             "div.arena-choices",
             q.choices.map((c, i) => h("button.arena-choice", { type: "button", onclick: (e) => submit(i, e.currentTarget) }, h("span.arena-choice-letter", "ABCD"[i]), h("span", c)))

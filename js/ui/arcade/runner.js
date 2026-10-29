@@ -20,6 +20,7 @@ import { experienceBonus, rideAndHomeBonus, recordShift, shiftRewards } from "..
 import { fullName } from "../../data/creatures.js";
 import { coinsFly } from "../fx.js";
 import { cabinetArt } from "../arcade-art.js";
+import { calcWidget } from "../minigames/calculator.js";
 import { setArcadeVoice, sfx } from "../arcade-sound.js";
 import { hasGuide, openGameGuide } from "../game-guide.js";
 import { echoHost, coachMark } from "./components.js";
@@ -423,15 +424,17 @@ export function arcadeRunner({ key, host, game, run, track, save, onBack }) {
           save("bonus round");
           fill(bonusBox, h("p.arc-bonus-result", { class: right ? "good" : "bad" }, icon(right ? "check" : "alert", { size: 18 }), right ? ` Right! +${money(CONFIG.arcade.bonusCoins)}. ` : " Not this time. ", q.why));
         };
+        const cw = calcWidget({ onOpen: () => track("calcOpen", { game: key, kind: "bonus" }), onUse: () => track("calcUse", { game: key, kind: "bonus" }) });
+        const tools = h("div.arc-bonus-tools", cw.toggle);
         if (q.type === "number") {
           const input = h("input.arc-bonus-num", { type: "text", inputmode: "decimal", "aria-label": "Your answer" });
           const submit = h("button", { type: "button", onclick: () => input.value.trim() && answer(input.value) }, "Answer");
           input.addEventListener("keydown", (e) => e.key === "Enter" && (e.preventDefault(), submit.click()));
-          fill(bonusBox, h("p.arc-bonus-q", q.q), h("div.arc-bonus-row", input, submit), h("small", "One try."));
+          fill(bonusBox, h("p.arc-bonus-q", q.q), tools, cw.slot, h("div.arc-bonus-row", input, submit), h("small", "One try."));
           input.focus();
         } else {
-          fill(bonusBox, h("p.arc-bonus-q", q.q), h("div.arc-bonus-choices", shown.choices.map((c, i) => h("button.arc-bonus-choice", { type: "button", onclick: () => answer(i) }, c))), h("small", "One try."));
-          bonusBox.querySelector("button").focus();
+          fill(bonusBox, h("p.arc-bonus-q", q.q), tools, cw.slot, h("div.arc-bonus-choices", shown.choices.map((c, i) => h("button.arc-bonus-choice", { type: "button", onclick: () => answer(i) }, c))), h("small", "One try."));
+          bonusBox.querySelector(".arc-bonus-choice").focus();
         }
       };
     }

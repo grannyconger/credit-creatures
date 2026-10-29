@@ -2,6 +2,8 @@
 // instant feedback with the worked math, accuracy by standard, and XP for
 // right answers.
 import { icon } from "../icons.js";
+import { calcWidget } from "../minigames/calculator.js";
+import { formulaBox } from "../formula.js";
 import { burstFrom } from "../motion/particles.js";
 import { h } from "../dom.js";
 import { createRng } from "../../engine/index.js";
@@ -42,7 +44,7 @@ function startView(play, { track, repaint, run }) {
   return h(
     "div.desk",
     h("h2", icon("scroll", { size: 24 }), " Practice Desk"),
-    h("p", `${DESK_QUESTIONS} quick questions with new numbers every time. Real math is fine. Grab a calculator if you want one.`),
+    h("p", `${DESK_QUESTIONS} quick questions with new numbers every time. Real math is fine. Every question has a calculator, and the math questions show a formula.`),
     h("p.reward-line", icon("star", { size: 16 }), run.practice ? " Practice mode: XP isn't saved." : P.answerXpLeft(play) ? ` ${P.answerXpLeft(play)} XP from right answers left this chapter.` : " You've earned all the answer XP for this chapter. Practice still counts for your teacher."),
     h(
       "div.row",
@@ -64,6 +66,12 @@ function startView(play, { track, repaint, run }) {
   );
 }
 
+// A formula for the questions with arithmetic, and a calculator on every question.
+function deskTools(meta, track) {
+  const cw = calcWidget({ onOpen: () => track("calcOpen", { game: "desk" }), onUse: () => track("calcUse", { game: "desk" }) });
+  return h("div.vault-desk-tools", formulaBox(meta.formula), h("div.desk-calc", cw.toggle, cw.slot));
+}
+
 function questionView(play, { track, save, repaint }) {
   const q = session.questions[session.k];
   const meta = QUESTION_TYPES[q.type];
@@ -73,6 +81,7 @@ function questionView(play, { track, save, repaint }) {
     "div.desk",
     h("p.step-label", `Question ${session.k + 1} of ${session.questions.length} · ${meta.label} · ${STANDARD_LABELS[meta.standard]}`),
     h("div.desk-prompt", q.prompt.map((line) => h("p", line))),
+    deskTools(meta, track),
     h(
       "div.dc-choices",
       { role: "group", "aria-label": "Answers" },

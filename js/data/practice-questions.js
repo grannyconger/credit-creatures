@@ -65,6 +65,7 @@ export const QUESTION_TYPES = {
   runningBalance: {
     label: "Running balance",
     standard: 2,
+    formula: ["New amount owed = old amount owed + purchases − payments", "A purchase makes you owe more, so add it.", "A payment makes you owe less, so subtract it."],
     make(rng) {
       const bal = step(rng, 100, 400, 5);
       const buy = step(rng, 15, 80, 5);
@@ -82,6 +83,7 @@ export const QUESTION_TYPES = {
   utilization: {
     label: "Utilization",
     standard: 3,
+    formula: ["Utilization = amount owed ÷ credit limit", "Divide what you owe by the limit.", "Move the decimal two places to make it a percent (0.25 is 25%)."],
     make(rng) {
       const limit = pick(rng, [500, 800, 1000, 1500, 2000, 2500]);
       const share = pick(rng, [0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75, 0.9]);
@@ -96,6 +98,7 @@ export const QUESTION_TYPES = {
   monthlyInterest: {
     label: "Monthly interest",
     standard: 2,
+    formula: ["Interest for 1 month = balance × APR ÷ 12", "Turn the APR into a decimal (24% is 0.24).", "Multiply the balance by that decimal. That is a whole year of interest.", "Divide by 12 to get one month."],
     make(rng) {
       const bal = step(rng, 300, 1200, 50);
       const apr = pick(rng, [18, 21, 24, 27, 30]);
@@ -110,6 +113,7 @@ export const QUESTION_TYPES = {
   tipMath: {
     label: "Tip math",
     standard: 2,
+    formula: ["Total = meal cost + tip, and tip = meal cost × tip percent", "Turn the percent into a decimal (20% is 0.20).", "Multiply the meal cost by it to get the tip.", "Add the tip to the meal cost."],
     make(rng) {
       const sub = step(rng, 1200, 6000, 50) / 100;
       const tip = cents(sub * 0.2);
