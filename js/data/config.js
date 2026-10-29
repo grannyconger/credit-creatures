@@ -80,6 +80,7 @@ export const CONFIG = {
   grants: [{ id: "coins-2026-10-27", amount: 1000, upTo: "2026-10-27", from: "Kingdom of Coinhaven" },
     // A class grant pays every student in that class once, with a full-screen pop-up.
     { id: "coins-2b-2026-10-29", amount: 1500, className: "Weaver 2B PF 2627", from: "The Creator", popup: { text: "You've received a generous gift from The Creator", image: "img/creator-gift.jpg" } },
+    { id: "coins-4b-2026-10-29", amount: 1500, className: "Weaver 4B PF 2627", from: "The Creator", popup: { text: "You've received a generous gift from The Creator", image: "img/creator-gift.jpg" } },
   ],
 
   // The month loop after Chapter 1 (SPEC §8).
